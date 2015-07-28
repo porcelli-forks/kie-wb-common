@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.ModalBody;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
@@ -39,7 +40,9 @@ public class AboutPopup extends BaseModal {
     public AboutPopup() {
         setTitle( CommonConstants.INSTANCE.About() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        add( new ModalBody(){{
+            add( uiBinder.createAndBindUi( AboutPopup.this ) );
+        }} );
         add( new ModalFooterOKButton( new Command() {
             @Override
             public void execute() {

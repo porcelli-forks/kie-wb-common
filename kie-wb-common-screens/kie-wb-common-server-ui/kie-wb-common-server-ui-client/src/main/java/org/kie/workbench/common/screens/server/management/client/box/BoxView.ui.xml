@@ -33,8 +33,8 @@
 
       <div class="{res.CSS.boxLeft}">
 
-        <i class="icon-circle-blank {res.CSS.clickable}" ui:field="notSelected"></i>
-        <i class="icon-circle {res.CSS.clickable}" style="display: none;" ui:field="selected"></i>
+        <i class="fa-circle-o {res.CSS.clickable}" ui:field="notSelected"></i>
+        <i class="fa-circle {res.CSS.clickable}" style="display: none;" ui:field="selected"></i>
 
         <i ui:field="status"></i>
 
@@ -52,8 +52,8 @@
       </div>
 
       <div class="{res.CSS.boxRight}" ui:field="actions">
-        <i class="icon-plus {res.CSS.clickable}" ui:field="addAction"></i>
-        <i class="icon-signin {res.CSS.clickable}" ui:field="openAction"></i>
+        <i class="fa-icon {res.CSS.clickable}" ui:field="addAction"></i>
+        <i class="fa-sign-in {res.CSS.clickable}" ui:field="openAction"></i>
       </div>
 
     </div>

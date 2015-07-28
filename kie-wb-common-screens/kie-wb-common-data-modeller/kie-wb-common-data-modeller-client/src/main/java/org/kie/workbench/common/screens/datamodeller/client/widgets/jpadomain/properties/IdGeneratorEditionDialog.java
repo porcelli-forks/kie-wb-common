@@ -15,22 +15,26 @@
 */
 package org.kie.workbench.common.screens.datamodeller.client.widgets.jpadomain.properties;
 
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
-import com.github.gwtbootstrap.client.ui.event.HiddenHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.model.DataModelerPropertyEditorFieldInfo;
+import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.common.properties.PropertyEditionPopup;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
+
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.setSelectedValue;
 
 public class IdGeneratorEditionDialog
         extends BaseModal implements PropertyEditionPopup {
@@ -42,10 +46,10 @@ public class IdGeneratorEditionDialog
     TextBox generatorName;
 
     @UiField
-    ControlGroup generatorControlGroup;
+    FormGroup generatorControlGroup;
 
     @UiField
-    HelpInline generatorNameInline;
+    HelpBlock generatorNameInline;
 
     private Boolean revertChanges = Boolean.TRUE;
 
@@ -63,37 +67,39 @@ public class IdGeneratorEditionDialog
 
     public IdGeneratorEditionDialog() {
         setTitle( "Generation Strategy" );
-        setMaxHeigth( "350px" );
-        add( uiBinder.createAndBindUi( this ) );
+        //setMaxHeigth( "350px" );
+        add( new ModalBody() {{
+            add( uiBinder.createAndBindUi( IdGeneratorEditionDialog.this ) );
+        }} );
 
         add( new ModalFooterOKCancelButtons(
-                new Command() {
-                    @Override
-                    public void execute() {
-                        okButton();
-                    }
-                },
-                new Command() {
-                    @Override
-                    public void execute() {
-                        cancelButton();
-                    }
-                }
-        )
-        );
+                     new Command() {
+                         @Override
+                         public void execute() {
+                             okButton();
+                         }
+                     },
+                     new Command() {
+                         @Override
+                         public void execute() {
+                             cancelButton();
+                         }
+                     }
+             )
+           );
 
         generatorType.addItem( "NONE", "NONE" );
-        generatorType.addItem( "SEQUENCE", "SEQUENCE");
-        generatorType.addItem( "TABLE", "TABLE");
-        generatorType.addItem( "IDENTITY", "IDENTITY");
-        generatorType.addItem( "AUTO", "AUTO");
+        generatorType.addItem( "SEQUENCE", "SEQUENCE" );
+        generatorType.addItem( "TABLE", "TABLE" );
+        generatorType.addItem( "IDENTITY", "IDENTITY" );
+        generatorType.addItem( "AUTO", "AUTO" );
 
     }
 
     private void addHiddlenHandler() {
-        addHiddenHandler( new HiddenHandler() {
+        addHiddenHandler( new ModalHiddenHandler() {
             @Override
-            public void onHidden( HiddenEvent hiddenEvent ) {
+            public void onHidden( ModalHiddenEvent hiddenEvent ) {
                 if ( userPressCloseOrCancel() ) {
                     revertChanges();
                 }
@@ -111,11 +117,11 @@ public class IdGeneratorEditionDialog
 
     public void show() {
         DataModelerPropertyEditorFieldInfo fieldInfo = (DataModelerPropertyEditorFieldInfo) property;
-        String strategy = (String)fieldInfo.getCurrentValue( "strategy" );
-        String generator = ( String ) fieldInfo.getCurrentValue( "generator" );
+        String strategy = (String) fieldInfo.getCurrentValue( "strategy" );
+        String generator = (String) fieldInfo.getCurrentValue( "generator" );
 
         strategy = strategy != null ? strategy : "NONE";
-        generatorType.setSelectedValue( strategy );
+        setSelectedValue( generatorType, strategy );
         generatorName.setText( generator );
 
         super.show();
@@ -135,7 +141,7 @@ public class IdGeneratorEditionDialog
         // then new current values can be set.
 
         DataModelerPropertyEditorFieldInfo fieldInfo = (DataModelerPropertyEditorFieldInfo) property;
-        String strategy = generatorType.getValue();
+        String strategy = generatorType.getSelectedValue();
         strategy = "NONE".equals( strategy ) ? null : strategy;
         String generator = generatorName.getText();
 
@@ -162,7 +168,7 @@ public class IdGeneratorEditionDialog
     @Override
     public String getStringValue() {
         //return the value to show in the property editor simple text field.
-        return generatorType.getValue();
+        return generatorType.getSelectedValue();
     }
 
     @Override

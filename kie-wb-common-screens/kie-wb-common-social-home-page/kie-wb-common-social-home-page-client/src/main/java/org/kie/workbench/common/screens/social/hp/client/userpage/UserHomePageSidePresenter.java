@@ -22,19 +22,20 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.uberfire.social.activities.client.gravatar.GravatarBuilder;
 import org.kie.uberfire.social.activities.model.SocialUser;
+import org.kie.uberfire.social.activities.service.SocialUserImageRepositoryAPI;
 import org.kie.uberfire.social.activities.service.SocialUserRepositoryAPI;
 import org.kie.uberfire.social.activities.service.SocialUserServiceAPI;
 import org.kie.workbench.common.screens.social.hp.client.homepage.events.LoadUserPageEvent;
@@ -57,8 +58,6 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
-
-import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "UserHomePageSidePresenter")
@@ -138,7 +137,7 @@ public class UserHomePageSidePresenter {
                                     {
                                         setIcon( IconType.HOME );
                                         setTitle( Constants.INSTANCE.Home() );
-                                        setSize( MINI );
+                                        setSize( ButtonSize.SMALL );
                                         addClickHandler( new ClickHandler() {
                                             @Override
                                             public void onClick( ClickEvent event ) {
@@ -215,7 +214,7 @@ public class UserHomePageSidePresenter {
 
     private SideUserInfoPresenter setupSideUserInfoPresenter( SocialUser socialUser ) {
         Button followUnfollow = generateActionLink( socialUser );
-        sideUserInfoPresenter.setup( socialUser, GravatarBuilder.generate( socialUser, GravatarBuilder.SIZE.BIG ), followUnfollow );
+        sideUserInfoPresenter.setup( socialUser, GravatarBuilder.generate( socialUser, SocialUserImageRepositoryAPI.ImageSize.BIG ), followUnfollow );
         return sideUserInfoPresenter;
     }
 

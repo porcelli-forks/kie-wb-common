@@ -89,7 +89,7 @@ public class JPADataObjectFieldEditor extends FieldEditor {
     public JPADataObjectFieldEditor() {
         initWidget( uiBinder.createAndBindUi( this ) );
 
-        propertyEditor.setFilterPanelVisible( false );
+        propertyEditor.setFilterGroupVisible( false );
         loadPropertyEditor();
         setReadonly( true );
     }

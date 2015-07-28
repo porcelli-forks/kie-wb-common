@@ -17,7 +17,6 @@ package org.kie.workbench.common.widgets.client.popups.validation;
 
 import java.util.List;
 
-import com.github.gwtbootstrap.client.ui.CellTable;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -25,6 +24,8 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
@@ -49,9 +50,12 @@ public class ValidationPopup extends BaseModal {
 
     private ValidationPopup() {
         setTitle( CommonConstants.INSTANCE.ValidationErrors() );
-        setHideOthers( false );
+        setHideOtherModals( false );
 
-        add( uiBinder.createAndBindUi( this ) );
+        add( new ModalBody() {{
+            add( uiBinder.createAndBindUi( ValidationPopup.this ) );
+        }} );
+
         add( new ModalFooterOKButton( new Command() {
             @Override
             public void execute() {
