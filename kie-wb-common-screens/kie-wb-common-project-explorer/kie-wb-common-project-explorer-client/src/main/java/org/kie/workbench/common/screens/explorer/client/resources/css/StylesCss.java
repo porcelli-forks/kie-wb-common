@@ -31,4 +31,28 @@ public interface StylesCss
 
     String scrollMenu();
 
+    String container();
+
+    String navigator();
+
+    @ClassName("navigator-folder-icon")
+    String navigatorFolderIcon();
+
+    @ClassName("navigator-file-icon")
+    String navigatoFileIcon();
+
+    String breadcrumb();
+
+    @ClassName("breadcrumb-header")
+    String breadcrumbHeader();
+
+    @ClassName("navigation-breadcrumb")
+    String navigationBreadcrumb();
+
+    @ClassName("breadcrumb-2nd-level")
+    String breadcrumb2ndLevel();
+
+    @ClassName("directory-name")
+    String directory();
+
 }

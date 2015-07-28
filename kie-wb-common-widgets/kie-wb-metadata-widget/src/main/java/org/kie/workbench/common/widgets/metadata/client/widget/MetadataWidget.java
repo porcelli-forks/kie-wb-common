@@ -197,7 +197,7 @@ public class MetadataWidget
                                                           }
                                                         },
                                                       null );
-        yesNoCancelPopup.setCloseVisible( false );
+        yesNoCancelPopup.setClosable( false );
         yesNoCancelPopup.show();
     }
 }

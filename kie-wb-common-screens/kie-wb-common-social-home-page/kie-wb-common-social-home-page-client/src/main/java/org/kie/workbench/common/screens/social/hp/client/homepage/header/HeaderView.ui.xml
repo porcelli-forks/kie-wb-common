@@ -18,13 +18,12 @@
 
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <b:Well>
-      <span>Showing updates for:</span>
-      <b:ListBox ui:field="updatesList">
-      </b:ListBox>
+    <b:Label text="Showing updates for:"></b:Label>
+    <b:ListBox ui:field="updatesList">
+    </b:ListBox>
   </b:Well>
 
 </ui:UiBinder>

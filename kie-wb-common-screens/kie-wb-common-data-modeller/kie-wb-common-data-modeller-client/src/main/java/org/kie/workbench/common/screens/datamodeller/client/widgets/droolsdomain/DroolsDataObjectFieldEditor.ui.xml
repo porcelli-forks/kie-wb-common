@@ -17,8 +17,7 @@
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:gwt="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-        >
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
     <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
 
@@ -59,8 +58,8 @@
                     <b:CheckBox ui:field="equalsSelector"></b:CheckBox>
                 </td>
                 <td style="padding-left: 4px;">
-                    <b:Popover placement="LEFT" trigger="HOVER" heading="{i18n.objectFieldEditor_equalsLabel}" text="{i18n.objectFieldEditor_equalsHelp}">
-                        <b:Icon ui:field="equalsHelpIcon" type="QUESTION_SIGN"></b:Icon>
+                    <b:Popover placement="LEFT" trigger="HOVER" title="{i18n.objectFieldEditor_equalsLabel}" content="{i18n.objectFieldEditor_equalsHelp}">
+                        <b:Icon ui:field="equalsHelpIcon" type="QUESTION"></b:Icon>
                     </b:Popover>
                 </td>
             </tr>
@@ -75,8 +74,8 @@
                     <b:TextBox ui:field="position" styleName="span10"></b:TextBox>
                 </td>
                 <td style="padding-left: 4px;">
-                    <b:Popover placement="LEFT" trigger="HOVER" heading="{i18n.objectFieldEditor_positionLabel}" text="{i18n.objectFieldEditor_positionHelp}">
-                        <b:Icon ui:field="positionHelpIcon" type="QUESTION_SIGN"></b:Icon>
+                    <b:Popover placement="LEFT" trigger="HOVER" title="{i18n.objectFieldEditor_positionLabel}" content="{i18n.objectFieldEditor_positionHelp}">
+                        <b:Icon ui:field="positionHelpIcon" type="QUESTION"></b:Icon>
                     </b:Popover>
                 </td>
             </tr>

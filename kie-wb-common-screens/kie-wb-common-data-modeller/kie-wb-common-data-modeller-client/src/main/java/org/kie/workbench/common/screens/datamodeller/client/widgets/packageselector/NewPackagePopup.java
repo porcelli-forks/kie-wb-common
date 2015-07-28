@@ -18,18 +18,19 @@ package org.kie.workbench.common.screens.datamodeller.client.widgets.packagesele
 
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.HtmlWidget;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.datamodeller.client.validation.ValidatorService;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorCallback;
@@ -44,13 +45,13 @@ public class NewPackagePopup extends BaseModal {
 
     private String packageName;
 
-    private HtmlWidget newPackageHelpHtml = new HtmlWidget( "P", Constants.INSTANCE.validPackageHelp( "<br>" ) );
+    private HTMLPanel newPackageHelpHtml = new HTMLPanel( "P", Constants.INSTANCE.validPackageHelp( "<br>" ) );
 
-    private HelpInline errorMessages = new HelpInline();
+    private HelpBlock errorMessages = new HelpBlock();
 
-    private ControlGroup newPackageControlGroup = new ControlGroup();
+    private FormGroup newPackageControlGroup = new FormGroup();
 
-    private ControlGroup errorMessagesGroup = new ControlGroup();
+    private FormGroup errorMessagesGroup = new FormGroup();
 
     private VerticalPanel mainPanel = new VerticalPanel();
 
@@ -63,7 +64,7 @@ public class NewPackagePopup extends BaseModal {
 
     public NewPackagePopup() {
         newPackageButton.setType( ButtonType.PRIMARY );
-        newPackageButton.setIcon( IconType.PLUS_SIGN );
+        newPackageButton.setIcon( IconType.PLUS );
 
         newPackageName.setPlaceholder( Constants.INSTANCE.package_id_placeholder() );
         newPackageControlGroup.add( newPackageName );
@@ -73,10 +74,12 @@ public class NewPackagePopup extends BaseModal {
         mainPanel.add( dataPanel );
         mainPanel.add( newPackageHelpHtml );
         mainPanel.add( errorMessagesGroup );
-        add( mainPanel );
+        add( new ModalBody(){{
+            add( mainPanel );
+        }} );
 
         setTitle( Constants.INSTANCE.new_dataobject_popup_new_package() );
-        setCloseVisible( true );
+        setClosable( true );
 
         newPackageButton.addClickHandler( new ClickHandler() {
 
@@ -139,13 +142,13 @@ public class NewPackagePopup extends BaseModal {
 
     public void cleanErrors() {
         errorMessages.setText( "" );
-        newPackageControlGroup.setType( ControlGroupType.NONE );
-        errorMessagesGroup.setType( ControlGroupType.NONE );
+        newPackageControlGroup.setValidationState( ValidationState.NONE );
+        errorMessagesGroup.setValidationState( ValidationState.NONE );
     }
 
     public void setErrorMessage( String errorMessage ) {
-        newPackageControlGroup.setType( ControlGroupType.ERROR );
+        newPackageControlGroup.setValidationState( ValidationState.ERROR );
         errorMessages.setText( errorMessage );
-        errorMessagesGroup.setType( ControlGroupType.ERROR );
+        errorMessagesGroup.setValidationState( ValidationState.ERROR );
     }
 }

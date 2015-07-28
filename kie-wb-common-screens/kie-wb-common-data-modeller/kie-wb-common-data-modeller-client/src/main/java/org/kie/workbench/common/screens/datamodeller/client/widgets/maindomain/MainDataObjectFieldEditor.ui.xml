@@ -17,8 +17,7 @@
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:gwt="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-        >
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
     <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
 
@@ -56,7 +55,7 @@
                     <gwt:Label ui:field="nameLabel" text="{i18n.objectFieldEditor_nameLabel}"/>
                 </td>
                 <td style="padding-left: 4px; padding-right:16px;">
-                    <b:TextBox ui:field="name" styleName="span10 "></b:TextBox>
+                    <b:TextBox ui:field="name" styleName="col-md-10 "></b:TextBox>
                 </td>
                 <td style="padding-left: 4px;">
                 </td>
@@ -71,7 +70,7 @@
                     <gwt:Label ui:field="labelLabel" text="{i18n.objectFieldEditor_labelLabel}"/>
                 </td>
                 <td style="padding-left: 4px;">
-                    <b:TextBox ui:field="label" styleName="span10"></b:TextBox>
+                    <b:TextBox ui:field="label" styleName="col-md-10"></b:TextBox>
                 </td>
                 <td style="padding-left: 4px;">
                 </td>
@@ -84,7 +83,7 @@
                     <gwt:Label ui:field="descriptionLabel" text="{i18n.objectFieldEditor_descriptionLabel}"/>
                 </td>
                 <td style="padding-left: 4px;">
-                    <b:TextArea ui:field="description" styleName="span10"></b:TextArea>
+                    <b:TextArea ui:field="description" styleName="col-md-10"></b:TextArea>
                 </td>
                 <td style="padding-left: 4px;">
                 </td>
@@ -100,15 +99,14 @@
                     <table>
                         <tr>
                             <td>
-                                <b:ListBox ui:field="typeSelector" styleName="span10"></b:ListBox>
+                                <b:ListBox ui:field="typeSelector" styleName="col-md-10"></b:ListBox>
                             </td>
 
-                            <td style="padding-left: 4px;">
-                                <table><tr><td><div class="typeCheckbox"><b:CheckBox ui:field="isTypeMultiple" /></div></td><td><b:Tooltip text="{i18n.objectBrowser_typeLabelMultipleTooltip}"><gwt:Label text="{i18n.objectBrowser_typeLabelMultiple}"/></b:Tooltip></td></tr></table>
+                          <td style="padding-left: 4px;">
+                                <table><tr><td><div class="typeCheckbox"><b:CheckBox ui:field="isTypeMultiple" /></div></td><td><b:Tooltip title="{i18n.objectBrowser_typeLabelMultipleTooltip}"><gwt:Label text="{i18n.objectBrowser_typeLabelMultiple}"/></b:Tooltip></td></tr></table>
                             </td>
                         </tr>
                     </table>
-
                 </td>
             </tr>
         </table>

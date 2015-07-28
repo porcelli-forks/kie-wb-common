@@ -19,12 +19,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.uberfire.social.activities.client.widgets.item.model.LinkCommandParams;
+import org.kie.uberfire.social.activities.client.widgets.pagination.Next;
 import org.kie.uberfire.social.activities.client.widgets.timeline.simple.model.SimpleSocialTimelineWidgetModel;
 import org.kie.uberfire.social.activities.model.SocialPaged;
 import org.kie.uberfire.social.activities.model.SocialUser;
@@ -82,7 +82,9 @@ public class SocialHomePageSidePresenter {
         socialUserRepositoryAPI.call( new RemoteCallback<SocialUser>() {
             public void callback( SocialUser socialUser ) {
                 SimpleSocialTimelineWidgetModel model = new SimpleSocialTimelineWidgetModel( socialUser, new UserTimeLineFileChangesPredicate(), placeManager, socialPaged )
-                        .withOnlyMorePagination( new NavLink( "(more...)" ))
+                        .withOnlyMorePagination( new Next() {{
+                            setText( "(more...)" );
+                        }} )
                         .withIcons( iconLocator.getResourceTypes() )
                         .withLinkCommand( generateLinkCommand() );
                 view.setupWidget( model );
@@ -91,7 +93,7 @@ public class SocialHomePageSidePresenter {
     }
 
     private ParameterizedCommand<LinkCommandParams> generateLinkCommand() {
-       return linkCommandGenerator.generateLinkCommand();
+        return linkCommandGenerator.generateLinkCommand();
     }
 
     @WorkbenchPartTitle

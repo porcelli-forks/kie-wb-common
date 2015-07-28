@@ -17,13 +17,6 @@ package org.kie.workbench.common.screens.datamodeller.client.pdescriptor;
 
 import java.util.List;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonCell;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -33,8 +26,19 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.widgets.common.client.tables.SimpleTable;
 
@@ -56,18 +60,31 @@ public class PersistenceUnitPropertyGridViewImpl
     SimpleTable<PropertyRow> dataGrid = new SimpleTable<PropertyRow>();
 
     @UiField
+    PanelGroup accordion;
+
+    @UiField
+    PanelHeader header;
+
+    @UiField
+    PanelCollapse collapse;
+
+    @UiField
     TextBox newPropertyNameTextBox;
 
     @UiField
     TextBox newPropertyValueTextBox;
 
     @UiField
-    HelpInline newPropertyHelpInline;
+    HelpBlock newPropertyHelpInline;
 
     @UiField
     Button addPropertyButton;
 
     public PersistenceUnitPropertyGridViewImpl() {
+
+        accordion.setId( DOM.createUniqueId() );
+        header.setDataParent( accordion.getId() );
+        header.setDataTargetWidget( collapse );
 
         dataGrid.setEmptyTableCaption( "No properties" );
         dataGrid.setToolBarVisible( false );

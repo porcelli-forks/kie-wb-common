@@ -20,11 +20,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.kie.workbench.common.screens.server.management.client.box.BoxPresenter;
 import org.kie.workbench.common.screens.server.management.client.header.HeaderPresenter;
 import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
@@ -95,7 +95,7 @@ public class ServerManagementBrowserView extends Composite
                 },
                 org.uberfire.ext.widgets.common.client.resources.i18n.CommonConstants.INSTANCE.YES(),
                 ButtonType.DANGER,
-                IconType.EXCLAMATION_SIGN,
+                IconType.EXCLAMATION_CIRCLE,
 
                 new Command() {
                     @Override

@@ -17,7 +17,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
   <ui:style>
     .mandatory-field {
@@ -27,43 +27,37 @@
 
   <g:FlowPanel>
     <b:Well>
-      <b:Fieldset>
+      <b:FieldSet>
         <b:Legend>
           Server connectivity info.
           <small>
             Is Required
           </small>
         </b:Legend>
-        <b:ControlGroup ui:field="idGroup">
-          <b:ControlLabel for="id">
+        <b:FormGroup ui:field="idGroup">
+          <b:FormLabel for="id">
             <span class="{style.mandatory-field}">*</span>
             Identifier
-          </b:ControlLabel>
-          <b:Controls>
-            <b:TextBox b:id="url" ui:field="idTextBox" placeholder="Identifier"/>
-            <b:HelpInline ui:field="idHelpInline"/>
-          </b:Controls>
-        </b:ControlGroup>
-        <b:ControlGroup ui:field="nameGroup">
-          <b:ControlLabel for="url">
+          </b:FormLabel>
+          <b:TextBox b:id="url" ui:field="idTextBox" placeholder="Identifier"/>
+          <b:HelpBlock ui:field="idHelpInline"/>
+        </b:FormGroup>
+        <b:FormGroup ui:field="nameGroup">
+          <b:FormLabel for="url">
             <span class="{style.mandatory-field}">*</span>
             Name
-          </b:ControlLabel>
-          <b:Controls>
-            <b:TextBox b:id="name" ui:field="nameTextBox" placeholder="Name"/>
-            <b:HelpInline ui:field="nameHelpInline"/>
-          </b:Controls>
-        </b:ControlGroup>
-        <b:ControlGroup ui:field="versionGroup">
-          <b:ControlLabel for="version">
+          </b:FormLabel>
+          <b:TextBox b:id="name" ui:field="nameTextBox" placeholder="Name"/>
+          <b:HelpBlock ui:field="nameHelpInline"/>
+        </b:FormGroup>
+        <b:FormGroup ui:field="versionGroup">
+          <b:FormLabel for="version">
             Version
-          </b:ControlLabel>
-          <b:Controls>
-            <b:TextBox b:id="version" ui:field="versionTextBox" placeholder="Version"/>
-            <b:HelpInline ui:field="versionHelpInline"/>
-          </b:Controls>
-        </b:ControlGroup>
-      </b:Fieldset>
+          </b:FormLabel>
+          <b:TextBox b:id="version" ui:field="versionTextBox" placeholder="Version"/>
+          <b:HelpBlock ui:field="versionHelpInline"/>
+        </b:FormGroup>
+      </b:FieldSet>
     </b:Well>
     <b:ModalFooter>
       <b:Button type="DEFAULT" ui:field="cancel">
