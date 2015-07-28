@@ -18,12 +18,6 @@ package org.kie.workbench.common.screens.server.management.client.registry;
 
 import javax.enterprise.context.Dependent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.PasswordTextBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -33,7 +27,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import org.uberfire.util.URIUtil;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 
 @Dependent
 public class ServerRegistryEndpointView extends Composite
@@ -54,13 +52,13 @@ public class ServerRegistryEndpointView extends Composite
     Button cancel;
 
     @UiField
-    ControlGroup versionGroup;
+    FormGroup versionGroup;
 
     @UiField
-    ControlGroup nameGroup;
+    FormGroup nameGroup;
 
     @UiField
-    ControlGroup idGroup;
+    FormGroup idGroup;
 
     @UiField
     TextBox versionTextBox;
@@ -72,14 +70,13 @@ public class ServerRegistryEndpointView extends Composite
     TextBox nameTextBox;
 
     @UiField
-    HelpInline nameHelpInline;
+    HelpBlock nameHelpInline;
 
     @UiField
-    HelpInline idHelpInline;
+    HelpBlock idHelpInline;
 
     @UiField
-    HelpInline versionHelpInline;
-
+    HelpBlock versionHelpInline;
 
     private ServerRegistryEndpointPresenter presenter;
 
@@ -91,31 +88,31 @@ public class ServerRegistryEndpointView extends Composite
     public void init( final ServerRegistryEndpointPresenter presenter ) {
         this.presenter = presenter;
 
-        idTextBox.addKeyPressHandler(new KeyPressHandler() {
+        idTextBox.addKeyPressHandler( new KeyPressHandler() {
             @Override
-            public void onKeyPress(final KeyPressEvent event) {
-                idGroup.setType(ControlGroupType.NONE);
-                idHelpInline.setText("");
+            public void onKeyPress( final KeyPressEvent event ) {
+                idGroup.setValidationState( ValidationState.NONE );
+                idHelpInline.setText( "" );
             }
-        });
+        } );
     }
 
     @UiHandler("connect")
     public void onConnectClick( final ClickEvent e ) {
         if ( idTextBox.getText() == null || idTextBox.getText().trim().isEmpty() ) {
-            idGroup.setType(ControlGroupType.ERROR);
-            idHelpInline.setText("Identifier mandatory");
+            idGroup.setValidationState( ValidationState.ERROR );
+            idHelpInline.setText( "Identifier mandatory" );
             return;
-        }else {
-            idGroup.setType(ControlGroupType.NONE);
+        } else {
+            idGroup.setValidationState( ValidationState.NONE );
         }
 
         if ( nameTextBox.getText() == null || nameTextBox.getText().trim().isEmpty() ) {
-            nameGroup.setType( ControlGroupType.ERROR );
+            nameGroup.setValidationState( ValidationState.ERROR );
             nameHelpInline.setText( "Name mandatory" );
             return;
         } else {
-            nameGroup.setType( ControlGroupType.NONE );
+            nameGroup.setValidationState( ValidationState.NONE );
         }
 
         presenter.registerServer( idTextBox.getText(), nameTextBox.getText(), versionTextBox.getText() );
@@ -130,7 +127,7 @@ public class ServerRegistryEndpointView extends Composite
     public void lockScreen() {
         connect.setEnabled( false );
         cancel.setEnabled( false );
-        idTextBox.setEnabled(false);
+        idTextBox.setEnabled( false );
         nameTextBox.setEnabled( false );
         versionTextBox.setEnabled( false );
     }
@@ -139,7 +136,7 @@ public class ServerRegistryEndpointView extends Composite
     public void unlockScreen() {
         connect.setEnabled( true );
         cancel.setEnabled( true );
-        idTextBox.setEnabled(true);
+        idTextBox.setEnabled( true );
         nameTextBox.setEnabled( true );
         versionTextBox.setEnabled( true );
     }

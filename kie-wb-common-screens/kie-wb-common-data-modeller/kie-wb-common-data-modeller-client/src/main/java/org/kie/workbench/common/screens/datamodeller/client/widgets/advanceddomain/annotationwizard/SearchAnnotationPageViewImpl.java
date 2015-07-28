@@ -16,11 +16,6 @@
 
 package org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddomain.annotationwizard;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -30,6 +25,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
 
 public class SearchAnnotationPageViewImpl
@@ -48,7 +48,7 @@ public class SearchAnnotationPageViewImpl
     TextBox annotationClassName;
 
     @UiField
-    HelpInline annotationClassNameHelpInline;
+    HelpBlock annotationClassNameHelpInline;
 
     @UiField
     Button searchAnnotationButton;
@@ -91,7 +91,7 @@ public class SearchAnnotationPageViewImpl
         annotationClassNameHelpInline.setText( helpMessage );
     }
 
-    @UiHandler( "searchAnnotationButton" )
+    @UiHandler("searchAnnotationButton")
     void onSearchAnnotationClicked( ClickEvent event ) {
         presenter.onSearchClass();
     }

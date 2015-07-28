@@ -18,8 +18,8 @@ package org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddom
 
 import java.util.List;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -27,6 +27,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.uberfire.commons.data.Pair;
 
 public class EnumValuePairEditorViewImpl
@@ -42,7 +44,7 @@ public class EnumValuePairEditorViewImpl
     private static EnumValuePairEditorViewImplUiBinder uiBinder = GWT.create( EnumValuePairEditorViewImplUiBinder.class );
 
     @UiField
-    Label valuePairLabel;
+    SpanElement valuePairLabel;
 
     @UiField
     ListBox listBox;
@@ -67,7 +69,7 @@ public class EnumValuePairEditorViewImpl
 
     @Override
     public void setSelectedValue( String value ) {
-        listBox.setSelectedValue( value );
+        DataModelerUtils.setSelectedValue( listBox, value );
     }
 
     @Override
@@ -76,10 +78,10 @@ public class EnumValuePairEditorViewImpl
     }
 
     public void setValuePairLabel( String valuePairLabel ) {
-        this.valuePairLabel.setText( valuePairLabel );
+        this.valuePairLabel.setInnerText( valuePairLabel );
     }
 
-    @UiHandler( "listBox" )
+    @UiHandler("listBox")
     void onValueChanged( ChangeEvent event ) {
         presenter.onValueChanged();
     }

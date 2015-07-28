@@ -16,44 +16,41 @@
 
 package org.kie.workbench.common.screens.search.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.AccordionGroup;
-import com.github.gwtbootstrap.client.ui.Alert;
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.Typeahead;
-import com.github.gwtbootstrap.client.ui.constants.AlertType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import org.gwtbootstrap3.client.ui.Alert;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
+import org.gwtbootstrap3.extras.typeahead.client.base.StringDataset;
+import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
 import org.kie.workbench.common.screens.search.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.search.client.widgets.SearchResultTable;
 import org.kie.workbench.common.screens.search.model.QueryMetadataPageRequest;
-import org.kie.workbench.common.screens.search.model.SearchPageRow;
-import org.kie.workbench.common.screens.search.service.SearchService;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.client.workbench.type.ClientTypeRegistry;
-import org.uberfire.paging.PageResponse;
-
-import static org.jboss.errai.bus.client.api.base.MessageBuilder.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "FindForm")
@@ -75,7 +72,7 @@ public class FindForm
     SimplePanel errorPanel;
 
     @UiField
-    ControlGroup form;
+    FormGroup form;
 
     @UiField
     TextBox sourceTextBox;
@@ -86,11 +83,8 @@ public class FindForm
     @UiField
     TextBox descriptionByTextBox;
 
-    @UiField
-    Typeahead formatTypeahead;
-
-    @UiField
-    TextBox formatTextBox;
+    @UiField(provided = true)
+    Typeahead<String> formatTypeahead;
 
     @UiField
     TextBox subjectTextBox;
@@ -107,61 +101,61 @@ public class FindForm
     @UiField
     TextBox checkinCommentTextBox;
 
-    @UiField(provided = true)
-    DateBox createdAfter;
-    @UiField(provided = true)
-    DateBox createdBefore;
-
-    @UiField(provided = true)
-    DateBox lastModifiedAfter;
-    @UiField(provided = true)
-    DateBox lastModifiedBefore;
+    @UiField
+    DatePicker createdAfter;
+    @UiField
+    DatePicker createdBefore;
 
     @UiField
-    AccordionGroup formAccordion;
+    DatePicker lastModifiedAfter;
     @UiField
-    AccordionGroup resultAccordion;
+    DatePicker lastModifiedBefore;
+
+    @UiField
+    PanelGroup accordion;
+
+    @UiField
+    PanelHeader formAccordionHeader;
+
+    @UiField
+    PanelCollapse formAccordionCollapse;
+
+    @UiField
+    PanelHeader resultAccordionHeader;
+
+    @UiField
+    PanelCollapse resultAccordionCollapse;
 
     @UiField
     SimplePanel simplePanel;
 
     @PostConstruct
     public void init() {
-        createdAfter = new DateBox();
-        createdAfter.setValue( null );
-        createdAfter.setAutoClose( true );
-
-        createdBefore = new DateBox();
-        createdBefore.setValue( null );
-        createdBefore.setAutoClose( true );
-
-        lastModifiedAfter = new DateBox();
-        lastModifiedAfter.setValue( null );
-        lastModifiedAfter.setAutoClose( true );
-
-        lastModifiedBefore = new DateBox();
-        lastModifiedBefore.setValue( null );
-        lastModifiedBefore.setAutoClose( true );
+        accordion.setId( DOM.createUniqueId() );
+        formAccordionHeader.setDataParent( accordion.getId() );
+        formAccordionHeader.setDataTargetWidget( formAccordionCollapse );
+        resultAccordionHeader.setDataParent( accordion.getId() );
+        resultAccordionHeader.setDataTargetWidget( resultAccordionCollapse );
 
         //TODO {porcelli} due a bug on bootstrap we can't use custom date formats
-//        createdAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
-//        createdBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
-//        lastModifiedAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
-//        lastModifiedBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        createdAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        createdBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        lastModifiedAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        lastModifiedBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+
+        formatTypeahead = new Typeahead<String>( new StringDataset( new ArrayList<String>() {{
+            for ( final ClientResourceType resourceType : clientTypeRegistry.getRegisteredTypes() ) {
+                add( resourceType.getShortName() );
+            }
+        }} ) );
 
         initWidget( uiBinder.createAndBindUi( this ) );
-
-        final MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) formatTypeahead.getSuggestOracle();
-
-        for ( final ClientResourceType resourceType : clientTypeRegistry.getRegisteredTypes() ) {
-            oracle.add( resourceType.getShortName() );
-        }
     }
 
     @UiHandler("search")
     public void onSearchClick( final ClickEvent e ) {
         errorPanel.clear();
-        form.setType( ControlGroupType.NONE );
+        form.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
         if ( !sourceTextBox.getText().trim().isEmpty() ) {
             metadata.put( "dcore.source[0]", sourceTextBox.getText().trim() );
@@ -175,8 +169,8 @@ public class FindForm
             metadata.put( "dcore.description[0]", descriptionByTextBox.getText().trim() );
         }
 
-        if ( !formatTextBox.getText().trim().isEmpty() ) {
-            final String pattern = clientTypeRegistry.resolveWildcardPattern( formatTextBox.getText().trim() );
+        if ( !formatTypeahead.getText().trim().isEmpty() ) {
+            final String pattern = clientTypeRegistry.resolveWildcardPattern( formatTypeahead.getText().trim() );
             metadata.put( "filename", pattern );
         }
 
@@ -219,10 +213,10 @@ public class FindForm
         }
 
         if ( metadata.size() == 0 && !hasSomeDateValue ) {
-            form.setType( ControlGroupType.ERROR );
-            Alert alert = new Alert( Constants.INSTANCE.AtLeastOneFieldMustBeSet(), AlertType.ERROR );
+            form.setValidationState( ValidationState.ERROR );
+            Alert alert = new Alert( Constants.INSTANCE.AtLeastOneFieldMustBeSet(), AlertType.DANGER );
             alert.setVisible( true );
-            alert.setClose( true );
+            alert.setDismissable( true );
             errorPanel.add( alert );
             return;
         }
@@ -235,8 +229,8 @@ public class FindForm
 
         simplePanel.add( queryTable );
 
-        formAccordion.hide();
-        resultAccordion.show();
+        formAccordionCollapse.setIn( false );
+        resultAccordionCollapse.setIn( true );
     }
 
     @WorkbenchPartTitle

@@ -16,7 +16,6 @@
 
 package org.kie.workbench.common.widgets.client.discussion;
 
-import com.github.gwtbootstrap.client.ui.TextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -29,6 +28,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.metadata.model.DiscussionRecord;
+import org.gwtbootstrap3.client.ui.TextArea;
 
 public class DiscussionWidgetViewImpl
         extends Composite

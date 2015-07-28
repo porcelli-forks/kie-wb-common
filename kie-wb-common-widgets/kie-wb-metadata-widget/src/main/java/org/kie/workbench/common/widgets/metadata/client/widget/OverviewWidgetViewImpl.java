@@ -17,21 +17,8 @@
 package org.kie.workbench.common.widgets.metadata.client.widget;
 
 import java.util.Date;
-
 import javax.inject.Inject;
 
-import org.guvnor.common.services.shared.metadata.model.Metadata;
-import org.kie.workbench.common.widgets.client.discussion.DiscussionWidgetPresenter;
-import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.client.workbench.type.ClientResourceType;
-import org.uberfire.ext.editor.commons.client.history.VersionHistoryPresenter;
-import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
-import org.uberfire.ext.widgets.common.client.common.BusyPopup;
-import org.uberfire.java.nio.base.version.VersionRecord;
-import org.uberfire.mvp.ParameterizedCommand;
-
-import com.github.gwtbootstrap.client.ui.TextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -42,6 +29,17 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.guvnor.common.services.shared.metadata.model.Metadata;
+import org.gwtbootstrap3.client.ui.TextArea;
+import org.kie.workbench.common.widgets.client.discussion.DiscussionWidgetPresenter;
+import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.client.workbench.type.ClientResourceType;
+import org.uberfire.ext.editor.commons.client.history.VersionHistoryPresenter;
+import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
+import org.uberfire.ext.widgets.common.client.common.BusyPopup;
+import org.uberfire.java.nio.base.version.VersionRecord;
+import org.uberfire.mvp.ParameterizedCommand;
 
 public class OverviewWidgetViewImpl
         extends Composite
@@ -102,7 +100,8 @@ public class OverviewWidgetViewImpl
         this.versionHistory = versionHistory;
 
         versionHistory.setOnCurrentVersionRefreshed( new ParameterizedCommand<VersionRecord>() {
-            @Override public void execute( VersionRecord record ) {
+            @Override
+            public void execute( VersionRecord record ) {
                 metadata.setNote( record.comment() );
                 setLastModified( record.author(), record.date() );
             }
@@ -208,8 +207,8 @@ public class OverviewWidgetViewImpl
     public void refresh( String version ) {
         versionHistory.refresh( version );
     }
-    
-    public void setForceUnlockHandler(final Runnable handler) {
+
+    public void setForceUnlockHandler( final Runnable handler ) {
         this.metadata.setForceUnlockHandler( handler );
     }
 }

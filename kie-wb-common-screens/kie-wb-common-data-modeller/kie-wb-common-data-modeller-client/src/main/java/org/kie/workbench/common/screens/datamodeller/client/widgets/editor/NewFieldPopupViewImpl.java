@@ -18,13 +18,6 @@ package org.kie.workbench.common.screens.datamodeller.client.widgets.editor;
 
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.event.ShownEvent;
-import com.github.gwtbootstrap.client.ui.event.ShownHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -37,16 +30,24 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
+import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.*;
 
 public class NewFieldPopupViewImpl
         extends BaseModal
         implements NewFieldPopupView {
 
-
     interface Binder extends
-            UiBinder<Widget, NewFieldPopupViewImpl> {
+                     UiBinder<Widget, NewFieldPopupViewImpl> {
 
     }
 
@@ -57,25 +58,25 @@ public class NewFieldPopupViewImpl
     private static final String TEXT_ERROR_CLASS = "text-error";
 
     @UiField
-    Label newPropertyIdLabel = new Label(  );
+    Label newPropertyIdLabel = new Label();
 
     @UiField
-    com.github.gwtbootstrap.client.ui.TextBox newPropertyId = new TextBox();
+    TextBox newPropertyId = new TextBox();
 
     @UiField
-    Label newPropertyLabelLabel = new Label(  );
+    Label newPropertyLabelLabel = new Label();
 
     @UiField
-    com.github.gwtbootstrap.client.ui.TextBox newPropertyLabel = new TextBox();
+    TextBox newPropertyLabel = new TextBox();
 
     @UiField
-    Label newPropertyTypeLabel = new Label(  );
+    Label newPropertyTypeLabel = new Label();
 
     @UiField
-    com.github.gwtbootstrap.client.ui.ListBox newPropertyTypeList = new ListBox(  );
+    ListBox newPropertyTypeList = new ListBox();
 
     @UiField
-    CheckBox isNewPropertyMultiple = new CheckBox(  );
+    CheckBox isNewPropertyMultiple = new CheckBox();
 
     @UiField
     Button createButton;
@@ -87,16 +88,16 @@ public class NewFieldPopupViewImpl
     Button cancelButton;
 
     @UiField
-    HelpInline messageHelpInline;
+    HelpBlock messageHelpInline;
 
     private Presenter presenter;
 
     @Inject
-    public NewFieldPopupViewImpl( ) {
+    public NewFieldPopupViewImpl() {
 
         setTitle( "New field" );
-        setMaxHeigth( "350px" );
-        setWidth( 600 );
+        //setMaxHeigth( "350px" );
+        setWidth( 600 + "px" );
 
         add( uiBinder.createAndBindUi( this ) );
 
@@ -112,31 +113,36 @@ public class NewFieldPopupViewImpl
         } );
 
         createButton.addClickHandler( new ClickHandler() {
-            @Override public void onClick( ClickEvent event ) {
+            @Override
+            public void onClick( ClickEvent event ) {
                 presenter.onCreate();
             }
         } );
 
         createAndContinue.addClickHandler( new ClickHandler() {
-            @Override public void onClick( ClickEvent event ) {
+            @Override
+            public void onClick( ClickEvent event ) {
                 presenter.onCreateAndContinue();
             }
         } );
 
         cancelButton.addClickHandler( new ClickHandler() {
-            @Override public void onClick( ClickEvent event ) {
+            @Override
+            public void onClick( ClickEvent event ) {
                 presenter.onCancel();
             }
         } );
 
-        addShownHandler( new ShownHandler() {
-            @Override public void onShown( ShownEvent shownEvent ) {
+        addShownHandler( new ModalShownHandler() {
+            @Override
+            public void onShown( ModalShownEvent shownEvent ) {
                 newPropertyId.setFocus( true );
             }
         } );
 
         newPropertyId.addKeyUpHandler( new KeyUpHandler() {
-            @Override public void onKeyUp( KeyUpEvent event ) {
+            @Override
+            public void onKeyUp( KeyUpEvent event ) {
                 clearErrorMessage();
             }
         } );
@@ -155,7 +161,7 @@ public class NewFieldPopupViewImpl
 
     @Override
     public String getSelectedType() {
-        return newPropertyTypeList.getValue();
+        return newPropertyTypeList.getSelectedValue();
     }
 
     @Override
@@ -199,7 +205,7 @@ public class NewFieldPopupViewImpl
         newPropertyId.setText( null );
         newPropertyLabel.setText( null );
         if ( newPropertyTypeList.getSelectedValue() != null ) {
-            newPropertyTypeList.setSelectedValue( DataModelerUtils.NOT_SELECTED );
+            setSelectedValue( newPropertyTypeList, DataModelerUtils.NOT_SELECTED );
         }
         isNewPropertyMultiple.setValue( false );
         isNewPropertyMultiple.setEnabled( true );

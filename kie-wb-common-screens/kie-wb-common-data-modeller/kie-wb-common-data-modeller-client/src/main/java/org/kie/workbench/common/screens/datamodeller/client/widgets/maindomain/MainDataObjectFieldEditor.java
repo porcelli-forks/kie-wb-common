@@ -22,10 +22,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -37,6 +33,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.TextArea;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
@@ -60,6 +60,8 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorCallback;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorWithReasonCallback;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.*;
 
 @Dependent
 public class MainDataObjectFieldEditor extends FieldEditor {
@@ -171,7 +173,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
     }
 
     protected void loadDataObjectField( DataObject dataObject,
-            ObjectProperty objectField ) {
+                                        ObjectProperty objectField ) {
         clean();
         setReadonly( true );
         if ( dataObject != null && objectField != null ) {
@@ -239,9 +241,9 @@ public class MainDataObjectFieldEditor extends FieldEditor {
                                         name.setValue( oldValue );
                                     }
                                 }
-                        );
+                                                                                                   );
 
-                        showUsagesPopup.setCloseVisible( false );
+                        showUsagesPopup.setClosable( false );
                         showUsagesPopup.show();
 
                     } else {
@@ -256,7 +258,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
     }
 
     private void doFieldNameChange( final String oldValue,
-            final String newValue ) {
+                                    final String newValue ) {
 
         final Command afterCloseCommand = new Command() {
             @Override
@@ -307,8 +309,8 @@ public class MainDataObjectFieldEditor extends FieldEditor {
                         nameLabel.setStyleName( DEFAULT_LABEL_CLASS );
                         objectField.setName( newValue );
                         notifyChange( createFieldChangeEvent( ChangeType.FIELD_NAME_CHANGE )
-                                .withOldValue( oldValue )
-                                .withNewValue( newValue ) );
+                                              .withOldValue( oldValue )
+                                              .withNewValue( newValue ) );
                     }
                 } );
             }
@@ -320,8 +322,8 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         if ( getObjectField() != null ) {
             String value = DataModelerUtils.nullTrim( label.getValue() );
             DataModelCommand command = commandBuilder.buildFieldAnnotationValueChangeCommand( getContext(),
-                    getName(), getDataObject(), getObjectField(), MainDomainAnnotations.LABEL_ANNOTATION,
-                    MainDomainAnnotations.VALUE_PARAM, value, true );
+                                                                                              getName(), getDataObject(), getObjectField(), MainDomainAnnotations.LABEL_ANNOTATION,
+                                                                                              MainDomainAnnotations.VALUE_PARAM, value, true );
             command.execute();
         }
     }
@@ -331,8 +333,8 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         if ( getObjectField() != null ) {
             String value = DataModelerUtils.nullTrim( description.getValue() );
             DataModelCommand command = commandBuilder.buildFieldAnnotationValueChangeCommand( getContext(),
-                    getName(), getDataObject(), getObjectField(), MainDomainAnnotations.DESCRIPTION_ANNOTATION,
-                    MainDomainAnnotations.VALUE_PARAM, value, true );
+                                                                                              getName(), getDataObject(), getObjectField(), MainDomainAnnotations.DESCRIPTION_ANNOTATION,
+                                                                                              MainDomainAnnotations.VALUE_PARAM, value, true );
             command.execute();
         }
     }
@@ -343,16 +345,18 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         }
 
         String oldValue = getObjectField().getClassName();
-        String type = typeSelector.getValue();
+        String type = typeSelector.getSelectedValue();
         boolean multiple = isTypeMultiple.getValue();
         typeChanged( oldValue, type, multiple );
     }
 
     private void typeMultipleChanged( ValueChangeEvent<Boolean> event ) {
-        typeChanged( typeSelector.getValue(), typeSelector.getValue(), event.getValue() );
+        typeChanged( typeSelector.getSelectedValue(), typeSelector.getSelectedValue(), event.getValue() );
     }
 
-    private void typeChanged( String oldType, String newType, boolean isMultiple ) {
+    private void typeChanged( String oldType,
+                              String newType,
+                              boolean isMultiple ) {
         if ( getObjectField() != null ) {
 
             boolean multiple = isMultiple;
@@ -366,7 +370,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
             }
 
             DataModelCommand command = commandBuilder.buildChangeTypeCommand( getContext(), getName(), getDataObject(),
-                    getObjectField(), newType, multiple );
+                                                                              getObjectField(), newType, multiple );
             command.execute();
             executePostCommandProcessing( command );
         }
@@ -410,10 +414,10 @@ public class MainDataObjectFieldEditor extends FieldEditor {
     }
 
     public void refreshTypeList( boolean keepSelection ) {
-        String selectedValue = typeSelector.getValue();
+        String selectedValue = typeSelector.getSelectedValue();
         initTypeList();
         if ( keepSelection && selectedValue != null ) {
-            typeSelector.setSelectedValue( selectedValue );
+            setSelectedValue( typeSelector, selectedValue );
         }
     }
 
@@ -422,6 +426,6 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         name.setText( null );
         label.setText( null );
         description.setText( null );
-        typeSelector.setSelectedValue( null );
+        setSelectedValue( typeSelector, "" );
     }
 }

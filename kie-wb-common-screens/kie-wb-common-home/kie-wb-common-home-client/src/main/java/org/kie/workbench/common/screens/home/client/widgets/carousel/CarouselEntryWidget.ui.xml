@@ -19,11 +19,9 @@
 
   <div class="item">
     <img ui:field="imageElement" src=""/>
-    <div class="container">
-      <div class="carousel-caption">
-        <h3 ui:field="headingElement" />
-        <p ui:field="subHeadingElement" class="lead"/>
-      </div>
+    <div class="carousel-caption">
+      <h3 ui:field="headingElement"/>
+      <p ui:field="subHeadingElement" class="lead"/>
     </div>
   </div>
 

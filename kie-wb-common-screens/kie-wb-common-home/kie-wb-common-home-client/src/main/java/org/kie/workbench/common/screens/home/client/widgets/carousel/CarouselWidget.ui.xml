@@ -18,8 +18,8 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder">
 
   <div class="home-top">
-    <div id="carousel" class="carousel slide">
-      <div ui:field="itemsElement" class="carousel-inner"/>
+    <div id="carousel" class="carousel slide" data-ride="carousel">
+      <div ui:field="itemsElement" class="carousel-inner" role="listbox"/>
       <a class="left carousel-control" href="#carousel" data-slide="prev">&lt;</a>
       <a class="right carousel-control" href="#carousel" data-slide="next">&gt;</a>
     </div>

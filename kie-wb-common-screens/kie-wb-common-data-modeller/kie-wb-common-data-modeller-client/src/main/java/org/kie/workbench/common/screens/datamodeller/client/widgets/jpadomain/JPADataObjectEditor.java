@@ -69,7 +69,7 @@ public class JPADataObjectEditor extends ObjectEditor {
     public JPADataObjectEditor() {
         initWidget( uiBinder.createAndBindUi( this ) );
 
-        propertyEditor.setFilterPanelVisible( false );
+        propertyEditor.setFilterGroupVisible( false );
         propertyEditor.setLastOpenAccordionGroupTitle( ENTITY_CATEGORY );
         loadPropertyEditor();
         setReadonly( true );

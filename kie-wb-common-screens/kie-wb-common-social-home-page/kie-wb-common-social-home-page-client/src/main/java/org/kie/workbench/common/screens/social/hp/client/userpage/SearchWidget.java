@@ -16,36 +16,26 @@
 
 package org.kie.workbench.common.screens.social.hp.client.userpage;
 
-import java.util.Collection;
 import java.util.List;
-import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Fieldset;
-import com.github.gwtbootstrap.client.ui.Legend;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.Well;
-import com.github.gwtbootstrap.client.ui.constants.Constants;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.Widget;
-import org.kie.workbench.common.screens.social.hp.client.homepage.header.HeaderPresenter;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.Command;
+import org.gwtbootstrap3.client.ui.FieldSet;
+import org.gwtbootstrap3.client.ui.base.HasPlaceholder;
 import org.uberfire.mvp.ParameterizedCommand;
 
 public class SearchWidget extends Composite {
 
     @UiField
-    Fieldset fieldset;
+    FieldSet fieldset;
 
     interface Mybinder
             extends
@@ -62,7 +52,7 @@ public class SearchWidget extends Composite {
         SuggestBox suggestBox = new SuggestBox( new MultiWordSuggestOracle() {{
             addAll( users );
         }} );
-        suggestBox.getElement().setAttribute( Constants.PLACEHOLDER, suggestText );
+        suggestBox.getElement().setAttribute( HasPlaceholder.PLACEHOLDER, suggestText );
         suggestBox.addSelectionHandler( new SelectionHandler<SuggestOracle.Suggestion>() {
             @Override
             public void onSelection( SelectionEvent<SuggestOracle.Suggestion> event ) {

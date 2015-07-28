@@ -1,12 +1,12 @@
 /**
  * Copyright 2012 JBoss Inc
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,12 +24,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.CellTable;
-import com.github.gwtbootstrap.client.ui.TooltipCellDecorator;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.constants.Placement;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -54,6 +48,11 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import org.guvnor.common.services.project.model.Project;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
@@ -98,7 +97,9 @@ public class DataObjectBrowser extends Composite {
     interface DataObjectEditorUIBinder
             extends UiBinder<Widget, DataObjectBrowser> {
 
-    };
+    }
+
+    ;
 
     private static DataObjectEditorUIBinder uiBinder = GWT.create( DataObjectEditorUIBinder.class );
 
@@ -109,7 +110,7 @@ public class DataObjectBrowser extends Composite {
     Button newPropertyButton;
 
     @UiField(provided = true)
-    CellTable<ObjectProperty> dataObjectPropertiesTable = new CellTable<ObjectProperty>( 1000, GWT.<CellTable.SelectableResources>create( CellTable.SelectableResources.class ) );
+    CellTable<ObjectProperty> dataObjectPropertiesTable = new CellTable<ObjectProperty>( 1000 );
 
     @Inject
     NewFieldPopup newFieldPopup;
@@ -153,10 +154,11 @@ public class DataObjectBrowser extends Composite {
 
         objectButton.setType( ButtonType.LINK );
         objectButton.addClickHandler( new ClickHandler() {
-            @Override public void onClick( ClickEvent event ) {
+            @Override
+            public void onClick( ClickEvent event ) {
                 lastSelectedRow = dataObjectPropertiesTable.getKeyboardSelectedRow();
                 showingObject = true;
-                ObjectProperty currentSelection = (( SingleSelectionModel<ObjectProperty> ) dataObjectPropertiesTable.getSelectionModel()).getSelectedObject();
+                ObjectProperty currentSelection = ( (SingleSelectionModel<ObjectProperty>) dataObjectPropertiesTable.getSelectionModel() ).getSelectedObject();
                 if ( currentSelection != null ) {
                     dataObjectPropertiesTable.getSelectionModel().setSelected( currentSelection, false );
                 }
@@ -168,7 +170,7 @@ public class DataObjectBrowser extends Composite {
 
         //Init data objects table
 
-        dataObjectPropertiesTable.setEmptyTableWidget( new com.github.gwtbootstrap.client.ui.Label( Constants.INSTANCE.objectBrowser_emptyTable() ) );
+        dataObjectPropertiesTable.setEmptyTableWidget( new Label( Constants.INSTANCE.objectBrowser_emptyTable() ) );
 
         //Init property name column
 
@@ -205,7 +207,7 @@ public class DataObjectBrowser extends Composite {
         propertyNameColumn.setSortable( true );
         dataObjectPropertiesTable.addColumn( propertyNameColumn, Constants.INSTANCE.objectBrowser_columnName() );
         //dataObjectPropertiesTable.setColumnWidth(propertyNameColumn, 100, Style.Unit.PX);
-        dataObjectPropertiesTable.setColumnWidth( propertyNameColumn, 30, Style.Unit.PCT);
+        dataObjectPropertiesTable.setColumnWidth( propertyNameColumn, 30, Style.Unit.PCT );
 
         ColumnSortEvent.ListHandler<ObjectProperty> propertyNameColHandler = new ColumnSortEvent.ListHandler<ObjectProperty>( dataObjectPropertiesProvider.getList() );
         propertyNameColHandler.setComparator( propertyNameColumn, new ObjectPropertyComparator( "name" ) );
@@ -245,7 +247,7 @@ public class DataObjectBrowser extends Composite {
 
         propertyLabelColumn.setSortable( true );
         dataObjectPropertiesTable.addColumn( propertyLabelColumn, Constants.INSTANCE.objectBrowser_columnLabel() );
-        dataObjectPropertiesTable.setColumnWidth( propertyLabelColumn, 30, Style.Unit.PCT);
+        dataObjectPropertiesTable.setColumnWidth( propertyLabelColumn, 30, Style.Unit.PCT );
 
         ColumnSortEvent.ListHandler<ObjectProperty> propertyLabelColHandler = new ColumnSortEvent.ListHandler<ObjectProperty>( dataObjectPropertiesProvider.getList() );
         propertyNameColHandler.setComparator( propertyLabelColumn, new ObjectPropertyComparator( "label" ) );
@@ -253,10 +255,10 @@ public class DataObjectBrowser extends Composite {
 
         //Init property type browsing column
         ClickableImageResourceCell typeImageCell = new ClickableImageResourceCell( true, 25 );
-        final TooltipCellDecorator<ImageResource> typeImageDecorator = new TooltipCellDecorator<ImageResource>( typeImageCell );
-        typeImageDecorator.setText( Constants.INSTANCE.objectBrowser_action_goToDataObjectDefinition() );
+//        final TooltipCellDecorator<ImageResource> typeImageDecorator = new TooltipCellDecorator<ImageResource>( typeImageCell );
+//        typeImageDecorator.setText( Constants.INSTANCE.objectBrowser_action_goToDataObjectDefinition() );
 
-        final Column<ObjectProperty, ImageResource> typeImageColumn = new Column<ObjectProperty, ImageResource>( typeImageDecorator ) {
+        final Column<ObjectProperty, ImageResource> typeImageColumn = new Column<ObjectProperty, ImageResource>( typeImageCell ) {
             @Override
             public ImageResource getValue( final ObjectProperty property ) {
 
@@ -317,11 +319,11 @@ public class DataObjectBrowser extends Composite {
 
         //Init delete column
         ClickableImageResourceCell deleteImageCell = new ClickableImageResourceCell( true, 25 );
-        final TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( deleteImageCell );
-        decorator.setPlacement( Placement.LEFT );
-        decorator.setText( Constants.INSTANCE.objectBrowser_action_deleteProperty() );
+//        final TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( deleteImageCell );
+//        decorator.setPlacement( Placement.LEFT );
+//        decorator.setText( Constants.INSTANCE.objectBrowser_action_deleteProperty() );
 
-        final Column<ObjectProperty, ImageResource> deletePropertyColumnImg = new Column<ObjectProperty, ImageResource>( decorator ) {
+        final Column<ObjectProperty, ImageResource> deletePropertyColumnImg = new Column<ObjectProperty, ImageResource>( deleteImageCell ) {
             @Override
             public ImageResource getValue( final ObjectProperty global ) {
                 if ( !isReadonly() ) {
@@ -358,14 +360,12 @@ public class DataObjectBrowser extends Composite {
 
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
-                ObjectProperty selectedProperty = ( ( SingleSelectionModel<ObjectProperty> ) dataObjectPropertiesTable.getSelectionModel() ).getSelectedObject();
+                ObjectProperty selectedProperty = ( (SingleSelectionModel<ObjectProperty>) dataObjectPropertiesTable.getSelectionModel() ).getSelectedObject();
                 notifyFieldSelected( selectedProperty );
             }
         } );
 
         dataObjectPropertiesTable.setKeyboardSelectionPolicy( HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.BOUND_TO_SELECTION );
-
-
 
         dataObjectPropertiesTable.addCellPreviewHandler( new CellPreviewEvent.Handler<ObjectProperty>() {
 
@@ -373,20 +373,19 @@ public class DataObjectBrowser extends Composite {
             public void onCellPreview( CellPreviewEvent<ObjectProperty> event ) {
                 if ( showingObject && "click".equals( event.getNativeEvent().getType() ) ) {
                     int selectedRow = dataObjectPropertiesTable.getKeyboardSelectedRow();
-                    if ( lastSelectedRow >= 0 && lastSelectedRow == selectedRow) {
+                    if ( lastSelectedRow >= 0 && lastSelectedRow == selectedRow ) {
                         ObjectProperty selectedProperty = dataObjectPropertiesProvider.getList().get( selectedRow );
-                        ( ( SingleSelectionModel<ObjectProperty> ) dataObjectPropertiesTable.getSelectionModel() ).setSelected( selectedProperty, true );
+                        ( (SingleSelectionModel<ObjectProperty>) dataObjectPropertiesTable.getSelectionModel() ).setSelected( selectedProperty, true );
                     }
                     showingObject = false;
                 }
             }
         } );
 
-
         dataObjectPropertiesProvider.addDataDisplay( dataObjectPropertiesTable );
         dataObjectPropertiesProvider.refresh();
 
-        newPropertyButton.setIcon( IconType.PLUS_SIGN );
+        newPropertyButton.setIcon( IconType.PLUS );
 
         setReadonly( true );
 
@@ -397,23 +396,29 @@ public class DataObjectBrowser extends Composite {
 
         newFieldPopup.addPopupHandler( new NewFieldPopupView.NewFieldPopupHandler() {
             @Override
-            public void onCreate( String fieldName, String fieldLabel, String type, boolean multiple ) {
+            public void onCreate( String fieldName,
+                                  String fieldLabel,
+                                  String type,
+                                  boolean multiple ) {
                 createNewProperty( dataObject,
-                        DataModelerUtils.unCapitalize( fieldName ),
-                        fieldLabel,
-                        type,
-                        multiple,
-                        true );
+                                   DataModelerUtils.unCapitalize( fieldName ),
+                                   fieldLabel,
+                                   type,
+                                   multiple,
+                                   true );
             }
 
             @Override
-            public void onCreateAndContinue( String fieldName, String fieldLabel, String type, boolean multiple ) {
+            public void onCreateAndContinue( String fieldName,
+                                             String fieldLabel,
+                                             String type,
+                                             boolean multiple ) {
                 createNewProperty( dataObject,
-                        DataModelerUtils.unCapitalize( fieldName ),
-                        fieldLabel,
-                        type,
-                        multiple,
-                        false );
+                                   DataModelerUtils.unCapitalize( fieldName ),
+                                   fieldLabel,
+                                   type,
+                                   multiple,
+                                   false );
             }
 
             @Override
@@ -546,14 +551,14 @@ public class DataObjectBrowser extends Composite {
     }
 
     private void addDataObjectProperty( DataObject dataObject,
-            final String propertyName,
-            final String propertyLabel,
-            final String propertyType,
-            final Boolean isMultiple ) {
+                                        final String propertyName,
+                                        final String propertyLabel,
+                                        final String propertyType,
+                                        final Boolean isMultiple ) {
 
         AddPropertyCommand command = commandBuilder.buildAddPropertyCommand( getContext(),
-                DataModelerEvent.DATA_OBJECT_BROWSER,
-                dataObject, propertyName, propertyLabel, propertyType, isMultiple );
+                                                                             DataModelerEvent.DATA_OBJECT_BROWSER,
+                                                                             dataObject, propertyName, propertyLabel, propertyType, isMultiple );
 
         command.execute();
         ObjectProperty property = command.getProperty();
@@ -625,7 +630,7 @@ public class DataObjectBrowser extends Composite {
                                 }
                                                                                                    );
 
-                        showUsagesPopup.setCloseVisible( false );
+                        showUsagesPopup.setClosable( false );
                         showUsagesPopup.show();
 
                     } else {
@@ -650,7 +655,7 @@ public class DataObjectBrowser extends Composite {
         }
 
         if ( property.isMultiple() ) {
-            displayName += " ["+Constants.INSTANCE.objectBrowser_typeLabelMultiple()+"]";
+            displayName += " [" + Constants.INSTANCE.objectBrowser_typeLabelMultiple() + "]";
         }
         return displayName;
     }
@@ -696,7 +701,7 @@ public class DataObjectBrowser extends Composite {
     }
 
     private void executePostCommandProcessing( DataModelCommand command ) {
-        List<DomainHandler> handlers = handlerRegistry.getDomainHandlers( );
+        List<DomainHandler> handlers = handlerRegistry.getDomainHandlers();
         for ( DomainHandler handler : handlers ) {
             handler.postCommandProcessing( command );
         }
@@ -718,8 +723,8 @@ public class DataObjectBrowser extends Composite {
         if ( event.isFromContext( context != null ? context.getContextId() : null ) ) {
             if ( event.getChangeType() == ChangeType.CLASS_NAME_CHANGE ||
                     event.getChangeType() == ChangeType.PACKAGE_NAME_CHANGE ||
-                    event.getChangeType() == ChangeType.OBJECT_NAME_CHANGE  ||
-                    MainDomainAnnotations.LABEL_ANNOTATION.equals( event.getAnnotationClassName( ) )
+                    event.getChangeType() == ChangeType.OBJECT_NAME_CHANGE ||
+                    MainDomainAnnotations.LABEL_ANNOTATION.equals( event.getAnnotationClassName() )
                     ) {
 
                 refreshObjectSelector( dataObject );
@@ -801,7 +806,7 @@ public class DataObjectBrowser extends Composite {
                                                                                                   null,
                                                                                                   null
                                                                                                 );
-                        yesNoCancelPopup.setCloseVisible( false );
+                        yesNoCancelPopup.setClosable( false );
                         yesNoCancelPopup.show();
                     }
                 }

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,10 +30,12 @@ import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.guvnor.common.services.project.model.Project;
-import org.guvnor.structure.client.resources.NavigatorResources;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.Repository;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.ioc.client.container.IOC;
+import org.kie.workbench.common.screens.explorer.client.resources.ProjectExplorerResources;
 import org.kie.workbench.common.screens.explorer.client.resources.i18n.ProjectExplorerConstants;
 import org.kie.workbench.common.screens.explorer.client.widgets.ViewPresenter;
 import org.kie.workbench.common.screens.explorer.client.widgets.dropdown.CustomDropdown;
@@ -45,11 +46,11 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 public class Explorer extends Composite {
 
-    public static enum Mode {
+    public enum Mode {
         REGULAR, EXPANDED, COLLAPSED
     }
 
-    public static enum NavType {
+    public enum NavType {
         TREE, BREADCRUMB
     }
 
@@ -70,7 +71,7 @@ public class Explorer extends Composite {
 
     public Explorer() {
         initWidget( container );
-        setStyleName( NavigatorResources.INSTANCE.css().container() );
+        setStyleName( ProjectExplorerResources.INSTANCE.CSS().container() );
     }
 
     public void init( final Mode mode,
@@ -134,7 +135,7 @@ public class Explorer extends Composite {
             this.organizationUnits.setText( activeOrganizationalUnit.getName() );
         }
         for ( final OrganizationalUnit ou : organizationalUnits ) {
-            this.organizationUnits.add( new NavLink( ou.getName() ) {{
+            this.organizationUnits.add( new AnchorListItem( ou.getName() ) {{
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -150,7 +151,7 @@ public class Explorer extends Composite {
         }
 
         for ( final Repository repository : repositories ) {
-            this.repos.add( new NavLink( repository.getAlias() ) {{
+            this.repos.add( new AnchorListItem( repository.getAlias() ) {{
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -166,7 +167,7 @@ public class Explorer extends Composite {
         }
 
         for ( final Project project : projects ) {
-            this.prjs.add( new NavLink( project.getProjectName() ) {{
+            this.prjs.add( new AnchorListItem( project.getProjectName() ) {{
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -178,25 +179,25 @@ public class Explorer extends Composite {
 
         if ( organizationalUnits.isEmpty() ) {
             this.organizationUnits.setText( ProjectExplorerConstants.INSTANCE.nullEntry() );
-            this.organizationUnits.add( new NavLink( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
-            this.organizationUnits.getTriggerWidget().setEnabled( false );
+            this.organizationUnits.add( new AnchorListItem( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
+            this.organizationUnits.setEnableTriggerWidget( false );
             this.repos.setText( ProjectExplorerConstants.INSTANCE.nullEntry() );
-            this.repos.add( new NavLink( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
-            this.repos.getTriggerWidget().setEnabled( false );
+            this.repos.add( new AnchorListItem( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
+            this.repos.setEnableTriggerWidget( false );
             this.prjs.setText( ProjectExplorerConstants.INSTANCE.nullEntry() );
-            this.prjs.getTriggerWidget().setEnabled( false );
-            this.prjs.add( new NavLink( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
+            this.prjs.setEnableTriggerWidget( false );
+            this.prjs.add( new AnchorListItem( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
         } else if ( repositories.isEmpty() ) {
             this.repos.setText( ProjectExplorerConstants.INSTANCE.nullEntry() );
-            this.repos.getTriggerWidget().setEnabled( false );
-            this.repos.add( new NavLink( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
+            this.repos.setEnableTriggerWidget( false );
+            this.repos.add( new AnchorListItem( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
             this.prjs.setText( ProjectExplorerConstants.INSTANCE.nullEntry() );
-            this.prjs.getTriggerWidget().setEnabled( false );
-            this.prjs.add( new NavLink( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
+            this.prjs.setEnableTriggerWidget( false );
+            this.prjs.add( new AnchorListItem( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
         } else if ( projects.isEmpty() ) {
             this.prjs.setText( ProjectExplorerConstants.INSTANCE.nullEntry() );
-            this.prjs.add( new NavLink( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
-            this.prjs.getTriggerWidget().setEnabled( false );
+            this.prjs.add( new AnchorListItem( ProjectExplorerConstants.INSTANCE.nullEntry() ) );
+            this.prjs.setEnableTriggerWidget( false );
         }
 
         if ( !isAlreadyInitialized ) {
@@ -206,23 +207,23 @@ public class Explorer extends Composite {
                 element.getStyle().setFloat( Style.Float.RIGHT );
                 element.getStyle().setPaddingTop( 5, Style.Unit.PX );
                 element.getStyle().setPaddingRight( 10, Style.Unit.PX );
-                DOM.sinkEvents( (com.google.gwt.user.client.Element) element, Event.ONCLICK );
-                DOM.setEventListener( (com.google.gwt.user.client.Element) element, new EventListener() {
+                DOM.sinkEvents( element, Event.ONCLICK );
+                DOM.setEventListener( element, new EventListener() {
                     public void onBrowserEvent( Event event ) {
-                        if ( element.getClassName().equals( "icon-expand-alt" ) ) {
-                            element.setClassName( "icon-collapse-alt" );
+                        if ( element.getClassName().equals( IconType.PLUS_SQUARE_O.getCssName() ) ) {
+                            element.setClassName( IconType.MINUS_SQUARE_O.getCssName() );
                             onExpandNavigator();
                         } else {
-                            element.setClassName( "icon-expand-alt" );
+                            element.setClassName( IconType.PLUS_SQUARE_O.getCssName() );
                             onCollapseNavigator();
                         }
                     }
                 } );
 
                 if ( mode.equals( Mode.COLLAPSED ) ) {
-                    element.setClassName( "icon-expand-alt" );
+                    element.setClassName( IconType.PLUS_SQUARE_O.getCssName() );
                 } else {
-                    element.setClassName( "icon-collapse-alt" );
+                    element.setClassName( IconType.MINUS_SQUARE_O.getCssName() );
                 }
 
                 container.getElement().appendChild( element );

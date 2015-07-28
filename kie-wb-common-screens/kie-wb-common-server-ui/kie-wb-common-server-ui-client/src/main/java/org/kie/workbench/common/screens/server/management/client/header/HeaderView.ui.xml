@@ -26,35 +26,35 @@
     <div class="{res.CSS.sectionHeader}">
 
       <div class="{res.CSS.selectionControls}">
-        <i class="icon-circle-blank {res.CSS.clickable}" title="Clear selection" ui:field="clearSelection"></i>
-        <i class="icon-circle {res.CSS.clickable}" title="Select all" ui:field="selectAll"></i>
+        <i class="fa-circle-o {res.CSS.clickable}" title="Clear selection" ui:field="clearSelection"></i>
+        <i class="fa-circle {res.CSS.clickable}" title="Select all" ui:field="selectAll"></i>
       </div>
 
       <div class="{res.CSS.sectionControls}">
         <a title="Create new containers" ui:field="registerArea">
-          <i class="icon-bolt {res.CSS.clickable}" ui:field="registerServer"></i> Register
+          <i class="fa-bolt {res.CSS.clickable}" ui:field="registerServer"></i> Register
         </a>
 
         <a title="Create new containers" ui:field="refreshArea">
-          <i class="icon-refresh {res.CSS.clickable}"></i> Refresh
+          <i class="fa-refresh {res.CSS.clickable}"></i> Refresh
         </a>
 
         <a title="Start containers" ui:field="startArea">
-          <i class="icon-play-circle {res.CSS.clickable}"></i>
+          <i class="fa-play-circle-o {res.CSS.clickable}"></i>
           Start
         </a>
         <a title="Stop containers" ui:field="stopArea">
-          <i class="icon-off {res.CSS.clickable}"></i>
+          <i class="fa-power-off {res.CSS.clickable}"></i>
           Stop
         </a>
         <a class="{res.CSS.navDanger}" title="Delete container" ui:field="deleteArea">
-          <i class="icon-minus {res.CSS.clickable}"></i> Delete
+          <i class="fa-minus {res.CSS.clickable}"></i> Delete
         </a>
       </div>
 
       <div class="{res.CSS.sectionFilter}">
         <input type="text" class="{res.CSS.searchQuery}" ui:field="inputFilter"/>
-        <i class="icon-remove {res.CSS.iconToRemove} {res.CSS.clickable}" title="Clear filter" ui:field="clearFilter"></i>
+        <i class="fa-times {res.CSS.iconToRemove} {res.CSS.clickable}" title="Clear filter" ui:field="clearFilter"></i>
       </div>
     </div>
 
