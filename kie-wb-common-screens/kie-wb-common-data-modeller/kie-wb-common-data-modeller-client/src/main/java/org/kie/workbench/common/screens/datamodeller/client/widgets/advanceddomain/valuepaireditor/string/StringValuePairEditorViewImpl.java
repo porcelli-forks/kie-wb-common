@@ -16,8 +16,9 @@
 
 package org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddomain.valuepaireditor.string;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -27,6 +28,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 public class StringValuePairEditorViewImpl
         extends Composite
@@ -41,7 +43,7 @@ public class StringValuePairEditorViewImpl
     private static StringValuePairEditorViewImplUiBinder uiBinder = GWT.create( StringValuePairEditorViewImplUiBinder.class );
 
     @UiField
-    Label valuePairLabel;
+    SpanElement valuePairLabel;
 
     @UiField
     TextBox textBox;
@@ -73,12 +75,16 @@ public class StringValuePairEditorViewImpl
     }
 
     public void setValuePairLabel( String valuePairLabel ) {
-        this.valuePairLabel.setText( valuePairLabel );
+        this.valuePairLabel.setInnerText( valuePairLabel );
     }
 
     @Override
     public void showValuePairName( boolean show ) {
-        this.valuePairLabel.setVisible( show );
+        if ( show ) {
+            this.valuePairLabel.getStyle().clearDisplay();
+        } else {
+            this.valuePairLabel.getStyle().setDisplay( Style.Display.NONE );
+        }
     }
 
     @Override

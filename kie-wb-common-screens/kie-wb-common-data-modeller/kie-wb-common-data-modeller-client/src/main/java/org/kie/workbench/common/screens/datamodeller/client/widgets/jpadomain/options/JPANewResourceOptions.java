@@ -20,16 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.InlineLabel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainHandler;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.common.domain.ResourceOptions;
 
@@ -46,7 +46,8 @@ public class JPANewResourceOptions
 
     private static JPANewResourceOptionsUIBinder uiBinder = GWT.create( JPANewResourceOptionsUIBinder.class );
 
-    @UiField CheckBox persistable;
+    @UiField
+    CheckBox persistable;
 
     @UiField
     Icon persistableHelpIcon;
@@ -58,7 +59,7 @@ public class JPANewResourceOptions
     InlineLabel tableNameLabel;
 
     //@UiField
-    HelpInline tableNameHelpInline;
+    HelpBlock tableNameHelpInline;
 
     private DomainHandler handler;
 

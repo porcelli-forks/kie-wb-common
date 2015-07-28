@@ -16,8 +16,8 @@
 
 package org.kie.workbench.common.screens.datamodeller.client.widgets.editor;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.ListBox;
 
 public interface NewFieldPopupView
         extends IsWidget {

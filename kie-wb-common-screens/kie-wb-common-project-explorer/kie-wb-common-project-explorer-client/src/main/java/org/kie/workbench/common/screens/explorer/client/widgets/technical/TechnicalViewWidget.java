@@ -23,7 +23,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -34,6 +33,7 @@ import org.guvnor.common.services.project.context.ProjectContextChangeEvent;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.Repository;
+import org.gwtbootstrap3.client.ui.Button;
 import org.kie.workbench.common.screens.explorer.client.widgets.BaseViewImpl;
 import org.kie.workbench.common.screens.explorer.client.widgets.BranchChangeHandler;
 import org.kie.workbench.common.screens.explorer.client.widgets.BranchSelector;
@@ -76,9 +76,6 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
     @Inject
     TagSelector tagSelector;
 
-    @UiField
-    Button openProjectEditorButton;
-
     @Inject
     PlaceManager placeManager;
 
@@ -104,23 +101,6 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
     public void init( final ViewPresenter presenter ) {
         this.presenter = presenter;
         explorer.init( Explorer.Mode.EXPANDED, techOptions, Explorer.NavType.BREADCRUMB, presenter );
-        openProjectEditorButton.addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                placeManager.goTo( "projectScreen" );
-            }
-        } );
-    }
-
-    //@TODO: we need to remove these two when we remove the projectScreen from here
-    public void onProjectContextChanged( @Observes final ProjectContextChangeEvent event ) {
-        enableToolsMenuItems( (KieProject) event.getProject() );
-    }
-
-    private void enableToolsMenuItems( final KieProject project ) {
-        final boolean enabled = ( project != null );
-        openProjectEditorButton.setEnabled( enabled );
     }
 
     @Override
@@ -145,7 +125,7 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
     }
 
     @Override
-    public void setItems ( final FolderListing folderListing ) {
+    public void setItems( final FolderListing folderListing ) {
         renderItems( folderListing );
     }
 
@@ -168,7 +148,9 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
     @Override
     public void hideTagFilter() {
         tagSelector.hide();
-        if (presenter.getActiveContent() != null) renderItems( presenter.getActiveContent() );
+        if ( presenter.getActiveContent() != null ) {
+            renderItems( presenter.getActiveContent() );
+        }
     }
 
     @Override
@@ -200,7 +182,7 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
         branchSelector.addBranchChangeHandler( branchChangeHandler );
     }
 
-    public void onTagChanged(@Observes TagChangedEvent event) {
+    public void onTagChanged( @Observes TagChangedEvent event ) {
 
     }
 }

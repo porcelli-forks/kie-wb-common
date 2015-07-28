@@ -17,7 +17,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
 
@@ -29,24 +29,22 @@
 
   <g:HTMLPanel>
 
-        <b:ControlGroup ui:field="searchGroup">
+        <b:FormGroup ui:field="searchGroup">
 
-          <b:Controls>
-
-          <b:ControlLabel for="className">
+          <b:FormLabel for="className">
             <span class="{style.mandatory-field}">*</span>
             <ui:text from="{i18n.advanced_domain_wizard_search_page_search_field}" />
-          </b:ControlLabel>
+            Annotation class name
+            <!-- TODO ui:text from="{i18n. the correct key}"/-->
+          </b:FormLabel>
 
           <g:HorizontalPanel>
             <b:TextBox b:id="className" ui:field="annotationClassName" placeholder="{i18n.advanced_domain_wizard_search_page_search_field_place_holder}"/>
             <b:Button ui:field="searchAnnotationButton" />
           </g:HorizontalPanel>
 
-          <b:HelpInline ui:field="annotationClassNameHelpInline"/>
-          </b:Controls>
-
-        </b:ControlGroup>
+          <b:HelpBlock ui:field="annotationClassNameHelpInline"/>
+        </b:FormGroup>
 
   </g:HTMLPanel>
 </ui:UiBinder>

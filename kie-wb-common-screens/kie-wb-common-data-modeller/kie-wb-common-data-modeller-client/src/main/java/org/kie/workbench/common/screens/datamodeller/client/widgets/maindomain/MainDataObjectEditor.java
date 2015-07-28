@@ -144,7 +144,7 @@ public class MainDataObjectEditor
                                     }
                             );
 
-                            showUsagesPopup.setCloseVisible( false );
+                            showUsagesPopup.setClosable( false );
                             showUsagesPopup.show();
 
                         } else {
@@ -267,7 +267,7 @@ public class MainDataObjectEditor
                                     }
                             );
 
-                            showUsagesPopup.setCloseVisible( false );
+                            showUsagesPopup.setClosable( false );
                             showUsagesPopup.show();
 
                         } else {

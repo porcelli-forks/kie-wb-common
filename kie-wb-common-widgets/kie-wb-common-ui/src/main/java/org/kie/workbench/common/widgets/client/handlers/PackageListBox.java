@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import org.guvnor.common.services.project.context.ProjectContext;
 import org.guvnor.common.services.project.model.Package;
+import org.gwtbootstrap3.client.ui.ListBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.services.shared.project.KieProjectService;

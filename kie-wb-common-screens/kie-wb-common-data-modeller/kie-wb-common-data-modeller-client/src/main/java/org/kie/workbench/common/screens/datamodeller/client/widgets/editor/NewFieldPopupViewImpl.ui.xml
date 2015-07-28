@@ -16,8 +16,7 @@
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:gwt="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
 
@@ -50,7 +49,7 @@
               <table width="100%">
                 <tr>
                   <td width="60%">
-                    <b:Tooltip text="{i18n.objectBrowser_typeLabelMultipleTooltip}">
+                    <b:Tooltip title="{i18n.objectBrowser_typeLabelMultipleTooltip}">
                       <b:CheckBox ui:field="isNewPropertyMultiple" text="{i18n.objectBrowser_typeLabelMultiple}"/>
                     </b:Tooltip>
                   </td>
@@ -60,7 +59,7 @@
           </tr>
         </table>
 
-        <b:HelpInline ui:field="messageHelpInline"> </b:HelpInline>
+        <b:HelpBlock ui:field="messageHelpInline"> </b:HelpBlock>
 
         <table align="center">
           <tr>

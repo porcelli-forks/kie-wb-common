@@ -16,9 +16,7 @@
   -->
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
-             xmlns:gwt="urn:import:com.google.gwt.user.client.ui"
-        >
+             xmlns:gwt="urn:import:com.google.gwt.user.client.ui">
 
   <gwt:HTMLPanel>
 
@@ -30,7 +28,7 @@
 
     </style>
 
-    <base:DivWidget ui:field="containerPanel" addStyleNames="jpa-domain"></base:DivWidget>
+    <gwt:FlowPanel ui:field="containerPanel" addStyleNames="jpa-domain"></gwt:FlowPanel>
 
   </gwt:HTMLPanel>
 

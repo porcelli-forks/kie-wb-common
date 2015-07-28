@@ -20,8 +20,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -34,11 +32,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.TextArea;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.packageselector.PackageSelector;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.superselector.SuperclassSelector;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.setSelectedValue;
 
 public class MainDataObjectEditorViewImpl
         extends Composite
@@ -145,7 +147,7 @@ public class MainDataObjectEditorViewImpl
 
     @Override
     public void setSuperClass( String superClass ) {
-        this.superclassSelector.getSuperclassList().setSelectedValue( superClass );
+        setSelectedValue( this.superclassSelector.getSuperclassList(), superClass );
     }
 
     @Override

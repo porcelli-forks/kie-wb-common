@@ -22,8 +22,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,9 +32,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.ListBox;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
 import org.kie.workbench.common.screens.datamodeller.client.validation.ValidatorService;
 import org.uberfire.mvp.Command;
+
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.setSelectedValue;
 
 public class PackageSelector extends Composite {
 
@@ -102,10 +104,10 @@ public class PackageSelector extends Composite {
                 }
             }
             if ( exists ) {
-                packageList.setSelectedValue( newPackageName );
+                setSelectedValue( packageList, newPackageName );
             } else {
                 packageList.addItem( newPackageName, newPackageName );
-                packageList.setSelectedValue( newPackageName );
+                setSelectedValue( packageList, newPackageName );
                 DomEvent.fireNativeEvent( Document.get().createChangeEvent(), packageList );
             }
             if ( context != null ) {
@@ -124,7 +126,7 @@ public class PackageSelector extends Composite {
     }
 
     public Boolean isValueSelected() {
-        return packageList.getValue() != null && !"".equals( packageList.getValue().trim() ) && !NOT_SELECTED.equals( packageList.getValue().trim() );
+        return packageList.getSelectedValue() != null && !"".equals( packageList.getSelectedValue().trim() ) && !NOT_SELECTED.equals( packageList.getSelectedValue().trim() );
     }
 
     public ListBox getPackageList() {
@@ -178,7 +180,7 @@ public class PackageSelector extends Composite {
         }
 
         if ( currentPackage != null ) {
-            packageList.setSelectedValue( currentPackage );
+            setSelectedValue( packageList, currentPackage );
         }
     }
 

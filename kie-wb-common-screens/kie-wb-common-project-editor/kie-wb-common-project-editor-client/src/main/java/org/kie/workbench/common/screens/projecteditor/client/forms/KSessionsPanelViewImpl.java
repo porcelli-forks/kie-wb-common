@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TooltipCellDecorator;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -38,6 +36,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
+import org.gwtbootstrap3.client.ui.Button;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.ClickableImageResourceCell;
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;
 import org.kie.workbench.common.services.shared.kmodule.ClockTypeOption;
@@ -229,9 +228,9 @@ public class KSessionsPanelViewImpl
 
     private void setUpOptionsColumn() {
         ClickableImageResourceCell typeImageCell = new ClickableImageResourceCell( true );
-        TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( typeImageCell );
-        decorator.setText( ProjectEditorResources.CONSTANTS.Options() );
-        Column<KSessionModel, ImageResource> column = new Column<KSessionModel, ImageResource>( decorator ) {
+//        TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( typeImageCell );
+//        decorator.setText( ProjectEditorResources.CONSTANTS.Options() );
+        Column<KSessionModel, ImageResource> column = new Column<KSessionModel, ImageResource>( typeImageCell ) {
             @Override
             public ImageResource getValue( KSessionModel model ) {
                 return CommonImages.INSTANCE.edit();
@@ -258,9 +257,9 @@ public class KSessionsPanelViewImpl
 
     private void setUpRemoveColumn() {
         ClickableImageResourceCell typeImageCell = new ClickableImageResourceCell( true );
-        TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( typeImageCell );
-        decorator.setText( ProjectEditorResources.CONSTANTS.Delete() );
-        Column<KSessionModel, ImageResource> column = new Column<KSessionModel, ImageResource>( decorator ) {
+//        TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( typeImageCell );
+//        decorator.setText( ProjectEditorResources.CONSTANTS.Delete() );
+        Column<KSessionModel, ImageResource> column = new Column<KSessionModel, ImageResource>( typeImageCell ) {
             @Override
             public ImageResource getValue( KSessionModel model ) {
                 return CommonImages.INSTANCE.DeleteItemSmall();

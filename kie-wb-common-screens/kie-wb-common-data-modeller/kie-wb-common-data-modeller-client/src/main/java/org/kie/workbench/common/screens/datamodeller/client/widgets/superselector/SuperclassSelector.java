@@ -18,13 +18,15 @@ package org.kie.workbench.common.screens.datamodeller.client.widgets.superselect
 
 import java.util.List;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.ListBox;
 import org.uberfire.commons.data.Pair;
+
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.setSelectedValue;
 
 public class SuperclassSelector extends Composite {
 
@@ -69,14 +71,14 @@ public class SuperclassSelector extends Composite {
                 superclassList.addItem( value.getK1(), value.getK2() );
             }
         }
-        superclassList.setSelectedValue( selectedValue != null ? selectedValue : NOT_SELECTED );
+        setSelectedValue( superclassList, selectedValue != null ? selectedValue : NOT_SELECTED );
     }
 
     public void refreshList( List<Pair<String, String>> values, boolean keepSelection ) {
-        String selectedValue = superclassList.getValue();
+        String selectedValue = superclassList.getSelectedValue();
         initList( values, selectedValue );
         if ( keepSelection && selectedValue != null ) {
-            superclassList.setSelectedValue( selectedValue );
+            setSelectedValue( superclassList, selectedValue );
         }
     }
 

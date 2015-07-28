@@ -16,12 +16,12 @@
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <g:FlowPanel>
-    <b:ControlLabel>
-      <g:Label ui:field="valuePairLabel"/>
-    </b:ControlLabel>
+    <b:FormLabel>
+      <span ui:field="valuePairLabel"/>
+    </b:FormLabel>
     <g:FlowPanel ui:field="controlsContainer"></g:FlowPanel>
   </g:FlowPanel>
 

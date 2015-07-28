@@ -17,10 +17,6 @@ package org.kie.workbench.common.screens.server.management.client.artifact;
 
 import javax.enterprise.context.Dependent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonCell;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,6 +29,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.m2repo.client.widgets.ArtifactListView;
 import org.guvnor.m2repo.model.JarListPageRow;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 
 @Dependent
 public class DependencyListWidgetView
@@ -82,9 +82,7 @@ public class DependencyListWidgetView
     }
 
     private Column<JarListPageRow, String> buildSelectColumn() {
-        return new Column<JarListPageRow, String>( new ButtonCell() {{
-            setSize( ButtonSize.MINI );
-        }} ) {
+        return new Column<JarListPageRow, String>( new ButtonCell( ButtonSize.EXTRA_SMALL ) ) {
             public String getValue( final JarListPageRow row ) {
                 return "Select";
             }
