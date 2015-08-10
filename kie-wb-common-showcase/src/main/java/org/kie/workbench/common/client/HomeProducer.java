@@ -48,7 +48,7 @@ public class HomeProducer {
         model.addCarouselEntry( ModelUtils.makeCarouselEntry( "Deploy",
                 "Learn how to configure your environment",
                 url + "/images/HandHome.jpg" ) );
-        final Section s1 = new Section( "Discover and Author:" );
+        final Section s1 = new Section( "Discover and Author" );
         s1.addEntry( ModelUtils.makeSectionEntry( "Author",
                 new Command() {
 
@@ -59,7 +59,7 @@ public class HomeProducer {
                 } ) );
         model.addSection( s1 );
 
-        final Section s2 = new Section( "Deploy:" );
+        final Section s2 = new Section( "Deploy" );
         s2.addEntry( ModelUtils.makeSectionEntry( "Manage and Deploy Your Assets",
                 new Command() {
 
