@@ -41,18 +41,18 @@
     <dependencies>
 
         <!-- Kie WB Common -->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.services</groupId>-->
-            <!--<artifactId>kie-wb-common-datamodel-api</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.services</groupId>-->
-            <!--<artifactId>kie-wb-common-datamodel-backend</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.services</groupId>-->
-            <!--<artifactId>kie-wb-common-refactoring-backend</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-datamodel-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-datamodel-backend</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-refactoring-backend</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.kie.workbench.widgets</groupId>-->
             <!--<artifactId>kie-wb-common-ui</artifactId>-->
@@ -63,10 +63,10 @@
             <!--<artifactId>kie-wb-decorated-grid-widget</artifactId>-->
             <!--<scope>provided</scope>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.services</groupId>-->
-            <!--<artifactId>kie-wb-common-services-api</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-services-api</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.kie.workbench.services</groupId>-->
             <!--<artifactId>kie-wb-common-services-backend</artifactId>-->
@@ -129,15 +129,19 @@
             <!--<groupId>org.kie.workbench.screens</groupId>-->
             <!--<artifactId>kie-wb-common-default-editor-backend</artifactId>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-server-ui-backend</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-server-ui-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-server-ui-backend</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-server-ui-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-server-ui-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.kie.workbench.screens</groupId>
             <artifactId>kie-wb-common-contributors-api</artifactId>
@@ -179,10 +183,10 @@
             <!--<artifactId>kie-wb-common-social-home-page-client</artifactId>-->
             <!--<scope>provided</scope>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.services</groupId>-->
-            <!--<artifactId>kie-wb-common-data-modeller-core</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-data-modeller-core</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.kie.workbench.screens</groupId>-->
             <!--<artifactId>kie-wb-common-data-modeller-api</artifactId>-->
@@ -224,18 +228,28 @@
             <artifactId>commons-io</artifactId>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-services-api</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-services-backend</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-services-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-services-backend</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.guvnor</groupId>-->
             <!--<artifactId>guvnor-structure-api</artifactId>-->
         <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.guvnor</groupId>-->
+            <!--<artifactId>guvnor-structure-backend</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.guvnor</groupId>-->
+            <!--<artifactId>guvnor-structure-client</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-widgets-commons</artifactId>
@@ -340,27 +354,32 @@
             <artifactId>guvnor-structure-backend</artifactId>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-structure-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-structure-api</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-m2repo-editor-api</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-structure-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-m2repo-editor-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-m2repo-editor-api</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-m2repo-editor-backend</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-m2repo-editor-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-m2repo-editor-backend</artifactId>
+        </dependency>
 
         <!--<dependency>-->
             <!--<groupId>org.guvnor</groupId>-->
@@ -378,42 +397,42 @@
             <!--<artifactId>guvnor-inbox-backend</artifactId>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-project-api</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-project-api</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-project-backend</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-project-backend</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-project-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-project-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-workingset-api</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-workingset-api</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-workingset-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-workingset-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!--<dependency>-->
             <!--<groupId>org.guvnor</groupId>-->
             <!--<artifactId>guvnor-project-builder</artifactId>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-            <!--<groupId>org.guvnor</groupId>-->
-            <!--<artifactId>guvnor-message-console-api</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-message-console-api</artifactId>
+        </dependency>
 
         <!--<dependency>-->
             <!--<groupId>org.guvnor</groupId>-->
@@ -609,6 +628,16 @@
             <groupId>org.dashbuilder</groupId>
             <artifactId>dashbuilder-renderer-lienzo</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Models held within Drools -->
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-workbench-models-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-workbench-models-datamodel-api</artifactId>
         </dependency>
 
         <!-- UberFire -->
@@ -816,22 +845,22 @@
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-client</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-data-modeller-core</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-data-modeller-core</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-config-resource-widget</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-services-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-services-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-refactoring-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-java-editor-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-java-editor-client</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-contributors-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-contributors-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-client</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-client</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-social-home-page-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-social-home-page-client</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-default-editor-api</compileSourcesArtifact>-->
@@ -840,18 +869,18 @@
                         <!-- Guvnor -->
                         <!--<compileSourcesArtifact>org.guvnor:guvnor-asset-mgmt-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.guvnor:guvnor-asset-mgmt-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-structure-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-structure-client</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.guvnor:guvnor-structure-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-structure-client</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.guvnor:guvnor-inbox-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.guvnor:guvnor-inbox-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-workingset-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-workingset-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-project-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.guvnor:guvnor-message-console-api</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-workingset-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-workingset-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-project-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-message-console-api</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.guvnor:guvnor-message-console-client</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.guvnor:guvnor-organizationalunit-manager</compileSourcesArtifact>-->
 
@@ -890,8 +919,8 @@
                         <!--<compileSourcesArtifact>org.uberfire:uberfire-wires-bayesian-network-client</compileSourcesArtifact>-->
 
                         <!-- KIE UberFire extensions -->
-                        <!--<compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
 
                         <!-- Dashbuilder -->
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-validations</compileSourcesArtifact>

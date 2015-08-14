@@ -25,6 +25,7 @@ import org.kie.workbench.common.screens.server.management.client.events.HeaderRe
 import org.kie.workbench.common.screens.server.management.client.events.HeaderSelectAllEvent;
 import org.kie.workbench.common.screens.server.management.client.events.HeaderStartEvent;
 import org.kie.workbench.common.screens.server.management.client.events.HeaderStopEvent;
+import org.kie.workbench.common.screens.server.management.client.registry.ServerRegistryEndpointPresenter;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceManager;
@@ -40,9 +41,6 @@ public class HeaderPresenterTest {
 
     @Mock
     private HeaderPresenter.View headerView;
-
-    @Mock
-    private PlaceManager placeManager;
 
     @Mock
     private EventSourceMock<HeaderFilterEvent> headerFilterEvent;
@@ -65,11 +63,15 @@ public class HeaderPresenterTest {
     @Mock
     private EventSourceMock<HeaderRefreshEvent> headerRefreshEvent;
 
+    @Mock
+    private ServerRegistryEndpointPresenter serverRegistryEndpointPresenter;
+
     @Before
     public void setup() {
-        headerPresenter = new HeaderPresenter( headerView, placeManager,
+        headerPresenter = new HeaderPresenter( headerView,
                                                headerFilterEvent, headerClearSelectionEvent, headerSelectAllEvent,
-                                               headerDeleteEvent, headerStopEvent, headerStartEvent, headerRefreshEvent );
+                                               headerDeleteEvent, headerStopEvent, headerStartEvent, headerRefreshEvent,
+                                               serverRegistryEndpointPresenter );
 
         assertEquals( headerView, headerPresenter.getView() );
     }
@@ -128,15 +130,15 @@ public class HeaderPresenterTest {
 
     @Test
     public void testRegisterServer() {
-        verify( placeManager, times( 0 ) ).goTo( "ServerRegistryEndpoint" );
+        verify( serverRegistryEndpointPresenter, times( 0 ) ).show();
 
         headerPresenter.registerServer();
 
-        verify( placeManager, times( 1 ) ).goTo( "ServerRegistryEndpoint" );
+        verify( serverRegistryEndpointPresenter, times( 1 ) ).show();
 
         headerPresenter.registerServer();
 
-        verify( placeManager, times( 2 ) ).goTo( "ServerRegistryEndpoint" );
+        verify( serverRegistryEndpointPresenter, times( 2 ) ).show();
     }
 
     @Test

@@ -47,14 +47,12 @@
             </b:ButtonGroup>
           </b:Column>
 
-          <b:Column size="MD_3">
+          <b:Column size="MD_2">
             <b:Button ui:field="scanNow">Scan Now</b:Button>
           </b:Column>
 
-          <b:Column size="MD_1" addStyleNames="pull-right">
-            <g:HTMLPanel>
-              <i ui:field="status" style="font-size:3em"></i>
-            </g:HTMLPanel>
+          <b:Column size="MD_2">
+              <b:Icon type="POWER_OFF" ui:field="status" size="TIMES2" pull="RIGHT"/>
           </b:Column>
         </b:Row>
 
@@ -80,7 +78,7 @@
               <u:ReadOnlyTextBox b:id="groupId" ui:field="groupId"/>
             </b:FormGroup>
           </b:Column>
-          <b:Column size="MD_4">
+          <b:Column size="MD_3">
             <b:FormGroup ui:field="artifactIdGroup">
               <b:FormLabel for="artifactId">
                 Artifact Id
@@ -96,7 +94,7 @@
               <b:TextBox b:id="version" ui:field="version"/>
             </b:FormGroup>
           </b:Column>
-          <b:Column size="MD_2">
+          <b:Column size="MD_3">
             <b:FormGroup>
               <b:FormLabel>&nbsp;</b:FormLabel>
               <b:Button block="true" ui:field="upgrade" text="Upgrade"/>
@@ -117,7 +115,7 @@
               <u:ReadOnlyTextBox b:id="resolvedGroupId" ui:field="resolvedGroupId"/>
             </b:FormGroup>
           </b:Column>
-          <b:Column size="MD_4">
+          <b:Column size="MD_3">
             <b:FormGroup ui:field="resolvedArtifactIdGroup">
               <b:FormLabel for="resolvedArtifactId">
                 Artifact Id
