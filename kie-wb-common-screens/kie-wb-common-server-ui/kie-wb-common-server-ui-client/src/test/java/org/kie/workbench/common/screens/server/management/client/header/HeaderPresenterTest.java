@@ -71,7 +71,7 @@ public class HeaderPresenterTest {
 
     @Before
     public void setup() {
-        headerPresenter = new HeaderPresenter( headerView, placeManager,
+        headerPresenter = new HeaderPresenter( headerView,
                                                headerFilterEvent, headerClearSelectionEvent, headerSelectAllEvent,
                                                headerDeleteEvent, headerStopEvent, headerStartEvent, headerRefreshEvent, headerServerStatusUpdateEvent );
 
