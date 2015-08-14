@@ -21,13 +21,11 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.animation.client.Animation;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
@@ -95,7 +93,17 @@ public class ShowcaseEntryPoint {
                             }
                         } )
                         .endMenu()
-                        .newTopLevelMenu( "Logout" ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                        .newTopLevelMenu( "Server Management" )
+                        .respondsWith( new Command() {
+                            @Override
+                            public void execute() {
+                                placeManager.goTo( "ServerManagementPerspective" );
+                            }
+                        } )
+                        .endMenu()
+                        .newTopLevelMenu( "Logout" )
+                        .position( MenuPosition.RIGHT )
+                        .respondsWith( new Command() {
                             @Override
                             public void execute() {
                                 logout();

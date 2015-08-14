@@ -22,6 +22,7 @@ import org.guvnor.common.services.project.model.GAV;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.server.management.client.artifact.NewContainerFormPresenter;
 import org.kie.workbench.common.screens.server.management.client.events.ContainerInfoUpdateEvent;
 import org.kie.workbench.common.screens.server.management.events.ContainerStarted;
 import org.kie.workbench.common.screens.server.management.events.ContainerStopped;
@@ -61,9 +62,12 @@ public class BoxPresenterTest {
     @Mock
     private EventSourceMock<ContainerInfoUpdateEvent> event;
 
+    @Mock
+    private NewContainerFormPresenter newContainerFormPresenter;
+
     @Before
     public void setup() {
-        boxPresenter = new BoxPresenter( boxView, placeManager, event );
+        boxPresenter = new BoxPresenter( boxView, placeManager, event, newContainerFormPresenter );
 
         doAnswer( new Answer<Void>() {
             public Void answer( InvocationOnMock invocation ) {
@@ -223,8 +227,8 @@ public class BoxPresenterTest {
         verify( placeManager, times( 0 ) ).goTo( "ContainerInfo" );
 
         boxPresenter.openAddScreen();
-        verify( placeManager, times( 0 ) ).goTo(new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ));
-
+        verify( newContainerFormPresenter, times( 0 ) ).setServer( "my_id" );
+        verify( newContainerFormPresenter, times( 0 ) ).show();
         testSelection();
 
         testVisibility( "my_server" );
@@ -234,22 +238,26 @@ public class BoxPresenterTest {
         assertEquals( ContainerStatus.STARTED, boxPresenter.getStatus() );
 
         boxPresenter.openAddScreen();
-        verify( placeManager, times( 1 ) ).goTo( new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ) );
+        verify( newContainerFormPresenter, times( 1 ) ).setServer( "my_id" );
+        verify( newContainerFormPresenter, times( 1 ) ).show();
         boxPresenter.onServerConnected( new ServerConnected( new ServerImpl( "my_id", "http://localhost", "my_server", "admin", null, ContainerStatus.LOADING, ConnectionType.REMOTE, Collections.<Container>emptyList(), Collections.<String, String>emptyMap(), Collections.<ContainerRef>emptyList() ) ) );
         assertEquals( ContainerStatus.LOADING, boxPresenter.getStatus() );
 
         boxPresenter.openAddScreen();
-        verify( placeManager, times( 1 ) ).goTo( new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ) );
+        verify( newContainerFormPresenter, times( 1 ) ).setServer( "my_id" );
+        verify( newContainerFormPresenter, times( 1 ) ).show();
 
         boxPresenter.onServerConnected( new ServerConnected( new ServerImpl( "xmy_id", "http://localhost", "my_server", "admin", null, ContainerStatus.STARTED, ConnectionType.REMOTE, Collections.<Container>emptyList(), Collections.<String, String>emptyMap(), Collections.<ContainerRef>emptyList() ) ) );
         boxPresenter.openAddScreen();
         assertEquals( ContainerStatus.LOADING, boxPresenter.getStatus() );
-        verify( placeManager, times( 1 ) ).goTo( new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ) );
+        verify( newContainerFormPresenter, times( 1 ) ).setServer( "my_id" );
+        verify( newContainerFormPresenter, times( 1 ) ).show();
 
         boxPresenter.onServerOnError( new ServerOnError( new ServerRefImpl( "my_id", "http://localhost", "my_server", "admin", null, ContainerStatus.ERROR, ConnectionType.REMOTE, Collections.<String, String>emptyMap(), Collections.<ContainerRef>emptyList() ), "message" ) );
         assertEquals( ContainerStatus.ERROR, boxPresenter.getStatus() );
         boxPresenter.openAddScreen();
-        verify( placeManager, times( 1 ) ).goTo( new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ) );
+        verify( newContainerFormPresenter, times( 1 ) ).setServer( "my_id" );
+        verify( newContainerFormPresenter, times( 1 ) ).show();
     }
 
 }
