@@ -22,7 +22,6 @@ import javax.enterprise.context.Dependent;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -40,6 +39,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.guvnor.common.services.project.model.GAV;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
@@ -66,7 +66,7 @@ public class ContainerInfoView
     }
 
     @UiField
-    Element status;
+    Icon status;
 
     @UiField
     FormGroup intervalGroup;
@@ -110,7 +110,7 @@ public class ContainerInfoView
     @UiField
     ReadOnlyTextBox resolvedVersion;
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     CellTable<ServerInstanceRef> endpointTable = new CellTable<ServerInstanceRef>();
 
     private ListDataProvider<ServerInstanceRef> endpointDataProvider = new ListDataProvider<ServerInstanceRef>();
@@ -288,7 +288,7 @@ public class ContainerInfoView
         versionGroup.setValidationState( ValidationState.NONE );
     }
 
-    @UiHandler("startScanner")
+    @UiHandler( "startScanner" )
     public void startScanner( final ClickEvent e ) {
         if ( startScanner.isActive() ) {
             return;
@@ -302,7 +302,7 @@ public class ContainerInfoView
         }
     }
 
-    @UiHandler("stopScanner")
+    @UiHandler( "stopScanner" )
     public void stopScanner( final ClickEvent e ) {
         if ( stopScanner.isActive() ) {
             return;
@@ -311,13 +311,13 @@ public class ContainerInfoView
         presenter.stopScanner();
     }
 
-    @UiHandler("scanNow")
+    @UiHandler( "scanNow" )
     public void scanNow( final ClickEvent e ) {
         stopScannerActive.execute();
         presenter.scanNow();
     }
 
-    @UiHandler("upgrade")
+    @UiHandler( "upgrade" )
     public void upgrade( final ClickEvent e ) {
         try {
             presenter.upgrade( new GAV( groupId.getText(), artifactId.getText(), version.getText() ) );
@@ -351,9 +351,9 @@ public class ContainerInfoView
         };
 
         endpointTable.addColumn( urlColumn,
-                                 new TextHeader( Constants.INSTANCE.endpoint() ) );
+                new TextHeader( Constants.INSTANCE.endpoint() ) );
         endpointTable.addColumn( statusColumn,
-                                 new TextHeader( Constants.INSTANCE.status() ) );
+                new TextHeader( Constants.INSTANCE.status() ) );
 
         //Link data
         endpointDataProvider.addDataDisplay( endpointTable );

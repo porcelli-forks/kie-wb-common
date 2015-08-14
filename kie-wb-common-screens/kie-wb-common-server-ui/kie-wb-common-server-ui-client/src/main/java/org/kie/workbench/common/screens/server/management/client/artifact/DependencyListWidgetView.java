@@ -19,6 +19,7 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -77,6 +78,10 @@ public class DependencyListWidgetView
         artifactListView.addColumn( buildSelectColumn(), "Select" );
 
         artifactListView.setContentHeight( "200px" );
+
+        final Style style = artifactListView.asWidget().getElement().getStyle();
+        style.setMarginLeft( 0, Style.Unit.PX );
+        style.setMarginRight( 0, Style.Unit.PX );
 
         panel.add( artifactListView );
     }

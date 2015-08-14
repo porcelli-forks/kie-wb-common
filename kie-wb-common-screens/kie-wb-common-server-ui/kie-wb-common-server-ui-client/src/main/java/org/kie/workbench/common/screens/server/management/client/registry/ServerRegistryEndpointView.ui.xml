@@ -19,53 +19,53 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
-  <ui:style>
-    .mandatory-field {
-      color: #FF0000 !important;
-    }
-  </ui:style>
+    <g:FlowPanel>
+        <b:Container fluid="true">
+            <b:Row>
+                <b:Column size="MD_12">
+                    <b:Form type="HORIZONTAL">
+                        <b:FieldSet>
+                            <b:Legend text="Server connectivity info"/>
+                            <b:FormGroup ui:field="idGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="id" text="Identifier" showRequiredIndicator="true"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox b:id="url" ui:field="idTextBox" placeholder="Identifier"/>
+                                    <b:HelpBlock ui:field="idHelpInline"/>
+                                </b:Column>
+                            </b:FormGroup>
+                            <b:FormGroup ui:field="nameGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="url" text="Name" showRequiredIndicator="true"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox b:id="name" ui:field="nameTextBox" placeholder="Name"/>
+                                    <b:HelpBlock ui:field="nameHelpInline"/>
+                                </b:Column>
+                            </b:FormGroup>
+                            <b:FormGroup ui:field="versionGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="version" text="Version"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox b:id="version" ui:field="versionTextBox" placeholder="Version"/>
+                                    <b:HelpBlock ui:field="versionHelpInline"/>
+                                </b:Column>
+                            </b:FormGroup>
+                        </b:FieldSet>
+                    </b:Form>
+                </b:Column>
+            </b:Row>
+        </b:Container>
+        <b:ModalFooter>
+            <b:Button type="DEFAULT" ui:field="cancel">
+                Cancel
+            </b:Button>
+            <b:Button icon="BOLT" type="PRIMARY" ui:field="connect">
+                Connect
+            </b:Button>
+        </b:ModalFooter>
 
-  <g:FlowPanel>
-    <b:Well>
-      <b:FieldSet>
-        <b:Legend>
-          Server connectivity info.
-          <small>
-            Is Required
-          </small>
-        </b:Legend>
-        <b:FormGroup ui:field="idGroup">
-          <b:FormLabel for="id">
-            <span class="{style.mandatory-field}">*</span>
-            Identifier
-          </b:FormLabel>
-          <b:TextBox b:id="url" ui:field="idTextBox" placeholder="Identifier"/>
-          <b:HelpBlock ui:field="idHelpInline"/>
-        </b:FormGroup>
-        <b:FormGroup ui:field="nameGroup">
-          <b:FormLabel for="url">
-            <span class="{style.mandatory-field}">*</span>
-            Name
-          </b:FormLabel>
-          <b:TextBox b:id="name" ui:field="nameTextBox" placeholder="Name"/>
-          <b:HelpBlock ui:field="nameHelpInline"/>
-        </b:FormGroup>
-        <b:FormGroup ui:field="versionGroup">
-          <b:FormLabel for="version">
-            Version
-          </b:FormLabel>
-          <b:TextBox b:id="version" ui:field="versionTextBox" placeholder="Version"/>
-          <b:HelpBlock ui:field="versionHelpInline"/>
-        </b:FormGroup>
-      </b:FieldSet>
-    </b:Well>
-    <b:ModalFooter>
-      <b:Button type="DEFAULT" ui:field="cancel">
-        Cancel
-      </b:Button>
-      <b:Button icon="BOLT" type="PRIMARY" ui:field="connect">
-        Connect
-      </b:Button>
-    </b:ModalFooter>
-  </g:FlowPanel>
+    </g:FlowPanel>
 </ui:UiBinder> 
