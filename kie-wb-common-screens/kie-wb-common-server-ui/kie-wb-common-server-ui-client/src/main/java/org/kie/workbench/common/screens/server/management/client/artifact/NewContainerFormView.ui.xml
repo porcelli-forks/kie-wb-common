@@ -20,56 +20,74 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
-  <ui:style>
-    .margin {
-      padding-top: 5px;
-    }
-  </ui:style>
+    <g:FlowPanel>
 
-  <g:FlowPanel>
-    <b:FieldSet>
-      <b:Container addStyleNames="well" fluid="true">
-        <b:Row>
-          <b:Column size="MD_5">
-            <b:FormGroup ui:field="containerNameGroup">
-              <b:TextBox ui:field="containerName" placeholder='Name'/>
-            </b:FormGroup>
-          </b:Column>
-        </b:Row>
 
-        <b:Row>
-          <b:Column size="MD_3">
-            <b:FormGroup ui:field="groupIdGroup">
-              <b:TextBox ui:field="groupId" placeholder='Group Name'/>
-            </b:FormGroup>
-          </b:Column>
-          <b:Column size="MD_4">
-            <b:FormGroup ui:field="artifactIdGroup">
-              <b:TextBox ui:field="artifactId" placeholder='Artifact Id'/>
-            </b:FormGroup>
-          </b:Column>
-          <b:Column size="MD_4">
-            <b:FormGroup ui:field="versionGroup">
-              <b:TextBox ui:field="version" placeholder='Version'/>
-            </b:FormGroup>
-          </b:Column>
-          <b:Column size="MD_1">
-            <b:Button block="true" ui:field="ok" text="Ok"/>
-          </b:Column>
-        </b:Row>
+        <b:Container fluid="true">
+            <b:Row>
+                <b:Column size="MD_12">
+                    <b:Form type="HORIZONTAL">
+                        <b:FieldSet>
 
-        <b:Row>
-          <b:Column size="MD_12">
-            <b:TextBox ui:field="endpoint" readOnly="true"/>
-          </b:Column>
-        </b:Row>
+                            <b:FormGroup ui:field="containerNameGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="containerName" text="Name"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox ui:field="containerName"/>
+                                </b:Column>
+                            </b:FormGroup>
 
-      </b:Container>
-    </b:FieldSet>
+                            <b:FormGroup ui:field="groupIdGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="groupId" text="Group Name"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox ui:field="groupId"/>
+                                </b:Column>
+                            </b:FormGroup>
 
-    <b:Container addStyleNames="{style.margin}" fluid="true">
-      <b:Row ui:field="content"/>
-    </b:Container>
-  </g:FlowPanel>
+                            <b:FormGroup ui:field="artifactIdGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="artifactId" text="Artifact Id"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox ui:field="artifactId"/>
+                                </b:Column>
+                            </b:FormGroup>
+
+                            <b:FormGroup ui:field="versionGroup">
+                                <b:Column size="MD_3">
+                                    <b:FormLabel for="version" text="Version"/>
+                                </b:Column>
+                                <b:Column size="MD_9">
+                                    <b:TextBox ui:field="version"/>
+                                </b:Column>
+                            </b:FormGroup>
+
+                            <b:FormGroup>
+                                <b:Column size="MD_12">
+                                    <b:TextBox ui:field="endpoint" readOnly="true"/>
+                                </b:Column>
+                            </b:FormGroup>
+
+                            <b:FormGroup>
+                                <b:Column size="MD_2" offset="MD_10">
+                                    <b:Button block="true" ui:field="ok" text="Ok" type="PRIMARY" pull="RIGHT"/>
+                                </b:Column>
+                            </b:FormGroup>
+                        </b:FieldSet>
+                    </b:Form>
+                </b:Column>
+            </b:Row>
+
+        </b:Container>
+
+        <b:Container fluid="true">
+            <b:Row>
+                <b:Column size="MD_12" ui:field="content"/>
+            </b:Row>
+        </b:Container>
+    </g:FlowPanel>
 
 </ui:UiBinder>
