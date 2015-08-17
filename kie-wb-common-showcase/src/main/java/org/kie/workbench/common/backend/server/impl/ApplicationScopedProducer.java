@@ -28,6 +28,9 @@ import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.backend.server.IOWatchServiceAllImpl;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
+import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
+import org.uberfire.ext.metadata.io.IOSearchIndex;
+import org.uberfire.io.IOSearchService;
 import org.uberfire.io.IOService;
 import org.uberfire.io.impl.IOServiceNio2WrapperImpl;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -37,59 +40,35 @@ import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 @ApplicationScoped
 public class ApplicationScopedProducer {
 
-//    @Inject
-//    private IOWatchServiceNonDotImpl watchService;
+    @Inject
+    @Named( "luceneConfig" )
+    private LuceneConfig config;
 
-//    @Inject
-//    @Named("clusterServiceFactory")
-//    private ClusterServiceFactory clusterServiceFactory;
-
-//    @Inject
-//    @Named("luceneConfig")
-//    private LuceneConfig config;
-
-//    private IOService ioService;
-//    private IOSearchService ioSearchService;
+    private IOService ioService;
+    private IOSearchService ioSearchService;
 
     @Inject
     private AuthenticationService authenticationService;
 
-//    @PostConstruct
-//    public void setup() {
-//        final IOService service = new IOServiceIndexedImpl( watchService,
-//                config.getIndexEngine(),
-//                DublinCoreView.class,
-//                VersionAttributeView.class,
-//                OtherMetaView.class );
-//
-//        ioService = service;
-//    }
-
-//    @Produces
-//    @Named("ioStrategy")
-//    public IOService ioService() {
-//        return ioService;
-//    }
-
-    //    @Produces
-//    @Named("ioSearchStrategy")
-//    public IOSearchService ioSearchService() {
-//        return ioSearchService;
-//    }
     @Inject
     private IOWatchServiceAllImpl watchService;
-
-    private IOService ioService;
 
     @PostConstruct
     public void setup() {
         ioService = new IOServiceNio2WrapperImpl( "1", watchService );
+        ioSearchService = new IOSearchIndex( config.getSearchIndex(), ioService );
     }
 
     @Produces
     @Named( "ioStrategy" )
     public IOService ioService() {
         return ioService;
+    }
+
+    @Produces
+    @Named( "ioSearchStrategy" )
+    public IOSearchService ioSearchService() {
+        return ioSearchService;
     }
 
     @Produces
