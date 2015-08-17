@@ -22,134 +22,215 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:qr="urn:import:org.kie.workbench.common.screens.search.client.widgets">
 
-  <ui:with field="i18n" type="org.kie.workbench.common.screens.search.client.resources.i18n.Constants"/>
+    <ui:with field="i18n" type="org.kie.workbench.common.screens.search.client.resources.i18n.Constants"/>
 
-  <b:PanelGroup ui:field="accordion">
-    <b:Panel>
-      <b:PanelHeader dataToggle="COLLAPSE" ui:field="formAccordionHeader">
-        <b:Heading size="H4" text="{i18n.SearchForm}"/>
-      </b:PanelHeader>
-      <b:PanelCollapse ui:field="formAccordionCollapse">
-        <b:PanelBody>
-          <b:Form type="HORIZONTAL">
-            <b:FieldSet>
-              <b:FormGroup ui:field="form">
-                <b:FormGroup>
-                  <b:FormLabel for="source">
-                    <ui:text from="{i18n.Source}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.SourceTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="source" ui:field="sourceTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+    <ui:style>
+        .container {
+            padding-top: 20px;
+        }
 
-                <b:FormGroup>
-                  <b:FormLabel for="createdBy">
-                    <ui:text from="{i18n.CreatedBy}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.CreatedByTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="createdBy" ui:field="createdByTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+        .spacer {
+            margin-left: 5px;
+        }
+    </ui:style>
 
-                <b:FormGroup>
-                  <b:FormLabel for="description">
-                    <ui:text from="{i18n.Description}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.DescriptionTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="description" ui:field="descriptionByTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+    <b:PanelGroup ui:field="accordion">
+        <b:Panel>
+            <b:PanelHeader dataToggle="COLLAPSE" ui:field="formAccordionHeader">
+                <b:Heading size="H4" text="{i18n.SearchForm}"/>
+            </b:PanelHeader>
+            <b:PanelCollapse ui:field="formAccordionCollapse">
+                <b:PanelBody>
+                    <b:Container fluid="true" addStyleNames="{style.container}">
+                        <b:Row>
+                            <b:Column size="MD_12">
+                                <b:Form type="HORIZONTAL" ui:field="form">
+                                    <b:FieldSet>
+                                        <b:FormGroup ui:field="formGroup">
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="source">
+                                                        <ui:text from="{i18n.Source}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.SourceTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="source" ui:field="sourceTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="format">
-                    <ui:text from="{i18n.Format}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.FormatTip}" placement="RIGHT" trigger="FOCUS">
-                    <b3:Typeahead ui:field="formatTypeahead"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="createdBy">
+                                                        <ui:text from="{i18n.CreatedBy}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.CreatedByTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="createdBy" ui:field="createdByTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="subject">
-                    <ui:text from="{i18n.Subject}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.SubjectTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="subject" ui:field="subjectTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="description">
+                                                        <ui:text from="{i18n.Description}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.DescriptionTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="description" ui:field="descriptionByTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="type">
-                    <ui:text from="{i18n.Type}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.TypeTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="type" ui:field="typeTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="format">
+                                                        <ui:text from="{i18n.Format}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.FormatTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b3:Typeahead ui:field="formatTypeahead"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="lastModifiedBy">
-                    <ui:text from="{i18n.LastModifiedBy}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.LastModifiedByTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="createdBy" ui:field="lastModifiedByTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="subject">
+                                                        <ui:text from="{i18n.Subject}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.SubjectTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="subject" ui:field="subjectTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="externalLink">
-                    <ui:text from="{i18n.ExternalLink}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.ExternalLinkTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="externalLink" ui:field="externalLinkTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="type">
+                                                        <ui:text from="{i18n.Type}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.TypeTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="type" ui:field="typeTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="checkinComment">
-                    <ui:text from="{i18n.CheckinComment}"/>
-                  </b:FormLabel>
-                  <b:Tooltip title="{i18n.CheckinCommentTip}" placement="RIGHT" trigger="FOCUS">
-                    <b:TextBox b:id="checkinComment" ui:field="checkinCommentTextBox"/>
-                  </b:Tooltip>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="lastModifiedBy">
+                                                        <ui:text from="{i18n.LastModifiedBy}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.LastModifiedByTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="createdBy" ui:field="lastModifiedByTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="dateCreated">
-                    <ui:text from="{i18n.DateCreated}"/>
-                  </b:FormLabel>
-                  <b2:DatePicker ui:field="createdAfter" placeholder="{i18n.DateAfterPlaceholder}"/>
-                  <b2:DatePicker ui:field="createdBefore" placeholder="{i18n.DateBeforePlaceholder}"/>
-                </b:FormGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="externalLink">
+                                                        <ui:text from="{i18n.ExternalLink}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.ExternalLinkTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="externalLink" ui:field="externalLinkTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
 
-                <b:FormGroup>
-                  <b:FormLabel for="lastModified">
-                    <ui:text from="{i18n.LastModified}"/>
-                  </b:FormLabel>
-                  <b2:DatePicker ui:field="lastModifiedAfter" placeholder="{i18n.DateAfterPlaceholder}"/>
-                  <b2:DatePicker ui:field="lastModifiedBefore" placeholder="{i18n.DateBeforePlaceholder}"/>
-                </b:FormGroup>
-              </b:FormGroup>
-            </b:FieldSet>
-            <g:SimplePanel ui:field="errorPanel"/>
-            <b:Button icon="SEARCH" type="PRIMARY" ui:field="search" text="{i18n.Search}"/>
-          </b:Form>
-        </b:PanelBody>
-      </b:PanelCollapse>
-    </b:Panel>
-    <b:Panel>
-      <b:PanelHeader dataToggle="COLLAPSE" ui:field="resultAccordionHeader">
-        <b:Heading size="H4" text="{i18n.QueryResult}"/>
-      </b:PanelHeader>
-      <b:PanelCollapse ui:field="resultAccordionCollapse">
-        <b:PanelBody>
-          <g:SimplePanel ui:field="simplePanel">
-            <qr:SearchResultTable/>
-          </g:SimplePanel>
-        </b:PanelBody>
-      </b:PanelCollapse>
-    </b:Panel>
-  </b:PanelGroup>
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="checkinComment">
+                                                        <ui:text from="{i18n.CheckinComment}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Tooltip title="{i18n.CheckinCommentTip}" placement="RIGHT" trigger="FOCUS">
+                                                        <b:TextBox b:id="checkinComment" ui:field="checkinCommentTextBox"/>
+                                                    </b:Tooltip>
+                                                </b:Column>
+                                            </b:FormGroup>
+
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="dateCreated">
+                                                        <ui:text from="{i18n.DateCreated}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Row>
+                                                        <b:Column size="MD_6">
+                                                            <b2:DatePicker ui:field="createdAfter" placeholder="{i18n.DateAfterPlaceholder}" autoClose="true"/>
+                                                        </b:Column>
+                                                        <b:Column size="MD_6">
+                                                            <b2:DatePicker ui:field="createdBefore" placeholder="{i18n.DateBeforePlaceholder}" autoClose="true"/>
+                                                        </b:Column>
+                                                    </b:Row>
+                                                </b:Column>
+                                            </b:FormGroup>
+
+                                            <b:FormGroup>
+                                                <b:Column size="MD_2">
+                                                    <b:FormLabel for="lastModified">
+                                                        <ui:text from="{i18n.LastModified}"/>
+                                                    </b:FormLabel>
+                                                </b:Column>
+                                                <b:Column size="MD_3">
+                                                    <b:Row>
+                                                        <b:Column size="MD_6">
+                                                            <b2:DatePicker ui:field="lastModifiedAfter" placeholder="{i18n.DateAfterPlaceholder}" autoClose="true"/>
+                                                        </b:Column>
+                                                        <b:Column size="MD_6">
+                                                            <b2:DatePicker ui:field="lastModifiedBefore" placeholder="{i18n.DateBeforePlaceholder}" autoClose="true"/>
+                                                        </b:Column>
+                                                    </b:Row>
+                                                </b:Column>
+                                            </b:FormGroup>
+                                        </b:FormGroup>
+                                    </b:FieldSet>
+                                    <g:SimplePanel ui:field="errorPanel"/>
+                                    <b:FormGroup>
+                                        <b:Column size="MD_2" offset="MD_3">
+                                            <b:Button icon="SEARCH" type="PRIMARY" ui:field="search" text="{i18n.Search}" pull="RIGHT" addStyleNames="{style.spacer}"/>
+                                            <b:Button icon="ERASER" type="DEFAULT" ui:field="clear" text="{i18n.Clear}" pull="RIGHT"/>
+                                        </b:Column>
+                                    </b:FormGroup>
+                                </b:Form>
+                            </b:Column>
+                        </b:Row>
+                    </b:Container>
+                </b:PanelBody>
+            </b:PanelCollapse>
+        </b:Panel>
+        <b:Panel>
+            <b:PanelHeader dataToggle="COLLAPSE" ui:field="resultAccordionHeader">
+                <b:Heading size="H4" text="{i18n.QueryResult}"/>
+            </b:PanelHeader>
+            <b:PanelCollapse ui:field="resultAccordionCollapse">
+                <b:PanelBody>
+                    <b:Container fluid="true">
+                        <b:Row>
+                            <b:Column size="MD_12" ui:field="simplePanel">
+                                <qr:SearchResultTable/>
+                            </b:Column>
+                        </b:Row>
+                    </b:Container>
+                </b:PanelBody>
+            </b:PanelCollapse>
+        </b:Panel>
+    </b:PanelGroup>
 
 </ui:UiBinder>
