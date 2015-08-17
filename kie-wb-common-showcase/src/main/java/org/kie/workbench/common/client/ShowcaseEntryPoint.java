@@ -17,6 +17,7 @@ package org.kie.workbench.common.client;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -25,12 +26,15 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.guvnor.common.services.shared.config.AppConfigService;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.service.AuthenticationService;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
@@ -64,8 +68,12 @@ public class ShowcaseEntryPoint {
     @Inject
     private Caller<AuthenticationService> authService;
 
+    @Inject
+    private Caller<AppConfigService> appConfigService;
+
     @AfterInitialization
     public void startApp() {
+        loadPreferences();
         hideLoadingPopup();
     }
 
@@ -101,6 +109,14 @@ public class ShowcaseEntryPoint {
                             }
                         } )
                         .endMenu()
+                        .newTopLevelMenu( "Search" )
+                        .respondsWith( new Command() {
+                            @Override
+                            public void execute() {
+                                placeManager.goTo( "SearchPerspective" );
+                            }
+                        } )
+                        .endMenu()
                         .newTopLevelMenu( "Logout" )
                         .position( MenuPosition.RIGHT )
                         .respondsWith( new Command() {
@@ -130,6 +146,16 @@ public class ShowcaseEntryPoint {
             }
         }
         return defaultPerspective;
+    }
+
+    private void loadPreferences() {
+        appConfigService.call( new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback( final Map<String, String> response ) {
+                response.put( ApplicationPreferences.DATE_FORMAT, "dd-MM-yyyy" );
+                ApplicationPreferences.setUp( response );
+            }
+        } ).loadPreferences();
     }
 
     /**

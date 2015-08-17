@@ -33,6 +33,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Alert;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Form;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelGroup;
@@ -53,7 +55,7 @@ import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.client.workbench.type.ClientTypeRegistry;
 
 @Dependent
-@WorkbenchScreen(identifier = "FindForm")
+@WorkbenchScreen( identifier = "FindForm" )
 public class FindForm
         extends Composite {
 
@@ -72,7 +74,10 @@ public class FindForm
     SimplePanel errorPanel;
 
     @UiField
-    FormGroup form;
+    FormGroup formGroup;
+
+    @UiField
+    Form form;
 
     @UiField
     TextBox sourceTextBox;
@@ -83,8 +88,8 @@ public class FindForm
     @UiField
     TextBox descriptionByTextBox;
 
-    @UiField(provided = true)
-    Typeahead<String> formatTypeahead;
+    @UiField
+    Typeahead formatTypeahead;
 
     @UiField
     TextBox subjectTextBox;
@@ -103,11 +108,13 @@ public class FindForm
 
     @UiField
     DatePicker createdAfter;
+
     @UiField
     DatePicker createdBefore;
 
     @UiField
     DatePicker lastModifiedAfter;
+
     @UiField
     DatePicker lastModifiedBefore;
 
@@ -127,10 +134,12 @@ public class FindForm
     PanelCollapse resultAccordionCollapse;
 
     @UiField
-    SimplePanel simplePanel;
+    Column simplePanel;
 
     @PostConstruct
     public void init() {
+        initWidget( uiBinder.createAndBindUi( this ) );
+
         accordion.setId( DOM.createUniqueId() );
         formAccordionHeader.setDataParent( accordion.getId() );
         formAccordionHeader.setDataTargetWidget( formAccordionCollapse );
@@ -143,19 +152,29 @@ public class FindForm
         lastModifiedAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
         lastModifiedBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
 
-        formatTypeahead = new Typeahead<String>( new StringDataset( new ArrayList<String>() {{
+        formGroup.setStyleName( null );
+
+        formatTypeahead.setDatasets( new StringDataset( new ArrayList<String>() {{
             for ( final ClientResourceType resourceType : clientTypeRegistry.getRegisteredTypes() ) {
                 add( resourceType.getShortName() );
             }
         }} ) );
+        formatTypeahead.setHighlight( true );
+        formatTypeahead.setHint( false );
 
-        initWidget( uiBinder.createAndBindUi( this ) );
+        formAccordionCollapse.setIn( true );
+        resultAccordionCollapse.setIn( false );
     }
 
-    @UiHandler("search")
+    @UiHandler( "clear" )
+    public void onClearClick( final ClickEvent e ) {
+        form.reset();
+    }
+
+    @UiHandler( "search" )
     public void onSearchClick( final ClickEvent e ) {
         errorPanel.clear();
-        form.setValidationState( ValidationState.NONE );
+        formGroup.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
         if ( !sourceTextBox.getText().trim().isEmpty() ) {
             metadata.put( "dcore.source[0]", sourceTextBox.getText().trim() );
@@ -213,7 +232,7 @@ public class FindForm
         }
 
         if ( metadata.size() == 0 && !hasSomeDateValue ) {
-            form.setValidationState( ValidationState.ERROR );
+            formGroup.setValidationState( ValidationState.ERROR );
             Alert alert = new Alert( Constants.INSTANCE.AtLeastOneFieldMustBeSet(), AlertType.DANGER );
             alert.setVisible( true );
             alert.setDismissable( true );
@@ -222,9 +241,9 @@ public class FindForm
         }
 
         final SearchResultTable queryTable = new SearchResultTable( new QueryMetadataPageRequest( metadata,
-                                                                                                  createdAfter.getValue(), createdBefore.getValue(),
-                                                                                                  lastModifiedAfter.getValue(), lastModifiedBefore.getValue(),
-                                                                                                  0, null ) );
+                createdAfter.getValue(), createdBefore.getValue(),
+                lastModifiedAfter.getValue(), lastModifiedBefore.getValue(),
+                0, null ) );
         simplePanel.clear();
 
         simplePanel.add( queryTable );

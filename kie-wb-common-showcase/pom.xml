@@ -53,11 +53,11 @@
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-refactoring-backend</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.widgets</groupId>-->
-            <!--<artifactId>kie-wb-common-ui</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.widgets</groupId>
+            <artifactId>kie-wb-common-ui</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.kie.workbench.widgets</groupId>-->
             <!--<artifactId>kie-wb-decorated-grid-widget</artifactId>-->
@@ -67,10 +67,10 @@
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-services-api</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.services</groupId>-->
-            <!--<artifactId>kie-wb-common-services-backend</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-services-backend</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.kie.workbench.screens</groupId>-->
             <!--<artifactId>kie-wb-common-project-editor-client</artifactId>-->
@@ -85,19 +85,19 @@
             <!--<artifactId>kie-wb-common-project-imports-editor-client</artifactId>-->
             <!--<scope>provided</scope>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-search-screen-api</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-search-screen-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-search-screen-backend</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-search-screen-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-search-screen-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-search-screen-backend</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.kie.workbench.screens</groupId>-->
             <!--<artifactId>kie-wb-common-project-explorer-api</artifactId>-->
@@ -250,6 +250,10 @@
             <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-widgets-service-backend</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-widgets-commons</artifactId>
@@ -841,14 +845,14 @@
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-editor-client</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-imports-editor-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-imports-editor-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-client</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-client</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-client</compileSourcesArtifact>-->
                         <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-data-modeller-core</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-config-resource-widget</compileSourcesArtifact>-->
