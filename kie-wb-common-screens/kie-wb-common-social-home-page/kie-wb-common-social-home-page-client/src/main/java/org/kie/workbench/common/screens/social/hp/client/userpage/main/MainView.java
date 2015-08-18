@@ -24,7 +24,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Well;
 import org.kie.uberfire.social.activities.client.widgets.timeline.simple.SimpleSocialTimelineWidget;
 import org.kie.uberfire.social.activities.client.widgets.timeline.simple.model.SimpleSocialTimelineWidgetModel;
 
@@ -43,19 +42,14 @@ public class MainView extends Composite
     @UiField
     FlowPanel timeline;
 
-    @UiField
-    Well well;
-
-
     public MainView() {
         initWidget( uiBinder.createAndBindUi( this ) );
-        well.setHeight( "100%" );
     }
 
     @Override
-    public void setup( SimpleSocialTimelineWidgetModel model ) {
+    public void setup( final SimpleSocialTimelineWidgetModel model ) {
         timeline.clear();
-        SimpleSocialTimelineWidget socialTimelineWidget = new SimpleSocialTimelineWidget(model);
+        SimpleSocialTimelineWidget socialTimelineWidget = new SimpleSocialTimelineWidget( model );
         timeline.add( socialTimelineWidget );
 
     }

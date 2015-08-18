@@ -16,6 +16,8 @@
 
 package org.kie.workbench.common.backend.server.impl;
 
+import java.net.URI;
+import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -33,6 +35,8 @@ import org.uberfire.ext.metadata.io.IOSearchIndex;
 import org.uberfire.io.IOSearchService;
 import org.uberfire.io.IOService;
 import org.uberfire.io.impl.IOServiceNio2WrapperImpl;
+import org.uberfire.java.nio.file.FileSystem;
+import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 
@@ -46,6 +50,7 @@ public class ApplicationScopedProducer {
 
     private IOService ioService;
     private IOSearchService ioSearchService;
+    private FileSystem systemFS;
 
     @Inject
     private AuthenticationService authenticationService;
@@ -53,10 +58,24 @@ public class ApplicationScopedProducer {
     @Inject
     private IOWatchServiceAllImpl watchService;
 
+    @Inject
+    @Named( "configIO" )
+    private IOService configIO;
+
     @PostConstruct
     public void setup() {
         ioService = new IOServiceNio2WrapperImpl( "1", watchService );
         ioSearchService = new IOSearchIndex( config.getSearchIndex(), ioService );
+        final URI system = URI.create( "git://system" );
+        try {
+            systemFS = configIO.newFileSystem( system,
+                    new HashMap<String, Object>() {{
+                        put( "init", Boolean.TRUE );
+                        put( "internal", Boolean.TRUE );
+                    }} );
+        } catch ( FileSystemAlreadyExistsException f ) {
+            systemFS = configIO.getFileSystem( system );
+        }
     }
 
     @Produces
@@ -69,6 +88,12 @@ public class ApplicationScopedProducer {
     @Named( "ioSearchStrategy" )
     public IOSearchService ioSearchService() {
         return ioSearchService;
+    }
+
+    @Produces
+    @Named( "systemFS" )
+    public FileSystem systemFS() {
+        return systemFS;
     }
 
     @Produces

@@ -20,6 +20,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
-  <b:Well ui:field="panel">
-  </b:Well>
+    <ui:with field="res" type="org.kie.workbench.common.screens.social.hp.client.resources.ContainerResources"/>
+
+    <b:Container fluid="true" addStyleNames="{res.CSS.container}">
+        <b:Row>
+            <b:Column size="MD_12" ui:field="column"/>
+        </b:Row>
+    </b:Container>
+
+
 </ui:UiBinder>
