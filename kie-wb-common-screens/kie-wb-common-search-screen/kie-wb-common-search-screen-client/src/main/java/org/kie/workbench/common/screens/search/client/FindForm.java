@@ -159,11 +159,6 @@ public class FindForm
                 add( resourceType.getShortName() );
             }
         }} ) );
-        formatTypeahead.setHighlight( true );
-        formatTypeahead.setHint( false );
-
-        formAccordionCollapse.setIn( true );
-        resultAccordionCollapse.setIn( false );
     }
 
     @UiHandler( "clear" )
