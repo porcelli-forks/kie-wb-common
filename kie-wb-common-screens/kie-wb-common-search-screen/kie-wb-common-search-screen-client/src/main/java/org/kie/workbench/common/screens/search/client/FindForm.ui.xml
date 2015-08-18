@@ -39,7 +39,7 @@
             <b:PanelHeader dataToggle="COLLAPSE" ui:field="formAccordionHeader">
                 <b:Heading size="H4" text="{i18n.SearchForm}"/>
             </b:PanelHeader>
-            <b:PanelCollapse ui:field="formAccordionCollapse">
+            <b:PanelCollapse ui:field="formAccordionCollapse" in="true" >
                 <b:PanelBody>
                     <b:Container fluid="true" addStyleNames="{style.container}">
                         <b:Row>
@@ -94,7 +94,7 @@
                                                 </b:Column>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.FormatTip}" placement="RIGHT" trigger="FOCUS">
-                                                        <b3:Typeahead ui:field="formatTypeahead"/>
+                                                        <b3:Typeahead ui:field="formatTypeahead" highlight="true" hint="false" />
                                                     </b:Tooltip>
                                                 </b:Column>
                                             </b:FormGroup>
@@ -219,7 +219,7 @@
             <b:PanelHeader dataToggle="COLLAPSE" ui:field="resultAccordionHeader">
                 <b:Heading size="H4" text="{i18n.QueryResult}"/>
             </b:PanelHeader>
-            <b:PanelCollapse ui:field="resultAccordionCollapse">
+            <b:PanelCollapse ui:field="resultAccordionCollapse" in="false">
                 <b:PanelBody>
                     <b:Container fluid="true">
                         <b:Row>
