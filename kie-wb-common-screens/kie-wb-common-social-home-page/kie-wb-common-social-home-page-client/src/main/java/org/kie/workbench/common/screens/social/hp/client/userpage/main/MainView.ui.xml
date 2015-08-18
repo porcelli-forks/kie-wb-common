@@ -21,14 +21,11 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-
-  <b:Well ui:field="well">
     <b:FieldSet>
-    <b:Legend>
-      <small>Recent Activities:</small>
-    </b:Legend>
-    <g:FlowPanel ui:field="timeline"/>
+        <b:Legend>
+            <small>Recent Activities</small>
+        </b:Legend>
+        <g:FlowPanel ui:field="timeline"/>
     </b:FieldSet>
-  </b:Well>
 
 </ui:UiBinder>

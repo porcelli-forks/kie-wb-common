@@ -21,11 +21,13 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <b:Well>
-    <b:Legend>
-      <small>Latest Changes:</small>
-    </b:Legend>
-    <g:FlowPanel ui:field="mainPanel"/>
-  </b:Well>
+    <ui:with field="res" type="org.kie.workbench.common.screens.social.hp.client.resources.ContainerResources"/>
+
+    <g:FlowPanel>
+        <b:Legend>
+            <small>Latest Changes</small>
+        </b:Legend>
+        <g:FlowPanel ui:field="mainPanel"/>
+    </g:FlowPanel>
 
 </ui:UiBinder>

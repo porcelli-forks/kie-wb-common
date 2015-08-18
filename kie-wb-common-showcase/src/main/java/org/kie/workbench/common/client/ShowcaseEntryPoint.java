@@ -117,6 +117,22 @@ public class ShowcaseEntryPoint {
                             }
                         } )
                         .endMenu()
+                        .newTopLevelMenu( "User Home" )
+                        .respondsWith( new Command() {
+                            @Override
+                            public void execute() {
+                                placeManager.goTo( "UserHomePagePerspective" );
+                            }
+                        } )
+                        .endMenu()
+                        .newTopLevelMenu( "Social Home" )
+                        .respondsWith( new Command() {
+                            @Override
+                            public void execute() {
+                                placeManager.goTo( "SocialHomePagePerspective" );
+                            }
+                        } )
+                        .endMenu()
                         .newTopLevelMenu( "Logout" )
                         .position( MenuPosition.RIGHT )
                         .respondsWith( new Command() {
