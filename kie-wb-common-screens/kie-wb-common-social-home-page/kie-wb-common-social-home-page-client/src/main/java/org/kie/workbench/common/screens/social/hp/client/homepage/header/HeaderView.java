@@ -27,7 +27,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
@@ -49,7 +50,7 @@ public class HeaderView extends Composite
     Command viewAllCommand;
 
     @UiField
-    ListBox updatesList;
+    Select updatesList;
 
 // widgets from UX (not yet implemented)
 //    @UiField
@@ -77,20 +78,23 @@ public class HeaderView extends Composite
     }
 
     @Override
-    public void setUpdatesMenuList( List<String> items ) {
+    public void setUpdatesMenuList( final List<String> items ) {
         updatesList.clear();
         for ( String item : items ) {
-            updatesList.addItem( item );
+            final Option option = new Option();
+            option.setText( item );
+            updatesList.add( option );
         }
+        updatesList.refresh();
     }
 
     public HeaderView() {
         initWidget( uiBinder.createAndBindUi( this ) );
     }
 
-    @UiHandler("updatesList")
+    @UiHandler( "updatesList" )
     void onSelect( ChangeEvent e ) {
-        onSelectCommand.execute(updatesList.getSelectedValue());
+        onSelectCommand.execute( updatesList.getValue() );
     }
 
 // widgets from UX (not yet implemented)

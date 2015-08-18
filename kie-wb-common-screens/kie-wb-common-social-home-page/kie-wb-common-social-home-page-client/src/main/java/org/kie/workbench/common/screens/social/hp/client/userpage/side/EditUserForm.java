@@ -23,7 +23,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.uberfire.social.activities.model.SocialUser;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
@@ -54,9 +53,7 @@ public class EditUserForm
 
     @PostConstruct
     public void init() {
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( EditUserForm.this ) );
-        }} );
+        setBody( uiBinder.createAndBindUi( EditUserForm.this ) );
         add( new ModalFooterOKCancelButtons( new Command() {
             @Override
             public void execute() {
@@ -68,6 +65,7 @@ public class EditUserForm
                 cancel();
             }
         } ) );
+        setTitle( "Edit User" );
     }
 
     void save() {
