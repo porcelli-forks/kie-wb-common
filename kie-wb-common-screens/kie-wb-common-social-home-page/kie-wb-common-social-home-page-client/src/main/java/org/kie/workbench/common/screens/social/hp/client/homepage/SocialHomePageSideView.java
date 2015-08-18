@@ -23,7 +23,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Well;
+import org.gwtbootstrap3.client.ui.Column;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.kie.uberfire.social.activities.client.widgets.timeline.simple.SimpleSocialTimelineWidget;
 import org.kie.uberfire.social.activities.client.widgets.timeline.simple.model.SimpleSocialTimelineWidgetModel;
@@ -41,7 +41,7 @@ public class SocialHomePageSideView extends Composite implements SocialHomePageS
     private static SocialHomePageSideViewBinder uiBinder = GWT.create( SocialHomePageSideViewBinder.class );
 
     @UiField
-    Well panel;
+    Column column;
 
     private SocialHomePageSidePresenter presenter = null;
 
@@ -60,8 +60,8 @@ public class SocialHomePageSideView extends Composite implements SocialHomePageS
 
     @Override
     public void setupWidget( SimpleSocialTimelineWidgetModel model ) {
-        panel.clear();
-        panel.add( new SimpleSocialTimelineWidget( model ) );
+        column.clear();
+        column.add( new SimpleSocialTimelineWidget( model ) );
     }
 
 }

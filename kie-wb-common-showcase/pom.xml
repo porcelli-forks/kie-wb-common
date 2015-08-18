@@ -170,19 +170,19 @@
             <artifactId>kie-wb-common-home-client</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-social-home-page-backend</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-social-home-page-api</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-social-home-page-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-social-home-page-backend</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-social-home-page-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-social-home-page-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-data-modeller-core</artifactId>
@@ -865,8 +865,8 @@
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-contributors-client</compileSourcesArtifact>-->
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-client</compileSourcesArtifact>
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-social-home-page-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-social-home-page-client</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-social-home-page-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-social-home-page-client</compileSourcesArtifact>
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-default-editor-api</compileSourcesArtifact>-->
                         <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-default-editor-client</compileSourcesArtifact>-->
 

@@ -54,7 +54,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
 
 @ApplicationScoped
-@WorkbenchScreen(identifier = "UserHomePageMainPresenter")
+@WorkbenchScreen( identifier = "UserHomePageMainPresenter" )
 public class UserHomePageMainPresenter {
 
     private PlaceRequest place;
@@ -116,47 +116,34 @@ public class UserHomePageMainPresenter {
     public void onStartup( final PlaceRequest place ) {
         this.place = place;
         this.lastUserOnpage = loggedUser.getIdentifier();
-        setupHeader( loggedUser.getIdentifier() );
-        setupMain( loggedUser.getIdentifier() );
+        setupUser( loggedUser.getIdentifier() );
     }
 
     public void watchLoadUserPageEvent( @Observes LoadUserPageEvent event ) {
         this.lastUserOnpage = event.getSocialUserName();
-        setupHeader( event.getSocialUserName() );
-        setupMain( event.getSocialUserName() );
+        setupUser( event.getSocialUserName() );
     }
 
     public void watchUserHomepageSelectedEvent( @Observes UserHomepageSelectedEvent event ) {
         this.lastUserOnpage = event.getSocialUserName();
-        setupHeader( event.getSocialUserName() );
-        setupMain( event.getSocialUserName() );
+        setupUser( event.getSocialUserName() );
     }
 
     public void watchUserHomepageSelectedEvent( @Observes UserEditedEvent event ) {
         this.lastUserOnpage = event.getSocialUserName();
-        setupHeader( event.getSocialUserName() );
-        setupMain( event.getSocialUserName() );
+        setupUser( event.getSocialUserName() );
     }
 
     private boolean isThisUserStillCurrentActiveUser( SocialUser socialUser ) {
         return socialUser.getUserName().equalsIgnoreCase( lastUserOnpage );
     }
 
-    private void setupHeader( String username ) {
-        socialUserRepositoryAPI.call( new RemoteCallback<SocialUser>() {
-            public void callback( SocialUser socialUser ) {
-                if ( isThisUserStillCurrentActiveUser( socialUser ) ) {
-                    generateConnectionsList( socialUser );
-                }
-            }
-        } ).findSocialUser( username );
-    }
-
-    private void setupMain( String username ) {
+    private void setupUser( final String username ) {
         final SocialPaged socialPaged = new SocialPaged( 5 );
         socialUserRepositoryAPI.call( new RemoteCallback<SocialUser>() {
             public void callback( SocialUser socialUser ) {
                 if ( isThisUserStillCurrentActiveUser( socialUser ) ) {
+                    generateConnectionsList( socialUser );
                     setupMainWidget( socialUser, socialPaged );
                 }
             }

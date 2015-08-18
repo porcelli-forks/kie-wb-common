@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.html.Paragraph;
+import org.gwtbootstrap3.client.ui.DescriptionData;
 import org.kie.uberfire.social.activities.model.SocialUser;
 
 @Dependent
@@ -40,10 +40,10 @@ public class SideUserInfoView extends Composite
     }
 
     @UiField
-    Paragraph userName;
+    DescriptionData userName;
 
     @UiField
-    Paragraph email;
+    DescriptionData email;
 
     @UiField
     FlowPanel action;
@@ -63,9 +63,9 @@ public class SideUserInfoView extends Composite
     }
 
     @Override
-    public void setUserInfo( SocialUser socialUser ) {
-        userName.setText( "User name: " + socialUser.getUserName() );
-        email.setText( "E-mail: " + socialUser.getEmail() );
+    public void setUserInfo( final SocialUser socialUser ) {
+        userName.setText( socialUser.getUserName() );
+        email.setText( socialUser.getEmail() );
     }
 
     @Override
@@ -77,7 +77,7 @@ public class SideUserInfoView extends Composite
     public void clear() {
         userPanel.clear();
         action.clear();
-        userName.clear();
-        email.clear();
+        userName.setText( null );
+        email.setText( null );
     }
 }
