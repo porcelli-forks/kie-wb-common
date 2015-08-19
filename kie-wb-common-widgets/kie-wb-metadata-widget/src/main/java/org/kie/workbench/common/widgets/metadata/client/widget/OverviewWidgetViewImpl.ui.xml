@@ -48,7 +48,7 @@
 
     .discussion {
       height: 600px;
-      border-left: solid black 1px;
+      border-left: solid #ddd 1px;
     }
 
     .left {
