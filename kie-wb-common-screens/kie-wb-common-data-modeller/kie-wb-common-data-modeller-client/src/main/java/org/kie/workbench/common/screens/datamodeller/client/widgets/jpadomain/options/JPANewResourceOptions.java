@@ -18,7 +18,8 @@ package org.kie.workbench.common.screens.datamodeller.client.widgets.jpadomain.o
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -31,15 +32,16 @@ import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainHandler;
+import org.kie.workbench.common.screens.datamodeller.client.handlers.jpadomain.JPADomainHandler;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.common.domain.ResourceOptions;
 
-@ApplicationScoped
+@Dependent
 public class JPANewResourceOptions
         extends Composite
         implements ResourceOptions {
 
     interface JPANewResourceOptionsUIBinder
-        extends
+            extends
             UiBinder<Widget, JPANewResourceOptions> {
 
     }
@@ -61,7 +63,8 @@ public class JPANewResourceOptions
     //@UiField
     HelpBlock tableNameHelpInline;
 
-    private DomainHandler handler;
+    @Inject
+    private JPADomainHandler handler;
 
     public JPANewResourceOptions() {
         initWidget( uiBinder.createAndBindUi( this ) );
@@ -91,7 +94,7 @@ public class JPANewResourceOptions
 
     @Override
     public Map<String, Object> getOptions() {
-        Map<String, Object> options = new HashMap<String, Object>( );
+        Map<String, Object> options = new HashMap<String, Object>();
         options.put( "persistable", isPersitable() );
         options.put( "tableName", getTableName() );
         return options;
@@ -99,11 +102,7 @@ public class JPANewResourceOptions
 
     @Override
     public DomainHandler getHandler() {
-        return null;
-    }
-
-    public void setHandler( DomainHandler handler ) {
-        this.handler = handler;
+        return handler;
     }
 
     @Override
