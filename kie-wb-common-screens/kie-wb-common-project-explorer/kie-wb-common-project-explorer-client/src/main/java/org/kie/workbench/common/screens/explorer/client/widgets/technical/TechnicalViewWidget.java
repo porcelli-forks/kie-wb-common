@@ -24,16 +24,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
-import org.guvnor.common.services.project.context.ProjectContextChangeEvent;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.Repository;
-import org.gwtbootstrap3.client.ui.Button;
 import org.kie.workbench.common.screens.explorer.client.widgets.BaseViewImpl;
 import org.kie.workbench.common.screens.explorer.client.widgets.BranchChangeHandler;
 import org.kie.workbench.common.screens.explorer.client.widgets.BranchSelector;
@@ -47,7 +43,6 @@ import org.kie.workbench.common.screens.explorer.model.FolderItem;
 import org.kie.workbench.common.screens.explorer.model.FolderListing;
 import org.kie.workbench.common.screens.explorer.service.ActiveOptions;
 import org.kie.workbench.common.screens.explorer.service.Option;
-import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 
@@ -68,11 +63,11 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
     @UiField
     Explorer explorer;
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     @Inject
     BranchSelector branchSelector;
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     @Inject
     TagSelector tagSelector;
 
@@ -113,8 +108,8 @@ public class TechnicalViewWidget extends BaseViewImpl implements View {
                             final FolderListing folderListing,
                             final Map<FolderItem, List<FolderItem>> siblings ) {
         explorer.setupHeader( organizationalUnits, activeOrganizationalUnit,
-                              repositories, activeRepository,
-                              projects, activeProject );
+                repositories, activeRepository,
+                projects, activeProject );
 
         tagSelector.loadContent( presenter.getActiveContentTags(), presenter.getCurrentTag() );
 

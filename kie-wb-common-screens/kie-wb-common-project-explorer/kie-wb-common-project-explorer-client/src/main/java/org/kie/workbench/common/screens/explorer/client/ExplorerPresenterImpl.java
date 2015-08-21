@@ -123,7 +123,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
-        businessView.setIconFixedWidth( true );
+        techView.setIconFixedWidth( true );
         techView.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -135,7 +135,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
-        businessView.setIconFixedWidth( true );
+        treeExplorer.setIconFixedWidth( true );
         treeExplorer.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -146,7 +146,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
-        businessView.setIconFixedWidth( true );
+        breadcrumbExplorer.setIconFixedWidth( true );
         breadcrumbExplorer.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -157,6 +157,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
+        showTagFilter.setIconFixedWidth( true );
         showTagFilter.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -257,7 +258,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
         }
 
         if ( options.contains( Option.SHOW_TAG_FILTER ) ) {
-            showTagFilter.setIcon( IconType.ASTERISK );
+            showTagFilter.setIcon( IconType.CHECK );
         } else {
             showTagFilter.setIcon( null );
         }
@@ -315,34 +316,34 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
     private void showBreadcrumbNav() {
         options.add( Option.BREADCRUMB_NAVIGATOR );
         options.remove( Option.TREE_NAVIGATOR );
-        breadcrumbExplorer.setIcon( IconType.ASTERISK );
+        breadcrumbExplorer.setIcon( IconType.CHECK );
         treeExplorer.setIcon( null );
     }
 
     private void showTreeNav() {
         options.remove( Option.BREADCRUMB_NAVIGATOR );
         options.add( Option.TREE_NAVIGATOR );
-        treeExplorer.setIcon( IconType.ASTERISK );
+        treeExplorer.setIcon( IconType.CHECK );
         breadcrumbExplorer.setIcon( null );
     }
 
     private void activateTechView() {
         options.remove( Option.BUSINESS_CONTENT );
         options.add( Option.TECHNICAL_CONTENT );
-        techView.setIcon( IconType.ASTERISK );
+        techView.setIcon( IconType.CHECK );
         businessView.setIcon( null );
     }
 
     private void activateBusinessView() {
         options.add( Option.BUSINESS_CONTENT );
         options.remove( Option.TECHNICAL_CONTENT );
-        businessView.setIcon( IconType.ASTERISK );
+        businessView.setIcon( IconType.CHECK );
         techView.setIcon( null );
     }
 
     private void enableTagFilter() {
         options.add( Option.SHOW_TAG_FILTER );
-        showTagFilter.setIcon( IconType.ASTERISK );
+        showTagFilter.setIcon( IconType.CHECK );
     }
 
     private void disableTagFilter() {

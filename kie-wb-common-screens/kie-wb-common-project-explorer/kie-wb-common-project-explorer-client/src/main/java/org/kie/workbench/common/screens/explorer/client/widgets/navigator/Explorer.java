@@ -29,11 +29,10 @@ import org.guvnor.common.services.project.model.Project;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.Repository;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Styles;
+import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.kie.workbench.common.screens.explorer.client.resources.ProjectExplorerResources;
 import org.kie.workbench.common.screens.explorer.client.resources.i18n.ProjectExplorerConstants;
 import org.kie.workbench.common.screens.explorer.client.widgets.ViewPresenter;
 import org.kie.workbench.common.screens.explorer.client.widgets.dropdown.CustomDropdown;
@@ -69,7 +68,6 @@ public class Explorer extends Composite {
 
     public Explorer() {
         initWidget( container );
-        setStyleName( ProjectExplorerResources.INSTANCE.CSS().container() );
     }
 
     public void init( final Mode mode,
@@ -201,29 +199,29 @@ public class Explorer extends Composite {
         if ( !isAlreadyInitialized ) {
             container.clear();
             if ( !mode.equals( Mode.REGULAR ) ) {
-                final Icon icon = new Icon( IconType.PLUS_SQUARE_O );
-                icon.addStyleName( Styles.PULL_RIGHT );
-                icon.getElement().getStyle().setPaddingTop( 17, Style.Unit.PX );
-                icon.getElement().getStyle().setPaddingRight( 7, Style.Unit.PX );
-                icon.addClickHandler( new ClickHandler() {
+                final Button button = new Button();
+                button.setIcon( IconType.PLUS );
+                button.setPull( Pull.RIGHT );
+                button.getElement().getStyle().setMarginTop( 10, Style.Unit.PX );
+                button.addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( final ClickEvent clickEvent ) {
-                        if ( icon.getType().equals( IconType.PLUS_SQUARE_O ) ) {
-                            icon.setType( IconType.MINUS_SQUARE_O );
+                        if ( button.getIcon().equals( IconType.PLUS ) ) {
+                            button.setIcon( IconType.MINUS );
                             onExpandNavigator();
                         } else {
-                            icon.setType( IconType.PLUS_SQUARE_O );
+                            button.setIcon( IconType.PLUS );
                             onCollapseNavigator();
                         }
                     }
                 } );
 
                 if ( mode.equals( Mode.COLLAPSED ) ) {
-                    icon.setType( IconType.PLUS_SQUARE_O );
+                    button.setIcon( IconType.PLUS );
                 } else {
-                    icon.setType( IconType.MINUS_SQUARE_O );
+                    button.setIcon( IconType.MINUS );
                 }
-                container.add( icon );
+                container.add( button );
             }
 
             this.navigatorBreadcrumbs = new NavigatorBreadcrumbs( NavigatorBreadcrumbs.Mode.HEADER ) {{
