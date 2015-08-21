@@ -22,19 +22,16 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:with field="resources"
-           type="org.kie.workbench.common.screens.explorer.client.resources.ProjectExplorerResources"/>
+    <ui:with field="resources"
+             type="org.kie.workbench.common.screens.explorer.client.resources.ProjectExplorerResources"/>
 
-  <g:HTMLPanel visible="true">
-    <div class="{resources.CSS.viewContainer}">
-      <w:Explorer ui:field="explorer"/>
-      <hr/>
-      <s:BranchSelector ui:field="branchSelector"/>
-      <hr/>
-      <div style="clear:both;"/>
-      <ts:TagSelector ui:field="tagSelector"/>
-      <b:PanelGroup ui:field="itemsContainer"/>
-    </div>
-  </g:HTMLPanel>
+    <g:HTMLPanel visible="true">
+        <div class="{resources.CSS.viewContainer}">
+            <s:BranchSelector ui:field="branchSelector"/>
+            <ts:TagSelector ui:field="tagSelector"/>
+            <w:Explorer ui:field="explorer"/>
+            <b:PanelGroup ui:field="itemsContainer"/>
+        </div>
+    </g:HTMLPanel>
 
 </ui:UiBinder>
