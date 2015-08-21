@@ -23,11 +23,19 @@
 
   <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
 
-  <b:Container fluid="true">
+  <ui:style>
+    .table {
+      margin-top: 20px;
+      margin-left: 0;
+      margin-right: 0;
+    }
 
+  </ui:style>
+
+  <b:Container fluid="true">
     <b:Row>
       <b:Column size="MD_12">
-        <uf:PagedTable ui:field="dataGrid"/>
+        <uf:PagedTable ui:field="dataGrid" addStyleNames="{style.table}"/>
       </b:Column>
     </b:Row>
 
@@ -42,7 +50,6 @@
         <b:Button ui:field="addClassesButton" text="{i18n.project_class_list_action_add_project_persistable_classes}"/>
       </b:Column>
     </b:Row>
-
   </b:Container>
 
 </ui:UiBinder>
