@@ -24,15 +24,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.PanelCollapse;
-import org.gwtbootstrap3.client.ui.PanelGroup;
-import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -59,22 +54,10 @@ public class PersistenceUnitPropertyGridViewImpl
     SimpleTable<PropertyRow> dataGrid = new SimpleTable<PropertyRow>();
 
     @UiField
-    PanelGroup accordion;
-
-    @UiField
-    PanelHeader header;
-
-    @UiField
-    PanelCollapse collapse;
-
-    @UiField
     TextBox newPropertyNameTextBox;
 
     @UiField
     TextBox newPropertyValueTextBox;
-
-    @UiField
-    HelpBlock newPropertyHelpInline;
 
     @UiField
     Button addPropertyButton;
@@ -83,9 +66,7 @@ public class PersistenceUnitPropertyGridViewImpl
 
     public PersistenceUnitPropertyGridViewImpl() {
 
-        accordion.setId( DOM.createUniqueId() );
-        header.setDataParent( accordion.getId() );
-        header.setDataTargetWidget( collapse );
+        initWidget( uiBinder.createAndBindUi( this ) );
 
         dataGrid.setEmptyTableCaption( Constants.INSTANCE.persistence_unit_property_grid_no_properties_message() );
         dataGrid.setToolBarVisible( false );
@@ -93,8 +74,6 @@ public class PersistenceUnitPropertyGridViewImpl
         addPropertyNameColumn();
         addPropertyValueColumn();
         addRemoveRowColumn();
-
-        initWidget( uiBinder.createAndBindUi( this ) );
     }
 
     private void addPropertyNameColumn() {
