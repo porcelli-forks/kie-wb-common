@@ -17,7 +17,7 @@
 package org.kie.workbench.common.screens.projecteditor.client.editor;
 
 import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
@@ -61,11 +61,11 @@ import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
-@ApplicationScoped
+@Dependent
 public class ProjectScreenViewImpl
         extends Composite
         implements ProjectScreenView,
-                   RequiresResize {
+        RequiresResize {
 
     private static final int GAV_PANEL_INDEX = 0;
     private static final int DEPENDENCY_PANEL_INDEX = 1;
@@ -179,12 +179,12 @@ public class ProjectScreenViewImpl
         setGAVDropboxTitle( ProjectEditorResources.CONSTANTS.Metadata() );
     }
 
-    @UiHandler(value = "generalSettingsButton")
+    @UiHandler( value = "generalSettingsButton" )
     public void onGeneralSettingsButtonClick( ClickEvent clickEvent ) {
         presenter.onGAVPanelSelected();
     }
 
-    @UiHandler(value = "gavMetadataButton")
+    @UiHandler( value = "gavMetadataButton" )
     public void onGAVMetadataButtonClick( ClickEvent clickEvent ) {
         presenter.onGAVMetadataPanelSelected();
     }
@@ -193,17 +193,17 @@ public class ProjectScreenViewImpl
         dropDownButton.setText( ProjectEditorResources.CONSTANTS.ProjectSettings() + ": " + subItem );
     }
 
-    @UiHandler(value = "dependenciesButton")
+    @UiHandler( value = "dependenciesButton" )
     public void onDependenciesButtonClick( ClickEvent clickEvent ) {
         presenter.onDependenciesSelected();
     }
 
-    @UiHandler(value = "kbaseButton")
+    @UiHandler( value = "kbaseButton" )
     public void onKbaseButtonClick( ClickEvent clickEvent ) {
         presenter.onKBasePanelSelected();
     }
 
-    @UiHandler(value = "kbaseMetadataButton")
+    @UiHandler( value = "kbaseMetadataButton" )
     public void onKbaseMetadataButtonClick( ClickEvent clickEvent ) {
         presenter.onKBaseMetadataPanelSelected();
     }
@@ -221,22 +221,22 @@ public class ProjectScreenViewImpl
         dropDownButton.setText( ProjectEditorResources.CONSTANTS.KnowledgeBaseSettings() + ": " + ProjectEditorResources.CONSTANTS.Metadata() );
     }
 
-    @UiHandler(value = "importsButton")
+    @UiHandler( value = "importsButton" )
     public void onImportsButtonClick( ClickEvent clickEvent ) {
         presenter.onImportsPanelSelected();
     }
 
-    @UiHandler(value = "importsMetadataButton")
+    @UiHandler( value = "importsMetadataButton" )
     public void onImportsMetadataButtonClick( ClickEvent clickEvent ) {
         presenter.onImportsMetadataPanelSelected();
     }
 
-    @UiHandler(value = "deploymentDescriptorButton")
+    @UiHandler( value = "deploymentDescriptorButton" )
     public void onDeploymentDescriptorButtonClick( ClickEvent clickEvent ) {
         presenter.onDeploymentDescriptorSelected();
     }
 
-    @UiHandler(value = "persistenceDescriptorButton")
+    @UiHandler( value = "persistenceDescriptorButton" )
     public void onPersistenceDescriptorDescriptorButtonClick( ClickEvent clickEvent ) {
         presenter.onPersistenceDescriptorSelected();
     }
@@ -455,7 +455,7 @@ public class ProjectScreenViewImpl
         int height = getParent().getOffsetHeight();
         int width = getParent().getOffsetWidth();
         container.setPixelSize( width,
-                                height );
+                height );
     }
 
     @Override
