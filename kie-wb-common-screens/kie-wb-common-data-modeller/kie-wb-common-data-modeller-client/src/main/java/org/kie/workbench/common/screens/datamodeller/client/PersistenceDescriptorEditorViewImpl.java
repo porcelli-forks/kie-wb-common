@@ -27,14 +27,10 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.PanelCollapse;
-import org.gwtbootstrap3.client.ui.PanelGroup;
-import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.gwtbootstrap3.client.ui.RadioButton;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.pdescriptor.ClassRow;
 import org.kie.workbench.common.screens.datamodeller.client.pdescriptor.ClassRowImpl;
@@ -78,34 +74,16 @@ public class PersistenceDescriptorEditorViewImpl
     HelpBlock datasourceHelpInline;
 
     @UiField
-    RadioButton transactionTypeRadioButton;
+    CheckBox transactionTypeRadioButton;
 
     @UiField
     HelpBlock transactionTypeHelpInline;
-
-    @UiField
-    PanelGroup accordion1;
-
-    @UiField
-    PanelHeader header1;
-
-    @UiField
-    PanelCollapse collapse1;
 
     @UiField
     PanelBody propertiesGridPanel;
 
     @Inject
     PersistenceUnitPropertyGrid persistenceUnitProperties;
-
-    @UiField
-    PanelGroup accordion2;
-
-    @UiField
-    PanelHeader header2;
-
-    @UiField
-    PanelCollapse collapse2;
 
     @UiField
     PanelBody persistenceUnitClassesPanel;
@@ -128,14 +106,6 @@ public class PersistenceDescriptorEditorViewImpl
 
     @PostConstruct
     void init() {
-        accordion1.setId( DOM.createUniqueId() );
-        header1.setDataParent( accordion1.getId() );
-        header1.setDataTargetWidget( collapse1 );
-
-        accordion2.setId( DOM.createUniqueId() );
-        header2.setDataParent( accordion2.getId() );
-        header2.setDataTargetWidget( collapse2 );
-
         propertiesGridPanel.add( persistenceUnitProperties );
         persistenceUnitClassesPanel.add( persistenceUnitClasses );
     }
@@ -192,17 +162,17 @@ public class PersistenceDescriptorEditorViewImpl
         persistenceUnitClasses.redraw();
     }
 
-    @UiHandler("persistenceUnitTextBox")
+    @UiHandler( "persistenceUnitTextBox" )
     void onPersistenceUnitChanged( ValueChangeEvent<String> event ) {
         presenter.onPersistenceUnitNameChanged( event.getValue() );
     }
 
-    @UiHandler("persistenceProviderTextBox")
+    @UiHandler( "persistenceProviderTextBox" )
     void onPersistenceProviderChanged( ChangeEvent event ) {
         presenter.onPersistenceProviderChanged( persistenceProviderTextBox.getText() );
     }
 
-    @UiHandler("datasourceTextBox")
+    @UiHandler( "datasourceTextBox" )
     void onJTADataSourceChanged( ChangeEvent event ) {
         presenter.onJTADataSourceChanged( datasourceTextBox.getValue() );
     }

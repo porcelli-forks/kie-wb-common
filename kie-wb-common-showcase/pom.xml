@@ -94,11 +94,15 @@
             <groupId>org.kie.workbench.screens</groupId>
             <artifactId>kie-wb-common-project-editor-backend</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.kie.workbench.screens</groupId>-->
-            <!--<artifactId>kie-wb-common-project-imports-editor-client</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-project-imports-editor-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.kie.workbench.screens</groupId>
             <artifactId>kie-wb-common-search-screen-api</artifactId>
@@ -866,8 +870,8 @@
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-home-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-editor-client</compileSourcesArtifact>
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-imports-editor-api</compileSourcesArtifact>-->
-                        <!--<compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-imports-editor-client</compileSourcesArtifact>-->
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-imports-editor-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-imports-editor-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-api</compileSourcesArtifact>
