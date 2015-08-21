@@ -133,6 +133,14 @@ public class ShowcaseEntryPoint {
                             }
                         } )
                         .endMenu()
+                        .newTopLevelMenu( "Project Explorer" )
+                        .respondsWith( new Command() {
+                            @Override
+                            public void execute() {
+                                placeManager.goTo( "ProjectPerspective" );
+                            }
+                        } )
+                        .endMenu()
                         .newTopLevelMenu( "Logout" )
                         .position( MenuPosition.RIGHT )
                         .respondsWith( new Command() {

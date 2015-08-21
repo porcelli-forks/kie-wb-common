@@ -25,6 +25,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
+import org.guvnor.messageconsole.backend.DefaultIndexEngineObserver;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.backend.server.IOWatchServiceAllImpl;
@@ -32,9 +34,12 @@ import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
 import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
 import org.uberfire.ext.metadata.io.IOSearchIndex;
+import org.uberfire.ext.metadata.io.IOServiceIndexedImpl;
 import org.uberfire.io.IOSearchService;
 import org.uberfire.io.IOService;
+import org.uberfire.io.attribute.DublinCoreView;
 import org.uberfire.io.impl.IOServiceNio2WrapperImpl;
+import org.uberfire.java.nio.base.version.VersionAttributeView;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -59,12 +64,21 @@ public class ApplicationScopedProducer {
     private IOWatchServiceAllImpl watchService;
 
     @Inject
+    private DefaultIndexEngineObserver defaultIndexEngineObserver;
+
+    @Inject
     @Named( "configIO" )
     private IOService configIO;
 
     @PostConstruct
     public void setup() {
-        ioService = new IOServiceNio2WrapperImpl( "1", watchService );
+        ioService = new IOServiceIndexedImpl( watchService,
+                config.getIndexEngine(),
+                defaultIndexEngineObserver,
+                DublinCoreView.class,
+                VersionAttributeView.class,
+                OtherMetaView.class );
+
         ioSearchService = new IOSearchIndex( config.getSearchIndex(), ioService );
         final URI system = URI.create( "git://system" );
         try {
