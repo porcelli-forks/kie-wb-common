@@ -70,7 +70,7 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
  * Repository, Package, Folder and File explorer
  */
 @ApplicationScoped
-@WorkbenchScreen(identifier = "org.kie.guvnor.explorer")
+@WorkbenchScreen( identifier = "org.kie.guvnor.explorer" )
 public class ExplorerPresenterImpl implements ExplorerPresenter {
 
     @Inject
@@ -126,7 +126,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
-        businessView.setIconFixedWidth( true );
+        techView.setIconFixedWidth( true );
         techView.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -138,7 +138,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
-        businessView.setIconFixedWidth( true );
+        treeExplorer.setIconFixedWidth( true );
         treeExplorer.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -149,7 +149,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
-        businessView.setIconFixedWidth( true );
+        breadcrumbExplorer.setIconFixedWidth( true );
         breadcrumbExplorer.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -160,6 +160,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             }
         } );
 
+        showTagFilter.setIconFixedWidth( true );
         showTagFilter.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -178,8 +179,8 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             @Override
             public void onClick( ClickEvent event ) {
                 Window.open( URLHelper.getDownloadUrl( context.getActiveProject().getRootPath() ),
-                             "downloading",
-                             "resizable=no,scrollbars=yes,status=no" );
+                        "downloading",
+                        "resizable=no,scrollbars=yes,status=no" );
             }
         } );
 
@@ -188,8 +189,8 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
             @Override
             public void onClick( ClickEvent event ) {
                 Window.open( URLHelper.getDownloadUrl( context.getActiveRepository().getRoot() ),
-                             "downloading",
-                             "resizable=no,scrollbars=yes,status=no" );
+                        "downloading",
+                        "resizable=no,scrollbars=yes,status=no" );
             }
         } );
     }
@@ -244,7 +245,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
                                           return false;
                                       }
                                   }
-                                ).getLastUserOptions();
+            ).getLastUserOptions();
         } else {
             config();
         }
@@ -260,7 +261,7 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
         }
 
         if ( options.contains( Option.SHOW_TAG_FILTER ) ) {
-            showTagFilter.setIcon( IconType.ASTERISK );
+            showTagFilter.setIcon( IconType.CHECK );
         } else {
             showTagFilter.setIcon( null );
         }
@@ -286,9 +287,9 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
                 technicalViewPresenter.branchChanged( branch );
 
                 ProjectContextChangeEvent event = new ProjectContextChangeEvent( context.getActiveOrganizationalUnit(),
-                                                                                 context.getActiveRepository(),
-                                                                                 context.getActiveProject(),
-                                                                                 branch );
+                        context.getActiveRepository(),
+                        context.getActiveProject(),
+                        branch );
 
                 contextChangedEvent.fire( event );
             }
@@ -318,34 +319,34 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
     private void showBreadcrumbNav() {
         options.add( Option.BREADCRUMB_NAVIGATOR );
         options.remove( Option.TREE_NAVIGATOR );
-        breadcrumbExplorer.setIcon( IconType.ASTERISK );
+        breadcrumbExplorer.setIcon( IconType.CHECK );
         treeExplorer.setIcon( null );
     }
 
     private void showTreeNav() {
         options.remove( Option.BREADCRUMB_NAVIGATOR );
         options.add( Option.TREE_NAVIGATOR );
-        treeExplorer.setIcon( IconType.ASTERISK );
+        treeExplorer.setIcon( IconType.CHECK );
         breadcrumbExplorer.setIcon( null );
     }
 
     private void activateTechView() {
         options.remove( Option.BUSINESS_CONTENT );
         options.add( Option.TECHNICAL_CONTENT );
-        techView.setIcon( IconType.ASTERISK );
+        techView.setIcon( IconType.CHECK );
         businessView.setIcon( null );
     }
 
     private void activateBusinessView() {
         options.add( Option.BUSINESS_CONTENT );
         options.remove( Option.TECHNICAL_CONTENT );
-        businessView.setIcon( IconType.ASTERISK );
+        businessView.setIcon( IconType.CHECK );
         techView.setIcon( null );
     }
 
     private void enableTagFilter() {
         options.add( Option.SHOW_TAG_FILTER );
-        showTagFilter.setIcon( IconType.ASTERISK );
+        showTagFilter.setIcon( IconType.CHECK );
     }
 
     private void disableTagFilter() {
@@ -491,9 +492,9 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
         if ( initPath == null ) {
             options = businessViewPresenter.getActiveOptions();
             businessViewPresenter.initialiseViewForActiveContext( context.getActiveOrganizationalUnit(),
-                                                                  context.getActiveRepository(),
-                                                                  context.getActiveProject(),
-                                                                  context.getActivePackage() );
+                    context.getActiveRepository(),
+                    context.getActiveProject(),
+                    context.getActivePackage() );
         } else {
             businessViewPresenter.update( options );
             technicalViewPresenter.update( options );
@@ -510,9 +511,9 @@ public class ExplorerPresenterImpl implements ExplorerPresenter {
         if ( initPath == null ) {
             options = technicalViewPresenter.getActiveOptions();
             technicalViewPresenter.initialiseViewForActiveContext( context.getActiveOrganizationalUnit(),
-                                                                   context.getActiveRepository(),
-                                                                   context.getActiveProject(),
-                                                                   context.getActivePackage() );
+                    context.getActiveRepository(),
+                    context.getActiveProject(),
+                    context.getActivePackage() );
         } else {
             businessViewPresenter.update( options );
             technicalViewPresenter.update( options );

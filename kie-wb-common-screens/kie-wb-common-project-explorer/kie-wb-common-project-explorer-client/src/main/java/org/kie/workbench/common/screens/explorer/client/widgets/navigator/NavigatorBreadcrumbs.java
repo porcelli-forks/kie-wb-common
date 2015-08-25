@@ -46,7 +46,6 @@ public class NavigatorBreadcrumbs extends Composite {
         initWidget( breadcrumbs );
         breadcrumbs.getElement().getStyle().setProperty( "whiteSpace", "nowrap" );
         breadcrumbs.getElement().getStyle().setMarginBottom( 0, Style.Unit.PX );
-        breadcrumbs.addStyleName( ProjectExplorerResources.INSTANCE.CSS().navigationBreadcrumb() );
     }
 
     public void build( final List<FolderItem> segments,

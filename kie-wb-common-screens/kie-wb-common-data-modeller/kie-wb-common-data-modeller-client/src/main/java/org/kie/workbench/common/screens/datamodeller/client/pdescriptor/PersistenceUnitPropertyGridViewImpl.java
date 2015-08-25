@@ -26,14 +26,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.PanelCollapse;
-import org.gwtbootstrap3.client.ui.PanelGroup;
-import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -56,17 +51,8 @@ public class PersistenceUnitPropertyGridViewImpl
 
     private Presenter presenter;
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     SimpleTable<PropertyRow> dataGrid = new SimpleTable<PropertyRow>();
-
-    @UiField
-    PanelGroup accordion;
-
-    @UiField
-    PanelHeader header;
-
-    @UiField
-    PanelCollapse collapse;
 
     @UiField
     TextBox newPropertyNameTextBox;
@@ -75,16 +61,11 @@ public class PersistenceUnitPropertyGridViewImpl
     TextBox newPropertyValueTextBox;
 
     @UiField
-    HelpBlock newPropertyHelpInline;
-
-    @UiField
     Button addPropertyButton;
 
     public PersistenceUnitPropertyGridViewImpl() {
 
-        accordion.setId( DOM.createUniqueId() );
-        header.setDataParent( accordion.getId() );
-        header.setDataTargetWidget( collapse );
+        initWidget( uiBinder.createAndBindUi( this ) );
 
         dataGrid.setEmptyTableCaption( "No properties" );
         dataGrid.setToolBarVisible( false );
@@ -92,12 +73,10 @@ public class PersistenceUnitPropertyGridViewImpl
         addPropertyNameColumn();
         addPropertyValueColumn();
         addRemoveRowColumn();
-
-        initWidget( uiBinder.createAndBindUi( this ) );
     }
 
     private void addPropertyNameColumn() {
-        Column<PropertyRow, String> column = new Column<PropertyRow, String>( new EditTextCell( ) ) {
+        Column<PropertyRow, String> column = new Column<PropertyRow, String>( new EditTextCell() ) {
             @Override
             public String getValue( PropertyRow propertyRow ) {
                 if ( propertyRow.getName() != null ) {
@@ -116,7 +95,7 @@ public class PersistenceUnitPropertyGridViewImpl
     }
 
     private void addPropertyValueColumn() {
-        final Column<PropertyRow, String> column = new Column<PropertyRow, String>( new EditTextCell(  ) ) {
+        final Column<PropertyRow, String> column = new Column<PropertyRow, String>( new EditTextCell() ) {
 
             @Override
             public String getValue( PropertyRow propertyRow ) {
@@ -136,7 +115,7 @@ public class PersistenceUnitPropertyGridViewImpl
     }
 
     private void addRemoveRowColumn() {
-        Column<PropertyRow, String> column = new Column<PropertyRow, String>( new ButtonCell( IconType.TRASH , ButtonType.DANGER, ButtonSize.SMALL) ) {
+        Column<PropertyRow, String> column = new Column<PropertyRow, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
             @Override
             public String getValue( PropertyRow propertyRow ) {
                 return CommonConstants.INSTANCE.Delete();
@@ -146,7 +125,7 @@ public class PersistenceUnitPropertyGridViewImpl
         column.setFieldUpdater( new FieldUpdater<PropertyRow, String>() {
             @Override
             public void update( int index,
-                    PropertyRow propertyRow,
+                                PropertyRow propertyRow,
                                 String value ) {
 
                 onRemoveProperty( propertyRow );
@@ -217,11 +196,11 @@ public class PersistenceUnitPropertyGridViewImpl
 
         @Override
         public void update( int index,
-                T object,
-                C value ) {
+                            T object,
+                            C value ) {
 
-            PropertyRow propertyRow = ( PropertyRow ) object;
-            String sValue = ( String ) value;
+            PropertyRow propertyRow = (PropertyRow) object;
+            String sValue = (String) value;
             //TODO add validations
             propertyRow.setName( sValue );
         }
@@ -237,11 +216,11 @@ public class PersistenceUnitPropertyGridViewImpl
 
         @Override
         public void update( int index,
-                T object,
-                C value ) {
+                            T object,
+                            C value ) {
 
-            PropertyRow propertyRow = ( PropertyRow ) object;
-            String sValue = ( String ) value;
+            PropertyRow propertyRow = (PropertyRow) object;
+            String sValue = (String) value;
             //TODO add validations
             propertyRow.setValue( sValue );
         }
