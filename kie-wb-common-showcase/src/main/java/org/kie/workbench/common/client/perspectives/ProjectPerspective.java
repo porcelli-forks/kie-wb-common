@@ -17,8 +17,11 @@
 package org.kie.workbench.common.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
@@ -29,10 +32,15 @@ import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 @ApplicationScoped
 @WorkbenchPerspective( identifier = "ProjectPerspective" )
 public class ProjectPerspective {
+
+    @Inject
+    private NewResourcesMenu newResourcesMenu;
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
@@ -45,6 +53,15 @@ public class ProjectPerspective {
         perspective.getRoot().insertChild( CompassPosition.WEST, west );
 
         return perspective;
+    }
+
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+                .newTopLevelMenu( "New Item" )
+                .withItems( newResourcesMenu.getMenuItems() )
+                .endMenu()
+                .build();
     }
 
 }
