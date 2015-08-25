@@ -18,32 +18,29 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:with field="i18n" type="org.kie.workbench.common.widgets.client.resources.i18n.NewItemPopupConstants"/>
-  <ui:with field="i18nCommon" type="org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants"/>
-  <b:Form type="HORIZONTAL">
-    <b:FieldSet>
-      <b:FormGroup ui:field="fileNameGroup">
-        <b:FormLabel for="fileName" addStyleNames="col-md-3">
-          <font color="red">*</font>
-          <span ui:field="fileTypeLabel">
-            <ui:text from="{i18n.resourceName}"/>
-          </span>
-        </b:FormLabel>
-        <g:FlowPanel addStyleNames="col-md-9">
-          <b:TextBox b:id="fileName" ui:field="fileNameTextBox" addStyleNames="col-md-10" placeholder="{i18n.resourceNamePlaceholder}"/>
-          <b:HelpBlock ui:field="fileNameHelpInline"/>
-        </g:FlowPanel>
-      </b:FormGroup>
+    <ui:with field="i18n" type="org.kie.workbench.common.widgets.client.resources.i18n.NewItemPopupConstants"/>
+    <ui:with field="i18nCommon" type="org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants"/>
+    <b:Form type="HORIZONTAL">
+        <b:FieldSet>
+            <b:FormGroup ui:field="fileNameGroup">
+                <b:Column size="MD_3">
+                    <b:FormLabel ui:field="fileTypeLabel" for="fileName" showRequiredIndicator="true" text="{i18n.resourceName}"/>
+                </b:Column>
+                <b:Column size="MD_9">
+                    <b:TextBox b:id="fileName" ui:field="fileNameTextBox" placeholder="{i18n.resourceNamePlaceholder}"/>
+                    <b:HelpBlock ui:field="fileNameHelpInline"/>
+                </b:Column>
+            </b:FormGroup>
 
-      <b:FormGroup ui:field="handlerExtensionsGroup">
-        <b:FormLabel addStyleNames="col-md-3">
-          <ui:text from="{i18n.packageName}"/>
-        </b:FormLabel>
-        <g:FlowPanel addStyleNames="col-md-9">
-          <g:VerticalPanel ui:field="handlerExtensions"/>
-        </g:FlowPanel>
-      </b:FormGroup>
-    </b:FieldSet>
-  </b:Form>
+            <b:FormGroup ui:field="handlerExtensionsGroup">
+                <b:Column size="MD_3">
+                    <b:FormLabel text="{i18n.packageName}"/>
+                </b:Column>
+                <b:Column size="MD_9">
+                    <g:FlowPanel ui:field="handlerExtensions"/>
+                </b:Column>
+            </b:FormGroup>
+        </b:FieldSet>
+    </b:Form>
 
 </ui:UiBinder>

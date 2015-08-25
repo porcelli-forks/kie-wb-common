@@ -20,17 +20,15 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.kie.workbench.common.widgets.client.resources.i18n.NewItemPopupConstants;
@@ -67,13 +65,13 @@ public class NewResourceView extends BaseModal implements NewResourcePresenter.V
     };
 
     private final ModalFooterOKCancelButtons footer = new ModalFooterOKCancelButtons( okCommand,
-                                                                                      cancelCommand );
+            cancelCommand );
 
     @UiField
     FormGroup fileNameGroup;
 
     @UiField
-    SpanElement fileTypeLabel;
+    FormLabel fileTypeLabel;
 
     @UiField
     TextBox fileNameTextBox;
@@ -85,14 +83,12 @@ public class NewResourceView extends BaseModal implements NewResourcePresenter.V
     FormGroup handlerExtensionsGroup;
 
     @UiField
-    VerticalPanel handlerExtensions;
+    FlowPanel handlerExtensions;
 
     public NewResourceView() {
         footer.enableOkButton( true );
 
-        add( new ModalBody(){{
-            add( uiBinder.createAndBindUi( NewResourceView.this ) );
-        }} );
+        setBody( uiBinder.createAndBindUi( NewResourceView.this ) );
         add( footer );
     }
 
@@ -114,10 +110,10 @@ public class NewResourceView extends BaseModal implements NewResourcePresenter.V
     public void setActiveHandler( final NewResourceHandler handler ) {
         final List<Pair<String, ? extends IsWidget>> extensions = handler.getExtensions();
         final boolean showExtensions = !( extensions == null || extensions.isEmpty() );
-        fileTypeLabel.setInnerText( handler.getDescription() );
+        fileTypeLabel.setText( handler.getDescription() );
 
         handlerExtensions.clear();
-        handlerExtensionsGroup.getElement().getStyle().setDisplay( showExtensions ? Style.Display.BLOCK : Style.Display.NONE );
+        handlerExtensionsGroup.setVisible( showExtensions );
         if ( showExtensions ) {
             for ( Pair<String, ? extends IsWidget> extension : extensions ) {
                 handlerExtensions.add( extension.getK2() );
@@ -136,26 +132,26 @@ public class NewResourceView extends BaseModal implements NewResourcePresenter.V
 
         //Specialized validation
         presenter.validate( fileName,
-                            new ValidatorWithReasonCallback() {
+                new ValidatorWithReasonCallback() {
 
-                                @Override
-                                public void onSuccess() {
-                                    fileNameGroup.setValidationState( ValidationState.NONE );
-                                    presenter.makeItem( fileName );
-                                }
+                    @Override
+                    public void onSuccess() {
+                        fileNameGroup.setValidationState( ValidationState.NONE );
+                        presenter.makeItem( fileName );
+                    }
 
-                                @Override
-                                public void onFailure() {
-                                    fileNameGroup.setValidationState( ValidationState.ERROR );
-                                }
+                    @Override
+                    public void onFailure() {
+                        fileNameGroup.setValidationState( ValidationState.ERROR );
+                    }
 
-                                @Override
-                                public void onFailure( final String reason ) {
-                                    fileNameGroup.setValidationState( ValidationState.ERROR );
-                                    fileNameHelpInline.setText( reason );
-                                }
+                    @Override
+                    public void onFailure( final String reason ) {
+                        fileNameGroup.setValidationState( ValidationState.ERROR );
+                        fileNameHelpInline.setText( reason );
+                    }
 
-                            } );
+                } );
     }
 
     @Override
