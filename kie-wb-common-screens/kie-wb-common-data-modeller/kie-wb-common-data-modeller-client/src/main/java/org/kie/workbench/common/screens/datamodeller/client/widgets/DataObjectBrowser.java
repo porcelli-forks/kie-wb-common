@@ -52,6 +52,7 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -99,8 +100,6 @@ public class DataObjectBrowser extends Composite {
 
     }
 
-    ;
-
     private static DataObjectEditorUIBinder uiBinder = GWT.create( DataObjectEditorUIBinder.class );
 
     @UiField
@@ -109,8 +108,8 @@ public class DataObjectBrowser extends Composite {
     @UiField
     Button newPropertyButton;
 
-    @UiField(provided = true)
-    CellTable<ObjectProperty> dataObjectPropertiesTable = new CellTable<ObjectProperty>( 1000 );
+    @UiField
+    CellTable<ObjectProperty> dataObjectPropertiesTable;
 
     @Inject
     NewFieldPopup newFieldPopup;
@@ -149,10 +148,11 @@ public class DataObjectBrowser extends Composite {
     private boolean showingObject = false;
     private int lastSelectedRow = -1;
 
+    private final ButtonCell deleteCell = new ButtonCell( ButtonType.DANGER, IconType.TRASH );
+
     public DataObjectBrowser() {
         initWidget( uiBinder.createAndBindUi( this ) );
 
-        objectButton.setType( ButtonType.LINK );
         objectButton.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
@@ -318,27 +318,17 @@ public class DataObjectBrowser extends Composite {
         dataObjectPropertiesTable.setColumnWidth( propertyTypeColumn, 40, Style.Unit.PCT );
 
         //Init delete column
-        ClickableImageResourceCell deleteImageCell = new ClickableImageResourceCell( true, 25 );
-//        final TooltipCellDecorator<ImageResource> decorator = new TooltipCellDecorator<ImageResource>( deleteImageCell );
-//        decorator.setPlacement( Placement.LEFT );
-//        decorator.setText( Constants.INSTANCE.objectBrowser_action_deleteProperty() );
-
-        final Column<ObjectProperty, ImageResource> deletePropertyColumnImg = new Column<ObjectProperty, ImageResource>( deleteImageCell ) {
+        final Column<ObjectProperty, String> deletePropertyColumnImg = new Column<ObjectProperty, String>( deleteCell ) {
             @Override
-            public ImageResource getValue( final ObjectProperty global ) {
-                if ( !isReadonly() ) {
-                    return ImagesResources.INSTANCE.Delete();
-                } else {
-                    return null;
-                }
+            public String getValue( final ObjectProperty global ) {
+                return "Remove";
             }
         };
 
-        deletePropertyColumnImg.setFieldUpdater( new FieldUpdater<ObjectProperty, ImageResource>() {
+        deletePropertyColumnImg.setFieldUpdater( new FieldUpdater<ObjectProperty, String>() {
             public void update( final int index,
                                 final ObjectProperty property,
-                                final ImageResource value ) {
-
+                                final String value ) {
                 if ( !isReadonly() ) {
                     checkAndDeleteDataObjectProperty( property, index );
                 }
@@ -694,6 +684,8 @@ public class DataObjectBrowser extends Composite {
     private void setReadonly( boolean readonly ) {
         this.readonly = readonly;
         enableNewPropertyAction( !readonly );
+        deleteCell.setEnabled( !readonly );
+        dataObjectPropertiesTable.redraw();
     }
 
     public boolean isReadonly() {

@@ -2,6 +2,8 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN"
         "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
+    <!-- Uberfire dependencies -->
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
     <inherits name="org.uberfire.UberfireClientAll"/>
     <inherits name="org.uberfire.client.views.PatternFly"/>
 
@@ -13,6 +15,9 @@
 
     <!-- Uberfire Extensions - Apps -->
     <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
+
+    <!-- Uberfire Extensions - Docks -->
+    <inherits name="org.uberfire.UberfireDocksClient"/>
 
     <!-- Guvnor dependencies -->
     <inherits name="org.guvnor.structure.GuvnorStructureClient"/>

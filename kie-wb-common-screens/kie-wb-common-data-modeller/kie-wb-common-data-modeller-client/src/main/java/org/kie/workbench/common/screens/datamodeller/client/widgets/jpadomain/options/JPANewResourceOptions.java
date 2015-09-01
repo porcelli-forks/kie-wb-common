@@ -29,7 +29,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainHandler;
 import org.kie.workbench.common.screens.datamodeller.client.handlers.jpadomain.JPADomainHandler;
@@ -50,9 +49,6 @@ public class JPANewResourceOptions
 
     @UiField
     CheckBox persistable;
-
-    @UiField
-    Icon persistableHelpIcon;
 
     //@UiField
     TextBox tableName = new TextBox();

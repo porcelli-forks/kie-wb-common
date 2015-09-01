@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -35,6 +34,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
@@ -55,7 +55,7 @@ public class MultipleValuePairEditorViewImpl
     private static MultipleValuePairEditorViewImplUiBinder uiBinder = GWT.create( MultipleValuePairEditorViewImplUiBinder.class );
 
     @UiField
-    SpanElement valuePairLabel;
+    FormLabel valuePairLabel;
 
     @UiField
     VerticalPanel itemsPanel;
@@ -92,7 +92,7 @@ public class MultipleValuePairEditorViewImpl
 
     @Override
     public void setValuePairLabel( String valuePairLabel ) {
-        this.valuePairLabel.setInnerText( valuePairLabel );
+        this.valuePairLabel.setText( valuePairLabel );
     }
 
     @Override

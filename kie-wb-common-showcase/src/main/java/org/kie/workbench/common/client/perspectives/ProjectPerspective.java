@@ -16,21 +16,18 @@
 
 package org.kie.workbench.common.client.perspectives;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.kie.workbench.common.client.AuthoringWorkbenchDocks;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
-import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -42,17 +39,17 @@ public class ProjectPerspective {
     @Inject
     private NewResourcesMenu newResourcesMenu;
 
+    @Inject
+    private AuthoringWorkbenchDocks docks;
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition perspective = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
+        return new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
+    }
 
-        final PanelDefinition west = new PanelDefinitionImpl( SimpleWorkbenchPanelPresenter.class.getName() );
-        west.setWidth( 400 );
-        west.setMinWidth( 350 );
-        west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
-        perspective.getRoot().insertChild( CompassPosition.WEST, west );
-
-        return perspective;
+    @PostConstruct
+    public void setup() {
+        docks.setup( "ProjectPerspective", new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) );
     }
 
     @WorkbenchMenu

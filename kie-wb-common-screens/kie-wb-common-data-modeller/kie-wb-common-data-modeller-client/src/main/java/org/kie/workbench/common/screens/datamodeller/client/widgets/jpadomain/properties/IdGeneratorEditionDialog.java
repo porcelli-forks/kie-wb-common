@@ -22,34 +22,24 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ListBox;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.kie.workbench.common.screens.datamodeller.client.model.DataModelerPropertyEditorFieldInfo;
-import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.common.properties.PropertyEditionPopup;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
 
-import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.setSelectedValue;
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.*;
 
 public class IdGeneratorEditionDialog
         extends BaseModal implements PropertyEditionPopup {
 
     @UiField
-    ListBox generatorType;
+    Select generatorType;
 
     @UiField
     TextBox generatorName;
-
-    @UiField
-    FormGroup generatorControlGroup;
-
-    @UiField
-    HelpBlock generatorNameInline;
 
     private Boolean revertChanges = Boolean.TRUE;
 
@@ -67,33 +57,30 @@ public class IdGeneratorEditionDialog
 
     public IdGeneratorEditionDialog() {
         setTitle( "Generation Strategy" );
-        //setMaxHeigth( "350px" );
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( IdGeneratorEditionDialog.this ) );
-        }} );
+        setBody( uiBinder.createAndBindUi( IdGeneratorEditionDialog.this ) );
 
         add( new ModalFooterOKCancelButtons(
-                     new Command() {
-                         @Override
-                         public void execute() {
-                             okButton();
-                         }
-                     },
-                     new Command() {
-                         @Override
-                         public void execute() {
-                             cancelButton();
-                         }
-                     }
-             )
-           );
+                        new Command() {
+                            @Override
+                            public void execute() {
+                                okButton();
+                            }
+                        },
+                        new Command() {
+                            @Override
+                            public void execute() {
+                                cancelButton();
+                            }
+                        }
+                )
+        );
 
-        generatorType.addItem( "NONE", "NONE" );
-        generatorType.addItem( "SEQUENCE", "SEQUENCE" );
-        generatorType.addItem( "TABLE", "TABLE" );
-        generatorType.addItem( "IDENTITY", "IDENTITY" );
-        generatorType.addItem( "AUTO", "AUTO" );
-
+        generatorType.add( newOption( "NONE", "NONE" ) );
+        generatorType.add( newOption( "SEQUENCE", "SEQUENCE" ) );
+        generatorType.add( newOption( "TABLE", "TABLE" ) );
+        generatorType.add( newOption( "IDENTITY", "IDENTITY" ) );
+        generatorType.add( newOption( "AUTO", "AUTO" ) );
+        refreshSelect( generatorType );
     }
 
     private void addHiddlenHandler() {
@@ -141,7 +128,7 @@ public class IdGeneratorEditionDialog
         // then new current values can be set.
 
         DataModelerPropertyEditorFieldInfo fieldInfo = (DataModelerPropertyEditorFieldInfo) property;
-        String strategy = generatorType.getSelectedValue();
+        String strategy = generatorType.getValue();
         strategy = "NONE".equals( strategy ) ? null : strategy;
         String generator = generatorName.getText();
 
@@ -168,7 +155,7 @@ public class IdGeneratorEditionDialog
     @Override
     public String getStringValue() {
         //return the value to show in the property editor simple text field.
-        return generatorType.getSelectedValue();
+        return generatorType.getValue();
     }
 
     @Override
