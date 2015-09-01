@@ -102,7 +102,7 @@ public class ServerManagementBrowserView extends Composite
                 },
                 org.uberfire.ext.widgets.common.client.resources.i18n.CommonConstants.INSTANCE.YES(),
                 ButtonType.DANGER,
-                IconType.MINUS,
+                IconType.TRASH,
 
                 new Command() {
                     @Override

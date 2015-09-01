@@ -39,7 +39,7 @@
             <b:Button ui:field="refreshArea" text="Refresh" title="Refresh containers" icon="REFRESH"/>
             <b:Button ui:field="startArea" text="Start" title="Start containers" icon="PLAY_CIRCLE_O"/>
             <b:Button ui:field="stopArea" text="Stop" title="Stop containers" icon="POWER_OFF"/>
-            <b:Button ui:field="deleteArea" text="Delete" title="Delete container" icon="MINUS" type="DANGER"/>
+            <b:Button ui:field="deleteArea" text="Delete" title="Delete container" icon="TRASH" type="DANGER"/>
         </b:ButtonGroup>
     </g:HTMLPanel>
 
