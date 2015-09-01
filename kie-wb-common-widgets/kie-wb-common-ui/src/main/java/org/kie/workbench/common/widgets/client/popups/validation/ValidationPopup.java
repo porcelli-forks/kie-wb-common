@@ -17,15 +17,12 @@ package org.kie.workbench.common.widgets.client.popups.validation;
 
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.Range;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
-import org.gwtbootstrap3.client.ui.ModalBody;
-import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.guvnor.messageconsole.client.console.widget.MessageTableWidget;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
@@ -35,26 +32,17 @@ import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterO
  */
 public class ValidationPopup extends BaseModal {
 
-    interface ValidationPopupWidgetBinder
-            extends
-            UiBinder<Widget, ValidationPopup> {
-
-    }
-
-    private static ValidationPopupWidgetBinder uiBinder = GWT.create( ValidationPopupWidgetBinder.class );
-
     private static ValidationPopup instance = new ValidationPopup();
 
-    @UiField
-    protected CellTable<ValidationMessage> table;
+    protected final MessageTableWidget<ValidationMessage> dataGrid = new MessageTableWidget<ValidationMessage>( MessageTableWidget.Mode.PAGED ) {{
+        setDataProvider( new ListDataProvider<ValidationMessage>() );
+    }};
 
     private ValidationPopup() {
         setTitle( CommonConstants.INSTANCE.ValidationErrors() );
         setHideOtherModals( false );
 
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( ValidationPopup.this ) );
-        }} );
+        setBody( dataGrid );
 
         add( new ModalFooterOKButton( new Command() {
             @Override
@@ -63,27 +51,28 @@ public class ValidationPopup extends BaseModal {
             }
         } ) );
 
-        final ValidationMessageLevelColumn validationMessageLevelColumn = new ValidationMessageLevelColumn() {
+        dataGrid.setToolBarVisible( false );
 
+        dataGrid.addLevelColumn( 10, new MessageTableWidget.ColumnExtractor<Level>() {
             @Override
-            public ValidationMessage.Level getValue( final ValidationMessage msg ) {
-                return msg.getLevel();
+            public Level getValue( final Object row ) {
+                return ( (ValidationMessage) row ).getLevel();
             }
-        };
-        table.addColumn( validationMessageLevelColumn );
-        table.setColumnWidth( validationMessageLevelColumn,
-                              "32px" );
-        table.addColumn( new TextColumn<ValidationMessage>() {
+        } );
 
+        dataGrid.addTextColumn( 90, new MessageTableWidget.ColumnExtractor<String>() {
             @Override
-            public String getValue( final ValidationMessage msg ) {
-                return msg.getText();
+            public String getValue( final Object row ) {
+                return ( (ValidationMessage) row ).getText();
             }
         } );
     }
 
     private void setMessages( final List<ValidationMessage> messages ) {
-        this.table.setRowData( messages );
+        final ListDataProvider<ValidationMessage> listDataProvider = (ListDataProvider<ValidationMessage>) this.dataGrid.getDataProvider();
+        listDataProvider.getList().clear();
+        listDataProvider.getList().addAll( messages );
+        this.dataGrid.setVisibleRangeAndClearData( new Range( 0, 5 ), true );
     }
 
     public static void showMessages( final List<ValidationMessage> messages ) {
