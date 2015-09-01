@@ -20,6 +20,7 @@
 <head>
   <title>Login - Kie Workbench Showcase</title>
   <link rel="stylesheet" href="org.kie.workbench.common.Showcase/patternfly/dist/css/patternfly.min.css">
+  <link rel="stylesheet" href="org.kie.workbench.common.Showcase/patternfly/dist/css/patternfly-additions.min.css">
 </head>
 
 <body>
