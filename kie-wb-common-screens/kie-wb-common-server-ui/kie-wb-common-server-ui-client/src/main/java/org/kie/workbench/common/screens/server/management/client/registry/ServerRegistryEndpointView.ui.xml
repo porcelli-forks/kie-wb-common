@@ -27,27 +27,21 @@
                         <b:FieldSet>
                             <b:Legend text="Server connectivity info"/>
                             <b:FormGroup ui:field="idGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="id" text="Identifier" showRequiredIndicator="true"/>
-                                </b:Column>
+                                <b:FormLabel for="id" text="Identifier" showRequiredIndicator="true" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
-                                    <b:TextBox b:id="url" ui:field="idTextBox" placeholder="Identifier"/>
+                                    <b:TextBox b:id="id" ui:field="idTextBox" placeholder="Identifier"/>
                                     <b:HelpBlock ui:field="idHelpInline"/>
                                 </b:Column>
                             </b:FormGroup>
                             <b:FormGroup ui:field="nameGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="url" text="Name" showRequiredIndicator="true"/>
-                                </b:Column>
+                                <b:FormLabel for="name" text="Name" showRequiredIndicator="true" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
                                     <b:TextBox b:id="name" ui:field="nameTextBox" placeholder="Name"/>
                                     <b:HelpBlock ui:field="nameHelpInline"/>
                                 </b:Column>
                             </b:FormGroup>
                             <b:FormGroup ui:field="versionGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="version" text="Version"/>
-                                </b:Column>
+                                <b:FormLabel for="version" text="Version" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
                                     <b:TextBox b:id="version" ui:field="versionTextBox" placeholder="Version"/>
                                     <b:HelpBlock ui:field="versionHelpInline"/>

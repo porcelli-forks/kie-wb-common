@@ -39,7 +39,7 @@
             <b:PanelHeader dataToggle="COLLAPSE" ui:field="formAccordionHeader">
                 <b:Heading size="H4" text="{i18n.SearchForm}"/>
             </b:PanelHeader>
-            <b:PanelCollapse ui:field="formAccordionCollapse" in="true" >
+            <b:PanelCollapse ui:field="formAccordionCollapse" in="true">
                 <b:PanelBody>
                     <b:Container fluid="true" addStyleNames="{style.container}">
                         <b:Row>
@@ -48,11 +48,9 @@
                                     <b:FieldSet>
                                         <b:FormGroup ui:field="formGroup">
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="source">
-                                                        <ui:text from="{i18n.Source}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="source" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.Source}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.SourceTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="source" ui:field="sourceTextBox"/>
@@ -61,11 +59,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="createdBy">
-                                                        <ui:text from="{i18n.CreatedBy}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="createdBy" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.CreatedBy}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.CreatedByTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="createdBy" ui:field="createdByTextBox"/>
@@ -74,11 +70,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="description">
-                                                        <ui:text from="{i18n.Description}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="description" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.Description}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.DescriptionTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="description" ui:field="descriptionByTextBox"/>
@@ -87,24 +81,20 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="format">
-                                                        <ui:text from="{i18n.Format}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="format" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.Format}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.FormatTip}" placement="RIGHT" trigger="FOCUS">
-                                                        <b3:Typeahead ui:field="formatTypeahead" highlight="true" hint="false" />
+                                                        <b3:Typeahead ui:field="formatTypeahead" highlight="true" hint="false"/>
                                                     </b:Tooltip>
                                                 </b:Column>
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="subject">
-                                                        <ui:text from="{i18n.Subject}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="subject" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.Subject}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.SubjectTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="subject" ui:field="subjectTextBox"/>
@@ -113,11 +103,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="type">
-                                                        <ui:text from="{i18n.Type}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="type" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.Type}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.TypeTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="type" ui:field="typeTextBox"/>
@@ -126,11 +114,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="lastModifiedBy">
-                                                        <ui:text from="{i18n.LastModifiedBy}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="lastModifiedBy" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.LastModifiedBy}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.LastModifiedByTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="createdBy" ui:field="lastModifiedByTextBox"/>
@@ -139,11 +125,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="externalLink">
-                                                        <ui:text from="{i18n.ExternalLink}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="externalLink" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.ExternalLink}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.ExternalLinkTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="externalLink" ui:field="externalLinkTextBox"/>
@@ -152,11 +136,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="checkinComment">
-                                                        <ui:text from="{i18n.CheckinComment}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="checkinComment" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.CheckinComment}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Tooltip title="{i18n.CheckinCommentTip}" placement="RIGHT" trigger="FOCUS">
                                                         <b:TextBox b:id="checkinComment" ui:field="checkinCommentTextBox"/>
@@ -165,11 +147,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="dateCreated">
-                                                        <ui:text from="{i18n.DateCreated}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="dateCreated" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.DateCreated}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Row>
                                                         <b:Column size="MD_6">
@@ -183,11 +163,9 @@
                                             </b:FormGroup>
 
                                             <b:FormGroup>
-                                                <b:Column size="MD_2">
-                                                    <b:FormLabel for="lastModified">
-                                                        <ui:text from="{i18n.LastModified}"/>
-                                                    </b:FormLabel>
-                                                </b:Column>
+                                                <b:FormLabel for="lastModified" addStyleNames="col-md-2">
+                                                    <ui:text from="{i18n.LastModified}"/>
+                                                </b:FormLabel>
                                                 <b:Column size="MD_3">
                                                     <b:Row>
                                                         <b:Column size="MD_6">

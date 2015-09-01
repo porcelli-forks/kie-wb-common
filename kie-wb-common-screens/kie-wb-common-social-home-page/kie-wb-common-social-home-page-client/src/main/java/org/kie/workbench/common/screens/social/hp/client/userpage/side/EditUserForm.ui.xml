@@ -26,21 +26,17 @@
                 <b:Form type="HORIZONTAL">
                     <b:FieldSet>
                         <b:FormGroup>
-                            <b:Column size="MD_3">
-                                <b:FormLabel>
-                                    E-mail
-                                </b:FormLabel>
-                            </b:Column>
+                            <b:FormLabel addStyleNames="col-md-3">
+                                E-mail
+                            </b:FormLabel>
                             <b:Column size="MD_9">
                                 <b:TextBox ui:field="emailTextBox" placeholder="E-mail"/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:Column size="MD_3">
-                            <b:FormLabel>
+                            <b:FormLabel addStyleNames="col-md-3">
                                 Real Name
                             </b:FormLabel>
-                            </b:Column>
                             <b:Column size="MD_9">
                                 <b:TextBox ui:field="realNameTextBox" placeholder="Real Name"/>
                             </b:Column>
