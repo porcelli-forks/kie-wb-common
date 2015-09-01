@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.guvnor.common.services.project.builder.model.BuildMessage;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.kie.api.builder.Message;
 
@@ -55,13 +56,13 @@ class MessageConverter {
         final BuildMessage m = new BuildMessage();
         switch (message.getLevel()) {
             case ERROR:
-                m.setLevel(BuildMessage.Level.ERROR);
+                m.setLevel( Level.ERROR );
                 break;
             case WARNING:
-                m.setLevel(BuildMessage.Level.WARNING);
+                m.setLevel( Level.WARNING );
                 break;
             case INFO:
-                m.setLevel(BuildMessage.Level.INFO);
+                m.setLevel( Level.INFO );
                 break;
         }
 
@@ -77,13 +78,13 @@ class MessageConverter {
         final BuildMessage m = new BuildMessage();
         switch (message.getLevel()) {
             case ERROR:
-                m.setLevel(BuildMessage.Level.ERROR);
+                m.setLevel( Level.ERROR );
                 break;
             case WARNING:
-                m.setLevel(BuildMessage.Level.WARNING);
+                m.setLevel( Level.WARNING );
                 break;
             case INFO:
-                m.setLevel(BuildMessage.Level.INFO);
+                m.setLevel( Level.INFO );
                 break;
         }
 

@@ -42,6 +42,7 @@ import org.guvnor.common.services.backend.validation.GenericValidator;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.POMService;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
@@ -780,7 +781,7 @@ public class DataModelerServiceImpl
         for (DriverError error : result.getErrors()) {
             systemMessage = new SystemMessage();
             systemMessage.setMessageType("DataModeler");
-            systemMessage.setLevel(SystemMessage.Level.ERROR);
+            systemMessage.setLevel( Level.ERROR);
             systemMessage.setId(error.getId());
             systemMessage.setText(error.getMessage());
             systemMessage.setColumn(error.getColumn());
@@ -912,7 +913,7 @@ public class DataModelerServiceImpl
                 ValidationMessage validationMessage = new ValidationMessage();
                 validationMessage.setPath(path);
                 validationMessage.setText("File do no belong to a valid project");
-                validationMessage.setLevel(ValidationMessage.Level.ERROR);
+                validationMessage.setLevel( Level.ERROR );
                 validations.add(new ValidationMessage());
                 return validations;
             }
@@ -1214,7 +1215,7 @@ public class DataModelerServiceImpl
                 validationMessage.setText( driverError.getMessage() );
                 validationMessage.setColumn( driverError.getColumn() );
                 validationMessage.setLine( driverError.getLine() );
-                validationMessage.setLevel( ValidationMessage.Level.ERROR );
+                validationMessage.setLevel( Level.ERROR );
                 validationMessages.add( validationMessage );
             }
         }

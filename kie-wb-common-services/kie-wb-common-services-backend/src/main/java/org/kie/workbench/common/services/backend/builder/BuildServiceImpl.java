@@ -35,6 +35,7 @@ import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.POMService;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.m2repo.backend.server.ExtendedM2RepoService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -88,7 +89,7 @@ public class BuildServiceImpl
             message.append(" Build: " + (results.getErrorMessages().isEmpty()?"SUCCESSFUL":"FAILURE"));
 
             BuildMessage infoMsg = new BuildMessage();
-            infoMsg.setLevel(BuildMessage.Level.INFO);
+            infoMsg.setLevel( Level.INFO );
             infoMsg.setText(message.toString());
 
             results.addBuildMessage(0, infoMsg);
@@ -161,7 +162,7 @@ public class BuildServiceImpl
     private BuildResults buildExceptionResults(Exception e, GAV gav) {
         BuildResults exceptionResults = new BuildResults(gav);
         BuildMessage exceptionMessage = new BuildMessage();
-        exceptionMessage.setLevel( BuildMessage.Level.ERROR );
+        exceptionMessage.setLevel( Level.ERROR );
         exceptionMessage.setText( e.getMessage() );
         exceptionResults.addBuildMessage( exceptionMessage );
 

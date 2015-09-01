@@ -29,8 +29,8 @@ import javax.inject.Named;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
-import org.guvnor.messageconsole.events.SystemMessage;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.forge.roaster.model.SyntaxError;
 import org.kie.api.builder.KieModule;
@@ -81,7 +81,7 @@ public class DataModelerServiceHelper {
             DataModelerError dataModelerError = new DataModelerError(
                     error.getId(),
                     error.getMessage(),
-                    SystemMessage.Level.ERROR,
+                    Level.ERROR,
                     error.getFile(),
                     error.getLine(),
                     error.getColumn() );
@@ -95,7 +95,7 @@ public class DataModelerServiceHelper {
         DataModelerError error;
         for ( SyntaxError syntaxError : syntaxErrors ) {
             error = new DataModelerError( syntaxError.getDescription(),
-                    syntaxError.isError() ? SystemMessage.Level.ERROR : SystemMessage.Level.WARNING,
+                    syntaxError.isError() ? Level.ERROR : Level.WARNING,
                     Paths.convert( file ) );
             error.setColumn( syntaxError.getColumn() );
             error.setLine( syntaxError.getLine() );
@@ -131,16 +131,16 @@ public class DataModelerServiceHelper {
             if ( error.getLevel() != null ) {
                 switch ( error.getLevel() ) {
                     case ERROR:
-                        validationMessage.setLevel( ValidationMessage.Level.ERROR );
+                        validationMessage.setLevel( Level.ERROR );
                         break;
                     case WARNING:
-                        validationMessage.setLevel( ValidationMessage.Level.WARNING );
+                        validationMessage.setLevel( Level.WARNING );
                         break;
                     case INFO:
-                        validationMessage.setLevel( ValidationMessage.Level.INFO );
+                        validationMessage.setLevel( Level.INFO );
                         break;
                     default:
-                        validationMessage.setLevel( ValidationMessage.Level.ERROR );
+                        validationMessage.setLevel( Level.ERROR );
                 }
             }
             validationMessages.add( validationMessage );
