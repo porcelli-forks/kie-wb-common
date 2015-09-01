@@ -20,10 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
 import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
-import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.Row;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddomain.valuepaireditor.booleans.BooleanValuePairEditor;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddomain.valuepaireditor.enums.EnumValuePairEditor;
@@ -44,19 +48,26 @@ public class ValuePairEditorPopupViewImpl
 
     private ValuePairEditor valuePairEditor;
 
-    private FlowPanel content = new FlowPanel();
+    private Form form = new Form();
+
+    private Container container = new Container();
+
+    private Row row = new Row();
+
+    private Column column = new Column( ColumnSize.MD_12 );
 
     @Inject
     private ValuePairEditorProvider valuePairEditorProvider;
 
     @Inject
     public ValuePairEditorPopupViewImpl() {
-
+        form.setType( FormType.HORIZONTAL );
+        container.setFluid( true );
+        container.add( row );
+        row.add( column );
+        column.add( form );
         setTitle( Constants.INSTANCE.advanced_domain_value_pair_editor_popup_title() );
-//        setMaxHeigth( "350px" );
-        add( new ModalBody() {{
-            add( content );
-        }} );
+        setBody( container );
         add( new ModalFooterOKCancelButtons(
                      new com.google.gwt.user.client.Command() {
                          @Override
@@ -94,7 +105,7 @@ public class ValuePairEditorPopupViewImpl
         if ( valuePairEditor instanceof GenericValuePairEditor ) {
             valuePairEditor.showValidateButton( false );
         }
-        content.add( valuePairEditor );
+        form.add( valuePairEditor );
 
         valuePairEditor.addEditorHandler( new ValuePairEditorHandler() {
             @Override

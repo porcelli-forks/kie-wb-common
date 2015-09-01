@@ -334,9 +334,9 @@ public class DataModelerScreenPresenter
                                                        view.showBusyIndicator( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.Copying() );
                                                        modelerService.call( getCopySuccessCallback(),
                                                                             new DataModelerErrorCallback( Constants.INSTANCE.modelEditor_copying_error() ) ).copy( versionRecordManager.getCurrentPath(),
-                                                                                                                                                                   details.getNewFileName(),
-                                                                                                                                                                   details.getCommitMessage(),
-                                                                                                                                                                   true );
+                                                               details.getNewFileName(),
+                                                               details.getCommitMessage(),
+                                                               true );
                                                    }
                                                } );
         popup.show();
@@ -478,7 +478,8 @@ public class DataModelerScreenPresenter
             @Override
             public void callback( final Path response ) {
                 view.hideBusyIndicator();
-                notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemCopiedSuccessfully() ) );
+                notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemCopiedSuccessfully(),
+                        NotificationEvent.NotificationType.SUCCESS ) );
             }
         };
     }
@@ -489,7 +490,8 @@ public class DataModelerScreenPresenter
             @Override
             public void callback( final Path response ) {
                 view.hideBusyIndicator();
-                notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemDeletedSuccessfully() ) );
+                notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemDeletedSuccessfully(),
+                        NotificationEvent.NotificationType.SUCCESS) );
             }
         };
     }
@@ -499,6 +501,8 @@ public class DataModelerScreenPresenter
             @Override
             public void callback( final Path targetPath ) {
                 view.hideBusyIndicator();
+                notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemRenamedSuccessfully(),
+                        NotificationEvent.NotificationType.SUCCESS ) );
             }
         };
     }
@@ -705,7 +709,7 @@ public class DataModelerScreenPresenter
                     createOriginalHash( context.getDataObject() );
                     originalSourceHash = getSource().hashCode();
 
-                    notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemSavedSuccessfully() ) );
+                    notification.fire( new NotificationEvent( org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants.INSTANCE.ItemSavedSuccessfully(), NotificationEvent.NotificationType.SUCCESS ) );
                     dataModelerEvent.fire( new DataModelStatusChangeEvent( context.getContextId(),
                                                                            DataModelerEvent.DATA_MODEL_BROWSER,
                                                                            oldDirtyStatus,

@@ -16,10 +16,9 @@
 
 package org.kie.workbench.common.screens.datamodeller.client.widgets.editor;
 
-import javax.inject.Inject;
+import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,55 +27,52 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
 import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap3.client.ui.Alert;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.CheckBox;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 
 import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.*;
 
+@Dependent
 public class NewFieldPopupViewImpl
         extends BaseModal
         implements NewFieldPopupView {
 
     interface Binder extends
-                     UiBinder<Widget, NewFieldPopupViewImpl> {
+            UiBinder<Widget, NewFieldPopupViewImpl> {
 
     }
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
-    private static final String DEFAULT_LABEL_CLASS = "gwt-Label";
-
-    private static final String TEXT_ERROR_CLASS = "text-error";
+    @UiField
+    FormLabel newPropertyIdLabel;
 
     @UiField
-    Label newPropertyIdLabel = new Label();
+    TextBox newPropertyId;
 
     @UiField
-    TextBox newPropertyId = new TextBox();
+    FormLabel newPropertyLabelLabel;
 
     @UiField
-    Label newPropertyLabelLabel = new Label();
+    TextBox newPropertyLabel;
 
     @UiField
-    TextBox newPropertyLabel = new TextBox();
+    FormLabel newPropertyTypeLabel;
 
     @UiField
-    Label newPropertyTypeLabel = new Label();
+    Select newPropertyTypeList;
 
     @UiField
-    ListBox newPropertyTypeList = new ListBox();
-
-    @UiField
-    CheckBox isNewPropertyMultiple = new CheckBox();
+    CheckBox isNewPropertyMultiple;
 
     @UiField
     Button createButton;
@@ -88,22 +84,14 @@ public class NewFieldPopupViewImpl
     Button cancelButton;
 
     @UiField
-    HelpBlock messageHelpInline;
+    Alert messageHelpInline;
 
     private Presenter presenter;
 
-    @Inject
     public NewFieldPopupViewImpl() {
-
         setTitle( "New field" );
-        //setMaxHeigth( "350px" );
-        setWidth( 600 + "px" );
 
-        add( uiBinder.createAndBindUi( this ) );
-
-        newPropertyId.getElement().getStyle().setWidth( 180, Style.Unit.PX );
-        newPropertyLabel.getElement().getStyle().setWidth( 160, Style.Unit.PX );
-        newPropertyTypeList.getElement().getStyle().setWidth( 200, Style.Unit.PX );
+        setBody( uiBinder.createAndBindUi( this ) );
 
         newPropertyTypeList.addChangeHandler( new ChangeHandler() {
             @Override
@@ -146,7 +134,6 @@ public class NewFieldPopupViewImpl
                 clearErrorMessage();
             }
         } );
-
     }
 
     @Override
@@ -155,13 +142,13 @@ public class NewFieldPopupViewImpl
     }
 
     @Override
-    public ListBox getPropertyTypeList() {
+    public Select getPropertyTypeList() {
         return newPropertyTypeList;
     }
 
     @Override
     public String getSelectedType() {
-        return newPropertyTypeList.getSelectedValue();
+        return newPropertyTypeList.getValue();
     }
 
     @Override
@@ -191,7 +178,7 @@ public class NewFieldPopupViewImpl
 
     @Override
     public void setErrorMessage( String errorMessage ) {
-        messageHelpInline.setStylePrimaryName( TEXT_ERROR_CLASS );
+        messageHelpInline.setVisible( true );
         messageHelpInline.setText( errorMessage );
     }
 
@@ -204,7 +191,7 @@ public class NewFieldPopupViewImpl
     public void clear() {
         newPropertyId.setText( null );
         newPropertyLabel.setText( null );
-        if ( newPropertyTypeList.getSelectedValue() != null ) {
+        if ( newPropertyTypeList.getValue() != null ) {
             setSelectedValue( newPropertyTypeList, DataModelerUtils.NOT_SELECTED );
         }
         isNewPropertyMultiple.setValue( false );
@@ -214,6 +201,6 @@ public class NewFieldPopupViewImpl
 
     private void clearErrorMessage() {
         messageHelpInline.setText( null );
-        messageHelpInline.removeStyleName( TEXT_ERROR_CLASS );
+        messageHelpInline.setVisible( false );
     }
 }

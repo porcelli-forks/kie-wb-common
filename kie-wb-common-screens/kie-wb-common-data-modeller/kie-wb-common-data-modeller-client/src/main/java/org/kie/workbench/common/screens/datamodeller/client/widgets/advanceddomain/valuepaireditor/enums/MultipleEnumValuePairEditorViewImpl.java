@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -30,6 +29,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.uberfire.commons.data.Pair;
 
 public class MultipleEnumValuePairEditorViewImpl
@@ -45,7 +45,7 @@ public class MultipleEnumValuePairEditorViewImpl
     private static MultipleEnumValuePairEditorViewImplUiBinder uiBinder = GWT.create( MultipleEnumValuePairEditorViewImplUiBinder.class );
 
     @UiField
-    SpanElement valuePairLabel;
+    FormLabel valuePairLabel;
 
     @UiField
     FlowPanel controlsContainer;
@@ -120,7 +120,7 @@ public class MultipleEnumValuePairEditorViewImpl
 
     @Override
     public void setValuePairLabel( String label ) {
-        valuePairLabel.setInnerText( label );
+        valuePairLabel.setText( label );
     }
 
     @Override

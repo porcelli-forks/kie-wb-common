@@ -29,39 +29,40 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.packageselector.PackageSelector;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.superselector.SuperclassSelector;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
-import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.setSelectedValue;
+import static org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils.*;
 
 public class MainDataObjectEditorViewImpl
         extends Composite
         implements MainDataObjectEditorView {
 
     interface MainDataObjectEditorViewImplUiBinder
-        extends UiBinder<Widget, MainDataObjectEditorViewImpl> {
+            extends UiBinder<Widget, MainDataObjectEditorViewImpl> {
 
     }
 
     private static MainDataObjectEditorViewImplUiBinder uiBinder = GWT.create( MainDataObjectEditorViewImplUiBinder.class );
 
-    private static final String DEFAULT_LABEL_CLASS = "gwt-Label";
-
-    private static final String TEXT_ERROR_CLASS = "text-error";
-
     @UiField
     TextBox name;
 
     @UiField
-    Label nameLabel;
+    FormLabel nameLabel;
+
+    @UiField
+    FormGroup nameFormGroup;
 
     @UiField
     TextBox label;
@@ -70,16 +71,19 @@ public class MainDataObjectEditorViewImpl
     TextArea description;
 
     @UiField
-    Label packageNameLabel;
+    FormLabel packageNameLabel;
 
     @UiField
-    SimplePanel packageSelectorPanel;
+    FormGroup packageFormGroup;
+
+    @UiField
+    FlowPanel packageSelectorPanel;
 
     @Inject
     PackageSelector packageSelector;
 
     @UiField
-    Label superclassLabel;
+    FormGroup superclassGroup;
 
     @UiField
     SuperclassSelector superclassSelector;
@@ -152,7 +156,7 @@ public class MainDataObjectEditorViewImpl
 
     @Override
     public String getSuperClass() {
-        return superclassSelector.getSuperclassList().getSelectedValue();
+        return superclassSelector.getSuperclassList().getValue();
     }
 
     @Override
@@ -162,7 +166,7 @@ public class MainDataObjectEditorViewImpl
 
     @Override
     public String getPackageName() {
-        return packageSelector.getPackageList().getSelectedValue();
+        return packageSelector.getPackageList().getValue();
     }
 
     @Override
@@ -183,17 +187,17 @@ public class MainDataObjectEditorViewImpl
 
     @Override
     public void setSuperClassOnError( boolean onError ) {
-        superclassLabel.setStyleName( onError ? TEXT_ERROR_CLASS : DEFAULT_LABEL_CLASS );
+        superclassGroup.setValidationState( onError ? ValidationState.ERROR : ValidationState.NONE );
     }
 
     @Override
     public void setPackageNameOnError( boolean onError ) {
-        packageNameLabel.setStyleName( onError ? TEXT_ERROR_CLASS : DEFAULT_LABEL_CLASS );
+        packageFormGroup.setValidationState( onError ? ValidationState.ERROR : ValidationState.NONE );
     }
 
     @Override
     public void setNameOnError( boolean onError ) {
-        nameLabel.setStyleName( onError ? TEXT_ERROR_CLASS : DEFAULT_LABEL_CLASS );
+        nameFormGroup.setValidationState( onError ? ValidationState.ERROR : ValidationState.NONE );
     }
 
     @Override
@@ -203,7 +207,7 @@ public class MainDataObjectEditorViewImpl
 
     @Override
     public void showErrorPopup( String errorMessage, final Command afterShow,
-            final Command afterClose ) {
+                                final Command afterClose ) {
         ErrorPopup.showMessage( errorMessage, afterShow, afterClose );
     }
 
@@ -234,20 +238,19 @@ public class MainDataObjectEditorViewImpl
 
     // Handlers
 
-    @UiHandler("name")
+    @UiHandler( "name" )
     void nameChanged( final ValueChangeEvent<String> event ) {
         presenter.onNameChanged();
     }
 
-    @UiHandler("label")
+    @UiHandler( "label" )
     void labelChanged( final ValueChangeEvent<String> event ) {
         presenter.onLabelChanged();
     }
 
-    @UiHandler("description")
+    @UiHandler( "description" )
     void descriptionChanged( final ValueChangeEvent<String> event ) {
         presenter.onDescriptionChanged();
     }
-
 
 }
