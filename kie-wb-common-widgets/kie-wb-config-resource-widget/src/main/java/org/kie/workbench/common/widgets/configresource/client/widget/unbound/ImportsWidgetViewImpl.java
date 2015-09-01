@@ -101,7 +101,7 @@ public class ImportsWidgetViewImpl
             }
         };
 
-        final ButtonCell deleteImportButton = new ButtonCell( IconType.MINUS, ButtonType.DANGER, ButtonSize.SMALL );
+        final ButtonCell deleteImportButton = new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL );
         final Column<Import, String> deleteImportColumn = new Column<Import, String>( deleteImportButton ) {
             @Override
             public String getValue( final Import importType ) {
