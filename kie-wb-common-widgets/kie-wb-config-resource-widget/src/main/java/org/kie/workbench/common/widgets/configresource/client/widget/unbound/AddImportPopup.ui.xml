@@ -27,9 +27,7 @@
                             <small>* is required</small>
                         </b:Legend>
                         <b:FormGroup ui:field="importTypeGroup">
-                            <b:Column size="MD_3">
-                                <b:FormLabel for="importType" showRequiredIndicator="true" text="Import"/>
-                            </b:Column>
+                            <b:FormLabel for="importType" showRequiredIndicator="true" text="Import" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
                                 <b:TextBox b:id="importType" ui:field="importTypeTextBox" placeholder="Import type..."/>
                                 <b:HelpBlock ui:field="importTypeHelpInline"/>
