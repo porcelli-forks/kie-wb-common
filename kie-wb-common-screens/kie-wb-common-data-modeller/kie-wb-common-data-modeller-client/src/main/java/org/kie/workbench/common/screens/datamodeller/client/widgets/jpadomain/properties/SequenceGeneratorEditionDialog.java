@@ -22,12 +22,10 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.kie.workbench.common.screens.datamodeller.client.model.DataModelerPropertyEditorFieldInfo;
 import org.kie.workbench.common.screens.datamodeller.client.handlers.jpadomain.util.SequenceGeneratorValueHandler;
+import org.kie.workbench.common.screens.datamodeller.client.model.DataModelerPropertyEditorFieldInfo;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.common.properties.PropertyEditionPopup;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
@@ -47,12 +45,6 @@ public class SequenceGeneratorEditionDialog
 
     @UiField
     TextBox allocationSize;
-
-    @UiField
-    FormGroup generatorControlGroup;
-
-    @UiField
-    HelpBlock generatorNameInline;
 
     private Boolean revertChanges = Boolean.TRUE;
 

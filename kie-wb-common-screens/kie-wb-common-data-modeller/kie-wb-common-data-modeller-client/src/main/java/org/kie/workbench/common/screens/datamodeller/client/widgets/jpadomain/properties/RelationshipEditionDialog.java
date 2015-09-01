@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,11 +31,9 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.CheckBox;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ListBox;
-import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.kie.workbench.common.screens.datamodeller.client.model.DataModelerPropertyEditorFieldInfo;
 import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.common.properties.PropertyEditionPopup;
@@ -55,34 +51,28 @@ public class RelationshipEditionDialog
         extends BaseModal implements PropertyEditionPopup {
 
     @UiField
-    ListBox relationType;
+    Select relationType;
 
     @UiField
-    ListBox fetchMode;
+    Select fetchMode;
 
     @UiField
     CheckBox optional;
 
     @UiField
-    SpanElement optionalLabel;
+    FormLabel optionalLabel;
 
     @UiField
-    SpanElement mappedByLabel;
+    FormLabel mappedByLabel;
 
     @UiField
     TextBox mappedBy;
 
     @UiField
-    SpanElement orphanRemovalLabel;
+    FormLabel orphanRemovalLabel;
 
     @UiField
     CheckBox orphanRemoval;
-
-    @UiField
-    FormGroup relationControlGroup;
-
-    @UiField
-    HelpBlock relationGroupInline;
 
     @UiField
     CheckBox cascadeAll;
@@ -120,10 +110,8 @@ public class RelationshipEditionDialog
 
     public RelationshipEditionDialog() {
         setTitle( "Relationship configuration" );
-//        setMaxHeigth( "450px" );
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( RelationshipEditionDialog.this ) );
-        }} );
+
+        setBody( uiBinder.createAndBindUi( RelationshipEditionDialog.this ) );
 
         add( new ModalFooterOKCancelButtons(
                      new Command() {
@@ -141,11 +129,11 @@ public class RelationshipEditionDialog
              )
            );
 
-        relationType.addItem( "Not set", DataModelerUtils.NOT_SELECTED );
-        relationType.addItem( "One to One", RelationType.ONE_TO_ONE.name() );
-        relationType.addItem( "One to Many", RelationType.ONE_TO_MANY.name() );
-        relationType.addItem( "Many to One", RelationType.MANY_TO_ONE.name() );
-        relationType.addItem( "Many to Many", RelationType.MANY_TO_MANY.name() );
+        relationType.add( newOption( "Not set", DataModelerUtils.NOT_SELECTED ) );
+        relationType.add( newOption( "One to One", RelationType.ONE_TO_ONE.name() ) );
+        relationType.add( newOption( "One to Many", RelationType.ONE_TO_MANY.name() ) );
+        relationType.add( newOption( "Many to One", RelationType.MANY_TO_ONE.name() ) );
+        relationType.add( newOption( "Many to Many", RelationType.MANY_TO_MANY.name() ) );
 
         relationType.addChangeHandler( new ChangeHandler() {
             @Override
@@ -154,17 +142,17 @@ public class RelationshipEditionDialog
             }
         } );
 
-        fetchMode.addItem( "EAGER", FetchMode.EAGER.name() );
-        fetchMode.addItem( "LAZY", FetchMode.LAZY.name() );
+        fetchMode.add( newOption( "EAGER", FetchMode.EAGER.name() ) );
+        fetchMode.add( newOption( "LAZY", FetchMode.LAZY.name() ) );
 
     }
 
     private void relationTypeChanged() {
-        String strValue = relationType.getSelectedValue();
+        String strValue = relationType.getValue();
         if ( DataModelerUtils.NOT_SELECTED.equals( strValue ) ) {
             //clean();
         } else {
-            RelationType type = RelationType.valueOf( relationType.getSelectedValue() );
+            RelationType type = RelationType.valueOf( relationType.getValue() );
             enableRelationDependentFields( type );
         }
     }
@@ -196,30 +184,17 @@ public class RelationshipEditionDialog
     }
 
     private void enableOptional( boolean value ) {
-        if ( value ) {
-            optionalLabel.getStyle().clearDisplay();
-        } else {
-            optionalLabel.getStyle().setDisplay( Style.Display.NONE );
-        }
-
+        optionalLabel.setVisible( value );
         optional.setVisible( value );
     }
 
     private void enableOrphanRemoval( boolean value ) {
-        if ( value ) {
-            orphanRemovalLabel.getStyle().clearDisplay();
-        } else {
-            orphanRemovalLabel.getStyle().setDisplay( Style.Display.NONE );
-        }
+        orphanRemovalLabel.setVisible( value );
         orphanRemoval.setVisible( value );
     }
 
     private void enableMappedBy( boolean value ) {
-        if ( value ) {
-            mappedByLabel.getStyle().clearDisplay();
-        } else {
-            mappedByLabel.getStyle().setDisplay( Style.Display.NONE );
-        }
+        mappedByLabel.setVisible( value );
         mappedBy.setVisible( value );
     }
 
@@ -294,7 +269,7 @@ public class RelationshipEditionDialog
 
         DataModelerPropertyEditorFieldInfo fieldInfo = (DataModelerPropertyEditorFieldInfo) property;
 
-        String relationTypeValueStr = relationType.getSelectedValue();
+        String relationTypeValueStr = relationType.getValue();
 
         fieldInfo.removeCurrentValue( RELATION_TYPE );
         fieldInfo.removeCurrentValue( CASCADE );
@@ -304,23 +279,23 @@ public class RelationshipEditionDialog
         fieldInfo.removeCurrentValue( ORPHAN_REMOVAL );
 
         if ( !relationTypeValueStr.equals( DataModelerUtils.NOT_SELECTED ) ) {
-            fieldInfo.setCurrentValue( RELATION_TYPE, RelationType.valueOf( relationType.getSelectedValue() ) );
+            fieldInfo.setCurrentValue( RELATION_TYPE, RelationType.valueOf( relationType.getValue() ) );
             fieldInfo.setCurrentValue( CASCADE, getCascadeTypes() );
-            fieldInfo.setCurrentValue( FETCH, FetchMode.valueOf( fetchMode.getSelectedValue() ) );
+            fieldInfo.setCurrentValue( FETCH, FetchMode.valueOf( fetchMode.getValue() ) );
 
-            if ( relationType.getSelectedValue().equals( RelationType.ONE_TO_ONE.name() ) ||
-                    relationType.getSelectedValue().equals( RelationType.MANY_TO_ONE.name() ) ) {
+            if ( relationType.getValue().equals( RelationType.ONE_TO_ONE.name() ) ||
+                    relationType.getValue().equals( RelationType.MANY_TO_ONE.name() ) ) {
                 fieldInfo.setCurrentValue( OPTIONAL, optional.getValue() );
             }
 
-            if ( relationType.getSelectedValue().equals( RelationType.ONE_TO_ONE.name() ) ||
-                    relationType.getSelectedValue().equals( RelationType.ONE_TO_MANY.name() ) ||
-                    relationType.getSelectedValue().equals( RelationType.MANY_TO_MANY.name() ) ) {
+            if ( relationType.getValue().equals( RelationType.ONE_TO_ONE.name() ) ||
+                    relationType.getValue().equals( RelationType.ONE_TO_MANY.name() ) ||
+                    relationType.getValue().equals( RelationType.MANY_TO_MANY.name() ) ) {
                 fieldInfo.setCurrentValue( MAPPED_BY, mappedBy.getText() );
             }
 
-            if ( relationType.getSelectedValue().equals( RelationType.ONE_TO_ONE.name() ) ||
-                    relationType.getSelectedValue().equals( RelationType.ONE_TO_MANY.name() ) ) {
+            if ( relationType.getValue().equals( RelationType.ONE_TO_ONE.name() ) ||
+                    relationType.getValue().equals( RelationType.ONE_TO_MANY.name() ) ) {
                 fieldInfo.setCurrentValue( ORPHAN_REMOVAL, orphanRemoval.getValue() );
             }
         } else {
@@ -346,7 +321,7 @@ public class RelationshipEditionDialog
     @Override
     public String getStringValue() {
         //return the value to show in the property editor simple text field.
-        String value = relationType.getSelectedValue();
+        String value = relationType.getValue();
         if ( value == null || "".equals( value ) ) {
             value = "NOT_SET";
         }

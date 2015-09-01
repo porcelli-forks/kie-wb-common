@@ -3,7 +3,7 @@
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <g:FlowPanel>
-    <b:InputGroup addStyleNames="col-md-12">
+    <b:InputGroup>
       <b:InputGroupAddon icon="EDIT" ui:field="propertyAddOn"/>
       <b:TextBox ui:field="propertyTextBox"/>
     </b:InputGroup>

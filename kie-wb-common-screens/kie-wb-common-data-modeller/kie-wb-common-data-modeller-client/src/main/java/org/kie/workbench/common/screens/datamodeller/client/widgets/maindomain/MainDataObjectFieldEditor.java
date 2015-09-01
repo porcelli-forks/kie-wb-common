@@ -31,12 +31,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.CheckBox;
-import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
@@ -71,17 +73,13 @@ public class MainDataObjectFieldEditor extends FieldEditor {
 
     }
 
-    //https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.11
-    private static int MAX_CLASS_FIELDS = 65535;
-
     private static DataObjectFieldEditorUIBinder uiBinder = GWT.create( DataObjectFieldEditorUIBinder.class );
 
-    private static final String DEFAULT_LABEL_CLASS = "gwt-Label";
-
-    private static final String TEXT_ERROR_CLASS = "text-error";
+    @UiField
+    FormLabel nameLabel;
 
     @UiField
-    Label nameLabel;
+    FormGroup nameFormGroup;
 
     @UiField
     TextBox name;
@@ -93,7 +91,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
     TextArea description;
 
     @UiField
-    ListBox typeSelector;
+    Select typeSelector;
 
     @UiField
     CheckBox isTypeMultiple;
@@ -156,6 +154,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         label.setEnabled( value );
         description.setEnabled( value );
         typeSelector.setEnabled( value );
+        refreshSelect( typeSelector );
         isTypeMultiple.setEnabled( value );
     }
 
@@ -200,13 +199,13 @@ public class MainDataObjectFieldEditor extends FieldEditor {
     }
 
     // Event handlers
-    @UiHandler("name")
+    @UiHandler( "name" )
     void nameChanged( ValueChangeEvent<String> event ) {
         if ( getObjectField() == null ) {
             return;
         }
         // Set widgets to error popup for styling purposes etc.
-        nameLabel.setStyleName( DEFAULT_LABEL_CLASS );
+        nameFormGroup.setValidationState( ValidationState.NONE );
 
         final String oldValue = getObjectField().getName();
         final String newValue = DataModelerUtils.unCapitalize( name.getValue() );
@@ -241,7 +240,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
                                         name.setValue( oldValue );
                                     }
                                 }
-                                                                                                   );
+                        );
 
                         showUsagesPopup.setClosable( false );
                         showUsagesPopup.show();
@@ -263,7 +262,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         final Command afterCloseCommand = new Command() {
             @Override
             public void execute() {
-                nameLabel.setStyleName( TEXT_ERROR_CLASS );
+                nameFormGroup.setValidationState( ValidationState.ERROR );
                 name.selectAll();
             }
         };
@@ -271,7 +270,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         // In case an invalid name (entered before), was corrected to the original value, don't do anything but reset the label style
         if ( oldValue.equalsIgnoreCase( name.getValue() ) ) {
             name.setText( oldValue );
-            nameLabel.setStyleName( DEFAULT_LABEL_CLASS );
+            nameFormGroup.setValidationState( ValidationState.NONE );
             return;
         }
 
@@ -306,35 +305,35 @@ public class MainDataObjectFieldEditor extends FieldEditor {
 
                     @Override
                     public void onSuccess() {
-                        nameLabel.setStyleName( DEFAULT_LABEL_CLASS );
+                        nameFormGroup.setValidationState( ValidationState.NONE );
                         objectField.setName( newValue );
                         notifyChange( createFieldChangeEvent( ChangeType.FIELD_NAME_CHANGE )
-                                              .withOldValue( oldValue )
-                                              .withNewValue( newValue ) );
+                                .withOldValue( oldValue )
+                                .withNewValue( newValue ) );
                     }
                 } );
             }
         } );
     }
 
-    @UiHandler("label")
+    @UiHandler( "label" )
     void labelChanged( final ValueChangeEvent<String> event ) {
         if ( getObjectField() != null ) {
             String value = DataModelerUtils.nullTrim( label.getValue() );
             DataModelCommand command = commandBuilder.buildFieldAnnotationValueChangeCommand( getContext(),
-                                                                                              getName(), getDataObject(), getObjectField(), MainDomainAnnotations.LABEL_ANNOTATION,
-                                                                                              MainDomainAnnotations.VALUE_PARAM, value, true );
+                    getName(), getDataObject(), getObjectField(), MainDomainAnnotations.LABEL_ANNOTATION,
+                    MainDomainAnnotations.VALUE_PARAM, value, true );
             command.execute();
         }
     }
 
-    @UiHandler("description")
+    @UiHandler( "description" )
     void descriptionChanged( final ValueChangeEvent<String> event ) {
         if ( getObjectField() != null ) {
             String value = DataModelerUtils.nullTrim( description.getValue() );
             DataModelCommand command = commandBuilder.buildFieldAnnotationValueChangeCommand( getContext(),
-                                                                                              getName(), getDataObject(), getObjectField(), MainDomainAnnotations.DESCRIPTION_ANNOTATION,
-                                                                                              MainDomainAnnotations.VALUE_PARAM, value, true );
+                    getName(), getDataObject(), getObjectField(), MainDomainAnnotations.DESCRIPTION_ANNOTATION,
+                    MainDomainAnnotations.VALUE_PARAM, value, true );
             command.execute();
         }
     }
@@ -345,13 +344,13 @@ public class MainDataObjectFieldEditor extends FieldEditor {
         }
 
         String oldValue = getObjectField().getClassName();
-        String type = typeSelector.getSelectedValue();
+        String type = typeSelector.getValue();
         boolean multiple = isTypeMultiple.getValue();
         typeChanged( oldValue, type, multiple );
     }
 
     private void typeMultipleChanged( ValueChangeEvent<Boolean> event ) {
-        typeChanged( typeSelector.getSelectedValue(), typeSelector.getSelectedValue(), event.getValue() );
+        typeChanged( typeSelector.getValue(), typeSelector.getValue(), event.getValue() );
     }
 
     private void typeChanged( String oldType,
@@ -370,7 +369,7 @@ public class MainDataObjectFieldEditor extends FieldEditor {
             }
 
             DataModelCommand command = commandBuilder.buildChangeTypeCommand( getContext(), getName(), getDataObject(),
-                                                                              getObjectField(), newType, multiple );
+                    getObjectField(), newType, multiple );
             command.execute();
             executePostCommandProcessing( command );
         }
@@ -414,15 +413,17 @@ public class MainDataObjectFieldEditor extends FieldEditor {
     }
 
     public void refreshTypeList( boolean keepSelection ) {
-        String selectedValue = typeSelector.getSelectedValue();
+        String selectedValue = typeSelector.getValue();
         initTypeList();
         if ( keepSelection && selectedValue != null ) {
             setSelectedValue( typeSelector, selectedValue );
+        } else {
+            refreshSelect( typeSelector );
         }
     }
 
     public void clean() {
-        nameLabel.setStyleName( DEFAULT_LABEL_CLASS );
+        nameFormGroup.setValidationState( ValidationState.NONE );
         name.setText( null );
         label.setText( null );
         description.setText( null );

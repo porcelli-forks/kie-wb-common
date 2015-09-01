@@ -30,36 +30,28 @@
                         <b:FieldSet>
 
                             <b:FormGroup ui:field="containerNameGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="containerName" text="Name"/>
-                                </b:Column>
+                                <b:FormLabel for="containerName" text="Name" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
                                     <b:TextBox ui:field="containerName"/>
                                 </b:Column>
                             </b:FormGroup>
 
                             <b:FormGroup ui:field="groupIdGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="groupId" text="Group Name"/>
-                                </b:Column>
+                                <b:FormLabel for="groupId" text="Group Name" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
                                     <b:TextBox ui:field="groupId"/>
                                 </b:Column>
                             </b:FormGroup>
 
                             <b:FormGroup ui:field="artifactIdGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="artifactId" text="Artifact Id"/>
-                                </b:Column>
+                                <b:FormLabel for="artifactId" text="Artifact Id" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
                                     <b:TextBox ui:field="artifactId"/>
                                 </b:Column>
                             </b:FormGroup>
 
                             <b:FormGroup ui:field="versionGroup">
-                                <b:Column size="MD_3">
-                                    <b:FormLabel for="version" text="Version"/>
-                                </b:Column>
+                                <b:FormLabel for="version" text="Version" addStyleNames="col-md-3"/>
                                 <b:Column size="MD_9">
                                     <b:TextBox ui:field="version"/>
                                 </b:Column>

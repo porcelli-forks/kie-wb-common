@@ -23,6 +23,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
@@ -66,7 +67,7 @@ public class ValidationPopup extends BaseModal {
         final ValidationMessageLevelColumn validationMessageLevelColumn = new ValidationMessageLevelColumn() {
 
             @Override
-            public ValidationMessage.Level getValue( final ValidationMessage msg ) {
+            public Level getValue( final ValidationMessage msg ) {
                 return msg.getLevel();
             }
         };
