@@ -184,6 +184,7 @@ public class BusinessViewWidget extends BaseViewImpl implements View {
                 collapse.setIn( true );
                 collapse.setId( getCollapseId( entry.getKey() ) );
                 final PanelBody body = new PanelBody();
+                body.getElement().getStyle().setPadding( 0, Style.Unit.PX );
                 collapse.add( body );
                 body.add( itemsNavList );
 
