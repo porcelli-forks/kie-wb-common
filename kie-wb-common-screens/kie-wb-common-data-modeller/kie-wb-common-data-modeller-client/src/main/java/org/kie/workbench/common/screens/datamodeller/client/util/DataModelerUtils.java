@@ -24,7 +24,10 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.gwtbootstrap3.client.ui.ListBox;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Command;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.kie.workbench.common.screens.datamodeller.model.droolsdomain.DroolsDomainAnnotations;
 import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
@@ -296,15 +299,27 @@ public class DataModelerUtils {
         return result;
     }
 
-    public static void initList( final ListBox listBox,
+    public static void initList( final Select select,
                                  boolean includeEmptyItem ) {
-        listBox.clear();
+        select.clear();
         if ( includeEmptyItem ) {
-            listBox.addItem( "", NOT_SELECTED );
+            select.add( emptyOption() );
         }
+        refreshSelect( select );
     }
 
-    public static void initTypeList( final ListBox typeSelector,
+    public static Option newOption( final String text, final String value ) {
+        final Option option = new Option();
+        option.setValue( value );
+        option.setText( text );
+        return option;
+    }
+
+    public static Option emptyOption() {
+        return newOption( "", NOT_SELECTED );
+    }
+
+    public static void initTypeList( final Select typeSelector,
                                      final Collection<PropertyType> baseTypes,
                                      final Collection<DataObject> dataObjects,
                                      final Collection<DataObject> externalClasses,
@@ -312,7 +327,7 @@ public class DataModelerUtils {
         initTypeList( typeSelector, baseTypes, dataObjects, externalClasses, null, false, includeEmptyItem );
     }
 
-    public static void initTypeList( final ListBox typeSelector,
+    public static void initTypeList( final Select typeSelector,
                                      final Collection<PropertyType> baseTypes,
                                      final Collection<DataObject> dataObjects,
                                      final Collection<DataObject> externalClasses,
@@ -321,7 +336,7 @@ public class DataModelerUtils {
         initTypeList( typeSelector, baseTypes, dataObjects, externalClasses, selectedType, selectedTypeMultiple, false );
     }
 
-    public static void initTypeList( final ListBox typeSelector,
+    public static void initTypeList( final Select typeSelector,
                                      final Collection<PropertyType> baseTypes,
                                      final Collection<DataObject> dataObjects,
                                      final Collection<DataObject> externalClasses,
@@ -342,19 +357,13 @@ public class DataModelerUtils {
             }
         }
 
-        typeSelector.clear();
-        if ( includeEmptyItem ) {
-            typeSelector.addItem( "", NOT_SELECTED );
-        }
+        initList( typeSelector, includeEmptyItem );
 
         // First add all base types, ordered
         for ( Map.Entry<String, PropertyType> baseType : orderedBaseTypes.entrySet() ) {
             if ( !baseType.getValue().isPrimitive() ) {
 
-                String baseClassName = baseType.getValue().getClassName();
-                String baseClassLabel = baseType.getKey();
-
-                typeSelector.addItem( baseClassLabel, baseClassName );
+                typeSelector.add( newOption( baseType.getKey(), baseType.getValue().getClassName() ) );
             }
         }
 
@@ -391,34 +400,36 @@ public class DataModelerUtils {
 
         //add project classes to the selector.
         for ( Map.Entry<String, String> typeName : sortedModelTypeNames.entrySet() ) {
-            typeSelector.addItem( typeName.getKey(), typeName.getValue() );
+            typeSelector.add( newOption( typeName.getKey(), typeName.getValue() ) );
         }
 
         //add external classes to the selector.
         for ( Map.Entry<String, String> typeName : sortedExternalTypeNames.entrySet() ) {
-            typeSelector.addItem( typeName.getKey(), typeName.getValue() );
+            typeSelector.add( newOption( typeName.getKey(), typeName.getValue() ) );
         }
 
         //finally add primitives
         for ( Map.Entry<String, PropertyType> baseType : orderedBaseTypes.entrySet() ) {
             if ( baseType.getValue().isPrimitive() ) {
-                typeSelector.addItem( baseType.getKey(), baseType.getValue().getClassName() );
+                typeSelector.add( newOption( baseType.getKey(), baseType.getValue().getClassName() ) );
             }
         }
 
-        if ( selectedType != null ) {
-            setSelectedValue( typeSelector, selectedType );
-        }
+        setSelectedValue( typeSelector, selectedType );
     }
 
-    public static void setSelectedValue( final ListBox listbox,
+    public static void setSelectedValue( final Select select,
                                          final String value ) {
-        for ( int i = 0; i < listbox.getItemCount(); i++ ) {
-            if ( listbox.getValue( i ).equals( value ) ) {
-                listbox.setSelectedIndex( i );
-                return;
+        select.setValue( value );
+        refreshSelect( select );
+    }
+
+    public static void refreshSelect( final Select select ) {
+        Scheduler.get().scheduleDeferred( new Command() {
+            public void execute() {
+                select.refresh();
             }
-        }
+        } );
     }
 
     public static final String nullTrim( String value ) {

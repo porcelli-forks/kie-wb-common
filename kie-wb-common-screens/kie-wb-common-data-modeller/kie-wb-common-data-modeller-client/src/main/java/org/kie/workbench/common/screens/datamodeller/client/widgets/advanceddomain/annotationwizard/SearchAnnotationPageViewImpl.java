@@ -16,6 +16,8 @@
 
 package org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddomain.annotationwizard;
 
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -28,10 +30,9 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
 
+@Dependent
 public class SearchAnnotationPageViewImpl
         extends Composite
         implements SearchAnnotationPageView {
@@ -55,8 +56,6 @@ public class SearchAnnotationPageViewImpl
 
     public SearchAnnotationPageViewImpl() {
         initWidget( uiBinder.createAndBindUi( this ) );
-        searchAnnotationButton.setType( ButtonType.DEFAULT );
-        searchAnnotationButton.setIcon( IconType.SEARCH );
         searchAnnotationButton.setTitle( Constants.INSTANCE.advanced_domain_wizard_search_page_search_button_tooltip() );
         annotationClassName.addKeyDownHandler( new KeyDownHandler() {
             @Override

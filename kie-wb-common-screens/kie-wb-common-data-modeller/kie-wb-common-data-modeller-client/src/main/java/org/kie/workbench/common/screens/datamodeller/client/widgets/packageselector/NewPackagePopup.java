@@ -1,12 +1,12 @@
 /**
  * Copyright 2012 JBoss Inc
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,14 +21,17 @@ import javax.inject.Inject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.InputGroup;
+import org.gwtbootstrap3.client.ui.InputGroupButton;
+import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
@@ -43,6 +46,8 @@ public class NewPackagePopup extends BaseModal {
 
     private Button newPackageButton = new Button( Constants.INSTANCE.packageSelector_popup_add() );
 
+    private InputGroupButton inputGroupButton = new InputGroupButton();
+
     private String packageName;
 
     private HTMLPanel newPackageHelpHtml = new HTMLPanel( "P", Constants.INSTANCE.validPackageHelp( "<br>" ) );
@@ -53,9 +58,13 @@ public class NewPackagePopup extends BaseModal {
 
     private FormGroup errorMessagesGroup = new FormGroup();
 
-    private VerticalPanel mainPanel = new VerticalPanel();
+    private Container mainPanel = new Container();
 
-    private HorizontalPanel dataPanel = new HorizontalPanel();
+    private Row row = new Row();
+
+    private Column column = new Column( ColumnSize.MD_12 );
+
+    private InputGroup inputGroup = new InputGroup();
 
     private Command afterAddCommand;
 
@@ -63,20 +72,25 @@ public class NewPackagePopup extends BaseModal {
     ValidatorService validatorService;
 
     public NewPackagePopup() {
+        mainPanel.setFluid( true );
+        mainPanel.add( row );
+        row.add( column );
+
         newPackageButton.setType( ButtonType.PRIMARY );
         newPackageButton.setIcon( IconType.PLUS );
+        inputGroupButton.add( newPackageButton );
+
+        inputGroup.add( newPackageName );
+        inputGroup.add( inputGroupButton );
 
         newPackageName.setPlaceholder( Constants.INSTANCE.package_id_placeholder() );
-        newPackageControlGroup.add( newPackageName );
+        newPackageControlGroup.add( inputGroup );
         errorMessagesGroup.add( errorMessages );
-        dataPanel.add( newPackageControlGroup );
-        dataPanel.add( newPackageButton );
-        mainPanel.add( dataPanel );
-        mainPanel.add( newPackageHelpHtml );
-        mainPanel.add( errorMessagesGroup );
-        add( new ModalBody(){{
-            add( mainPanel );
-        }} );
+
+        column.add( newPackageControlGroup );
+        column.add( newPackageHelpHtml );
+        column.add( errorMessagesGroup );
+        setBody( mainPanel );
 
         setTitle( Constants.INSTANCE.new_dataobject_popup_new_package() );
         setClosable( true );

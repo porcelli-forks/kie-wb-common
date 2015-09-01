@@ -20,15 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.kie.workbench.common.screens.datamodeller.client.util.DataModelerUtils;
 import org.uberfire.commons.data.Pair;
 
@@ -45,10 +44,10 @@ public class BooleanValuePairEditorViewImpl
     private static BooleanValuePairEditorViewImplUiBinder uiBinder = GWT.create( BooleanValuePairEditorViewImplUiBinder.class );
 
     @UiField
-    SpanElement valuePairLabel;
+    FormLabel valuePairLabel;
 
     @UiField
-    ListBox listBox;
+    Select listBox;
 
     private static List<Pair<String, String>> items = new ArrayList<Pair<String, String>>();
 
@@ -77,29 +76,25 @@ public class BooleanValuePairEditorViewImpl
 
     @Override
     public String getSelectedValue() {
-        return listBox.getSelectedValue();
+        return listBox.getValue();
     }
 
     public void setValuePairLabel( String valuePairLabel ) {
-        this.valuePairLabel.setInnerText( valuePairLabel );
+        this.valuePairLabel.setText( valuePairLabel );
     }
 
     @Override
     public void showValuePairName( boolean show ) {
-        if ( show ) {
-            this.valuePairLabel.getStyle().clearDisplay();
-        } else {
-            this.valuePairLabel.getStyle().setDisplay( Style.Display.NONE );
-        }
+        this.valuePairLabel.setVisible( show );
     }
 
     private void initItems( List<Pair<String, String>> options ) {
         for ( Pair<String, String> option : options ) {
-            listBox.addItem( option.getK1(), option.getK2() );
+            listBox.add( DataModelerUtils.newOption( option.getK1(), option.getK2() ) );
         }
     }
 
-    @UiHandler("listBox")
+    @UiHandler( "listBox" )
     void onValueChanged( ChangeEvent event ) {
         presenter.onValueChanged();
     }

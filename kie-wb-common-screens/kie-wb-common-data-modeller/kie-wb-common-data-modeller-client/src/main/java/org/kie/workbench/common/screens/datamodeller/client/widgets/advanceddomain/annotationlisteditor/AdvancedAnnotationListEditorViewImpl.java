@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,20 +30,28 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ColumnOffset;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.Pull;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.datamodeller.client.widgets.advanceddomain.annotationwizard.CreateAnnotationWizard;
@@ -69,9 +78,6 @@ public class AdvancedAnnotationListEditorViewImpl
     private static AdvancedAnnotationListEditorViewImplUiBinder uiBinder = GWT.create( AdvancedAnnotationListEditorViewImplUiBinder.class );
 
     @UiField
-    FlowPanel containerPanel;
-
-    @UiField
     Button addAnnotationButton;
 
     @UiField
@@ -89,8 +95,6 @@ public class AdvancedAnnotationListEditorViewImpl
     public AdvancedAnnotationListEditorViewImpl() {
         initWidget( uiBinder.createAndBindUi( this ) );
         accordionsContainer.setId( DOM.createUniqueId() );
-        addAnnotationButton.setType( ButtonType.LINK );
-        addAnnotationButton.setIcon( IconType.PLUS );
     }
 
     @Override
@@ -129,21 +133,30 @@ public class AdvancedAnnotationListEditorViewImpl
         container.add( header );
         collapse.add( body );
         container.add( collapse );
-        header.setDataParent( accordionsContainer.getId() );
-        header.setDataTargetWidget( collapse );
 
-        final AnchorListItem listItem = new AnchorListItem( accordionHeading( annotation ) );
-        listItem.add( new FlowPanel() {{
-            add( new Icon( IconType.TRASH ) {{
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( final ClickEvent clickEvent ) {
-                        presenter.onDeleteAnnotation( annotation );
-                    }
-                } );
-                addStyleName( "pull-right" );
-            }} );
-        }} );
+        final Button remove = new Button();
+        remove.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( final ClickEvent clickEvent ) {
+                presenter.onDeleteAnnotation( annotation );
+            }
+        } );
+        remove.setPull( Pull.RIGHT );
+        remove.setIcon( IconType.TRASH );
+        remove.setType( ButtonType.DANGER );
+        remove.setSize( ButtonSize.SMALL );
+        remove.getElement().getStyle().setMarginTop( -4, Style.Unit.PX );
+        header.add( remove );
+
+        final Heading heading = new Heading( HeadingSize.H4 );
+        final Anchor anchor = new Anchor();
+        anchor.setText( accordionHeading( annotation ) );
+        anchor.setDataToggle( Toggle.COLLAPSE );
+        anchor.setDataParent( accordionsContainer.getId() );
+        anchor.setDataTargetWidget( collapse );
+        anchor.addStyleName( "collapsed" );
+        heading.add( anchor );
+        header.add( heading );
 
         accordionsContainer.add( container );
 
@@ -158,21 +171,25 @@ public class AdvancedAnnotationListEditorViewImpl
     private Widget createValuePairItem( final Annotation annotation,
                                         final AnnotationValuePairDefinition valuePairDefinition,
                                         final AnnotationSource annotationSource ) {
-        FlowPanel valuePairRow = new FlowPanel();
-        valuePairRow.addStyleName( "row" );
-        valuePairRow.addStyleName( "form-group" );
+        final Row valuePairRow = new Row();
+        final FormGroup formGroup = new FormGroup();
+        valuePairRow.add( formGroup );
 
-        valuePairRow.add( new Label( valuePairDefinition.getName() + ":" ) );
+        final FormLabel formLabel = new FormLabel();
+        formLabel.addStyleName( ColumnSize.MD_3.getCssName() );
+        formLabel.setText( valuePairDefinition.getName() );
+        formGroup.add( formLabel );
 
-        TextBox content = new TextBox();
-        content.addStyleName( "col-md-8" );
-        String valuePairString = getValuePairStringValue( annotation, valuePairDefinition, annotationSource );
+        final Column column = new Column( ColumnSize.MD_9 );
+        formGroup.add( column );
+        final TextBox content = new TextBox();
+        column.add( content );
+        final String valuePairString = getValuePairStringValue( annotation, valuePairDefinition, annotationSource );
         content.setText( valuePairString );
         content.setReadOnly( true );
         content.setTitle( valuePairString );
-        valuePairRow.add( content );
 
-        Button editButton = new Button(
+        final Button editButton = new Button(
                 Constants.INSTANCE.advanced_domain_annotation_list_editor_action_edit(),
                 new ClickHandler() {
                     @Override
@@ -180,11 +197,10 @@ public class AdvancedAnnotationListEditorViewImpl
                         presenter.onEditValuePair( annotation, valuePairDefinition.getName() );
                     }
                 } );
-        editButton.setType( ButtonType.LINK );
         editButton.setEnabled( !readonly );
-        valuePairRow.add( editButton );
+        editButton.setIcon( IconType.EDIT );
 
-        Button clearButton = new Button(
+        final Button clearButton = new Button(
                 Constants.INSTANCE.advanced_domain_annotation_list_editor_action_clear(),
                 new ClickHandler() {
                     @Override
@@ -192,9 +208,16 @@ public class AdvancedAnnotationListEditorViewImpl
                         presenter.onClearValuePair( annotation, valuePairDefinition.getName() );
                     }
                 } );
-        clearButton.setType( ButtonType.LINK );
         clearButton.setEnabled( !readonly );
-        valuePairRow.add( clearButton );
+        clearButton.setIcon( IconType.ERASER );
+
+        final FormGroup formGroupButton = new FormGroup();
+        formGroupButton.add( editButton );
+        formGroupButton.add( clearButton );
+        final Column columnButton = new Column( ColumnSize.MD_9 );
+        columnButton.setOffset( ColumnOffset.MD_3 );
+        columnButton.add( formGroupButton );
+        valuePairRow.add( columnButton );
 
         return valuePairRow;
     }
@@ -263,7 +286,7 @@ public class AdvancedAnnotationListEditorViewImpl
         accordionsContainer.clear();
     }
 
-    @UiHandler("addAnnotationButton")
+    @UiHandler( "addAnnotationButton" )
     void onAddAnnotation( ClickEvent event ) {
         presenter.onAddAnnotation();
     }

@@ -30,16 +30,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
 import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
@@ -57,7 +55,7 @@ public class ShowUsagesPopup extends BaseModal {
     private ShowUsagesPopupWidgetBinder uiBinder = GWT.create( ShowUsagesPopupWidgetBinder.class );
 
     @UiField
-    protected HTML message;
+    protected Paragraph message;
 
     @UiField
     protected SimpleTable<UsedByRow> usedByTable;
@@ -91,19 +89,12 @@ public class ShowUsagesPopup extends BaseModal {
                                final IconType cancelButtonIconType ) {
 
         setTitle( title );
-//        setMaxHeigth( ( Window.getClientHeight() * 0.75 ) + "px" );
-        setDataBackdrop( ModalBackdrop.STATIC );
-        setDataKeyboard( true );
-        setFade( true );
-        setRemoveOnHide( true );
-        setHideOtherModals( false );
+
         this.usedByFiles = usedByFiles;
         this.yesCommand = yesCommand;
         this.cancelCommand = cancelCommand;
 
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( ShowUsagesPopup.this ) );
-        }} );
+        setBody( uiBinder.createAndBindUi( ShowUsagesPopup.this ) );
 
         if ( yesCommand == null ) {
             yesButton.setVisible( false );
@@ -133,7 +124,7 @@ public class ShowUsagesPopup extends BaseModal {
         }
 
         //setWidth(  );
-        this.message.setHTML( SafeHtmlUtils.fromTrustedString( message ) );
+        this.message.setHTML( message );
         initTable();
         addShownHandler( new ModalShownHandler() {
             @Override
@@ -212,7 +203,7 @@ public class ShowUsagesPopup extends BaseModal {
                                yesCommand,
                                Constants.INSTANCE.usages_popup_action_yes_delete_anyway(),
                                ButtonType.DANGER,
-                               IconType.MINUS,
+                               IconType.TRASH,
                                cancelCommand,
                                null,
                                ButtonType.PRIMARY,
@@ -229,7 +220,7 @@ public class ShowUsagesPopup extends BaseModal {
                                yesCommand,
                                Constants.INSTANCE.usages_popup_action_yes_rename_anyway(),
                                ButtonType.DANGER,
-                               IconType.MINUS,
+                               IconType.TRASH,
                                cancelCommand,
                                null,
                                ButtonType.PRIMARY,
@@ -246,7 +237,7 @@ public class ShowUsagesPopup extends BaseModal {
                                yesCommand,
                                Constants.INSTANCE.usages_popup_action_yes_change_anyway(),
                                ButtonType.DANGER,
-                               IconType.MINUS,
+                               IconType.TRASH,
                                cancelCommand,
                                null,
                                ButtonType.PRIMARY,
