@@ -207,7 +207,7 @@ public class Explorer extends Composite {
                     @Override
                     public void onClick( final ClickEvent clickEvent ) {
                         if ( button.getIcon().equals( IconType.PLUS ) ) {
-                            button.setIcon( IconType.TRASH );
+                            button.setIcon( IconType.MINUS );
                             onExpandNavigator();
                         } else {
                             button.setIcon( IconType.PLUS );
@@ -219,7 +219,7 @@ public class Explorer extends Composite {
                 if ( mode.equals( Mode.COLLAPSED ) ) {
                     button.setIcon( IconType.PLUS );
                 } else {
-                    button.setIcon( IconType.TRASH );
+                    button.setIcon( IconType.MINUS );
                 }
                 container.add( button );
             }
