@@ -56,7 +56,8 @@ public class ValidationPopup extends BaseModal {
         dataGrid.addLevelColumn( 10, new MessageTableWidget.ColumnExtractor<Level>() {
             @Override
             public Level getValue( final Object row ) {
-                return ( (ValidationMessage) row ).getLevel();
+                final Level level = ( (ValidationMessage) row ).getLevel();
+                return level != null ? level : Level.ERROR;
             }
         } );
 
