@@ -26,8 +26,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.project.model.WorkItemHandlerModel;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.kie.workbench.common.services.shared.kmodule.ListenerModel;
+import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
@@ -59,9 +59,9 @@ public class KSessionModelOptionsPopUpViewImpl
         this.listenersPanel = listenersPanel;
         this.workItemHandlersPanel = workItemHandlersPanel;
 
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( KSessionModelOptionsPopUpViewImpl.this ) );
-        }} );
+        setTitle( CommonConstants.INSTANCE.Edit() );
+        setBody( uiBinder.createAndBindUi( KSessionModelOptionsPopUpViewImpl.this ) );
+
         add( new ModalFooterOKButton( new Command() {
             @Override
             public void execute() {

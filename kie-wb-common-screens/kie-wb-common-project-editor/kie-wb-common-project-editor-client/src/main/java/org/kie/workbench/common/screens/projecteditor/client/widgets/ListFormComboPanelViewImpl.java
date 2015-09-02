@@ -24,9 +24,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.ListBox;
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
@@ -51,7 +51,7 @@ public class ListFormComboPanelViewImpl
     ListBox list;
 
     @UiField
-    SimplePanel kSessionForm;
+    Column kSessionForm;
 
     @UiField
     Button makeDefaultButton;
