@@ -28,7 +28,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.PageHeader;
-import org.gwtbootstrap3.client.ui.RadioButton;
+import org.gwtbootstrap3.client.ui.Radio;
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;
 import org.kie.workbench.common.services.shared.kmodule.KSessionModel;
 
@@ -47,28 +47,28 @@ public class KBaseFormViewImpl
 
     private static KnowledgeBaseConfigurationFormViewImplBinder uiBinder = GWT.create( KnowledgeBaseConfigurationFormViewImplBinder.class );
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     CRUDListBox includesListBox;
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     CRUDListBox packagesListBox;
 
     @UiField
     PageHeader nameLabel;
 
     @UiField
-    RadioButton equalsBehaviorIdentity;
+    Radio equalsBehaviorIdentity;
 
     @UiField
-    RadioButton equalsBehaviorEquality;
+    Radio equalsBehaviorEquality;
 
     @UiField
-    RadioButton eventProcessingModeStream;
+    Radio eventProcessingModeStream;
 
     @UiField
-    RadioButton eventProcessingModeCloud;
+    Radio eventProcessingModeCloud;
 
-    @UiField(provided = true)
+    @UiField( provided = true )
     KSessionsPanel statefulSessionsPanel;
 
     @Inject
@@ -196,28 +196,28 @@ public class KBaseFormViewImpl
         statefulSessionsPanel.setItems( new ArrayList<KSessionModel>() );
     }
 
-    @UiHandler("equalsBehaviorIdentity")
+    @UiHandler( "equalsBehaviorIdentity" )
     public void onEqualsBehaviorIdentityChange( ValueChangeEvent<Boolean> valueChangeEvent ) {
         if ( equalsBehaviorIdentity.getValue() ) {
             presenter.onEqualsBehaviorIdentitySelect();
         }
     }
 
-    @UiHandler("equalsBehaviorEquality")
+    @UiHandler( "equalsBehaviorEquality" )
     public void onEqualsBehaviorEqualityChange( ValueChangeEvent<Boolean> valueChangeEvent ) {
         if ( equalsBehaviorEquality.getValue() ) {
             presenter.onEqualsBehaviorEqualitySelect();
         }
     }
 
-    @UiHandler("eventProcessingModeStream")
+    @UiHandler( "eventProcessingModeStream" )
     public void onEventProcessingModeStreamChange( ValueChangeEvent<Boolean> valueChangeEvent ) {
         if ( eventProcessingModeStream.getValue() ) {
             presenter.onEventProcessingModeStreamSelect();
         }
     }
 
-    @UiHandler("eventProcessingModeCloud")
+    @UiHandler( "eventProcessingModeCloud" )
     public void onEventProcessingModeCloudChange( ValueChangeEvent<Boolean> valueChangeEvent ) {
         if ( eventProcessingModeCloud.getValue() ) {
             presenter.onEventProcessingModeCloudSelect();
