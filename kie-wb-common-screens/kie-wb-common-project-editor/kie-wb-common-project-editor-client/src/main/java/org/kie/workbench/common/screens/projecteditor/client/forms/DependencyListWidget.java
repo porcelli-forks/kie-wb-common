@@ -19,6 +19,7 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -28,6 +29,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.m2repo.client.widgets.ArtifactListPresenter;
+import org.guvnor.m2repo.client.widgets.ArtifactListView;
 import org.guvnor.m2repo.model.JarListPageRow;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -87,12 +89,14 @@ public class DependencyListWidget
                 onPathSelect.execute( row.getPath() );
             }
         } );
-        dependencyPagedJarTable.getView().addColumn( selectColumn,
-                                                     "Select" );
+        final ArtifactListView artifactListView = dependencyPagedJarTable.getView();
 
-        dependencyPagedJarTable.getView().setContentHeight( "200px" );
+        artifactListView.addColumn( selectColumn, "Select" );
+        artifactListView.setContentHeight( "200px" );
+        artifactListView.asWidget().getElement().getStyle().setMarginLeft( 0, Style.Unit.PX );
+        artifactListView.asWidget().getElement().getStyle().setMarginRight( 0, Style.Unit.PX );
 
-        panel.add( dependencyPagedJarTable.getView() );
+        panel.add( artifactListView );
     }
 
     public void addOnSelect( final ParameterizedCommand<String> onPathSelect ) {
