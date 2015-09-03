@@ -29,7 +29,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.RadioButton;
+import org.gwtbootstrap3.client.ui.Radio;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.kie.workbench.common.screens.datamodeller.client.pdescriptor.PersistenceUnitPropertyGrid;
 import org.kie.workbench.common.screens.datamodeller.client.pdescriptor.ProjectClassList;
@@ -69,10 +69,10 @@ public class PersistenceDescriptorEditorViewImpl
     HelpBlock datasourceHelpInline;
 
     @UiField
-    RadioButton transactionTypeJTARadioButton;
+    Radio transactionTypeJTARadioButton;
 
     @UiField
-    RadioButton transactionTypeResourceLocalRadioButton;
+    Radio transactionTypeResourceLocalRadioButton;
 
     @UiField
     HelpBlock transactionTypeHelpInline;
