@@ -18,102 +18,98 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
+    <ui:with field="i18n" type="org.kie.workbench.common.screens.datamodeller.client.resources.i18n.Constants"/>
 
-  <ui:style>
+    <ui:style>
 
-    .container {
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
+        .container {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
 
-  </ui:style>
+    </ui:style>
 
-  <b:Container fluid="true" addStyleNames="{style.container}">
-    <b:Row>
-      <b:Column size="MD_12">
-        <b:Form type="HORIZONTAL">
-          <b:FieldSet>
+    <b:Container fluid="true" addStyleNames="{style.container}">
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:Form type="HORIZONTAL">
+                    <b:FieldSet>
 
-            <!-- persistence unit -->
-            <b:FormGroup ui:field="persistenceUnitGroup">
-              <b:Column size="MD_3">
-                <b:FormLabel for="persistenceUnit">
-                  <ui:text from="{i18n.persistence_descriptor_editor_persistence_unit_field}"/>
-                </b:FormLabel>
-              </b:Column>
-              <b:Column size="MD_9">
-                <b:TextBox b:id="persistenceUnit" ui:field="persistenceUnitTextBox" addStyleNames="col-md-5" placeholder=""/>
-                <b:HelpBlock ui:field="persistenceUnitHelpInline"/>
-              </b:Column>
-            </b:FormGroup>
+                        <!-- persistence unit -->
+                        <b:FormGroup ui:field="persistenceUnitGroup">
+                            <b:FormLabel for="persistenceUnit" addStyleNames="col-md-3">
+                                <ui:text from="{i18n.persistence_descriptor_editor_persistence_unit_field}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:TextBox b:id="persistenceUnit" ui:field="persistenceUnitTextBox" addStyleNames="col-md-5" placeholder=""/>
+                                <b:HelpBlock ui:field="persistenceUnitHelpInline"/>
+                            </b:Column>
+                        </b:FormGroup>
 
-            <!-- persistence provider -->
-            <b:FormGroup ui:field="persistenceProviderGroup">
-              <b:Column size="MD_3">
-                <b:FormLabel for="persistenceProvider">
-                  <ui:text from="{i18n.persistence_descriptor_editor_persistence_provider_field}"/>
-                </b:FormLabel>
-              </b:Column>
-              <b:Column size="MD_9">
-                <b:TextBox b:id="persistenceProvider" ui:field="persistenceProviderTextBox" addStyleNames="col-md-5"/>
-                <b:HelpBlock ui:field="persistenceProviderHelpInline"/>
-              </b:Column>
-            </b:FormGroup>
+                        <!-- persistence provider -->
+                        <b:FormGroup ui:field="persistenceProviderGroup">
+                            <b:FormLabel for="persistenceProvider" addStyleNames="col-md-3">
+                                <ui:text from="{i18n.persistence_descriptor_editor_persistence_provider_field}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:TextBox b:id="persistenceProvider" ui:field="persistenceProviderTextBox" addStyleNames="col-md-5"/>
+                                <b:HelpBlock ui:field="persistenceProviderHelpInline"/>
+                            </b:Column>
+                        </b:FormGroup>
 
-            <!-- data source -->
-            <b:FormGroup ui:field="datasourceGroup">
-              <b:Column size="MD_3">
-                <b:FormLabel for="datasource">
-                  <ui:text from="{i18n.persistence_descriptor_editor_data_source_field}"/>
-                </b:FormLabel>
-              </b:Column>
-              <b:Column size="MD_9">
-                <b:TextBox b:id="datasource" ui:field="datasourceTextBox" addStyleNames="col-md-5"/>
-                <b:HelpBlock ui:field="datasourceHelpInline"/>
-              </b:Column>
-            </b:FormGroup>
+                        <!-- data source -->
+                        <b:FormGroup ui:field="datasourceGroup">
+                            <b:FormLabel for="datasource" addStyleNames="col-md-3">
+                                <ui:text from="{i18n.persistence_descriptor_editor_data_source_field}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:TextBox b:id="datasource" ui:field="datasourceTextBox" addStyleNames="col-md-5"/>
+                                <b:HelpBlock ui:field="datasourceHelpInline"/>
+                            </b:Column>
+                        </b:FormGroup>
 
-            <!-- persistence unit -->
-            <b:FormGroup ui:field="transactionTypeGroup">
-              <b:FormLabel for="transactionType">
-                <ui:text from="{i18n.persistence_descriptor_editor_transactions_type_field}"/>
-              </b:FormLabel>
-              <b:RadioButton b:id="transactionType" name="transactionType" ui:field="transactionTypeJTARadioButton" text="JTA"/>
-              <b:RadioButton b:id="transactionType" name="transactionType" ui:field="transactionTypeResourceLocalRadioButton" text="Resource Local"/>
-              <b:HelpBlock ui:field="transactionTypeHelpInline"/>
-            </b:FormGroup>
+                        <!-- persistence unit -->
+                        <b:FormGroup ui:field="transactionTypeGroup">
+                            <b:FormLabel for="transactionType" addStyleNames="col-md-3">
+                                <ui:text from="{i18n.persistence_descriptor_editor_transactions_type_field}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:Radio b:id="transactionType" name="transactionType" ui:field="transactionTypeJTARadioButton" text="JTA"/>
+                                <b:Radio b:id="transactionType" name="transactionType" ui:field="transactionTypeResourceLocalRadioButton" text="Resource Local"/>
+                                <b:HelpBlock ui:field="transactionTypeHelpInline"/>
+                            </b:Column>
+                        </b:FormGroup>
 
-            <b:PanelGroup>
-              <b:Panel>
-                <b:PanelHeader dataToggle="COLLAPSE" dataTarget="#collapseProperties">
-                  <b:Heading size="H4">
-                    <b:Anchor text="{i18n.persistence_descriptor_editor_advanced_properties_table}"/>
-                  </b:Heading>
-                </b:PanelHeader>
-                <b:PanelCollapse b:id="collapseProperties">
-                  <b:PanelBody ui:field="propertiesGridPanel"/>
-                </b:PanelCollapse>
-              </b:Panel>
-            </b:PanelGroup>
+                        <b:PanelGroup>
+                            <b:Panel>
+                                <b:PanelHeader>
+                                    <b:Heading size="H4" addStyleNames="panel-title">
+                                        <b:Anchor text="{i18n.persistence_descriptor_editor_advanced_properties_table}" addStyleNames="collapsed" dataToggle="COLLAPSE" dataTarget="#collapseProperties"/>
+                                    </b:Heading>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="collapseProperties">
+                                    <b:PanelBody ui:field="propertiesGridPanel"/>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                        </b:PanelGroup>
 
-            <b:PanelGroup>
-              <b:Panel>
-                <b:PanelHeader dataToggle="COLLAPSE" dataTarget="#collapsePersistence">
-                  <b:Heading size="H4">
-                    <b:Anchor text="{i18n.persistence_descriptor_editor_persistable_objects_table}"/>
-                  </b:Heading>
-                </b:PanelHeader>
-                <b:PanelCollapse b:id="collapsePersistence">
-                  <b:PanelBody ui:field="persistenceUnitClassesPanel"/>
-                </b:PanelCollapse>
-              </b:Panel>
-            </b:PanelGroup>
+                        <b:PanelGroup>
+                            <b:Panel>
+                                <b:PanelHeader>
+                                    <b:Heading size="H4" addStyleNames="panel-title">
+                                        <b:Anchor text="{i18n.persistence_descriptor_editor_persistable_objects_table}" addStyleNames="collapsed" dataToggle="COLLAPSE" dataTarget="#collapsePersistence" />
+                                    </b:Heading>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="collapsePersistence">
+                                    <b:PanelBody ui:field="persistenceUnitClassesPanel"/>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                        </b:PanelGroup>
 
-          </b:FieldSet>
-        </b:Form>
-      </b:Column>
-    </b:Row>
-  </b:Container>
+                    </b:FieldSet>
+                </b:Form>
+            </b:Column>
+        </b:Row>
+    </b:Container>
 
 </ui:UiBinder>
