@@ -19,20 +19,18 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
-  <ui:style>
-    .relative {
-      position: relative;
-    }
-  </ui:style>
-
-  <g:FlowPanel addStyleNames="{style.relative}">
-    <b:InputGroup>
-      <b:TextBox ui:field="filter"/>
-      <b:InputGroupButton>
-        <b:Button ui:field="search">Search</b:Button>
-      </b:InputGroupButton>
-    </b:InputGroup>
-    <g:FlowPanel ui:field="panel"/>
-  </g:FlowPanel>
+    <b:Container fluid="true">
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:InputGroup>
+                    <b:TextBox ui:field="filter"/>
+                    <b:InputGroupButton>
+                        <b:Button icon="SEARCH" ui:field="search">Search</b:Button>
+                    </b:InputGroupButton>
+                </b:InputGroup>
+                <g:FlowPanel ui:field="panel"/>
+            </b:Column>
+        </b:Row>
+    </b:Container>
 
 </ui:UiBinder>
