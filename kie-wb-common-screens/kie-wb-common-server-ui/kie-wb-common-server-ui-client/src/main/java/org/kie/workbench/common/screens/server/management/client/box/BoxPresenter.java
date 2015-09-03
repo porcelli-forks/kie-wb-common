@@ -22,7 +22,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.project.model.GAV;
-import org.kie.workbench.common.screens.server.management.client.artifact.NewContainerFormPresenter;
 import org.kie.workbench.common.screens.server.management.client.events.ContainerInfoUpdateEvent;
 import org.kie.workbench.common.screens.server.management.events.ContainerStarted;
 import org.kie.workbench.common.screens.server.management.events.ContainerStopped;
@@ -37,6 +36,7 @@ import org.kie.workbench.common.screens.server.management.model.ServerRef;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 public class BoxPresenter {
@@ -90,8 +90,6 @@ public class BoxPresenter {
 
     private boolean supportsOpenCommand = false;
 
-    private NewContainerFormPresenter newContainerFormPresenter;
-
     private Command onSelect = new Command() {
         @Override
         public void execute() {
@@ -108,12 +106,10 @@ public class BoxPresenter {
     @Inject
     public BoxPresenter( final View view,
                          final PlaceManager placeManager,
-                         final Event<ContainerInfoUpdateEvent> containerInfoEvent,
-                         final NewContainerFormPresenter newContainerFormPresenter ) {
+                         final Event<ContainerInfoUpdateEvent> containerInfoEvent ) {
         this.view = view;
         this.placeManager = placeManager;
         this.containerInfoEvent = containerInfoEvent;
-        this.newContainerFormPresenter = newContainerFormPresenter;
         this.view.init( this );
     }
 
@@ -236,8 +232,7 @@ public class BoxPresenter {
 
     public void openAddScreen() {
         if ( enableAddAction() ) {
-            newContainerFormPresenter.setServer( serverId );
-            newContainerFormPresenter.show();
+            placeManager.goTo( new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", serverId ) );
         }
     }
 
@@ -308,7 +303,7 @@ public class BoxPresenter {
             } else {
                 for ( final ContainerRef containerRef : disconnected.getServer().getContainersRef() ) {
                     if ( containerRef.getId().equals( getName() ) ) {
-                        if ( disconnected.getServer().getStatus().equals( ContainerStatus.STOPPED ) ) {
+                        if (disconnected.getServer().getStatus().equals(ContainerStatus.STOPPED)) {
                             status = disconnected.getServer().getStatus();
                         } else {
                             status = containerRef.getStatus();

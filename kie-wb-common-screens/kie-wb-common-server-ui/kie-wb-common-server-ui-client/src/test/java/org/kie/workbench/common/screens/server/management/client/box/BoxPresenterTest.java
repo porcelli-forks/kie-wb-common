@@ -22,7 +22,6 @@ import org.guvnor.common.services.project.model.GAV;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.screens.server.management.client.artifact.NewContainerFormPresenter;
 import org.kie.workbench.common.screens.server.management.client.events.ContainerInfoUpdateEvent;
 import org.kie.workbench.common.screens.server.management.events.ContainerStarted;
 import org.kie.workbench.common.screens.server.management.events.ContainerStopped;
@@ -62,12 +61,9 @@ public class BoxPresenterTest {
     @Mock
     private EventSourceMock<ContainerInfoUpdateEvent> event;
 
-    @Mock
-    private NewContainerFormPresenter newContainerFormPresenter;
-
     @Before
     public void setup() {
-        boxPresenter = new BoxPresenter( boxView, placeManager, event, newContainerFormPresenter );
+        boxPresenter = new BoxPresenter( boxView, placeManager, event );
 
         doAnswer( new Answer<Void>() {
             public Void answer( InvocationOnMock invocation ) {
@@ -227,7 +223,7 @@ public class BoxPresenterTest {
         verify( placeManager, times( 0 ) ).goTo( "ContainerInfo" );
 
         boxPresenter.openAddScreen();  // we allow to add containers offline so every time we hit opeAddScreen it will be allowed
-        verify( placeManager, times( 1 ) ).goTo( new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ) );
+        verify( placeManager, times( 1 ) ).goTo(new DefaultPlaceRequest( "NewContainerForm" ).addParameter( "serverId", "my_id" ));
 
         testSelection();
 

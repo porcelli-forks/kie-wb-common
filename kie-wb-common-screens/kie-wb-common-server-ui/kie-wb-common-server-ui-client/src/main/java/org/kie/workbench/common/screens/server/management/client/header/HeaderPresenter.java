@@ -24,10 +24,10 @@ import org.kie.workbench.common.screens.server.management.client.events.HeaderDe
 import org.kie.workbench.common.screens.server.management.client.events.HeaderFilterEvent;
 import org.kie.workbench.common.screens.server.management.client.events.HeaderRefreshEvent;
 import org.kie.workbench.common.screens.server.management.client.events.HeaderSelectAllEvent;
-import org.kie.workbench.common.screens.server.management.client.events.HeaderServerStatusUpdateEvent;
 import org.kie.workbench.common.screens.server.management.client.events.HeaderStartEvent;
 import org.kie.workbench.common.screens.server.management.client.events.HeaderStopEvent;
-import org.kie.workbench.common.screens.server.management.client.registry.ServerRegistryEndpointPresenter;
+import org.kie.workbench.common.screens.server.management.client.events.HeaderServerStatusUpdateEvent;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
@@ -74,15 +74,16 @@ public class HeaderPresenter {
 
     private final Event<HeaderServerStatusUpdateEvent> headerServerStatusUpdateEvent;
 
+    private final PlaceManager placeManager;
+
     private State deleteContainerState = State.DISPLAY;
     private State stopContainerState = State.DISPLAY;
     private State startContainerState = State.DISPLAY;
     private State updateStatusState = State.DISPLAY;
 
-    private ServerRegistryEndpointPresenter serverRegistryEndpointPresenter;
-
     @Inject
     public HeaderPresenter( final View view,
+                            final PlaceManager placeManager,
                             final Event<HeaderFilterEvent> filterEvent,
                             final Event<HeaderClearSelectionEvent> clearSelectionEvent,
                             final Event<HeaderSelectAllEvent> selectAllEvent,
@@ -90,8 +91,9 @@ public class HeaderPresenter {
                             final Event<HeaderStopEvent> headerStopEvent,
                             final Event<HeaderStartEvent> headerStartEvent,
                             final Event<HeaderRefreshEvent> headerRefreshEvent,
-                            final Event<HeaderServerStatusUpdateEvent> headerServerStatusUpdateEvent ) {
+                            final Event<HeaderServerStatusUpdateEvent> headerServerStatusUpdateEvent) {
         this.view = view;
+        this.placeManager = placeManager;
         this.filterEvent = filterEvent;
         this.clearSelectionEvent = clearSelectionEvent;
         this.selectAllEvent = selectAllEvent;
@@ -152,7 +154,7 @@ public class HeaderPresenter {
     }
 
     public void registerServer() {
-        serverRegistryEndpointPresenter.show();
+        placeManager.goTo( "ServerRegistryEndpoint" );
     }
 
     public void refresh() {

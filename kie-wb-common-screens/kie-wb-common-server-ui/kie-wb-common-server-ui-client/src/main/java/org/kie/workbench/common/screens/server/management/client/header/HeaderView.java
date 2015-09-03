@@ -1,17 +1,17 @@
 /*
- * Copyright 2012 JBoss Inc
+ *   Copyright 2015 JBoss Inc
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 
 package org.kie.workbench.common.screens.server.management.client.header;
@@ -55,14 +55,10 @@ public class HeaderView extends Composite
     Button registerArea;
 
     @UiField
-<<<<<<< HEAD
-    Element updateStatusArea;
+    Button updateStatusArea;
 
     @UiField
-    Element refreshArea;
-=======
     Button refreshArea;
->>>>>>> Kie WB Common server management PatternFly style review
 
     @UiField
     Button startArea;
@@ -105,22 +101,9 @@ public class HeaderView extends Composite
             }
         } );
 
-<<<<<<< HEAD
-        DOM.sinkEvents( updateStatusArea, Event.ONCLICK );
-        DOM.setEventListener( updateStatusArea, new EventListener() {
-            public void onBrowserEvent( final Event event ) {
-                presenter.updateServerStatus();
-            }
-        } );
-
-        DOM.sinkEvents( refreshArea, Event.ONCLICK );
-        DOM.setEventListener( refreshArea, new EventListener() {
-            public void onBrowserEvent( final Event event ) {
-=======
         refreshArea.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
->>>>>>> Kie WB Common server management PatternFly style review
                 presenter.refresh();
             }
         } );
@@ -160,16 +143,9 @@ public class HeaderView extends Composite
             }
         } );
 
-<<<<<<< HEAD
-        startArea.getStyle().setDisplay( Style.Display.NONE );
-        stopArea.getStyle().setDisplay( Style.Display.NONE );
-        deleteArea.getStyle().setDisplay( Style.Display.NONE );
-        updateStatusArea.getStyle().setDisplay( Style.Display.NONE );
-=======
         hideStartContainer();
         hideStopContainer();
         hideDeleteContainer();
->>>>>>> Kie WB Common server management PatternFly style review
     }
 
     @Override
@@ -194,7 +170,7 @@ public class HeaderView extends Composite
 
     @Override
     public void displayUpdateStatus() {
-        updateStatusArea.getStyle().clearDisplay();
+        updateStatusArea.setVisible( true );
     }
 
     @Override
@@ -214,6 +190,6 @@ public class HeaderView extends Composite
 
     @Override
     public void hideUpdateStatus() {
-        updateStatusArea.getStyle().setDisplay( Style.Display.NONE );
+        updateStatusArea.setVisible( false );
     }
 }
