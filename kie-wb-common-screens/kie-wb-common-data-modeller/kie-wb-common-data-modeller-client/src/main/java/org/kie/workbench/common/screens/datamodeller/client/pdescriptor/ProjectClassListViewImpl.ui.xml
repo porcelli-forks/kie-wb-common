@@ -50,6 +50,12 @@
         <b:Button ui:field="addClassesButton" text="{i18n.project_class_list_action_add_project_persistable_classes}"/>
       </b:Column>
     </b:Row>
+
+    <b:Row>
+      <b:Column size="MD_12">
+        <b:HelpBlock ui:field="newClassHelpInline"/>
+      </b:Column>
+    </b:Row>
   </b:Container>
 
 </ui:UiBinder>
