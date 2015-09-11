@@ -203,26 +203,26 @@ public class Explorer extends Composite {
             container.clear();
             if ( !mode.equals( Mode.REGULAR ) ) {
                 final Button button = new Button();
-                button.setIcon( IconType.PLUS );
+                button.setIcon( IconType.CHEVRON_DOWN );
                 button.setPull( Pull.RIGHT );
                 button.getElement().getStyle().setMarginTop( 10, Style.Unit.PX );
                 button.addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( final ClickEvent clickEvent ) {
-                        if ( button.getIcon().equals( IconType.PLUS ) ) {
-                            button.setIcon( IconType.MINUS );
+                        if ( button.getIcon().equals( IconType.CHEVRON_DOWN ) ) {
+                            button.setIcon( IconType.CHEVRON_UP );
                             onExpandNavigator();
                         } else {
-                            button.setIcon( IconType.PLUS );
+                            button.setIcon( IconType.CHEVRON_DOWN );
                             onCollapseNavigator();
                         }
                     }
                 } );
 
                 if ( mode.equals( Mode.COLLAPSED ) ) {
-                    button.setIcon( IconType.PLUS );
+                    button.setIcon( IconType.CHEVRON_DOWN );
                 } else {
-                    button.setIcon( IconType.MINUS );
+                    button.setIcon( IconType.CHEVRON_UP );
                 }
                 container.add( button );
             }
