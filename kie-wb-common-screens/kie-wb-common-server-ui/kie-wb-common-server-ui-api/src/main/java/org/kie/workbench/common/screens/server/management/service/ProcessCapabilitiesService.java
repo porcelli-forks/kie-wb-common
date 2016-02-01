@@ -13,16 +13,19 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.model.spec;
+package org.kie.workbench.common.screens.server.management.service;
 
 import org.guvnor.common.services.project.model.GAV;
+import org.jboss.errai.bus.server.annotations.Remote;
 
-public interface ContainerSpec {
+@Remote
+public interface ProcessCapabilitiesService {
 
-    String getId();
-
-    String getServerTemplateId();
-
-    GAV getReleasedId();
+    void update( final String serverTemplateId,
+                 final String containerSpecId,
+                 final String runtimeStrategy,
+                 final String kbase,
+                 final String ksession,
+                 final String mergeMode );
 
 }

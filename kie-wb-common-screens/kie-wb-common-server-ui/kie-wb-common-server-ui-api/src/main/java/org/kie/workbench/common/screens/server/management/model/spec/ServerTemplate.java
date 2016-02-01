@@ -24,11 +24,9 @@ public interface ServerTemplate {
 
     String getName();
 
-    Map<String, String> getProperties();
+    Map<Capability, Config> getProperties();
 
     Collection<ContainerSpec> getContainersSpec();
-
-    Collection<Capability> getCapabilities();
 
     boolean hasContainerSpec( final String containerSpecId );
 
