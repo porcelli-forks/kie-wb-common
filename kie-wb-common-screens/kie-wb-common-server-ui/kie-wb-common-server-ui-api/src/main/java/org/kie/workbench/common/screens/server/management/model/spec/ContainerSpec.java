@@ -15,6 +15,8 @@
 
 package org.kie.workbench.common.screens.server.management.model.spec;
 
+import java.util.Map;
+
 import org.guvnor.common.services.project.model.GAV;
 
 public interface ContainerSpec {
@@ -24,5 +26,7 @@ public interface ContainerSpec {
     String getServerTemplateId();
 
     GAV getReleasedId();
+
+    Map<Capability, Config> getConfigs();
 
 }
