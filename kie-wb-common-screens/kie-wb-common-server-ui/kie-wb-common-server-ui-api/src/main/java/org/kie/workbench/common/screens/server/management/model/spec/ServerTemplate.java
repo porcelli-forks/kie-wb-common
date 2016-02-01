@@ -13,41 +13,28 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.model;
+package org.kie.workbench.common.screens.server.management.model.spec;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
-public interface ServerRef {
+public interface ServerTemplate {
 
     String getId();
 
-    String getUrl();
-
     String getName();
-
-    String getUsername();
-
-    String getPassword();
-
-    ContainerStatus getStatus();
-
-    ConnectionType getConnectionType();
 
     Map<String, String> getProperties();
 
-    Collection<ContainerRef> getContainersRef();
+    Collection<ContainerSpec> getContainersSpec();
 
-    boolean hasContainerRef( final String containerId );
+    Collection<Capability> getCapabilities();
 
-    ContainerRef getContainerRef( final String containerId );
+    boolean hasContainerSpec( final String containerSpecId );
 
-    void addContainerRef( final ContainerRef containerConfig );
+    ContainerSpec getContainerSpec( final String containerSpecId );
 
-    void deleteContainer( String containerId );
+    void addContainerRef( final ContainerSpec containerSpec );
 
-    List<ServerInstanceRef> getManagedServers();
-
-    void addManagedServer( final ServerInstanceRef serverInstanceRef );
+    void deleteContainerSpec( String containerSpecId );
 }

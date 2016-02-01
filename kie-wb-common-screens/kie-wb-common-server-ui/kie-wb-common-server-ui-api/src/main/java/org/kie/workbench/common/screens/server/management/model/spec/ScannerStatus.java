@@ -13,8 +13,8 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.model;
+package org.kie.workbench.common.screens.server.management.model.spec;
 
-public enum ConnectionType {
-    REMOTE, PROVISIONED
+public enum ScannerStatus {
+    UNKNOWN, CREATED, STARTED, SCANNING, STOPPED, DISPOSED, ERROR
 }

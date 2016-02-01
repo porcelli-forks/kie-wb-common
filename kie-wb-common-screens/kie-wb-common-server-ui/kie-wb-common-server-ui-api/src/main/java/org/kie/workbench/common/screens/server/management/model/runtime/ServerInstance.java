@@ -13,18 +13,20 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.service;
+package org.kie.workbench.common.screens.server.management.model.runtime;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
+import java.util.Collection;
 
-@Portable
-public class RemoteOperationFailedException extends RuntimeException {
+public interface ServerInstance {
 
-    public RemoteOperationFailedException() {
-        super();
-    }
+    String getServerInstanceId();
 
-    public RemoteOperationFailedException( String s ) {
-        super( s );
-    }
+    String getVersion();
+
+    String getUrl();
+
+    Collection<Status> getStatus();
+
+    Collection<Container> getContainers();
+
 }

@@ -13,12 +13,21 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.model;
+package org.kie.workbench.common.screens.server.management.service;
 
 import java.util.Collection;
 
-public interface Server extends ServerRef {
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.kie.workbench.common.screens.server.management.model.runtime.Container;
+import org.kie.workbench.common.screens.server.management.model.runtime.ServerInstance;
 
-    Collection<Container> containers();
+@Remote
+public interface RuntimeManagementService {
+
+    Collection<String> getServerInstanceNames( final String serverTemplateId );
+
+    Collection<ServerInstance> getServerInstances( final String serverTemplateId );
+
+    Collection<Container> getContainers( final String serverInstanceId );
 
 }

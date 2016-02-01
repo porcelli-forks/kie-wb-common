@@ -13,25 +13,24 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.events;
+package org.kie.workbench.common.screens.server.management.model.runtime;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.kie.workbench.common.screens.server.management.model.Server;
+import java.util.Collection;
 
-@Portable
-public class ServerDisconnected {
+import org.guvnor.common.services.project.model.GAV;
 
-    private Server server;
+public interface Container {
 
-    public ServerDisconnected() {
-    }
+    String getServerTemplateId();
 
-    public ServerDisconnected(final Server server) {
-        this.server = server;
-    }
+    String getContainerSpecId();
 
-    public Server getServer() {
-        return server;
-    }
+    String getServerInstanceId();
+
+    Collection<Status> getStatus();
+
+    GAV getResolvedReleasedId();
+
+    String getUrl();
 
 }

@@ -13,25 +13,20 @@
  * limitations under the License.
 */
 
-package org.kie.workbench.common.screens.server.management.events;
+package org.kie.workbench.common.screens.server.management.model.spec;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.kie.workbench.common.screens.server.management.model.Container;
+import org.guvnor.common.services.project.model.GAV;
 
-@Portable
-public class ContainerStarted {
+public interface ContainerSpec {
 
-    private Container container;
+    String getId();
 
-    public ContainerStarted() {
+    String getServerTemplateId();
 
-    }
+    GAV getReleasedId();
 
-    public ContainerStarted( final Container container ) {
-        this.container = container;
-    }
+    Long getPollInterval();
 
-    public Container getContainer() {
-        return container;
-    }
+    ScannerStatus getScannerStatus();
+
 }
