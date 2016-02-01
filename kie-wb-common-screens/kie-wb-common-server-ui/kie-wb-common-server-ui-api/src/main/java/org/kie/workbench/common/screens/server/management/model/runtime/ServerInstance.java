@@ -25,7 +25,7 @@ public interface ServerInstance {
 
     String getUrl();
 
-    Collection<Status> getStatus();
+    Collection<Message> getStatus();
 
     Collection<Container> getContainers();
 

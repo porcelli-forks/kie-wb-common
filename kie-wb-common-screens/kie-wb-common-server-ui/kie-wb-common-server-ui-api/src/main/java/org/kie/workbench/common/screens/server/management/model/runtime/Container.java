@@ -27,7 +27,7 @@ public interface Container {
 
     String getServerInstanceId();
 
-    Collection<Status> getStatus();
+    Collection<Message> getMessages();
 
     GAV getResolvedReleasedId();
 

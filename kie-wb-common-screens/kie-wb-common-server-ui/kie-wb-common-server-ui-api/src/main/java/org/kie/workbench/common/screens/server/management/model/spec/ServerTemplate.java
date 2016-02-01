@@ -34,7 +34,7 @@ public interface ServerTemplate {
 
     ContainerSpec getContainerSpec( final String containerSpecId );
 
-    void addContainerRef( final ContainerSpec containerSpec );
+    void addContainerSpec( final ContainerSpec containerSpec );
 
     void deleteContainerSpec( String containerSpecId );
 }
