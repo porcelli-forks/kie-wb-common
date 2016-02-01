@@ -16,6 +16,7 @@
 package org.kie.workbench.common.screens.server.management.model.spec;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface ServerTemplate {
 
@@ -23,7 +24,7 @@ public interface ServerTemplate {
 
     String getName();
 
-    Collection<Capability> getCapabilities();
+    Map<Capability, ServerConfig> getConfigs();
 
     Collection<ContainerSpec> getContainersSpec();
 

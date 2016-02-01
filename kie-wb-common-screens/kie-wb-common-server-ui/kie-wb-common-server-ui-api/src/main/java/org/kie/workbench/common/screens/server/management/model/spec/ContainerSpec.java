@@ -27,6 +27,6 @@ public interface ContainerSpec {
 
     GAV getReleasedId();
 
-    Map<Capability, Config> getConfigs();
+    Map<Capability, ContainerConfig> getConfigs();
 
 }

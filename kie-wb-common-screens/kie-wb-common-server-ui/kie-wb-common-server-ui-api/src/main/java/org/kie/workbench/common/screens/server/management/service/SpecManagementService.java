@@ -18,12 +18,13 @@ package org.kie.workbench.common.screens.server.management.service;
 import java.util.Collection;
 
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.kie.workbench.common.screens.server.management.model.spec.ContainerConfig;
 import org.kie.workbench.common.screens.server.management.model.spec.ContainerSpec;
+import org.kie.workbench.common.screens.server.management.model.spec.ServerConfig;
 import org.kie.workbench.common.screens.server.management.model.spec.ServerTemplate;
 
 @Remote
-public interface SpecManagementService extends ProcessCapabilitiesService,
-                                               RuleCapabilitiesService {
+public interface SpecManagementService extends RuleCapabilitiesService {
 
     void saveContainerSpec( final String serverTemplateId,
                             final ContainerSpec containerSpec );
@@ -44,5 +45,13 @@ public interface SpecManagementService extends ProcessCapabilitiesService,
     void copyServerTemplate( final String serverTemplateId,
                              final String newServerTemplateId,
                              final String newServerTemplateName );
+
+    void updateContainerConfig( final String serverTemplateId,
+                                final String containerSpecId,
+                                final ContainerConfig containerConfig );
+
+    void updateServerTemplateConfig( final String serverTemplateId,
+                                     final String containerSpecId,
+                                     final ServerConfig serverTemplateConfig );
 
 }
