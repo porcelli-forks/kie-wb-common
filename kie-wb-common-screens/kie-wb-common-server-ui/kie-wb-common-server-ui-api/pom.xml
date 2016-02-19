@@ -14,6 +14,11 @@
 
   <dependencies>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-commons</artifactId>
+   </dependency>
+
     <!-- Project Dependencies -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -29,6 +34,7 @@
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-project-api</artifactId>
     </dependency>
+
 
   </dependencies>
 

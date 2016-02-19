@@ -4,7 +4,7 @@
 <module>
     <inherits name="org.uberfire.UberfireClientAll"/>
 
-    <inherits name="org.kie.workbench.common.screens.server.management.ServerManagementAPI"/>
+    <inherits name="org.kie.server.controller.api.NewServerManagementAPI"/>
 
     <inherits name="org.guvnor.m2repo.GuvnorM2RepoEditorClient"/>
 
