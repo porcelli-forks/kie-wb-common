@@ -127,8 +127,7 @@ public class NewServerTemplateWizard extends AbstractMultiPageWizard {
                 notification.fire( new NotificationEvent( "New Server Template created.", NotificationEvent.NotificationType.SUCCESS ) );
                 clear();
                 NewServerTemplateWizard.super.complete();
-                serverTemplateListRefreshEvent.fire( new ServerTemplateListRefresh() );
-                serverTemplateSelectedEvent.fire( new ServerTemplateSelected( newServerTemplate ) );
+                serverTemplateListRefreshEvent.fire( new ServerTemplateListRefresh( newServerTemplate.getId() ) );
             }
         }, new ErrorCallback<Object>() {
             @Override

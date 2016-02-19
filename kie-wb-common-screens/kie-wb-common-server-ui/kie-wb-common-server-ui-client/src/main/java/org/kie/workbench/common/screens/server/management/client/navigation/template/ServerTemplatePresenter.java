@@ -184,6 +184,7 @@ public class ServerTemplatePresenter {
                     @Override
                     public void callback( final Void aVoid ) {
                         copyPresenter.hide();
+                        serverTemplateListRefreshEvent.fire( new ServerTemplateListRefresh( value ) );
                     }
                 }, new ErrorCallback<Object>() {
                     @Override

@@ -110,24 +110,28 @@ public class ServerManagementBrowserPresenter {
         refreshList( new ServerTemplateListRefresh() );
     }
 
-    private void refreshList( @Observes ServerTemplateListRefresh refresh ) {
+    private void refreshList( @Observes final ServerTemplateListRefresh refresh ) {
         specManagementService.call( new RemoteCallback<Collection<ServerTemplateKey>>() {
             @Override
             public void callback( final Collection<ServerTemplateKey> serverTemplateKeys ) {
-                setup( serverTemplateKeys );
+                setup( serverTemplateKeys, refresh.getSelectServerTemplateId() );
             }
         } ).listServerTemplateKeys();
     }
 
     public void onSelected( @Observes final ServerTemplateSelected serverTemplateSelected ) {
         checkNotNull( "serverTemplateSelected", serverTemplateSelected );
+        selectServerTemplate( serverTemplateSelected.getServerTemplateKey().getId(), serverTemplateSelected.getContainerId() );
+    }
 
+    private void selectServerTemplate( final String serverTemplateId,
+                                       final String containerId ) {
         specManagementService.call( new RemoteCallback<ServerTemplate>() {
             @Override
             public void callback( final ServerTemplate serverTemplate ) {
-                setup( serverTemplate );
+                setup( serverTemplate, containerId );
             }
-        } ).getServerTemplate( serverTemplateSelected.getServerTemplateKey().getId() );
+        } ).getServerTemplate( serverTemplateId );
     }
 
     public void onSelected( @Observes final ContainerSpecSelected containerSpecSelected ) {
@@ -141,26 +145,49 @@ public class ServerManagementBrowserPresenter {
         this.view.setContent( remotePresenter.getView() );
     }
 
-    public void setup( final Collection<ServerTemplateKey> serverTemplateKeys ) {
+    public void setup( final Collection<ServerTemplateKey> serverTemplateKeys,
+                       final String selectServerTemplateId ) {
         if ( serverTemplateKeys.isEmpty() ) {
             this.view.setEmptyView( serverEmptyPresenter.getView() );
             navigationPresenter.clear();
         } else {
-            final ServerTemplateKey serverTemplate2BeSelected = serverTemplateKeys.iterator().next();
+            ServerTemplateKey serverTemplate2BeSelected = null;
+            if ( selectServerTemplateId != null ) {
+                for ( ServerTemplateKey serverTemplateKey : serverTemplateKeys ) {
+                    if ( serverTemplateKey.getId().equals( selectServerTemplateId ) ) {
+                        serverTemplate2BeSelected = serverTemplateKey;
+                        break;
+                    }
+                }
+            }
+            if ( serverTemplate2BeSelected == null ) {
+                serverTemplate2BeSelected = serverTemplateKeys.iterator().next();
+            }
             navigationPresenter.setup( serverTemplate2BeSelected, serverTemplateKeys );
             serverTemplateSelectedEvent.fire( new ServerTemplateSelected( serverTemplate2BeSelected ) );
         }
     }
 
-    private void setup( final ServerTemplate serverTemplate ) {
+    private void setup( final ServerTemplate serverTemplate,
+                        final String selectContainerId ) {
         this.view.setServerTemplate( serverTemplatePresenter.getView() );
-        final ContainerSpec firstContainerSpec;
+        ContainerSpec firstContainerSpec = null;
         if ( serverTemplate.getContainersSpec().isEmpty() ) {
             serverContainerEmptyPresenter.setTemplate( serverTemplate );
             this.view.setContent( serverContainerEmptyPresenter.getView() );
             firstContainerSpec = null;
         } else {
-            firstContainerSpec = serverTemplate.getContainersSpec().iterator().next();
+            if ( selectContainerId != null ) {
+                for ( final ContainerSpec containerSpec : serverTemplate.getContainersSpec() ) {
+                    if ( containerSpec.getId().equals( selectContainerId ) ) {
+                        firstContainerSpec = containerSpec;
+                        break;
+                    }
+                }
+            }
+            if ( firstContainerSpec == null ) {
+                firstContainerSpec = serverTemplate.getContainersSpec().iterator().next();
+            }
         }
         serverTemplatePresenter.setup( serverTemplate, firstContainerSpec );
     }

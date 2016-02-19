@@ -11,8 +11,10 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerConfig;
+import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.service.SpecManagementService;
+import org.kie.workbench.common.screens.server.management.client.events.ServerTemplateSelected;
 import org.kie.workbench.common.screens.server.management.client.wizard.config.process.ProcessConfigPagePresenter;
 import org.kie.workbench.common.screens.server.management.client.wizard.container.NewContainerFormPresenter;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -24,18 +26,21 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
     private final ProcessConfigPagePresenter processConfigPagePresenter;
     private final Caller<SpecManagementService> specManagementService;
     private final Event<NotificationEvent> notification;
+    private final Event<ServerTemplateSelected> serverTemplateSelectedEvent;
+    private ServerTemplate serverTemplate;
 
     @Inject
     public NewContainerWizard( final NewContainerFormPresenter newContainerFormPresenter,
                                final ProcessConfigPagePresenter processConfigPagePresenter,
                                final Caller<SpecManagementService> specManagementService,
-                               final Event<NotificationEvent> notification ) {
+                               final Event<NotificationEvent> notification,
+                               final Event<ServerTemplateSelected> serverTemplateSelectedEvent ) {
         this.newContainerFormPresenter = newContainerFormPresenter;
         this.processConfigPagePresenter = processConfigPagePresenter;
         this.specManagementService = specManagementService;
         this.notification = notification;
+        this.serverTemplateSelectedEvent = serverTemplateSelectedEvent;
     }
-
 
     @Override
     public String getTitle() {
@@ -52,8 +57,8 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
         return 800;
     }
 
-
     public void setServerTemplate( final ServerTemplate serverTemplate ) {
+        this.serverTemplate = serverTemplate;
         newContainerFormPresenter.setServerTemplate( serverTemplate );
         pages.clear();
         pages.add( newContainerFormPresenter );
@@ -81,12 +86,15 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
         if ( getPages().size() == 2 ) {
             mapConfig.put( Capability.PROCESS, processConfigPagePresenter.buildProcessConfig() );
         }
+        final ContainerSpec newContainer = newContainerFormPresenter.buildContainerSpec( newContainerFormPresenter.getServerTemplate().getId(),
+                                                                                         mapConfig );
         specManagementService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( final Void o ) {
                 notification.fire( new NotificationEvent( "New Container created.", NotificationEvent.NotificationType.SUCCESS ) );
                 clear();
                 NewContainerWizard.super.complete();
+                serverTemplateSelectedEvent.fire( new ServerTemplateSelected( serverTemplate, newContainer.getId() ) );
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -97,10 +105,7 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
                 NewContainerWizard.this.start();
                 return false;
             }
-        } ).saveContainerSpec(
-                newContainerFormPresenter.getServerTemplate().getId(),
-                newContainerFormPresenter.buildContainerSpec( newContainerFormPresenter.getServerTemplate().getId(),
-                                                              mapConfig ) );
+        } ).saveContainerSpec( newContainerFormPresenter.getServerTemplate().getId(), newContainer );
     }
 
 }
