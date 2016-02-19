@@ -128,6 +128,7 @@ public class TestBackend implements SpecManagementService,
                                                "http://10.37.119.252:8080/container2" ) );
 
             final Collection<Message> messages = new ArrayList<Message>();
+            messages.add( new MessageImpl( Severity.ERROR, Arrays.asList( "SUPER ERROR FAULT!", "SUPER ERROR FAULT2!" ) ) );
             messages.add( new MessageImpl( Severity.WARN, Arrays.asList( "not responding!" ) ) );
 
             containers.add( new ContainerImpl( containerSpec2.getId(),
@@ -141,8 +142,7 @@ public class TestBackend implements SpecManagementService,
                                                "http://10.37.119.252:8080/container2" ) );
 
             final Collection<Message> serverMessages = new ArrayList<Message>();
-            serverMessages.add( new MessageImpl( Severity.ERROR, Arrays.asList( "SUPER ERROR FAULT!" ) ) );
-            serverMessages.add( new MessageImpl( Severity.ERROR, Arrays.asList( "SUPER ERROR FAULT2!" ) ) );
+            messages.add( new MessageImpl( Severity.ERROR, Arrays.asList( "SUPER ERROR FAULT!", "SUPER ERROR FAULT2!" ) ) );
             serverMessages.add( new MessageImpl( Severity.WARN, Arrays.asList( "not responding!" ) ) );
 
             final ServerInstance serverInstance = new ServerInstanceImpl( "MyTemplate",
@@ -515,7 +515,7 @@ public class TestBackend implements SpecManagementService,
             }
         }
 
-        return new ContainerSpecData( (ContainerSpec) containerSpecKey,
+        return new ContainerSpecData( serverTemplates.get( containerSpecKey.getServerTemplateKey().getId() ).getContainerSpec( containerSpecKey.getId() ),
                                       containers );
 
     }

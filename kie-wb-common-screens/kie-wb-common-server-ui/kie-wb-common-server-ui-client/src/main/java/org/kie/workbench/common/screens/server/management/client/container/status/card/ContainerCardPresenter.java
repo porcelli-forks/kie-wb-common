@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
-import org.kie.workbench.common.screens.server.management.client.events.RemoteServerSelected;
+import org.kie.workbench.common.screens.server.management.client.events.ServerInstanceSelected;
 import org.kie.workbench.common.screens.server.management.client.widget.card.CardPresenter;
 import org.kie.workbench.common.screens.server.management.client.widget.card.body.BodyPresenter;
 import org.kie.workbench.common.screens.server.management.client.widget.card.footer.FooterPresenter;
@@ -25,15 +25,14 @@ public class ContainerCardPresenter {
 
     private final View view;
 
-    private final Event<RemoteServerSelected> remoteServerSelectedEvent;
+    private final Event<ServerInstanceSelected> remoteServerSelectedEvent;
 
     @Inject
     public ContainerCardPresenter( final View view,
-                                   final Event<RemoteServerSelected> remoteServerSelectedEvent ) {
+                                   final Event<ServerInstanceSelected> remoteServerSelectedEvent ) {
         this.view = view;
         this.remoteServerSelectedEvent = remoteServerSelectedEvent;
     }
-
 
     public View getView() {
         return view;
@@ -42,11 +41,11 @@ public class ContainerCardPresenter {
     public void setup( final ServerInstanceKey serverInstanceKey,
                        final Container container ) {
         final LinkTitlePresenter linkTitlePresenter = newTitle();
-        linkTitlePresenter.setup( serverInstanceKey,
+        linkTitlePresenter.setup( serverInstanceKey.getServerName(),
                                   new Command() {
                                       @Override
                                       public void execute() {
-                                          remoteServerSelectedEvent.fire( new RemoteServerSelected( serverInstanceKey ) );
+                                          remoteServerSelectedEvent.fire( new ServerInstanceSelected( serverInstanceKey ) );
                                       }
                                   } );
         final BodyPresenter bodyPresenter = newBody();
@@ -61,7 +60,7 @@ public class ContainerCardPresenter {
         card.addFooter( footerPresenter );
 
         view.setCard( card.getView() );
-   }
+    }
 
     CardPresenter newCard() {
         return IOC.getBeanManager().lookupBean( CardPresenter.class ).getInstance();

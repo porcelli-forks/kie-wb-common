@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.Command;
 
@@ -36,10 +35,10 @@ public class LinkTitlePresenter implements TitlePresenter {
         return view;
     }
 
-    public void setup( final ServerInstanceKey serverInstanceKey,
+    public void setup( final String title,
                        final Command command ) {
         this.command = checkNotNull( "command", command );
-        view.setText( serverInstanceKey.getServerName() );
+        view.setText( title );
     }
 
     public void onSelect() {

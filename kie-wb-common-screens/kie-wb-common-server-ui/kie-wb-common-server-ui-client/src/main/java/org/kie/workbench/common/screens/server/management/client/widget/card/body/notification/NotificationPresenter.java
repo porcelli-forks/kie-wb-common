@@ -17,7 +17,11 @@ public class NotificationPresenter {
         void setupOk();
 
         void setup( final NotificationType type,
-                    final int size );
+                    final String size );
+
+        void setup( final NotificationType type,
+                    final String size,
+                    final String popOverContent );
     }
 
     private final View view;
@@ -37,7 +41,33 @@ public class NotificationPresenter {
 
     public void setup( final Message message ) {
         checkNotNull( "message", message );
-        view.setup( toNotificationType( message.getSeverity() ), message.getMessages().size() );
+
+        final NotificationType notificationType = toNotificationType( message.getSeverity() );
+        if ( notificationType.equals( NotificationType.OK ) ) {
+            view.setupOk();
+        } else {
+            if ( message.getMessages().isEmpty() ) {
+                view.setup( notificationType, String.valueOf( message.getMessages().size() ) );
+            } else {
+                final StringBuilder sb = new StringBuilder();
+                int i = 0;
+                for ( final String msg : message.getMessages() ) {
+                    i++;
+                    sb.append( i ).append( ": " ).append( msg ).append( '\n' );
+                }
+                view.setup( notificationType, String.valueOf( message.getMessages().size() ), clean( sb ) );
+            }
+        }
+    }
+
+    private String clean( StringBuilder str ) {
+        final String result;
+        if ( str.length() > 0 ) {
+            result = str.substring( 0, str.length() - 1 );
+        } else {
+            result = "";
+        }
+        return result;
     }
 
     private NotificationType toNotificationType( final Severity severity ) {
