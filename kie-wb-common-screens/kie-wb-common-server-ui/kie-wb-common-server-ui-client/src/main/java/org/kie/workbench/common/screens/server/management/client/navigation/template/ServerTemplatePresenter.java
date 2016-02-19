@@ -31,7 +31,6 @@ import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.service.SpecManagementService;
 import org.kie.workbench.common.screens.server.management.client.events.AddNewContainer;
 import org.kie.workbench.common.screens.server.management.client.events.ContainerSpecSelected;
-import org.kie.workbench.common.screens.server.management.client.events.RemoteServerSelected;
 import org.kie.workbench.common.screens.server.management.client.events.ServerInstanceSelected;
 import org.kie.workbench.common.screens.server.management.client.events.ServerTemplateListRefresh;
 import org.kie.workbench.common.screens.server.management.client.navigation.template.copy.CopyPopupPresenter;

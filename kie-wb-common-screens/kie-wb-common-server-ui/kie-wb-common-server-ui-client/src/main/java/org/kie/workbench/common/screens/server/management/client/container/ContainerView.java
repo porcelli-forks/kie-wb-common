@@ -32,7 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.screens.server.management.client.container.config.process.ContainerProcessConfigPresenter;
 import org.kie.workbench.common.screens.server.management.client.container.config.rules.ContainerRulesConfigPresenter;
 import org.kie.workbench.common.screens.server.management.client.util.State;
-import org.kie.workbench.common.screens.server.management.client.widget.confirm.YesNoCancelPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.mvp.Command;
 
 @Dependent

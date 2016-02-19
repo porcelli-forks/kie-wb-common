@@ -15,12 +15,16 @@
 
 package org.kie.workbench.common.screens.server.management.client.widget.artifact;
 
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.guvnor.m2repo.client.widgets.ArtifactListPresenter;
 import org.guvnor.m2repo.client.widgets.ArtifactListView;
+import org.guvnor.m2repo.client.widgets.ColumnType;
 import org.kie.workbench.common.screens.server.management.client.events.DependencyPathSelectedEvent;
 import org.uberfire.client.mvp.UberView;
 
@@ -33,6 +37,8 @@ public class ArtifactListWidgetPresenter {
 
     private final View view;
 
+    private final List<String> FORMATS = Arrays.asList("*.jar");
+
     private final ArtifactListPresenter artifactListPresenter;
 
     private final Event<DependencyPathSelectedEvent> dependencyPathSelectedEvent;
@@ -44,6 +50,12 @@ public class ArtifactListWidgetPresenter {
         this.view = view;
         this.artifactListPresenter = artifactListPresenter;
         this.dependencyPathSelectedEvent = dependencyPathSelectedEvent;
+    }
+
+    @PostConstruct
+    public void init() {
+        artifactListPresenter.notifyOnRefresh( false );
+        artifactListPresenter.defaultColumns( ColumnType.GAV );
         this.view.init( this );
     }
 
@@ -52,7 +64,7 @@ public class ArtifactListWidgetPresenter {
     }
 
     public void search( final String value ) {
-        artifactListPresenter.search( value );
+        artifactListPresenter.search( value, FORMATS);
     }
 
     public ArtifactListView getArtifactListView() {

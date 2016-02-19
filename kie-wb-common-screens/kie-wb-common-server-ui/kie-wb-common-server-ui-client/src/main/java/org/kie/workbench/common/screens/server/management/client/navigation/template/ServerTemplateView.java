@@ -32,7 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.screens.server.management.client.widget.CustomGroupItem;
-import org.kie.workbench.common.screens.server.management.client.widget.confirm.YesNoCancelPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.mvp.Command;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
