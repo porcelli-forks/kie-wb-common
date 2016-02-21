@@ -92,7 +92,8 @@ public class RemotePresenter {
                     view.addCard( newCard.getView().asWidget() );
                 }
             }
-        } ).getContainers( serverInstanceKey.getServerInstanceId() );
+        } ).getContainersByContainerSpec( serverInstanceKey.getServerTemplateId(),
+                                          serverInstanceKey.getServerInstanceId() );
     }
 
     ContainerCardPresenter newCard() {

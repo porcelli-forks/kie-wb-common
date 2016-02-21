@@ -18,18 +18,19 @@ package org.kie.workbench.common.screens.server.management.service;
 import java.util.Collection;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.kie.workbench.common.screens.server.management.model.ContainerSpecData;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
+import org.kie.workbench.common.screens.server.management.model.ContainerSpecData;
 
 @Remote
 public interface RuntimeManagementService {
 
     Collection<ServerInstanceKey> getServerInstances( final String serverTemplateId );
 
-    Collection<Container> getContainers( final String serverInstanceId );
+    Collection<Container> getContainersByServerInstance( final String serverTemplateId,
+                                                         final String serverInstanceId );
 
-    ContainerSpecData getContainers( final String serverTemplateId,
-                                     final String containerSpecId );
+    ContainerSpecData getContainersByContainerSpec( final String serverTemplateId,
+                                                    final String containerSpecId );
 
 }

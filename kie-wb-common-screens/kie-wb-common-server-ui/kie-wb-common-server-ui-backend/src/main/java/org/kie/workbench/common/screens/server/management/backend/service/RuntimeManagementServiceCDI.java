@@ -53,19 +53,32 @@ public class RuntimeManagementServiceCDI extends RuntimeManagementServiceImpl
     }
 
     @Override
-    public Collection<Container> getContainers( final String serverInstanceId ) {
+    public Collection<Container> getContainersByServerInstance( final String serverTemplateId,
+                                                                final String serverInstanceId ) {
+        final ServerTemplate serverTemplate = getTemplateStorage().load( serverTemplateId );   // best to pass both serverTemplateId and serverInstanceId
+        if ( serverTemplate == null ) {
+            throw new RuntimeException( "No server template found for server instance id " + serverInstanceId );
+        }
+
+        for ( final ServerInstanceKey serverInstance : serverTemplate.getServerInstanceKeys() ) {
+
+            if ( serverInstance.getServerInstanceId().equals( serverInstanceId ) ) {
+                return getContainers( serverInstance );
+            }
+        }
+
         return Collections.emptyList();
     }
 
-   /*
-    * TODO revisit this as most likely it will not be efficient
-    */
+    /*
+     * TODO revisit this as most likely it will not be efficient
+     */
     @Override
-    public ContainerSpecData getContainers( final String serverTemplateId,
-                                            final String containerSpecId ) {
+    public ContainerSpecData getContainersByContainerSpec( final String serverTemplateId,
+                                                           final String containerSpecId ) {
         final Collection<Container> containers = new ArrayList<Container>();
 
-        ServerTemplate serverTemplate = getTemplateStorage().load( serverTemplateId );
+        final ServerTemplate serverTemplate = getTemplateStorage().load( serverTemplateId );
         if ( serverTemplate == null ) {
             throw new RuntimeException( "No server template found for container spec " + containerSpecId );
         }
@@ -79,7 +92,7 @@ public class RuntimeManagementServiceCDI extends RuntimeManagementServiceImpl
             }
         }
 
-        return new ContainerSpecData( specManagementService.getServerTemplate( serverTemplateId ).getContainerSpec( containerSpecId ),
+        return new ContainerSpecData( serverTemplate.getContainerSpec( containerSpecId ),
                                       containers );
 
     }

@@ -151,8 +151,8 @@ public class ContainerPresenter {
                 checkNotNull( "content", content );
                 setup( content.getContainerSpec(), content.getContainers() );
             }
-        } ).getContainers( containerSpecKey.getServerTemplateKey().getId(),
-                           containerSpecKey.getId() );
+        } ).getContainersByContainerSpec( containerSpecKey.getServerTemplateKey().getId(),
+                                          containerSpecKey.getId() );
     }
 
     private void setup( final ContainerSpec containerSpec,
