@@ -38,77 +38,84 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
     }
 
     @Override
-    public List<Container> startScanner(final ServerTemplate serverTemplate, final ContainerSpec containerSpec, final long interval) {
+    public List<Container> startScanner( final ServerTemplate serverTemplate,
+                                         final ContainerSpec containerSpec,
+                                         final long interval ) {
         executor.execute( new Runnable() {
             @Override
             public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.startScanner(serverTemplate, containerSpec, interval);
+                List<Container> containers = AsyncKieServerInstanceManager.super.startScanner( serverTemplate, containerSpec, interval );
             }
         } );
         return null;
     }
 
     @Override
-    public List<Container> stopScanner(final ServerTemplate serverTemplate, final ContainerSpec containerSpec) {
+    public List<Container> stopScanner( final ServerTemplate serverTemplate,
+                                        final ContainerSpec containerSpec ) {
         executor.execute( new Runnable() {
             @Override
             public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.stopScanner(serverTemplate, containerSpec);
+                List<Container> containers = AsyncKieServerInstanceManager.super.stopScanner( serverTemplate, containerSpec );
             }
         } );
         return null;
     }
 
     @Override
-    public List<Container> scanNow(final ServerTemplate serverTemplate, final ContainerSpec containerSpec) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.scanNow(serverTemplate, containerSpec);
-            }
-        });
-        return null;
-    }
-
-    @Override
-    public List<Container> startContainer(final ServerTemplate serverTemplate, final ContainerSpec containerSpec) {
+    public List<Container> scanNow( final ServerTemplate serverTemplate,
+                                    final ContainerSpec containerSpec ) {
         executor.execute( new Runnable() {
             @Override
             public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.startContainer(serverTemplate, containerSpec);
+                List<Container> containers = AsyncKieServerInstanceManager.super.scanNow( serverTemplate, containerSpec );
             }
         } );
         return null;
     }
 
     @Override
-    public List<Container> stopContainer(final ServerTemplate serverTemplate, final ContainerSpec containerSpec) {
+    public List<Container> startContainer( final ServerTemplate serverTemplate,
+                                           final ContainerSpec containerSpec ) {
         executor.execute( new Runnable() {
             @Override
             public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.stopContainer(serverTemplate, containerSpec);
+                List<Container> containers = AsyncKieServerInstanceManager.super.startContainer( serverTemplate, containerSpec );
             }
         } );
         return null;
     }
 
     @Override
-    public List<Container> upgradeContainer(final ServerTemplate serverTemplate, final ContainerSpec containerSpec) {
+    public List<Container> stopContainer( final ServerTemplate serverTemplate,
+                                          final ContainerSpec containerSpec ) {
         executor.execute( new Runnable() {
             @Override
             public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.upgradeContainer(serverTemplate, containerSpec);
+                List<Container> containers = AsyncKieServerInstanceManager.super.stopContainer( serverTemplate, containerSpec );
             }
         } );
         return null;
     }
 
     @Override
-    public List<Container> getContainers(final ServerInstanceKey serverInstanceKey) {
+    public List<Container> upgradeContainer( final ServerTemplate serverTemplate,
+                                             final ContainerSpec containerSpec ) {
         executor.execute( new Runnable() {
             @Override
             public void run() {
-                List<Container> containers = AsyncKieServerInstanceManager.super.getContainers(serverInstanceKey);
+                List<Container> containers = AsyncKieServerInstanceManager.super.upgradeContainer( serverTemplate, containerSpec );
+            }
+        } );
+        return null;
+    }
+
+    @Override
+    public List<Container> getContainers( final ServerInstanceKey serverInstanceKey ) {
+        executor.execute( new Runnable() {
+            @Override
+            public void run() {
+                List<Container> containers = AsyncKieServerInstanceManager.super.getContainers( serverInstanceKey );
             }
         } );
         return null;

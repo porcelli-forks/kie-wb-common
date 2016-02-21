@@ -10,9 +10,11 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
+import org.kie.server.api.model.KieScannerStatus;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerConfig;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
+import org.kie.server.controller.api.model.spec.RuleConfig;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.workbench.common.screens.server.management.client.events.ServerTemplateSelected;
 import org.kie.workbench.common.screens.server.management.client.wizard.config.process.ProcessConfigPagePresenter;
@@ -87,6 +89,7 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
         if ( getPages().size() == 2 ) {
             mapConfig.put( Capability.PROCESS, processConfigPagePresenter.buildProcessConfig() );
         }
+        mapConfig.put( Capability.RULE, new RuleConfig( null, KieScannerStatus.STOPPED ) );
         final ContainerSpec newContainer = newContainerFormPresenter.buildContainerSpec( newContainerFormPresenter.getServerTemplate().getId(),
                                                                                          mapConfig );
         specManagementService.call( new RemoteCallback<Void>() {

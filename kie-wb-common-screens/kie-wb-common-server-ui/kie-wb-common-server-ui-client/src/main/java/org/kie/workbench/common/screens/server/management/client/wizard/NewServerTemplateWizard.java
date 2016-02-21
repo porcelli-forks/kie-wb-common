@@ -12,9 +12,11 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
+import org.kie.server.api.model.KieScannerStatus;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerConfig;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
+import org.kie.server.controller.api.model.spec.RuleConfig;
 import org.kie.server.controller.api.model.spec.ServerConfig;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.workbench.common.screens.server.management.client.events.ServerTemplateListRefresh;
@@ -153,6 +155,7 @@ public class NewServerTemplateWizard extends AbstractMultiPageWizard {
                 capabilityContainerConfig.put( Capability.PROCESS, processConfigPagePresenter.buildProcessConfig() );
             }
         }
+        capabilityContainerConfig.put( Capability.RULE, new RuleConfig( null, KieScannerStatus.STOPPED ) );
 
         if ( newTemplatePresenter.isRuleCapabilityChecked() ) {
             capabilities.add( Capability.RULE.toString() );
