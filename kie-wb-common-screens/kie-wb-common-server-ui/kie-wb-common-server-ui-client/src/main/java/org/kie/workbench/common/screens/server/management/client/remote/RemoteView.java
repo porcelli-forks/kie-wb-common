@@ -29,6 +29,7 @@ import org.gwtbootstrap3.client.ui.html.Div;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.remote.empty.RemoteEmptyPresenter;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
@@ -40,8 +41,8 @@ public class RemoteView extends Composite
     private RemotePresenter presenter;
 
     @Inject
-    @DataField("card-container")
-    Div cardContainer;
+    @DataField("remote-content")
+    Div remoteContent;
 
     @Inject
     @DataField
@@ -65,19 +66,26 @@ public class RemoteView extends Composite
     }
 
     @Override
-    public void addCard( final IsWidget widget ) {
-        cardContainer.add( checkNotNull( "widget", widget ) );
-    }
-
-    @Override
     public void setServerURL( final String url ) {
         this.url.setHref( url );
         this.url.setText( url );
     }
 
     @Override
+    public void setEmptyView( final RemoteEmptyPresenter.View view ) {
+        clear();
+        remoteContent.add( view.asWidget() );
+    }
+
+    @Override
+    public void setStatusPresenter( final RemoteStatusPresenter.View view ) {
+        clear();
+        remoteContent.add( view.asWidget() );
+    }
+
+    @Override
     public void clear() {
-        cardContainer.clear();
+        remoteContent.clear();
     }
 
     @EventHandler("refresh")

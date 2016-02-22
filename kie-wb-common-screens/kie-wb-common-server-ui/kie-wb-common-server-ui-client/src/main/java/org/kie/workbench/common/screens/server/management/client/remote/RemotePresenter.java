@@ -21,14 +21,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.workbench.common.screens.server.management.client.events.ServerInstanceSelected;
-import org.kie.workbench.common.screens.server.management.client.remote.card.ContainerCardPresenter;
+import org.kie.workbench.common.screens.server.management.client.remote.empty.RemoteEmptyPresenter;
 import org.kie.workbench.common.screens.server.management.service.RuntimeManagementService;
 import org.uberfire.client.mvp.UberView;
 
@@ -43,20 +41,28 @@ public class RemotePresenter {
 
         void setServerName( final String serverName );
 
-        void addCard( final IsWidget widget );
-
         void setServerURL( String url );
+
+        void setEmptyView( final RemoteEmptyPresenter.View view );
+
+        void setStatusPresenter( final RemoteStatusPresenter.View view );
     }
 
     private final View view;
+    private final RemoteStatusPresenter remoteStatusPresenter;
+    private final RemoteEmptyPresenter remoteEmptyPresenter;
     private final Caller<RuntimeManagementService> runtimeManagementService;
 
     private ServerInstanceKey serverInstanceKey;
 
     @Inject
     public RemotePresenter( final View view,
+                            final RemoteStatusPresenter remoteStatusPresenter,
+                            final RemoteEmptyPresenter remoteEmptyPresenter,
                             final Caller<RuntimeManagementService> runtimeManagementService ) {
         this.view = view;
+        this.remoteStatusPresenter = remoteStatusPresenter;
+        this.remoteEmptyPresenter = remoteEmptyPresenter;
         this.runtimeManagementService = runtimeManagementService;
     }
 
@@ -86,18 +92,15 @@ public class RemotePresenter {
                 view.clear();
                 view.setServerName( serverInstanceKey.getServerName() );
                 view.setServerURL( serverInstanceKey.getUrl() );
-                for ( final Container container : containers ) {
-                    ContainerCardPresenter newCard = newCard();
-                    newCard.setup( container );
-                    view.addCard( newCard.getView().asWidget() );
+                if ( containers.isEmpty() ) {
+                    view.setEmptyView( remoteEmptyPresenter.getView() );
+                } else {
+                    remoteStatusPresenter.setup( containers );
+                    view.setStatusPresenter( remoteStatusPresenter.getView() );
                 }
             }
-        } ).getContainersByContainerSpec( serverInstanceKey.getServerTemplateId(),
-                                          serverInstanceKey.getServerInstanceId() );
-    }
-
-    ContainerCardPresenter newCard() {
-        return IOC.getBeanManager().lookupBean( ContainerCardPresenter.class ).getInstance();
+        } ).getContainersByServerInstance( serverInstanceKey.getServerTemplateId(),
+                                           serverInstanceKey.getServerInstanceId() );
     }
 
 }
