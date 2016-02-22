@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-
 import org.kie.server.api.model.KieScannerStatus;
 import org.kie.server.api.model.ReleaseId;
 import org.kie.server.controller.api.model.events.RuleConfigUpdated;
@@ -74,7 +73,7 @@ public class ContainerRulesConfigPresenter {
     private final Caller<RuleCapabilitiesService> ruleCapabilitiesService;
     private final Event<NotificationEvent> notification;
 
-    private ContainerSpecKey containerSpecKey;
+    private ContainerSpec containerSpec;
 
     private String pollInterval;
     private KieScannerStatus scannerStatus;
@@ -105,7 +104,7 @@ public class ContainerRulesConfigPresenter {
 
     public void setup( final ContainerSpec containerSpec,
                        final RuleConfig ruleConfig ) {
-        this.containerSpecKey = toId( checkNotNull( "containerSpec", containerSpec ) );
+        this.containerSpec = checkNotNull( "containerSpec", containerSpec );
         setRuleConfig( ruleConfig, containerSpec.getReleasedId().getVersion() );
     }
 
@@ -135,7 +134,7 @@ public class ContainerRulesConfigPresenter {
                 updateViewState();
                 return false;
             }
-        } ).startScanner( containerSpecKey, Integer.valueOf( checkNotEmpty( "interval", interval ) ) );
+        } ).startScanner( containerSpec, Integer.valueOf( checkNotEmpty( "interval", interval ) ) );
     }
 
     public void stopScanner() {
@@ -155,7 +154,7 @@ public class ContainerRulesConfigPresenter {
                 updateViewState();
                 return false;
             }
-        } ).stopScanner( containerSpecKey );
+        } ).stopScanner( containerSpec );
     }
 
     public void scanNow() {
@@ -175,7 +174,7 @@ public class ContainerRulesConfigPresenter {
                 updateViewState();
                 return false;
             }
-        } ).scanNow( containerSpecKey );
+        } ).scanNow( containerSpec );
     }
 
     public void upgrade( final String version ) {
@@ -193,7 +192,10 @@ public class ContainerRulesConfigPresenter {
                 updateViewState();
                 return false;
             }
-        } ).upgradeContainer(containerSpecKey, new ReleaseId( null, null, version));
+        } ).upgradeContainer( containerSpec,
+                              new ReleaseId( containerSpec.getReleasedId().getGroupId(),
+                                             containerSpec.getReleasedId().getArtifactId(),
+                                             version ) );
     }
 
     public void onRuleConfigUpdate( @Observes final RuleConfigUpdated configUpdate ) {
@@ -267,8 +269,8 @@ public class ContainerRulesConfigPresenter {
 
     private ContainerSpecKey toId( final ContainerSpec containerSpec ) {
         return new ContainerSpecKey( containerSpec.getId(),
-                                         containerSpec.getContainerName(),
-                                         containerSpec.getServerTemplateKey() );
+                                     containerSpec.getContainerName(),
+                                     containerSpec.getServerTemplateKey() );
     }
 
 }
