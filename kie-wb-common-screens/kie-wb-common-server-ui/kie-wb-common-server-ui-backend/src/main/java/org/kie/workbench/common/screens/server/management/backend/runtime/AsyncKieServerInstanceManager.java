@@ -50,6 +50,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.startScanner( serverTemplate, containerSpec, interval );
+
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
