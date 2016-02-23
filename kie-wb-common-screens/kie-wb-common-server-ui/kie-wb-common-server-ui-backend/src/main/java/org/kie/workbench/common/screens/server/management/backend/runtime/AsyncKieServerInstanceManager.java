@@ -50,7 +50,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.startScanner( serverTemplate, containerSpec, interval );
-                notificationService.notify(serverTemplate, containerSpec, containers);
+                notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
         return null;
@@ -63,7 +63,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.stopScanner( serverTemplate, containerSpec );
-                notificationService.notify(serverTemplate, containerSpec, containers);
+                notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
         return null;
@@ -76,7 +76,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.scanNow( serverTemplate, containerSpec );
-                notificationService.notify(serverTemplate, containerSpec, containers);
+                notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
         return null;
@@ -89,7 +89,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.startContainer( serverTemplate, containerSpec );
-                notificationService.notify(serverTemplate, containerSpec, containers);
+                notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
         return null;
@@ -102,7 +102,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.stopContainer( serverTemplate, containerSpec );
-                notificationService.notify(serverTemplate, containerSpec, containers);
+                notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
         return null;
@@ -115,7 +115,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.upgradeContainer( serverTemplate, containerSpec );
-                notificationService.notify(serverTemplate, containerSpec, containers);
+                notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
         return null;
@@ -127,9 +127,8 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.getContainers( serverInstanceKey );
-
-                ServerTemplate serverTemplate = new ServerTemplate(serverInstanceKey.getServerTemplateId(), "");
-                notificationService.notify(serverTemplate, null, containers);
+                ServerTemplate serverTemplate = new ServerTemplate( serverInstanceKey.getServerTemplateId(), "" );
+                notificationService.notify( serverTemplate, null, containers );
             }
         } );
         return null;

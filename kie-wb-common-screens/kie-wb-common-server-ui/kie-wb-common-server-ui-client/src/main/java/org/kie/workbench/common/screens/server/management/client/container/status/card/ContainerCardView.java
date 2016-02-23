@@ -4,7 +4,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.html.Div;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -28,7 +27,12 @@ public class ContainerCardView extends Composite
     }
 
     @Override
-    public Widget asWidget(){
+    public void delete() {
+        removeFromParent();
+    }
+
+    @Override
+    public Widget asWidget() {
         return container;
     }
 }

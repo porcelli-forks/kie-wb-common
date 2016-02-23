@@ -16,14 +16,21 @@
 package org.kie.workbench.common.screens.server.management.client.container.status;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.ioc.client.container.IOC;
+import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
+import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.workbench.common.screens.server.management.client.container.status.card.ContainerCardPresenter;
+
+import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 @Dependent
 public class ContainerRemoteStatusPresenter {
@@ -36,6 +43,8 @@ public class ContainerRemoteStatusPresenter {
     }
 
     private final View view;
+
+    private final Map<String, Map<String, ContainerCardPresenter>> index = new HashMap<String, Map<String, ContainerCardPresenter>>();
 
     @Inject
     public ContainerRemoteStatusPresenter( final View view ) {
@@ -50,13 +59,55 @@ public class ContainerRemoteStatusPresenter {
         return view;
     }
 
+    public void onSelect( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
+        checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
+        final String updatedServerInstanceKey = serverInstanceUpdated.getServerInstance().getServerInstanceId();
+        if ( index.containsKey( updatedServerInstanceKey ) ) {
+            final Map<String, ContainerCardPresenter> oldIndex = new HashMap<String, ContainerCardPresenter>( index.remove( updatedServerInstanceKey ) );
+            final Map<String, ContainerCardPresenter> newIndexIndex = new HashMap<String, ContainerCardPresenter>( serverInstanceUpdated.getServerInstance().getContainers().size() );
+            index.put( updatedServerInstanceKey, newIndexIndex );
+            for ( final Container container : serverInstanceUpdated.getServerInstance().getContainers() ) {
+                final ContainerCardPresenter presenter = oldIndex.remove( container.getContainerName() );
+                if ( presenter != null ) {
+                    presenter.updateContent( serverInstanceUpdated.getServerInstance(), container );
+                }
+                newIndexIndex.put( container.getContainerName(), presenter );
+            }
+            for ( final ContainerCardPresenter presenter : oldIndex.values() ) {
+                presenter.delete();
+            }
+        }
+    }
+
+    public void onDelete( @Observes final ServerInstanceDeleted serverInstanceDeleted ) {
+        checkNotNull( "serverInstanceDeleted", serverInstanceDeleted );
+        final String deletedServerInstanceId = serverInstanceDeleted.getServerInstanceId();
+        if ( index.containsKey( deletedServerInstanceId ) ) {
+            final Map<String, ContainerCardPresenter> oldIndex = index.remove( deletedServerInstanceId );
+            if ( oldIndex != null ) {
+                for ( final ContainerCardPresenter presenter : oldIndex.values() ) {
+                    presenter.delete();
+                }
+            }
+        }
+    }
+
     public void setup( final Collection<Container> containers ) {
         this.view.clear();
         for ( Container container : containers ) {
             final ContainerCardPresenter cardPresenter = newCard();
+            index( container, cardPresenter );
             cardPresenter.setup( container.getServerInstanceKey(), container );
             view.addCard( cardPresenter.getView().asWidget() );
         }
+    }
+
+    private void index( final Container container,
+                        final ContainerCardPresenter cardPresenter ) {
+        if ( !index.containsKey( container.getServerInstanceKey().getServerInstanceId() ) ) {
+            index.put( container.getServerInstanceKey().getServerInstanceId(), new HashMap<String, ContainerCardPresenter>() );
+        }
+        index.get( container.getServerInstanceKey().getServerInstanceId() ).put( container.getContainerName(), cardPresenter );
     }
 
     ContainerCardPresenter newCard() {

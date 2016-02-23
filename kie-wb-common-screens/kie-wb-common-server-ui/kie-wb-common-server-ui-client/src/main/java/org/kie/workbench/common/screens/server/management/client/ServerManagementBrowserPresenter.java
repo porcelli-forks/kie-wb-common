@@ -25,6 +25,10 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
+import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
+import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
+import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.model.spec.ServerTemplateKey;
@@ -114,6 +118,12 @@ public class ServerManagementBrowserPresenter {
         refreshList( new ServerTemplateListRefresh() );
     }
 
+    public void onServerDeleted( @Observes final ServerTemplateDeleted serverTemplateDeleted ) {
+        if ( serverTemplateDeleted != null ) {
+            refreshList( new ServerTemplateListRefresh() );
+        }
+    }
+
     private void refreshList( @Observes final ServerTemplateListRefresh refresh ) {
         specManagementService.call( new RemoteCallback<Collection<ServerTemplateKey>>() {
             @Override
@@ -170,6 +180,31 @@ public class ServerManagementBrowserPresenter {
             navigationPresenter.setup( serverTemplate2BeSelected, serverTemplateKeys );
             serverTemplateSelectedEvent.fire( new ServerTemplateSelected( serverTemplate2BeSelected ) );
         }
+    }
+
+    public void onServerTemplateUpdated( @Observes final ServerTemplateUpdated serverTemplateUpdated ) {
+        checkNotNull( "serverTemplateUpdated", serverTemplateUpdated );
+        if ( serverTemplateUpdated.getServerTemplate().getId().equals( currentServerTemplateId() ) ) {
+            setup( serverTemplateUpdated.getServerTemplate(), null );
+        }
+    }
+
+    public void onDelete( @Observes final ServerInstanceDeleted serverInstanceDeleted ) {
+        checkNotNull( "serverInstanceDeleted", serverInstanceDeleted );
+        final String deletedServerInstanceId = serverInstanceDeleted.getServerInstanceId();
+        for ( final ServerInstanceKey serverInstanceKey : serverTemplatePresenter.getCurrentServerTemplate().getServerInstanceKeys() ) {
+            if ( deletedServerInstanceId.equals( serverInstanceKey.getServerInstanceId() ) ) {
+                refreshList( new ServerTemplateListRefresh( serverTemplatePresenter.getCurrentServerTemplate().getId() ) );
+                break;
+            }
+        }
+    }
+
+    private String currentServerTemplateId() {
+        if ( serverTemplatePresenter.getCurrentServerTemplate() != null ) {
+            return serverTemplatePresenter.getCurrentServerTemplate().getId();
+        }
+        return null;
     }
 
     private void setup( final ServerTemplate serverTemplate,

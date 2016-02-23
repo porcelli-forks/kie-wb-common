@@ -198,6 +198,13 @@ public class ContainerRulesConfigPresenter {
                                              version ) );
     }
 
+    public void onConfigUpdate( @Observes final RuleConfigUpdated configUpdated ) {
+        checkNotNull( "configUpdated", configUpdated );
+        if ( configUpdated.getContainerSpecKey().equals( containerSpec ) ) {
+            setup( containerSpec, configUpdated.getRuleConfig() );
+        }
+    }
+
     public void onRuleConfigUpdate( @Observes final RuleConfigUpdated configUpdate ) {
         checkNotNull( "configUpdate", configUpdate );
         setRuleConfig( configUpdate.getRuleConfig(),

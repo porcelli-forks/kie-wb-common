@@ -24,7 +24,7 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-
+import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
@@ -40,6 +40,8 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+
 @ApplicationScoped
 public class ServerTemplatePresenter {
 
@@ -50,8 +52,11 @@ public class ServerTemplatePresenter {
         void setTemplate( final String id,
                           final String name );
 
-        void select( final String serverTemplateId,
-                     final String id );
+        void selectContainer( final String serverTemplateId,
+                              final String id );
+
+        void selectServerInstance( final String serverTemplateId,
+                                   final String id );
 
         void addContainer( final String serverTemplateId,
                            final String containerSpecId,
@@ -112,6 +117,10 @@ public class ServerTemplatePresenter {
         return view;
     }
 
+    public ServerTemplate getCurrentServerTemplate() {
+        return serverTemplate;
+    }
+
     public void setup( final ServerTemplate serverTemplate,
                        final ContainerSpec firstContainerSpec ) {
         view.clear();
@@ -164,13 +173,13 @@ public class ServerTemplatePresenter {
     }
 
     public void onContainerSelect( @Observes final ContainerSpecSelected containerSpecSelected ) {
-        view.select( containerSpecSelected.getContainerSpecKey().getServerTemplateKey().getId(),
-                     containerSpecSelected.getContainerSpecKey().getId() );
+        view.selectContainer( containerSpecSelected.getContainerSpecKey().getServerTemplateKey().getId(),
+                              containerSpecSelected.getContainerSpecKey().getId() );
     }
 
     public void onServerInstanceSelect( @Observes final ServerInstanceSelected serverInstanceSelected ) {
-        view.select( serverInstanceSelected.getServerInstanceKey().getServerTemplateId(),
-                     serverInstanceSelected.getServerInstanceKey().getServerInstanceId() );
+        view.selectServerInstance( serverInstanceSelected.getServerInstanceKey().getServerTemplateId(),
+                                   serverInstanceSelected.getServerInstanceKey().getServerInstanceId() );
     }
 
     public void addNewContainer() {

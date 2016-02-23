@@ -79,7 +79,8 @@ public class ServerTemplateView extends Composite
     @DataField("remote-server-list-group")
     LinkedGroup remoteServersListGroup;
 
-    private Map<String, CustomGroupItem> groupItems = new HashMap<String, CustomGroupItem>();
+    private Map<String, CustomGroupItem> serverInstanceItems = new HashMap<String, CustomGroupItem>();
+    private Map<String, CustomGroupItem> containerItems = new HashMap<String, CustomGroupItem>();
 
     private CustomGroupItem selected = null;
     private String templateId;
@@ -99,7 +100,8 @@ public class ServerTemplateView extends Composite
     public void clear() {
         remoteServersListGroup.clear();
         containersListGroup.clear();
-        groupItems.clear();
+        serverInstanceItems.clear();
+        containerItems.clear();
         selected = null;
         templateId = null;
         serverTemplate.setInnerText( "" );
@@ -113,14 +115,27 @@ public class ServerTemplateView extends Composite
                              final String templateName ) {
         this.templateId = templateId;
         serverTemplate.setInnerText( templateName );
-        groupItems.clear();
+        serverInstanceItems.clear();
+        containerItems.clear();
         containersListGroup.clear();
         remoteServersListGroup.clear();
     }
 
     @Override
-    public void select( final String serverTemplateId,
-                        final String id ) {
+    public void selectContainer( final String serverTemplateId,
+                                 final String id ) {
+        select( serverTemplateId, id, containerItems );
+    }
+
+    @Override
+    public void selectServerInstance( final String serverTemplateId,
+                                      final String id ) {
+        select( serverTemplateId, id, serverInstanceItems );
+    }
+
+    private void select( final String serverTemplateId,
+                         final String id,
+                         final Map<String, CustomGroupItem> map ) {
         checkNotEmpty( "serverTemplateId", serverTemplateId );
         checkNotEmpty( "id", id );
 
@@ -133,7 +148,7 @@ public class ServerTemplateView extends Composite
             return;
         }
 
-        selected = groupItems.get( id );
+        selected = map.get( id );
         selected.setActive( true );
     }
 
@@ -150,7 +165,7 @@ public class ServerTemplateView extends Composite
                                                                IconType.FOLDER_O,
                                                                onSelect );
 
-        groupItems.put( containerSpecId, groupItem );
+        containerItems.put( containerSpecId, groupItem );
 
         containersListGroup.add( groupItem );
     }
@@ -168,7 +183,7 @@ public class ServerTemplateView extends Composite
                                                                IconType.SERVER,
                                                                onSelect );
 
-        groupItems.put( serverInstanceId, groupItem );
+        serverInstanceItems.put( serverInstanceId, groupItem );
 
         remoteServersListGroup.add( groupItem );
     }

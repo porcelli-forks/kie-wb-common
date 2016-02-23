@@ -16,6 +16,7 @@
 package org.kie.workbench.common.screens.server.management.client.remote;
 
 import java.util.Collection;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -23,13 +24,17 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
+import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
+import org.kie.workbench.common.screens.server.management.client.container.status.card.ContainerCardPresenter;
 import org.kie.workbench.common.screens.server.management.client.events.ServerInstanceSelected;
 import org.kie.workbench.common.screens.server.management.client.remote.empty.RemoteEmptyPresenter;
 import org.kie.workbench.common.screens.server.management.service.RuntimeManagementService;
 import org.uberfire.client.mvp.UberView;
 
+import static org.kie.workbench.common.screens.server.management.client.util.Convert.*;
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 @ApplicationScoped
@@ -81,6 +86,15 @@ public class RemotePresenter {
         refresh();
     }
 
+    public void onSelect( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
+        checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
+        final ServerInstanceKey updatedServerInstanceKey = toKey( serverInstanceUpdated.getServerInstance() );
+        if ( serverInstanceKey.equals( updatedServerInstanceKey ) ) {
+            serverInstanceKey = updatedServerInstanceKey;
+            loadContent( serverInstanceUpdated.getServerInstance().getContainers() );
+        }
+    }
+
     public void refresh() {
         load( serverInstanceKey );
     }
@@ -89,18 +103,23 @@ public class RemotePresenter {
         runtimeManagementService.call( new RemoteCallback<Collection<Container>>() {
             @Override
             public void callback( final Collection<Container> containers ) {
-                view.clear();
-                view.setServerName( serverInstanceKey.getServerName() );
-                view.setServerURL( serverInstanceKey.getUrl() );
-                if ( containers.isEmpty() ) {
-                    view.setEmptyView( remoteEmptyPresenter.getView() );
-                } else {
-                    remoteStatusPresenter.setup( containers );
-                    view.setStatusPresenter( remoteStatusPresenter.getView() );
-                }
+                loadContent( containers );
             }
         } ).getContainersByServerInstance( serverInstanceKey.getServerTemplateId(),
                                            serverInstanceKey.getServerInstanceId() );
+    }
+
+    private void loadContent( final Collection<Container> containers ) {
+        view.clear();
+        view.setServerName( serverInstanceKey.getServerName() );
+        view.setServerURL( serverInstanceKey.getUrl() );
+        if ( containers.isEmpty() ) {
+            view.setEmptyView( remoteEmptyPresenter.getView() );
+        } else {
+            remoteStatusPresenter.setup( containers );
+            view.setStatusPresenter( remoteStatusPresenter.getView() );
+        }
+
     }
 
 }

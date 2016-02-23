@@ -37,20 +37,20 @@ public class NotificationServiceCDI implements NotificationService {
     private Event<ServerTemplateDeleted> serverTemplateDeletedEvent;
 
     @Override
-    public void notify( ServerTemplate serverTemplate,
-                        ContainerSpec containerSpec,
-                        List<Container> containers ) {
+    public void notify( final ServerTemplate serverTemplate,
+                        final ContainerSpec containerSpec,
+                        final List<Container> containers ) {
 
     }
 
     @Override
-    public void notify( ServerTemplateUpdated serverTemplateUpdated ) {
+    public void notify( final ServerTemplateUpdated serverTemplateUpdated ) {
 
         serverTemplateUpdatedEvent.fire( serverTemplateUpdated );
     }
 
     @Override
-    public void notify( ServerTemplateDeleted serverTemplateDeleted ) {
+    public void notify( final ServerTemplateDeleted serverTemplateDeleted ) {
         serverTemplateDeletedEvent.fire( serverTemplateDeleted );
     }
 }

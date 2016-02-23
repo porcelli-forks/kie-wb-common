@@ -21,11 +21,17 @@ public class ContainerCardPresenter {
     public interface View extends IsWidget {
 
         void setCard( CardPresenter.View card );
+
+        void delete();
     }
 
     private final View view;
 
     private final Event<ServerInstanceSelected> remoteServerSelectedEvent;
+
+    private LinkTitlePresenter linkTitlePresenter;
+    private BodyPresenter bodyPresenter;
+    private FooterPresenter footerPresenter;
 
     @Inject
     public ContainerCardPresenter( final View view,
@@ -40,19 +46,11 @@ public class ContainerCardPresenter {
 
     public void setup( final ServerInstanceKey serverInstanceKey,
                        final Container container ) {
-        final LinkTitlePresenter linkTitlePresenter = newTitle();
-        linkTitlePresenter.setup( serverInstanceKey.getServerName(),
-                                  new Command() {
-                                      @Override
-                                      public void execute() {
-                                          remoteServerSelectedEvent.fire( new ServerInstanceSelected( serverInstanceKey ) );
-                                      }
-                                  } );
-        final BodyPresenter bodyPresenter = newBody();
-        bodyPresenter.setMessages( container.getMessages() );
+        linkTitlePresenter = newTitle();
+        bodyPresenter = newBody();
+        footerPresenter = newFooter();
 
-        final FooterPresenter footerPresenter = newFooter();
-        footerPresenter.setup( container.getUrl(), container.getResolvedReleasedId().getVersion() );
+        updateContent( serverInstanceKey, container );
 
         CardPresenter card = newCard();
         card.addTitle( linkTitlePresenter );
@@ -60,6 +58,24 @@ public class ContainerCardPresenter {
         card.addFooter( footerPresenter );
 
         view.setCard( card.getView() );
+    }
+
+    public void delete() {
+        view.delete();
+    }
+
+    public void updateContent( final ServerInstanceKey serverInstanceKey,
+                               final Container container ) {
+        linkTitlePresenter.setup( serverInstanceKey.getServerName(),
+                                  new Command() {
+                                      @Override
+                                      public void execute() {
+                                          remoteServerSelectedEvent.fire( new ServerInstanceSelected( serverInstanceKey ) );
+                                      }
+                                  } );
+        bodyPresenter.setMessages( container.getMessages() );
+        footerPresenter.setup( container.getUrl(), container.getResolvedReleasedId().getVersion() );
+
     }
 
     CardPresenter newCard() {
