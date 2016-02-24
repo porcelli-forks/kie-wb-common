@@ -15,6 +15,8 @@
 
 package org.kie.workbench.common.screens.server.management.client.navigation.template;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -24,7 +26,8 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
+import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
+import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
@@ -40,7 +43,7 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 @ApplicationScoped
 public class ServerTemplatePresenter {
@@ -88,6 +91,8 @@ public class ServerTemplatePresenter {
     private final Event<ServerTemplateListRefresh> serverTemplateListRefreshEvent;
 
     private ServerTemplate serverTemplate;
+
+    private Set<ServerInstanceKey> serverInstances = new HashSet<ServerInstanceKey>();
 
     @Inject
     public ServerTemplatePresenter( final View view,
@@ -161,6 +166,7 @@ public class ServerTemplatePresenter {
     }
 
     private void addServerInstance( final ServerInstanceKey serverInstanceKey ) {
+        serverInstances.add( serverInstanceKey );
         view.addServerInstance( serverInstanceKey.getServerTemplateId(),
                                 serverInstanceKey.getServerInstanceId(),
                                 serverInstanceKey.getServerName(),
@@ -180,6 +186,15 @@ public class ServerTemplatePresenter {
     public void onServerInstanceSelect( @Observes final ServerInstanceSelected serverInstanceSelected ) {
         view.selectServerInstance( serverInstanceSelected.getServerInstanceKey().getServerTemplateId(),
                                    serverInstanceSelected.getServerInstanceKey().getServerInstanceId() );
+    }
+
+    public void onServerInstanceUpdated( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
+        checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
+        final ServerInstance updatedServerInstance = serverInstanceUpdated.getServerInstance();
+        if ( updatedServerInstance.getServerTemplateId().equals( serverTemplate.getId() ) &&
+                !serverInstances.contains( updatedServerInstance ) ) {
+            addServerInstance( updatedServerInstance );
+        }
     }
 
     public void addNewContainer() {
