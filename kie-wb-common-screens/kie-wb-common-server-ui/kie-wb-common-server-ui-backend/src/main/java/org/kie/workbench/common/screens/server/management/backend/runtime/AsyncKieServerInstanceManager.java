@@ -15,12 +15,15 @@
 
 package org.kie.workbench.common.screens.server.management.backend.runtime;
 
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.runtime.Container;
+import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
@@ -54,7 +57,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -67,7 +70,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -80,7 +83,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -93,7 +96,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -106,7 +109,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -119,7 +122,7 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 notificationService.notify( serverTemplate, containerSpec, containers );
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -128,10 +131,18 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
             @Override
             public void run() {
                 List<Container> containers = AsyncKieServerInstanceManager.super.getContainers( serverInstanceKey );
-                ServerTemplate serverTemplate = new ServerTemplate( serverInstanceKey.getServerTemplateId(), "" );
-                notificationService.notify( serverTemplate, null, containers );
+
+                ServerInstance serverInstance = new ServerInstance();
+                serverInstance.setServerName(serverInstanceKey.getServerName());
+                serverInstance.setServerTemplateId(serverInstanceKey.getServerTemplateId());
+                serverInstance.setServerInstanceId(serverInstanceKey.getServerInstanceId());
+                serverInstance.setUrl(serverInstanceKey.getUrl());
+
+                serverInstance.setContainers(containers);
+
+                notificationService.notify( new ServerInstanceUpdated(serverInstance));
             }
         } );
-        return null;
+        return Collections.emptyList();
     }
 }
