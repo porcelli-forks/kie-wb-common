@@ -20,6 +20,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
+import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
 import org.kie.server.controller.api.model.runtime.Container;
@@ -36,11 +38,18 @@ public class NotificationServiceCDI implements NotificationService {
     @Inject
     private Event<ServerTemplateDeleted> serverTemplateDeletedEvent;
 
+    @Inject
+    private Event<ServerInstanceUpdated> serverInstanceUpdatedEvent;
+
+    @Inject
+    private Event<ServerInstanceDeleted> serverInstanceDeletedEvent;
+
     @Override
     public void notify( final ServerTemplate serverTemplate,
                         final ContainerSpec containerSpec,
                         final List<Container> containers ) {
 
+        serverTemplateUpdatedEvent.fire( new ServerTemplateUpdated(serverTemplate) );
     }
 
     @Override
@@ -52,5 +61,15 @@ public class NotificationServiceCDI implements NotificationService {
     @Override
     public void notify( final ServerTemplateDeleted serverTemplateDeleted ) {
         serverTemplateDeletedEvent.fire( serverTemplateDeleted );
+    }
+
+    @Override
+    public void notify( ServerInstanceUpdated serverInstanceUpdated ) {
+        serverInstanceUpdatedEvent.fire( serverInstanceUpdated );
+    }
+
+    @Override
+    public void notify( ServerInstanceDeleted serverInstanceDeleted ) {
+        serverInstanceDeletedEvent.fire( serverInstanceDeleted );
     }
 }

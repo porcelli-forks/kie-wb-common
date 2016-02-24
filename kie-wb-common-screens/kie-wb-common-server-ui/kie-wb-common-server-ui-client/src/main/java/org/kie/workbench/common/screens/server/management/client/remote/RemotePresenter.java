@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -89,10 +89,10 @@ public class RemotePresenter {
     public void onSelect( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
         checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
         final ServerInstanceKey updatedServerInstanceKey = toKey( serverInstanceUpdated.getServerInstance() );
-        if ( serverInstanceKey.equals( updatedServerInstanceKey ) ) {
+//        if ( serverInstanceKey.equals( updatedServerInstanceKey ) ) {
             serverInstanceKey = updatedServerInstanceKey;
             loadContent( serverInstanceUpdated.getServerInstance().getContainers() );
-        }
+//        }
     }
 
     public void refresh() {
@@ -110,6 +110,7 @@ public class RemotePresenter {
     }
 
     private void loadContent( final Collection<Container> containers ) {
+
         view.clear();
         view.setServerName( serverInstanceKey.getServerName() );
         view.setServerURL( serverInstanceKey.getUrl() );
