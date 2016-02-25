@@ -71,7 +71,21 @@ public class NotificationPresenter {
     }
 
     private NotificationType toNotificationType( final Severity severity ) {
-        return checkNotNull( "severity", severity ).equals( Severity.ERROR ) ? NotificationType.ERROR : NotificationType.WARNING;
+        checkNotNull( "severity", severity );
+
+        switch (severity) {
+            case WARN:
+                return NotificationType.WARNING;
+
+            case ERROR:
+                return NotificationType.ERROR;
+
+            case INFO:
+                return NotificationType.OK;
+
+            default:
+                return NotificationType.OK;
+        }
     }
 
 }
