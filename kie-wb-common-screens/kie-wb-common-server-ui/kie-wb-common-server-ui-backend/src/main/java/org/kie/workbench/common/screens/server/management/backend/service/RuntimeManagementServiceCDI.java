@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
+import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.storage.KieServerTemplateStorage;
 import org.kie.server.controller.impl.KieServerInstanceManager;
@@ -70,9 +71,6 @@ public class RuntimeManagementServiceCDI extends RuntimeManagementServiceImpl
         return Collections.emptyList();
     }
 
-    /*
-     * TODO revisit this as most likely it will not be efficient
-     */
     @Override
     public ContainerSpecData getContainersByContainerSpec( final String serverTemplateId,
                                                            final String containerSpecId ) {
@@ -83,14 +81,9 @@ public class RuntimeManagementServiceCDI extends RuntimeManagementServiceImpl
             throw new RuntimeException( "No server template found for container spec " + containerSpecId );
         }
 
-        for ( final ServerInstanceKey serverInstance : serverTemplate.getServerInstanceKeys() ) {
-            for ( final Container container : getContainers( serverInstance ) ) {
-                if ( container.getContainerSpecId().equals( containerSpecId ) &&
-                        container.getServerTemplateId().equals( serverTemplateId ) ) {
-                    containers.add( container );
-                }
-            }
-        }
+        ContainerSpec containerSpec = serverTemplate.getContainerSpec( containerSpecId );
+
+        getKieServerInstanceManager().getContainers(serverTemplate, containerSpec);
 
         return new ContainerSpecData( serverTemplate.getContainerSpec( containerSpecId ),
                                       containers );

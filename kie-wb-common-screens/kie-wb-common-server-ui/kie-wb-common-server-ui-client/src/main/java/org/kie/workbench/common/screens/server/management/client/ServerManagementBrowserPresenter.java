@@ -184,9 +184,9 @@ public class ServerManagementBrowserPresenter {
 
     public void onServerTemplateUpdated( @Observes final ServerTemplateUpdated serverTemplateUpdated ) {
         checkNotNull( "serverTemplateUpdated", serverTemplateUpdated );
-        if ( serverTemplateUpdated.getServerTemplate().getId().equals( currentServerTemplateId() ) ) {
+//        if ( serverTemplateUpdated.getServerTemplate().getId().equals( currentServerTemplateId() ) ) {
             setup( serverTemplateUpdated.getServerTemplate(), null );
-        }
+//        }
     }
 
     public void onDelete( @Observes final ServerInstanceDeleted serverInstanceDeleted ) {

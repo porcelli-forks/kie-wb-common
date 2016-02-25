@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
@@ -29,6 +30,7 @@ import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.service.NotificationService;
 import org.kie.server.controller.impl.KieServerInstanceManager;
+import org.kie.workbench.common.screens.server.management.model.ContainerSpecData;
 import org.uberfire.commons.async.DisposableExecutor;
 import org.uberfire.commons.async.SimpleAsyncExecutorService;
 
@@ -39,6 +41,9 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
 
     @Inject
     private NotificationService notificationService;
+
+    @Inject
+    private Event<ContainerSpecData> containerSpecDataEvent;
 
     @PostConstruct
     public void configure() {
@@ -141,6 +146,21 @@ public class AsyncKieServerInstanceManager extends KieServerInstanceManager {
                 serverInstance.setContainers(containers);
 
                 notificationService.notify( new ServerInstanceUpdated(serverInstance));
+            }
+        } );
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Container> getContainers(final ServerTemplate serverTemplate, final ContainerSpec containerSpec) {
+        executor.execute( new Runnable() {
+            @Override
+            public void run() {
+                List<Container> containers = AsyncKieServerInstanceManager.super.getContainers(serverTemplate, containerSpec);
+
+                ContainerSpecData containerSpecData = new ContainerSpecData( containerSpec, containers );
+
+                containerSpecDataEvent.fire( containerSpecData );
             }
         } );
         return Collections.emptyList();
