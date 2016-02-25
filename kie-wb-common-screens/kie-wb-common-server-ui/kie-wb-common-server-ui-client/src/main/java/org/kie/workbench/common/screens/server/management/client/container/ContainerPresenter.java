@@ -141,7 +141,7 @@ public class ContainerPresenter {
 
     public void loadContainers( @Observes final ContainerSpecData content ) {
         checkNotNull( "content", content );
-        setup(content.getContainerSpec(), content.getContainers());
+        setup( content.getContainerSpec(), content.getContainers() );
     }
 
     public void refresh() {
@@ -163,13 +163,17 @@ public class ContainerPresenter {
     private void setup( final ContainerSpec containerSpec,
                         final Collection<Container> containers ) {
         this.containerSpec = checkNotNull( "containerSpec", containerSpec );
+        updateView( containers );
+    }
+
+    private void updateView( final Collection<Container> containers ) {
+        containerStatusEmptyPresenter.setup( containerSpec );
+        containerRemoteStatusPresenter.setup( containerSpec, containers );
         view.clear();
         if ( containers.isEmpty() ) {
-            containerStatusEmptyPresenter.setup( containerSpec );
             view.setStatus( containerStatusEmptyPresenter.getView() );
         } else {
             view.setStatus( containerRemoteStatusPresenter.getView() );
-            containerRemoteStatusPresenter.setup( containerSpec, containers );
         }
 
         view.setContainerName( containerSpec.getContainerName() );

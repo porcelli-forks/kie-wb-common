@@ -62,7 +62,7 @@ public class ContainerRemoteStatusPresenter {
         return view;
     }
 
-    public void onSelect( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
+    public void onServerInstanceUpdated( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
         checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
         final String updatedServerInstanceKey = serverInstanceUpdated.getServerInstance().getServerInstanceId();
         if ( index.containsKey( updatedServerInstanceKey ) ) {
@@ -103,7 +103,7 @@ public class ContainerRemoteStatusPresenter {
     }
 
     public void setup( final ContainerSpec containerSpec,
-            final Collection<Container> containers ) {
+                       final Collection<Container> containers ) {
         this.containerSpec = containerSpec;
         this.view.clear();
         for ( Container container : containers ) {
@@ -119,7 +119,7 @@ public class ContainerRemoteStatusPresenter {
     }
 
     private void index( final Container container,
-            final ContainerCardPresenter cardPresenter ) {
+                        final ContainerCardPresenter cardPresenter ) {
         if ( !index.containsKey( container.getServerInstanceKey().getServerInstanceId() ) ) {
             index.put( container.getServerInstanceKey().getServerInstanceId(), new HashMap<String, ContainerCardPresenter>() );
         }

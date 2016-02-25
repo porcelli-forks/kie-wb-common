@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
 import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
@@ -92,7 +93,7 @@ public class ServerTemplatePresenter {
 
     private ServerTemplate serverTemplate;
 
-    private Set<ServerInstanceKey> serverInstances = new HashSet<ServerInstanceKey>();
+    private Set<String> serverInstances = new HashSet<String>();
 
     @Inject
     public ServerTemplatePresenter( final View view,
@@ -166,7 +167,7 @@ public class ServerTemplatePresenter {
     }
 
     private void addServerInstance( final ServerInstanceKey serverInstanceKey ) {
-        serverInstances.add( serverInstanceKey );
+        serverInstances.add( serverInstanceKey.getServerInstanceId() );
         view.addServerInstance( serverInstanceKey.getServerTemplateId(),
                                 serverInstanceKey.getServerInstanceId(),
                                 serverInstanceKey.getServerName(),
@@ -192,9 +193,14 @@ public class ServerTemplatePresenter {
         checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
         final ServerInstance updatedServerInstance = serverInstanceUpdated.getServerInstance();
         if ( updatedServerInstance.getServerTemplateId().equals( serverTemplate.getId() ) &&
-                !serverInstances.contains( updatedServerInstance ) ) {
+                !serverInstances.contains( updatedServerInstance.getServerInstanceId() ) ) {
             addServerInstance( updatedServerInstance );
         }
+    }
+
+    public void onServerInstanceUpdated( @Observes final ServerInstanceDeleted serverInstanceDeleted ) {
+        checkNotNull( "serverInstanceDeleted", serverInstanceDeleted );
+        serverInstances.remove( serverInstanceDeleted.getServerInstanceId() );
     }
 
     public void addNewContainer() {
