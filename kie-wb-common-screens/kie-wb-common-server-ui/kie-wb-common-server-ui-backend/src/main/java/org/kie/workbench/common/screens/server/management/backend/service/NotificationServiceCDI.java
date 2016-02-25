@@ -28,6 +28,7 @@ import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.service.NotificationService;
+import org.kie.workbench.common.screens.server.management.model.ContainerSpecData;
 
 @ApplicationScoped
 public class NotificationServiceCDI implements NotificationService {
@@ -44,12 +45,17 @@ public class NotificationServiceCDI implements NotificationService {
     @Inject
     private Event<ServerInstanceDeleted> serverInstanceDeletedEvent;
 
+    @Inject
+    private Event<ContainerSpecData> containerSpecDataEvent;
+
     @Override
     public void notify( final ServerTemplate serverTemplate,
                         final ContainerSpec containerSpec,
                         final List<Container> containers ) {
 
-        serverTemplateUpdatedEvent.fire( new ServerTemplateUpdated(serverTemplate) );
+        ContainerSpecData containerSpecData = new ContainerSpecData( containerSpec, containers );
+
+        containerSpecDataEvent.fire( containerSpecData );
     }
 
     @Override

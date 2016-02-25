@@ -20,6 +20,7 @@ import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
 import org.kie.server.api.model.KieContainerResource;
+import org.kie.server.controller.api.ModelFactory;
 import org.kie.server.controller.api.model.KieServerInstance;
 import org.kie.server.controller.api.model.KieServerInstanceInfo;
 import org.kie.server.controller.api.model.KieServerSetup;
@@ -90,7 +91,7 @@ public class ServerTemplateMigration {
                         for (KieServerInstanceInfo instanceInfo : instanceInfos) {
 
                             logger.debug("Migrating server instance '{}'", instanceInfo);
-                            serverTemplate.addServerInstance(instanceInfo.getLocation());
+                            serverTemplate.addServerInstance(ModelFactory.newServerInstanceKey(serverTemplate.getId(), instanceInfo.getLocation()));
 
                             serverTemplate.setCapabilities(instanceInfo.getCapabilities());
                         }
