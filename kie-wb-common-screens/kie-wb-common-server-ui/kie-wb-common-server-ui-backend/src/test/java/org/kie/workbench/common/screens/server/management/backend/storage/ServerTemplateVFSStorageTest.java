@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.kie.server.api.model.KieContainerStatus;
 import org.kie.server.api.model.KieScannerStatus;
 import org.kie.server.api.model.ReleaseId;
+import org.kie.server.controller.api.ModelFactory;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.Capability;
@@ -245,7 +246,7 @@ public class ServerTemplateVFSStorageTest {
         fromStorage.addContainerSpec(newContainerSpec);
 
         // now let's add server instance
-        fromStorage.addServerInstance("some invalid url");
+        fromStorage.addServerInstance(ModelFactory.newServerInstanceKey(serverTemplate.getId(), "some invalid url"));
 
         templateStorage.update(fromStorage);
 
