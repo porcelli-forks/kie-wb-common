@@ -28,6 +28,7 @@ import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
 import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.runtime.Container;
+import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.workbench.common.screens.server.management.client.container.status.card.ContainerCardPresenter;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
@@ -45,6 +46,8 @@ public class ContainerRemoteStatusPresenter {
     private final View view;
 
     private final Map<String, Map<String, ContainerCardPresenter>> index = new HashMap<String, Map<String, ContainerCardPresenter>>();
+
+    private ContainerSpec containerSpec;
 
     @Inject
     public ContainerRemoteStatusPresenter( final View view ) {
@@ -76,6 +79,13 @@ public class ContainerRemoteStatusPresenter {
             for ( final ContainerCardPresenter presenter : oldIndex.values() ) {
                 presenter.delete();
             }
+        } else {
+            for ( final Container container : serverInstanceUpdated.getServerInstance().getContainers() ) {
+                if ( container.getServerTemplateId().equals( containerSpec.getServerTemplateKey().getId() ) &&
+                        container.getContainerSpecId().equals( containerSpec.getId() ) ) {
+                    buildContainer( container );
+                }
+            }
         }
     }
 
@@ -92,18 +102,24 @@ public class ContainerRemoteStatusPresenter {
         }
     }
 
-    public void setup( final Collection<Container> containers ) {
+    public void setup( final ContainerSpec containerSpec,
+            final Collection<Container> containers ) {
+        this.containerSpec = containerSpec;
         this.view.clear();
         for ( Container container : containers ) {
-            final ContainerCardPresenter cardPresenter = newCard();
-            index( container, cardPresenter );
-            cardPresenter.setup( container.getServerInstanceKey(), container );
-            view.addCard( cardPresenter.getView().asWidget() );
+            buildContainer( container );
         }
     }
 
+    private void buildContainer( final Container container ) {
+        final ContainerCardPresenter cardPresenter = newCard();
+        index( container, cardPresenter );
+        cardPresenter.setup( container.getServerInstanceKey(), container );
+        view.addCard( cardPresenter.getView().asWidget() );
+    }
+
     private void index( final Container container,
-                        final ContainerCardPresenter cardPresenter ) {
+            final ContainerCardPresenter cardPresenter ) {
         if ( !index.containsKey( container.getServerInstanceKey().getServerInstanceId() ) ) {
             index.put( container.getServerInstanceKey().getServerInstanceId(), new HashMap<String, ContainerCardPresenter>() );
         }

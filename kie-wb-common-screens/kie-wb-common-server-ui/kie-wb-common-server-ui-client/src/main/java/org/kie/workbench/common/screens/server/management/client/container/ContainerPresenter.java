@@ -139,6 +139,11 @@ public class ContainerPresenter {
         load( checkNotNull( "containerSpecSelected", containerSpecSelected ).getContainerSpecKey() );
     }
 
+    public void loadContainers( @Observes final ContainerSpecData content ) {
+        checkNotNull( "content", content );
+        setup(content.getContainerSpec(), content.getContainers());
+    }
+
     public void refresh() {
         load( containerSpec );
     }
@@ -164,7 +169,7 @@ public class ContainerPresenter {
             view.setStatus( containerStatusEmptyPresenter.getView() );
         } else {
             view.setStatus( containerRemoteStatusPresenter.getView() );
-            containerRemoteStatusPresenter.setup( containers );
+            containerRemoteStatusPresenter.setup( containerSpec, containers );
         }
 
         view.setContainerName( containerSpec.getContainerName() );
