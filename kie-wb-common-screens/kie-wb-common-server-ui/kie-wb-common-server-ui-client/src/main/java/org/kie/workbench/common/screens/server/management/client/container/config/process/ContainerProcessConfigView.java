@@ -22,15 +22,20 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FieldSet;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.widget.config.process.ProcessConfigPresenter;
 
 @Dependent
 @Templated
 public class ContainerProcessConfigView extends Composite
         implements ContainerProcessConfigPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private ContainerProcessConfigPresenter presenter;
 
@@ -83,4 +88,13 @@ public class ContainerProcessConfigView extends Composite
         presenter.cancel();
     }
 
+    @Override
+    public String getSaveSuccessMessage() {
+        return translationService.format( Constants.ContainerProcessConfigView_SaveSuccessMessage );
+    }
+
+    @Override
+    public String getSaveErrorMessage() {
+        return translationService.format( Constants.ContainerProcessConfigView_SaveErrorMessage );
+    }
 }

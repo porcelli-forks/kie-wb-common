@@ -92,7 +92,7 @@ public class NewServerTemplateWizard extends AbstractMultiPageWizard {
 
     @Override
     public String getTitle() {
-        return "New Server Template";
+        return newTemplatePresenter.getView().getNewServerTemplateWizardTitle();
     }
 
     @Override
@@ -126,7 +126,7 @@ public class NewServerTemplateWizard extends AbstractMultiPageWizard {
         specManagementService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( final Void o ) {
-                notification.fire( new NotificationEvent( "New Server Template created.", NotificationEvent.NotificationType.SUCCESS ) );
+                notification.fire( new NotificationEvent( newTemplatePresenter.getView().getNewServerTemplateWizardSaveSuccess(), NotificationEvent.NotificationType.SUCCESS ) );
                 clear();
                 NewServerTemplateWizard.super.complete();
                 serverTemplateListRefreshEvent.fire( new ServerTemplateListRefresh( newServerTemplate.getId() ) );
@@ -135,7 +135,7 @@ public class NewServerTemplateWizard extends AbstractMultiPageWizard {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "New Server Template Error.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( newTemplatePresenter.getView().getNewServerTemplateWizardSaveError(), NotificationEvent.NotificationType.ERROR ) );
                 NewServerTemplateWizard.this.pageSelected( 0 );
                 NewServerTemplateWizard.this.start();
                 return false;

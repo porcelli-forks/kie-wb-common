@@ -31,13 +31,18 @@ import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 
 @Dependent
 @Templated
 public class ArtifactListWidgetView
         extends Composite implements ArtifactListWidgetPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     @Inject
     @DataField("row-place-list")
@@ -66,7 +71,7 @@ public class ArtifactListWidgetView
 
         final ArtifactListView artifactListView = presenter.getArtifactListView();
 
-        artifactListView.addColumn( buildSelectColumn(), "Select" );
+        artifactListView.addColumn( buildSelectColumn(), getSelectColumnLabel() );
 
         artifactListView.setContentHeight( "200px" );
 
@@ -80,7 +85,7 @@ public class ArtifactListWidgetView
     private Column<JarListPageRow, String> buildSelectColumn() {
         return new Column<JarListPageRow, String>( new ButtonCell( ButtonSize.EXTRA_SMALL ) ) {
             public String getValue( final JarListPageRow row ) {
-                return "Select";
+                return getSelectColumnLabel();
             }
 
             {
@@ -93,5 +98,9 @@ public class ArtifactListWidgetView
                 } );
             }
         };
+    }
+
+    private String getSelectColumnLabel() {
+        return translationService.format( Constants.ArtifactListWidgetView_SelectColumnLabel );
     }
 }

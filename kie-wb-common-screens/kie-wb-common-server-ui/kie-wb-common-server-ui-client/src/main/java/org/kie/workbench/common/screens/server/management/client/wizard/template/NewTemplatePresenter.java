@@ -57,6 +57,14 @@ public class NewTemplatePresenter implements WizardPage {
         void noErrorOnCapability();
 
         void noErrors();
+
+        String getInvalidErrorMessage();
+
+        String getNewServerTemplateWizardTitle();
+
+        String getNewServerTemplateWizardSaveSuccess();
+
+        String getNewServerTemplateWizardSaveError();
     }
 
     private final View view;
@@ -89,7 +97,7 @@ public class NewTemplatePresenter implements WizardPage {
                 @Override
                 public void callback( final Boolean result ) {
                     if ( result.equals( Boolean.FALSE ) ) {
-                        view.errorOnTemplateName( "Invalid name." );
+                        view.errorOnTemplateName( view.getInvalidErrorMessage() );
                         callback.callback( false );
                     } else {
                         callback.callback( true );
@@ -178,4 +186,7 @@ public class NewTemplatePresenter implements WizardPage {
         return view.isPlanningCapabilityChecked();
     }
 
+    public View getView() {
+        return this.view;
+    }
 }
