@@ -79,6 +79,10 @@ public class ServerTemplatePresenter {
         void setPlanningCapability( final boolean value );
 
         void confirmRemove( Command command );
+
+        String getCopyTemplateErrorMessage();
+
+        String getRemoveTemplateErrorMessage();
     }
 
     private final View view;
@@ -221,7 +225,7 @@ public class ServerTemplatePresenter {
                     @Override
                     public boolean error( final Object o,
                                           final Throwable throwable ) {
-                        copyPresenter.errorDuringProcessing( "Invalid name." );
+                        copyPresenter.errorDuringProcessing( view.getCopyTemplateErrorMessage() );
                         return false;
                     }
                 } ).copyServerTemplate( serverTemplate.getId(), value, value );
@@ -242,7 +246,7 @@ public class ServerTemplatePresenter {
                     @Override
                     public boolean error( final Object o,
                                           final Throwable throwable ) {
-                        notification.fire( new NotificationEvent( "Error trying to remove template." ) );
+                        notification.fire( new NotificationEvent( view.getRemoveTemplateErrorMessage() ) );
                         serverTemplateListRefreshEvent.fire( new ServerTemplateListRefresh() );
                         return false;
                     }

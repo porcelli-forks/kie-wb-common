@@ -26,11 +26,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.html.Div;
 import org.gwtbootstrap3.client.ui.html.Span;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.screens.server.management.client.container.config.process.ContainerProcessConfigPresenter;
 import org.kie.workbench.common.screens.server.management.client.container.config.rules.ContainerRulesConfigPresenter;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.util.State;
 import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.mvp.Command;
@@ -39,6 +41,9 @@ import org.uberfire.mvp.Command;
 @Templated
 public class ContainerView extends Composite
         implements ContainerPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private ContainerPresenter presenter;
 
@@ -161,8 +166,8 @@ public class ContainerView extends Composite
 
     @Override
     public void confirmRemove( final Command command ) {
-        final YesNoCancelPopup result = YesNoCancelPopup.newYesNoCancelPopup( "Container Remove",
-                                                                              "Are you sure you want remove current container?",
+        final YesNoCancelPopup result = YesNoCancelPopup.newYesNoCancelPopup( getConfirmRemovePopupTitle(),
+                                                                              getConfirmRemovePopupMessage(),
                                                                               command,
                                                                               new Command() {
                                                                                   @Override
@@ -199,4 +204,32 @@ public class ContainerView extends Composite
         presenter.stopContainer();
     }
 
+
+    @Override
+    public String getRemoveContainerSuccessMessage() {
+        return translationService.format( Constants.ContainerView_RemoveContainerSuccessMessage );
+    }
+
+    @Override
+    public String getRemoveContainerErrorMessage() {
+        return translationService.format( Constants.ContainerView_RemoveContainerErrorMessage );
+    }
+
+    @Override
+    public String getStopContainerErrorMessage() {
+        return translationService.format( Constants.ContainerView_StopContainerErrorMessage );
+    }
+
+    @Override
+    public String getStartContainerErrorMessage() {
+        return translationService.format( Constants.ContainerView_StartContainerErrorMessage );
+    }
+
+    private String getConfirmRemovePopupMessage() {
+        return translationService.format( Constants.ContainerView_ConfirmRemovePopupMessage );
+    }
+
+    private String getConfirmRemovePopupTitle() {
+        return translationService.format( Constants.ContainerView_ConfirmRemovePopupTitle );
+    }
 }

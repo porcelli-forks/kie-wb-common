@@ -48,6 +48,8 @@ public class ProcessConfigPresenter {
         void disable();
 
         void clear();
+
+        String getConfigPageTitle();
     }
 
     private final View view;

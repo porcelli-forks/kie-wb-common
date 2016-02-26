@@ -15,8 +15,10 @@ import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.util.ContentChangeHandler;
 import org.kie.workbench.common.screens.server.management.client.util.StyleHelper;
 
@@ -24,6 +26,9 @@ import org.kie.workbench.common.screens.server.management.client.util.StyleHelpe
 @Templated
 public class NewTemplateView extends Composite
         implements NewTemplatePresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private NewTemplatePresenter presenter;
 
@@ -57,9 +62,9 @@ public class NewTemplateView extends Composite
     @Override
     public void init( final NewTemplatePresenter presenter ) {
         this.presenter = presenter;
-        ruleEnabled.setText( "Rule" );
-        processEnabled.setText( "Process" );
-        planningEnabled.setText( "Planning" );
+        ruleEnabled.setText( getRuleCheckBoxText() );
+        processEnabled.setText( getProcessCheckBoxText() );
+        planningEnabled.setText( getPlanningCheckBoxText() );
 
         templateName.addKeyUpHandler( new KeyUpHandler() {
             @Override
@@ -110,7 +115,7 @@ public class NewTemplateView extends Composite
 
     @Override
     public String getTitle() {
-        return "Server Template";
+        return getTitleText();
     }
 
     @Override
@@ -184,5 +189,41 @@ public class NewTemplateView extends Composite
     public void noErrors() {
         noErrorOnTemplateName();
         noErrorOnCapability();
+    }
+
+    @Override
+    public String getInvalidErrorMessage() {
+        return translationService.format( Constants.NewTemplateView_InvalidErrorMessage );
+    }
+
+    @Override
+    public String getNewServerTemplateWizardTitle() {
+        return translationService.format( Constants.NewTemplateView_NewServerTemplateWizardTitle );
+    }
+
+    @Override
+    public String getNewServerTemplateWizardSaveSuccess() {
+        return translationService.format( Constants.NewTemplateView_NewServerTemplateWizardSaveSuccess );
+    }
+
+    @Override
+    public String getNewServerTemplateWizardSaveError() {
+        return translationService.format( Constants.NewTemplateView_NewServerTemplateWizardSaveError );
+    }
+
+    private String getRuleCheckBoxText() {
+        return translationService.format( Constants.NewTemplateView_RuleCheckBoxText );
+    }
+
+    private String getProcessCheckBoxText() {
+        return translationService.format( Constants.NewTemplateView_ProcessCheckBoxText );
+    }
+
+    private String getPlanningCheckBoxText() {
+        return translationService.format( Constants.NewTemplateView_PlanningCheckBoxText );
+    }
+
+    private String getTitleText() {
+        return translationService.format( Constants.NewTemplateView_TitleText );
     }
 }

@@ -28,9 +28,11 @@ import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.widget.CustomGroupItem;
 import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.mvp.Command;
@@ -41,6 +43,9 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 @Templated
 public class ServerTemplateView extends Composite
         implements ServerTemplatePresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private ServerTemplatePresenter presenter;
 
@@ -88,11 +93,11 @@ public class ServerTemplateView extends Composite
     @Override
     public void init( final ServerTemplatePresenter presenter ) {
         this.presenter = presenter;
-        ruleEnabled.setText( "Rule" );
+        ruleEnabled.setText( getRuleCheckBoxText() );
         ruleEnabled.setEnabled( false );
-        processEnabled.setText( "Process" );
+        processEnabled.setText( getProcessCheckBoxText() );
         processEnabled.setEnabled( false );
-        planningEnabled.setText( "Planning" );
+        planningEnabled.setText( getPlanningCheckBoxText() );
         planningEnabled.setEnabled( false );
     }
 
@@ -205,8 +210,8 @@ public class ServerTemplateView extends Composite
 
     @Override
     public void confirmRemove( final Command command ) {
-        final YesNoCancelPopup result = YesNoCancelPopup.newYesNoCancelPopup( "Template Remove",
-                                                                              "Are you sure you want remove current template?",
+        final YesNoCancelPopup result = YesNoCancelPopup.newYesNoCancelPopup( getTemplateRemovePopupTitle(),
+                                                                              getTemplateRemovePopupText(),
                                                                               command,
                                                                               new Command() {
                                                                                   @Override
@@ -232,4 +237,33 @@ public class ServerTemplateView extends Composite
         presenter.removeTemplate();
     }
 
+    @Override
+    public String getCopyTemplateErrorMessage() {
+        return translationService.format( Constants.ServerTemplateView_CopyTemplateErrorMessage );
+    }
+
+    @Override
+    public String getRemoveTemplateErrorMessage() {
+        return translationService.format( Constants.ServerTemplateView_RemoveTemplateErrorMessage );
+    }
+
+    private String getRuleCheckBoxText() {
+        return translationService.format( Constants.ServerTemplateView_RuleCheckBoxText );
+    }
+
+    private String getProcessCheckBoxText() {
+        return translationService.format( Constants.ServerTemplateView_ProcessCheckBoxText );
+    }
+
+    private String getPlanningCheckBoxText() {
+        return translationService.format( Constants.ServerTemplateView_PlanningCheckBoxText );
+    }
+
+    private String getTemplateRemovePopupText() {
+        return translationService.format( Constants.ServerTemplateView_TemplateRemovePopupText );
+    }
+
+    private String getTemplateRemovePopupTitle() {
+        return translationService.format( Constants.ServerTemplateView_TemplateRemovePopupTitle );
+    }
 }

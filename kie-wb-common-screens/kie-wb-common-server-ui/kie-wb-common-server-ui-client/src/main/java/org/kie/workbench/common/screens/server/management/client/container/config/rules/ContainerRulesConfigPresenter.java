@@ -67,6 +67,14 @@ public class ContainerRulesConfigPresenter {
         void disableActions();
 
         void errorOnInterval();
+
+        String getStartScannerErrorMessage();
+
+        String getStopScannerErrorMessage();
+
+        String getScanNowErrorMessage();
+
+        String getUpgradeErrorMessage();
     }
 
     private final View view;
@@ -130,7 +138,7 @@ public class ContainerRulesConfigPresenter {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "Start scanner failed.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( view.getStartScannerErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                 updateViewState();
                 return false;
             }
@@ -150,7 +158,7 @@ public class ContainerRulesConfigPresenter {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "Stop scanner failed.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( view.getStopScannerErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                 updateViewState();
                 return false;
             }
@@ -170,7 +178,7 @@ public class ContainerRulesConfigPresenter {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "Scan now has failed.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( view.getScanNowErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                 updateViewState();
                 return false;
             }
@@ -188,7 +196,7 @@ public class ContainerRulesConfigPresenter {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "Upgrade has failed.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( view.getUpgradeErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                 updateViewState();
                 return false;
             }

@@ -21,7 +21,7 @@ public class ProcessConfigPagePresenter implements WizardPage {
 
     @Override
     public String getTitle() {
-        return "Process Config";
+        return processConfigPresenter.getView().getConfigPageTitle();
     }
 
     @Override
