@@ -9,9 +9,9 @@ public final class Convert {
     }
 
     public static ServerInstanceKey toKey( final ServerInstance serverInstance ) {
-        return new ServerInstanceKey( serverInstance.getServerInstanceId(),
+        return new ServerInstanceKey( serverInstance.getServerTemplateId(),
                                       serverInstance.getServerName(),
-                                      serverInstance.getServerTemplateId(),
+                                      serverInstance.getServerInstanceId(),
                                       serverInstance.getUrl() );
     }
 

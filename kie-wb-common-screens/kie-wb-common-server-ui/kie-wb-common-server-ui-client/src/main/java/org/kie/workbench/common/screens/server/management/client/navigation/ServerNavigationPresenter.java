@@ -16,12 +16,16 @@
 package org.kie.workbench.common.screens.server.management.client.navigation;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.model.spec.ServerTemplateKey;
 import org.kie.workbench.common.screens.server.management.client.events.AddNewServerTemplate;
 import org.kie.workbench.common.screens.server.management.client.events.ServerTemplateListRefresh;
@@ -49,6 +53,8 @@ public class ServerNavigationPresenter {
     private final Event<ServerTemplateListRefresh> serverTemplateListRefreshEvent;
     private final Event<ServerTemplateSelected> serverTemplateSelectedEvent;
 
+    private Set<String> serverTemplates = new HashSet<String>();
+
     @Inject
     public ServerNavigationPresenter( final View view,
                                       final Event<AddNewServerTemplate> addNewServerTemplateEvent,
@@ -72,6 +78,7 @@ public class ServerNavigationPresenter {
     public void setup( final ServerTemplateKey firstTemplate,
                        final Collection<ServerTemplateKey> serverTemplateKeys ) {
         view.clean();
+        serverTemplates.clear();
         addTemplate( checkNotNull( "serverTemplate2BeSelected", firstTemplate ) );
         for ( final ServerTemplateKey serverTemplateKey : serverTemplateKeys ) {
             if ( !serverTemplateKey.equals( firstTemplate ) ) {
@@ -82,12 +89,20 @@ public class ServerNavigationPresenter {
 
     private void addTemplate( final ServerTemplateKey serverTemplateKey ) {
         checkNotNull( "serverTemplateKey", serverTemplateKey );
+        serverTemplates.add( serverTemplateKey.getId() );
         this.view.addTemplate( serverTemplateKey.getId(), serverTemplateKey.getName() );
     }
 
     public void onSelect( @Observes final ServerTemplateSelected serverTemplateSelected ) {
         checkNotNull( "serverTemplateSelected", serverTemplateSelected );
         view.select( serverTemplateSelected.getServerTemplateKey().getId() );
+    }
+
+    public void onServerTemplateUpdated( @Observes final ServerTemplateUpdated serverTemplateUpdated ) {
+        final ServerTemplate serverTemplate = checkNotNull( "serverTemplateUpdated", serverTemplateUpdated ).getServerTemplate();
+        if ( !serverTemplates.contains( serverTemplate.getId() ) ) {
+            addTemplate( serverTemplate );
+        }
     }
 
     public void select( final String id ) {

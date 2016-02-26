@@ -18,6 +18,7 @@ package org.kie.workbench.common.screens.server.management.service;
 import java.util.Collection;
 
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerConfig;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
@@ -35,6 +36,8 @@ public interface SpecManagementService {
     void saveServerTemplate( final ServerTemplate serverTemplate );
 
     ServerTemplate getServerTemplate( final String serverTemplateId );
+
+    void deleteServerInstance( final ServerInstanceKey serverInstanceKey );
 
     Collection<ServerTemplateKey> listServerTemplateKeys();
 
