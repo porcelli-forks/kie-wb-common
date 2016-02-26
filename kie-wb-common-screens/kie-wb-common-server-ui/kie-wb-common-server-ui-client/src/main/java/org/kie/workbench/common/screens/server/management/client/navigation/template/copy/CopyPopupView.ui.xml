@@ -21,7 +21,7 @@
   <b:Form type="HORIZONTAL">
     <b:FieldSet>
       <b:FormGroup ui:field="templateNameGroup">
-        <b:FormLabel for="templateName" text="Template Name" addStyleNames="col-md-3"/>
+        <b:FormLabel ui:field="templateNameLabel" for="templateName" addStyleNames="col-md-3"/>
         <b:Column size="MD_9">
           <b:TextBox ui:field="templateName"/>
           <b:HelpBlock ui:field="templateNameHelpInline"/>

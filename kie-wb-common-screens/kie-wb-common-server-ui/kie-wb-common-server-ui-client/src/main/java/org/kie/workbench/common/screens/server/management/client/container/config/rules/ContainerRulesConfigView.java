@@ -30,9 +30,11 @@ import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.util.State;
 import org.kie.workbench.common.screens.server.management.client.util.StyleHelper;
 import org.kie.workbench.common.screens.server.management.client.widget.NumericTextBox;
@@ -41,6 +43,9 @@ import org.kie.workbench.common.screens.server.management.client.widget.NumericT
 @Templated
 public class ContainerRulesConfigView extends Composite
         implements ContainerRulesConfigPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private ContainerRulesConfigPresenter presenter;
 
@@ -241,4 +246,23 @@ public class ContainerRulesConfigView extends Composite
         }
     }
 
+    @Override
+    public String getStartScannerErrorMessage() {
+        return translationService.format( Constants.ContainerRulesConfigView_StartScannerErrorMessage );
+    }
+
+    @Override
+    public String getStopScannerErrorMessage() {
+        return translationService.format( Constants.ContainerRulesConfigView_StopScannerErrorMessage );
+    }
+
+    @Override
+    public String getScanNowErrorMessage() {
+        return translationService.format( Constants.ContainerRulesConfigView_ScanNowErrorMessage );
+    }
+
+    @Override
+    public String getUpgradeErrorMessage() {
+        return translationService.format( Constants.ContainerRulesConfigView_UpgradeErrorMessage );
+    }
 }

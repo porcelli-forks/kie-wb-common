@@ -28,8 +28,10 @@ import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.client.ui.html.Div;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.util.ContentChangeHandler;
 import org.kie.workbench.common.screens.server.management.client.util.StyleHelper;
 import org.kie.workbench.common.screens.server.management.client.widget.artifact.ArtifactListWidgetPresenter;
@@ -40,6 +42,9 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 @Templated
 public class NewContainerFormView extends Composite
         implements NewContainerFormPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     @DataField("new-container-name-form")
     Element containerNameGroup = DOM.createDiv();
@@ -136,6 +141,11 @@ public class NewContainerFormView extends Composite
     }
 
     @Override
+    public String getTitle() {
+        return getTitleText();
+    }
+
+    @Override
     public void setArtifactListWidgetView( final ArtifactListWidgetPresenter.View view ) {
         content.add( view );
     }
@@ -190,7 +200,7 @@ public class NewContainerFormView extends Composite
     }
 
     @Override
-    public void setAtifactId( final String value ) {
+    public void setArtifactId( final String value ) {
         artifactId.setText( value );
     }
 
@@ -246,4 +256,27 @@ public class NewContainerFormView extends Composite
         StyleHelper.addUniqueEnumStyleName( versionGroup, ValidationState.class, ValidationState.ERROR );
     }
 
+    @Override
+    public String getInvalidErrorMessage() {
+        return translationService.format( Constants.NewContainerFormView_InvalidErrorMessage );
+    }
+
+    @Override
+    public String getNewContainerWizardTitle() {
+        return translationService.format( Constants.NewContainerFormView_NewContainerWizardTitle );
+    }
+
+    @Override
+    public String getNewContainerWizardSaveSuccess() {
+        return translationService.format( Constants.NewContainerFormView_NewContainerWizardSaveSuccess );
+    }
+
+    @Override
+    public String getNewContainerWizardSaveError() {
+        return translationService.format( Constants.NewContainerFormView_NewContainerWizardSaveError );
+    }
+
+    private String getTitleText() {
+        return translationService.format( Constants.NewContainerFormView_TitleText );
+    }
 }

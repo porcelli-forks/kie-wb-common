@@ -29,9 +29,11 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.widget.CustomGroupItem;
 import org.uberfire.mvp.Command;
 
@@ -39,6 +41,9 @@ import org.uberfire.mvp.Command;
 @Templated
 public class ServerNavigationView extends Composite
         implements ServerNavigationPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private ServerNavigationPresenter presenter;
 
@@ -68,7 +73,7 @@ public class ServerNavigationView extends Composite
 
     @PostConstruct
     public void init() {
-        title.setInnerText( "SERVER TEMPLATES" );
+        title.setInnerText( getTitleText() );
     }
 
     @EventHandler("new-server-template-button")
@@ -113,5 +118,9 @@ public class ServerNavigationView extends Composite
         serverTemplates.clear();
         selected = null;
         serverTemplates.clear();
+    }
+
+    private String getTitleText() {
+        return translationService.format( Constants.ServerNavigationView_TitleText );
     }
 }

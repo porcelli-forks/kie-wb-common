@@ -10,8 +10,10 @@ import org.gwtbootstrap3.client.ui.Popover;
 import org.gwtbootstrap3.client.ui.constants.Placement;
 import org.gwtbootstrap3.client.ui.constants.Trigger;
 import org.gwtbootstrap3.client.ui.html.Span;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
@@ -19,6 +21,9 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 @Dependent
 public class NotificationView extends Composite
         implements NotificationPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     @Inject
     @DataField
@@ -51,10 +56,13 @@ public class NotificationView extends Composite
         final Popover popover = new Popover( this.size );
         popover.setTrigger( Trigger.CLICK );
         popover.setPlacement( Placement.RIGHT );
-        popover.setTitle( "Messages" );
+        popover.setTitle( getTitleText() );
         popover.setContent( popOverMessage );
         parent.getElement().insertAfter( popover.asWidget().getElement(), icon.getElement() );
         popover.reconfigure();
     }
 
+    private String getTitleText() {
+        return translationService.format( Constants.NotificationView_TitleText );
+    }
 }

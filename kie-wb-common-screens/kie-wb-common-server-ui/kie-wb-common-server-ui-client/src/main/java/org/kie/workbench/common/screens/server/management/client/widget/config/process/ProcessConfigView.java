@@ -28,13 +28,18 @@ import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 
 @Dependent
 @Templated
 public class ProcessConfigView extends Composite
         implements ProcessConfigPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     private ProcessConfigPresenter presenter;
 
@@ -167,4 +172,8 @@ public class ProcessConfigView extends Composite
         return mergeMode.getText();
     }
 
+    @Override
+    public String getConfigPageTitle() {
+        return translationService.format( Constants.ProcessConfigView_ConfigPageTitle );
+    }
 }
