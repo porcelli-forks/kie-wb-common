@@ -16,23 +16,24 @@
 package org.kie.workbench.common.screens.server.management.client.remote;
 
 import java.util.Collection;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
 import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
-import org.kie.workbench.common.screens.server.management.client.container.status.card.ContainerCardPresenter;
 import org.kie.workbench.common.screens.server.management.client.events.ServerInstanceSelected;
 import org.kie.workbench.common.screens.server.management.client.remote.empty.RemoteEmptyPresenter;
 import org.kie.workbench.common.screens.server.management.service.RuntimeManagementService;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.kie.workbench.common.screens.server.management.client.util.Convert.*;
 import static org.uberfire.commons.validation.PortablePreconditions.*;
@@ -57,6 +58,8 @@ public class RemotePresenter {
     private final RemoteStatusPresenter remoteStatusPresenter;
     private final RemoteEmptyPresenter remoteEmptyPresenter;
     private final Caller<RuntimeManagementService> runtimeManagementService;
+    private final Caller<SpecManagementService> specManagementServiceCaller;
+    private final Event<NotificationEvent> notification;
 
     private ServerInstanceKey serverInstanceKey;
 
@@ -64,11 +67,15 @@ public class RemotePresenter {
     public RemotePresenter( final View view,
                             final RemoteStatusPresenter remoteStatusPresenter,
                             final RemoteEmptyPresenter remoteEmptyPresenter,
-                            final Caller<RuntimeManagementService> runtimeManagementService ) {
+                            final Caller<RuntimeManagementService> runtimeManagementService,
+                            final Caller<SpecManagementService> specManagementServiceCaller,
+                            final Event<NotificationEvent> notification ) {
         this.view = view;
         this.remoteStatusPresenter = remoteStatusPresenter;
         this.remoteEmptyPresenter = remoteEmptyPresenter;
         this.runtimeManagementService = runtimeManagementService;
+        this.specManagementServiceCaller = specManagementServiceCaller;
+        this.notification = notification;
     }
 
     @PostConstruct
@@ -86,13 +93,29 @@ public class RemotePresenter {
         refresh();
     }
 
-    public void onSelect( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
+    public void onInstanceUpdate( @Observes final ServerInstanceUpdated serverInstanceUpdated ) {
         checkNotNull( "serverInstanceUpdated", serverInstanceUpdated );
         final ServerInstanceKey updatedServerInstanceKey = toKey( serverInstanceUpdated.getServerInstance() );
-//        if ( serverInstanceKey.equals( updatedServerInstanceKey ) ) {
+        if ( serverInstanceKey.getServerInstanceId().equals( updatedServerInstanceKey.getServerInstanceId() ) ) {
             serverInstanceKey = updatedServerInstanceKey;
             loadContent( serverInstanceUpdated.getServerInstance().getContainers() );
-//        }
+        }
+    }
+
+    public void remove() {
+        specManagementServiceCaller.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( final Void aVoid ) {
+                notification.fire( new NotificationEvent( "Remote instance removed.", NotificationEvent.NotificationType.SUCCESS ) );
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error( final Object o,
+                                  final Throwable throwable ) {
+                notification.fire( new NotificationEvent( "Failed to remove remote instance.", NotificationEvent.NotificationType.ERROR ) );
+                return false;
+            }
+        } ).deleteServerInstance( serverInstanceKey );
     }
 
     public void refresh() {

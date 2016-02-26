@@ -15,6 +15,7 @@
 
 package org.kie.workbench.common.screens.server.management.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -84,6 +85,8 @@ public class ServerManagementBrowserPresenter {
     private final Caller<SpecManagementService> specManagementService;
 
     private final Event<ServerTemplateSelected> serverTemplateSelectedEvent;
+
+    private boolean isEmpty = true;
 
     @Inject
     public ServerManagementBrowserPresenter( final View view,
@@ -162,9 +165,11 @@ public class ServerManagementBrowserPresenter {
     public void setup( final Collection<ServerTemplateKey> serverTemplateKeys,
                        final String selectServerTemplateId ) {
         if ( serverTemplateKeys.isEmpty() ) {
+            isEmpty = true;
             this.view.setEmptyView( serverEmptyPresenter.getView() );
             navigationPresenter.clear();
         } else {
+            isEmpty = false;
             ServerTemplateKey serverTemplate2BeSelected = null;
             if ( selectServerTemplateId != null ) {
                 for ( ServerTemplateKey serverTemplateKey : serverTemplateKeys ) {
@@ -183,10 +188,12 @@ public class ServerManagementBrowserPresenter {
     }
 
     public void onServerTemplateUpdated( @Observes final ServerTemplateUpdated serverTemplateUpdated ) {
-        checkNotNull( "serverTemplateUpdated", serverTemplateUpdated );
-//        if ( serverTemplateUpdated.getServerTemplate().getId().equals( currentServerTemplateId() ) ) {
-            setup( serverTemplateUpdated.getServerTemplate(), null );
-//        }
+        final ServerTemplate serverTemplate = checkNotNull( "serverTemplateUpdated", serverTemplateUpdated ).getServerTemplate();
+        if ( isEmpty ) {
+            setup( new ArrayList<ServerTemplateKey>() {{
+                add( serverTemplate );
+            }}, serverTemplate.getId() );
+        }
     }
 
     public void onDelete( @Observes final ServerInstanceDeleted serverInstanceDeleted ) {

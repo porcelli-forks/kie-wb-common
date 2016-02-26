@@ -48,6 +48,10 @@ public class RemoteView extends Composite
     @DataField
     Button refresh;
 
+    @Inject
+    @DataField
+    Button remove;
+
     @DataField("server-name")
     Heading serverName = new Heading( HeadingSize.H3 );
 
@@ -92,4 +96,10 @@ public class RemoteView extends Composite
     public void onRefresh( final ClickEvent event ) {
         presenter.refresh();
     }
+
+    @EventHandler("remove")
+    public void onRemove( final ClickEvent event ) {
+        presenter.remove();
+    }
+
 }

@@ -1,11 +1,14 @@
 package org.kie.workbench.common.screens.server.management.client.container.status.card;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.ioc.client.container.IOC;
+import org.kie.server.api.model.Message;
 import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.workbench.common.screens.server.management.client.events.ServerInstanceSelected;
@@ -73,7 +76,9 @@ public class ContainerCardPresenter {
                                           remoteServerSelectedEvent.fire( new ServerInstanceSelected( serverInstanceKey ) );
                                       }
                                   } );
-        bodyPresenter.setMessages( container.getMessages() );
+        final List<Message> collection = new ArrayList<Message>( container.getMessages() );
+
+        bodyPresenter.setMessage( collection.get( collection.size() - 1 ) );
         footerPresenter.setup( container.getUrl(), container.getResolvedReleasedId().getVersion() );
 
     }

@@ -30,4 +30,9 @@ public class BodyView extends Composite
         notifications.add( widget );
     }
 
+    @Override
+    public void clear() {
+        notifications.clear();
+    }
+
 }

@@ -20,6 +20,8 @@ public class BodyPresenter {
     public interface View extends UberView<BodyPresenter> {
 
         void addNotification( IsWidget view );
+
+        void clear();
     }
 
     private final View view;
@@ -40,16 +42,9 @@ public class BodyPresenter {
         return view;
     }
 
-    public void setMessages( final Collection<Message> messages ) {
-        checkNotNull( "messages", messages );
-
-        if ( messages.isEmpty() ) {
-            view.addNotification( setupNotification( true ).getView() );
-        } else {
-            for ( final Message message : messages ) {
-                view.addNotification( setupNotification( message ).getView() );
-            }
-        }
+    public void setMessage( final Message message ) {
+        checkNotNull( "message", message );
+        view.addNotification( setupNotification( message ).getView() );
     }
 
     NotificationPresenter setupNotification( final Message message ) {
