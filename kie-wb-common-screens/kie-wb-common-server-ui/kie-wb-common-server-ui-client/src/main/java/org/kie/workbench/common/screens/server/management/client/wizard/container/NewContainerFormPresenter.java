@@ -52,11 +52,13 @@ public class NewContainerFormPresenter implements WizardPage {
 
     public interface View extends UberView<NewContainerFormPresenter> {
 
+        String getTitle();
+
         void addContentChangeHandler( final ContentChangeHandler contentChangeHandler );
 
         void setGroupId( final String groupId );
 
-        void setAtifactId( final String artifactId );
+        void setArtifactId( final String artifactId );
 
         void setVersion( final String version );
 
@@ -91,6 +93,14 @@ public class NewContainerFormPresenter implements WizardPage {
         void noErrorOnArtifactId();
 
         void noErrorOnVersion();
+
+        String getInvalidErrorMessage();
+
+        String getNewContainerWizardTitle();
+
+        String getNewContainerWizardSaveSuccess();
+
+        String getNewContainerWizardSaveError();
 
     }
 
@@ -136,7 +146,7 @@ public class NewContainerFormPresenter implements WizardPage {
 
     @Override
     public String getTitle() {
-        return "Container";
+        return view.getTitle();
     }
 
     @Override
@@ -149,7 +159,7 @@ public class NewContainerFormPresenter implements WizardPage {
                     @Override
                     public void callback( final Boolean result ) {
                         if ( result.equals( Boolean.FALSE ) ) {
-                            view.errorOnContainerName( "Invalid name." );
+                            view.errorOnContainerName( view.getInvalidErrorMessage() );
                         }
                         callback.callback( result );
                     }
@@ -202,7 +212,7 @@ public class NewContainerFormPresenter implements WizardPage {
                 @Override
                 public void callback( GAV gav ) {
                     view.setGroupId( gav.getGroupId() );
-                    view.setAtifactId( gav.getArtifactId() );
+                    view.setArtifactId( gav.getArtifactId() );
                     view.setVersion( gav.getVersion() );
                     wizardPageStatusChangeEvent.fire( new WizardPageStatusChangeEvent( NewContainerFormPresenter.this ) );
                 }
@@ -300,4 +310,7 @@ public class NewContainerFormPresenter implements WizardPage {
                                   configs );
     }
 
+    public View getView() {
+        return this.view;
+    }
 }

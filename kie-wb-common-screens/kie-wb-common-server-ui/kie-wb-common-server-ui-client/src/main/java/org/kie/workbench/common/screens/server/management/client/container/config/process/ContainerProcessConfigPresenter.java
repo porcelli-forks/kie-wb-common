@@ -43,6 +43,10 @@ public class ContainerProcessConfigPresenter {
         void disableActions();
 
         void enableActions();
+
+        String getSaveSuccessMessage();
+
+        String getSaveErrorMessage();
     }
 
     private final View view;
@@ -92,7 +96,7 @@ public class ContainerProcessConfigPresenter {
         specManagementService.call( new RemoteCallback<Void>() {
                                         @Override
                                         public void callback( final Void containerConfig ) {
-                                            notification.fire( new NotificationEvent( "Container has been updated.", NotificationEvent.NotificationType.SUCCESS ) );
+                                            notification.fire( new NotificationEvent( view.getSaveSuccessMessage(), NotificationEvent.NotificationType.SUCCESS ) );
                                             setupView( newProcessConfig );
                                         }
                                     },
@@ -100,7 +104,7 @@ public class ContainerProcessConfigPresenter {
                                         @Override
                                         public boolean error( final Object o,
                                                               final Throwable throwable ) {
-                                            notification.fire( new NotificationEvent( "Container has failed to update.", NotificationEvent.NotificationType.ERROR ) );
+                                            notification.fire( new NotificationEvent( view.getSaveErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                                             setupView( processConfigPresenter.getProcessConfig() );
                                             return false;
                                         }

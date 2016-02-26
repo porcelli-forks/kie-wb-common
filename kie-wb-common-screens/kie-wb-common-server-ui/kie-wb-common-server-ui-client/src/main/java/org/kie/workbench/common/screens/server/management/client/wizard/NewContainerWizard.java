@@ -47,7 +47,7 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
 
     @Override
     public String getTitle() {
-        return "New Container";
+        return newContainerFormPresenter.getView().getNewContainerWizardTitle();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
         specManagementService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( final Void o ) {
-                notification.fire( new NotificationEvent( "New Container created.", NotificationEvent.NotificationType.SUCCESS ) );
+                notification.fire( new NotificationEvent( newContainerFormPresenter.getView().getNewContainerWizardSaveSuccess(), NotificationEvent.NotificationType.SUCCESS ) );
                 clear();
                 NewContainerWizard.super.complete();
                 serverTemplateSelectedEvent.fire( new ServerTemplateSelected( serverTemplate, newContainer.getId() ) );
@@ -104,7 +104,7 @@ public class NewContainerWizard extends AbstractMultiPageWizard {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "New Container Error.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( newContainerFormPresenter.getView().getNewContainerWizardSaveError(), NotificationEvent.NotificationType.ERROR ) );
                 NewContainerWizard.this.pageSelected( 0 );
                 NewContainerWizard.this.start();
                 return false;

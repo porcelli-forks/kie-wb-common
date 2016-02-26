@@ -76,6 +76,14 @@ public class ContainerPresenter {
         void setContainerStartState( final State state );
 
         void confirmRemove( final Command command );
+
+        String getRemoveContainerSuccessMessage();
+
+        String getRemoveContainerErrorMessage();
+
+        String getStopContainerErrorMessage();
+
+        String getStartContainerErrorMessage();
     }
 
     private final View view;
@@ -227,14 +235,14 @@ public class ContainerPresenter {
                 specManagementService.call( new RemoteCallback<Void>() {
                     @Override
                     public void callback( final Void response ) {
-                        notification.fire( new NotificationEvent( "Container deleted.", NotificationEvent.NotificationType.SUCCESS ) );
+                        notification.fire( new NotificationEvent( view.getRemoveContainerSuccessMessage(), NotificationEvent.NotificationType.SUCCESS ) );
                         serverTemplateSelectedEvent.fire( new ServerTemplateSelected( containerSpec.getServerTemplateKey() ) );
                     }
                 }, new ErrorCallback<Object>() {
                     @Override
                     public boolean error( final Object o,
                                           final Throwable throwable ) {
-                        notification.fire( new NotificationEvent( "Failed to delete container.", NotificationEvent.NotificationType.ERROR ) );
+                        notification.fire( new NotificationEvent( view.getRemoveContainerErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                         serverTemplateSelectedEvent.fire( new ServerTemplateSelected( containerSpec.getServerTemplateKey() ) );
                         return false;
                     }
@@ -253,7 +261,7 @@ public class ContainerPresenter {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "Stop container failed.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( view.getStopContainerErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                 updateStatus( KieContainerStatus.STARTED );
                 return false;
             }
@@ -270,7 +278,7 @@ public class ContainerPresenter {
             @Override
             public boolean error( final Object o,
                                   final Throwable throwable ) {
-                notification.fire( new NotificationEvent( "Start container failed.", NotificationEvent.NotificationType.ERROR ) );
+                notification.fire( new NotificationEvent( view.getStartContainerErrorMessage(), NotificationEvent.NotificationType.ERROR ) );
                 updateStatus( KieContainerStatus.STOPPED );
                 return false;
             }
