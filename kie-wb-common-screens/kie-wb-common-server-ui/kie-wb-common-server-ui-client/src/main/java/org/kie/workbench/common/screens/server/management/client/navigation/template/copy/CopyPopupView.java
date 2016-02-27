@@ -3,58 +3,55 @@ package org.kie.workbench.common.screens.server.management.client.navigation.tem
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.FormGroup;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
+import org.kie.workbench.common.screens.server.management.client.util.StyleHelper;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
 
 @Dependent
-public class CopyPopupView extends BaseModal
+public class CopyPopupView extends Composite
         implements CopyPopupPresenter.View {
-
-    //@Inject
-    //private TranslationService translationService;
 
     private CopyPopupPresenter presenter;
 
-    interface CopyPopupViewBinder
-            extends
-            UiBinder<Widget, CopyPopupView> {
+    private final BaseModal modal;
+    private final TranslationService translationService;
 
-    }
+    @DataField("template-name-group")
+    Element templateNameGroup = DOM.createDiv();
 
-    private static CopyPopupViewBinder uiBinder = GWT.create( CopyPopupViewBinder.class );
-
-    @UiField
-    FormGroup templateNameGroup;
-
-    @UiField
+    @Inject
+    @DataField("template-name-label")
     FormLabel templateNameLabel;
 
-    @UiField
+    @Inject
+    @DataField("template-name")
     TextBox templateName;
 
-    @UiField
-    HelpBlock templateNameHelpInline;
+    @Inject
+    @DataField("template-name-help")
+    Span templateNameHelp;
 
-    public CopyPopupView() {
-        setTitle( getCopyServerTemplatePopupTitle() );
-
-        setBody( uiBinder.createAndBindUi( CopyPopupView.this ) );
-        templateNameLabel.setText( getTemplateNameLabelText() );
-        add( new ModalFooterOKCancelButtons( new Command() {
+    @Inject
+    public CopyPopupView( final TranslationService translationService ) {
+        this.translationService = translationService;
+        this.modal = new BaseModal();
+        this.modal.setTitle( getCopyServerTemplatePopupTitle() );
+        this.modal.setBody( this );
+        this.templateNameLabel.setText( getTemplateNameLabelText() );
+        this.modal.add( new ModalFooterOKCancelButtons( new Command() {
             @Override
             public void execute() {
                 presenter.save();
@@ -74,23 +71,18 @@ public class CopyPopupView extends BaseModal
             @Override
             public void onKeyUp( KeyUpEvent event ) {
                 if ( !templateName.getText().trim().isEmpty() ) {
-                    templateNameGroup.setValidationState( ValidationState.NONE );
-                    templateNameHelpInline.setVisible( false );
+                    StyleHelper.addUniqueEnumStyleName( templateNameGroup, ValidationState.class, ValidationState.NONE );
+                    templateNameHelp.setVisible( false );
                 }
             }
         } );
     }
 
     @Override
-    public void display() {
-        this.show();
-    }
-
-    @Override
     public void clear() {
         templateName.setText( "" );
-        templateNameGroup.setValidationState( ValidationState.NONE );
-        templateNameHelpInline.setVisible( false );
+        StyleHelper.addUniqueEnumStyleName( templateNameGroup, ValidationState.class, ValidationState.NONE );
+        templateNameHelp.setVisible( false );
     }
 
     @Override
@@ -100,27 +92,37 @@ public class CopyPopupView extends BaseModal
 
     @Override
     public void errorOnTemplateNameFromGroup() {
-        templateNameGroup.setValidationState( ValidationState.ERROR );
-        templateNameHelpInline.setText( getTemplateNameEmptyMessage() );
-        templateNameHelpInline.setVisible( true );
+        StyleHelper.addUniqueEnumStyleName( templateNameGroup, ValidationState.class, ValidationState.ERROR );
+        templateNameHelp.setText( getTemplateNameEmptyMessage() );
+        templateNameHelp.setVisible( true );
+    }
+
+    @Override
+    public void display() {
+        modal.show();
+    }
+
+    @Override
+    public void hide() {
+        modal.hide();
     }
 
     @Override
     public void errorOnTemplateNameFromGroup( final String message ) {
-        templateNameGroup.setValidationState( ValidationState.ERROR );
-        templateNameHelpInline.setText( message );
-        templateNameHelpInline.setVisible( true );
+        StyleHelper.addUniqueEnumStyleName( templateNameGroup, ValidationState.class, ValidationState.ERROR );
+        templateNameHelp.setText( message );
+        templateNameHelp.setVisible( true );
     }
 
     private String getTemplateNameLabelText() {
-        return "Template Name";//translationService.format( Constants.CopyPopupView_TemplateNameLabelText );
+        return translationService.format( Constants.CopyPopupView_TemplateNameLabelText );
     }
 
     private String getCopyServerTemplatePopupTitle() {
-        return "Copy Server Template";//translationService.format( Constants.CopyPopupView_CopyServerTemplatePopupTitle );
+        return translationService.format( Constants.CopyPopupView_CopyServerTemplatePopupTitle );
     }
 
     private String getTemplateNameEmptyMessage() {
-        return "Name can't be empty";//translationService.format( Constants.CopyPopupView_TemplateNameEmptyMessage );
+        return translationService.format( Constants.CopyPopupView_TemplateNameEmptyMessage );
     }
 }

@@ -182,7 +182,7 @@ public class NewContainerFormPresenter implements WizardPage {
         return mode;
     }
 
-    private ArtifactListWidgetPresenter buildArtifactListWidgetPresenter() {
+    protected ArtifactListWidgetPresenter buildArtifactListWidgetPresenter() {
         return IOC.getBeanManager().lookupBean( ArtifactListWidgetPresenter.class ).getInstance();
     }
 
