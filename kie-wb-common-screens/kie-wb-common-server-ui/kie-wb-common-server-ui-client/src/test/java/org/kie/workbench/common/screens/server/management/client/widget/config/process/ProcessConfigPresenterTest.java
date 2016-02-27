@@ -42,4 +42,10 @@ public class ProcessConfigPresenterTest {
         assertEquals(view, presenter.getView());
     }
 
+    @Test
+    public void testClear() {
+        presenter.clear();
+        verify(view).clear();
+    }
+
 }

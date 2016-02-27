@@ -43,4 +43,10 @@ public class ServerNavigationPresenterTest {
         assertEquals(view, presenter.getView());
     }
 
+    @Test
+    public void testClear() {
+        presenter.clear();
+        verify(view).clean();
+    }
+
 }

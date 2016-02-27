@@ -42,4 +42,49 @@ public class NewTemplatePresenterTest {
         assertEquals(view.asWidget(), presenter.asWidget());
     }
 
+    @Test
+    public void testIsTemplateNameValid() {
+        when(view.getTemplateName())
+                .thenReturn(null)
+                .thenReturn("")
+                .thenReturn("test");
+
+        assertFalse(presenter.isTemplateNameValid());
+        assertFalse(presenter.isTemplateNameValid());
+        assertTrue(presenter.isTemplateNameValid());
+    }
+
+    @Test
+    public void testIsCapabilityValid() {
+        when(view.isPlanningCapabilityChecked()).thenReturn(true);
+        when(view.isRuleCapabilityChecked()).thenReturn(true);
+        when(view.isProcessCapabilityChecked()).thenReturn(true);
+
+        assertTrue(presenter.isCapabilityValid());
+
+        when(view.isPlanningCapabilityChecked()).thenReturn(false);
+        when(view.isRuleCapabilityChecked()).thenReturn(true);
+        when(view.isProcessCapabilityChecked()).thenReturn(true);
+
+        assertTrue(presenter.isCapabilityValid());
+
+        when(view.isPlanningCapabilityChecked()).thenReturn(true);
+        when(view.isRuleCapabilityChecked()).thenReturn(false);
+        when(view.isProcessCapabilityChecked()).thenReturn(true);
+
+        assertTrue(presenter.isCapabilityValid());
+
+        when(view.isPlanningCapabilityChecked()).thenReturn(false);
+        when(view.isRuleCapabilityChecked()).thenReturn(false);
+        when(view.isProcessCapabilityChecked()).thenReturn(false);
+
+        assertFalse(presenter.isCapabilityValid());
+    }
+
+    @Test
+    public void testClear() {
+        presenter.clear();
+        verify(view).clear();
+    }
+
 }

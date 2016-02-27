@@ -16,23 +16,38 @@
 
 package org.kie.workbench.common.screens.server.management.client.container.empty;
 
+import javax.enterprise.event.Event;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.client.events.AddNewContainer;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mocks.EventSourceMock;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServerContainerEmptyPresenterTest {
 
+    @Spy
+    Event<AddNewContainer> addNewContainerEvent = new EventSourceMock<AddNewContainer>();
+
     @Mock
     ServerContainerEmptyPresenter.View view;
 
-    @InjectMocks
     ServerContainerEmptyPresenter presenter;
+
+    @Before
+    public void init() {
+        doNothing().when(addNewContainerEvent).fire(any(AddNewContainer.class));
+        presenter = new ServerContainerEmptyPresenter(view, addNewContainerEvent);
+    }
 
     @Test
     public void testInit() {
@@ -40,6 +55,22 @@ public class ServerContainerEmptyPresenterTest {
 
         verify(view).init(presenter);
         assertEquals(view, presenter.getView());
+    }
+
+    @Test
+    public void testTemplate() {
+        final ServerTemplate template = new ServerTemplate("id", "name");
+
+        presenter.setTemplate(template);
+
+        verify(view).setTemplateName(template.getName());
+    }
+
+    @Test
+    public void testAddContainer() {
+        presenter.addContainer();
+
+        verify(addNewContainerEvent).fire(any(AddNewContainer.class));
     }
 
 }
