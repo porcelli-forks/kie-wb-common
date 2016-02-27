@@ -22,6 +22,7 @@ import org.kie.workbench.common.screens.server.management.client.widget.config.p
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.callbacks.Callback;
 
 import static org.mockito.Mockito.*;
 
@@ -42,10 +43,19 @@ public class ProcessConfigPagePresenterTest {
     }
 
     @Test
-    public void testBuildProcessConfig(){
+    public void testBuildProcessConfig() {
         presenter.buildProcessConfig();
 
         verify(processConfigPresenter).buildProcessConfig();
+    }
+
+    @Test
+    public void testIsComplete() {
+        final Callback callback = mock(Callback.class);
+
+        presenter.isComplete(callback);
+
+        verify(callback).callback(true);
     }
 
 }
