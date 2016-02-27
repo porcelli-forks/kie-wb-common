@@ -40,4 +40,11 @@ public class NewContainerFormPresenterTest {
         verify(view).init(presenter);
     }
 
+    @Test
+    public void testClear() {
+        presenter.clear();
+
+        verify(view).clear();
+    }
+
 }
