@@ -77,7 +77,6 @@ public class ContainerRulesConfigPresenter {
 
     private String pollInterval;
     private KieScannerStatus scannerStatus;
-    private String version;
 
     private State startScannerState;
     private State stopScannerState;
@@ -109,7 +108,6 @@ public class ContainerRulesConfigPresenter {
     }
 
     public void setVersion( final String version ) {
-        this.version = version;
         this.view.setVersion( version );
     }
 
@@ -223,8 +221,6 @@ public class ContainerRulesConfigPresenter {
         } else {
             this.pollInterval = "";
         }
-
-        this.version = version;
 
         setScannerStatus();
 

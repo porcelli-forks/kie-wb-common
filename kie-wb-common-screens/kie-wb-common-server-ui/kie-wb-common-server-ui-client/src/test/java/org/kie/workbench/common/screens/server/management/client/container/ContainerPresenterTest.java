@@ -16,23 +16,54 @@
 
 package org.kie.workbench.common.screens.server.management.client.container;
 
+import javax.enterprise.event.Event;
+
+import org.jboss.errai.common.client.api.Caller;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.server.management.client.container.config.process.ContainerProcessConfigPresenter;
 import org.kie.workbench.common.screens.server.management.client.container.config.rules.ContainerRulesConfigPresenter;
 import org.kie.workbench.common.screens.server.management.client.container.status.ContainerRemoteStatusPresenter;
-import org.mockito.InjectMocks;
+import org.kie.workbench.common.screens.server.management.client.container.status.empty.ContainerStatusEmptyPresenter;
+import org.kie.workbench.common.screens.server.management.client.events.ServerTemplateSelected;
+import org.kie.workbench.common.screens.server.management.service.RuntimeManagementService;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContainerPresenterTest {
 
+    @Spy
+    Event<ServerTemplateSelected> serverTemplateSelectedEvent = new EventSourceMock<ServerTemplateSelected>();
+
+    @Spy
+    Event<NotificationEvent> notification = new EventSourceMock<NotificationEvent>();
+
+    Caller<RuntimeManagementService> runtimeManagementServiceCaller;
+
+    @Mock
+    RuntimeManagementService runtimeManagementService;
+
+    Caller<SpecManagementService> specManagementServiceCaller;
+
+    @Mock
+    SpecManagementService specManagementService;
+
     @Mock
     ContainerPresenter.View view;
+
+    @Mock
+    ContainerStatusEmptyPresenter containerStatusEmptyPresenter;
 
     @Mock
     ContainerRemoteStatusPresenter containerRemoteStatusPresenter;
@@ -43,8 +74,25 @@ public class ContainerPresenterTest {
     @Mock
     ContainerProcessConfigPresenter containerProcessConfigPresenter;
 
-    @InjectMocks
     ContainerPresenter presenter;
+
+    @Before
+    public void init() {
+        runtimeManagementServiceCaller = new CallerMock<RuntimeManagementService>(runtimeManagementService);
+        specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
+        doNothing().when(serverTemplateSelectedEvent).fire(any(ServerTemplateSelected.class));
+        doNothing().when(notification).fire(any(NotificationEvent.class));
+        presenter = spy(new ContainerPresenter(
+                view,
+                containerRemoteStatusPresenter,
+                containerStatusEmptyPresenter,
+                containerProcessConfigPresenter,
+                containerRulesConfigPresenter,
+                runtimeManagementServiceCaller,
+                specManagementServiceCaller,
+                serverTemplateSelectedEvent,
+                notification));
+    }
 
     @Test
     public void testInit() {
@@ -52,5 +100,9 @@ public class ContainerPresenterTest {
 
         verify(view).init(presenter);
         assertEquals(view, presenter.getView());
+        verify(view).setStatus(containerRemoteStatusPresenter.getView());
+        verify(view).setRulesConfig(containerRulesConfigPresenter.getView());
+        verify(view).setProcessConfig(containerProcessConfigPresenter.getView());
     }
+
 }

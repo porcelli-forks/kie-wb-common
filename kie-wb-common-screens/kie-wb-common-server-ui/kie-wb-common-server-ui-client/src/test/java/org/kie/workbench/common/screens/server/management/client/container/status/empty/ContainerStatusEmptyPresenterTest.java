@@ -16,23 +16,40 @@
 
 package org.kie.workbench.common.screens.server.management.client.container.status.empty;
 
+import javax.enterprise.event.Event;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.kie.server.controller.api.model.spec.ContainerSpecKey;
+import org.kie.server.controller.api.model.spec.ServerTemplateKey;
+import org.kie.workbench.common.screens.server.management.client.events.RefreshRemoteServers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mocks.EventSourceMock;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContainerStatusEmptyPresenterTest {
 
+    @Spy
+    Event<RefreshRemoteServers> refreshRemoteServersEvent = new EventSourceMock<RefreshRemoteServers>();
+
     @Mock
     ContainerStatusEmptyPresenter.View view;
 
-    @InjectMocks
     ContainerStatusEmptyPresenter presenter;
+
+    @Before
+    public void init() {
+        doNothing().when(refreshRemoteServersEvent).fire(any(RefreshRemoteServers.class));
+        presenter = spy(new ContainerStatusEmptyPresenter(view, refreshRemoteServersEvent));
+    }
 
     @Test
     public void testInit() {
@@ -40,6 +57,17 @@ public class ContainerStatusEmptyPresenterTest {
 
         verify(view).init(presenter);
         assertEquals(view, presenter.getView());
+    }
+
+    @Test
+    public void testRefresh() {
+        final ContainerSpecKey containerSpecKey = new ContainerSpecKey("id", "name", new ServerTemplateKey());
+        presenter.setup(containerSpecKey);
+        presenter.refresh();
+
+        final ArgumentCaptor<RefreshRemoteServers> refreshRemoteServersCaptor = ArgumentCaptor.forClass(RefreshRemoteServers.class);
+        verify(refreshRemoteServersEvent).fire(refreshRemoteServersCaptor.capture());
+        assertEquals(containerSpecKey, refreshRemoteServersCaptor.getValue().getContainerSpecKey());
     }
 
 }

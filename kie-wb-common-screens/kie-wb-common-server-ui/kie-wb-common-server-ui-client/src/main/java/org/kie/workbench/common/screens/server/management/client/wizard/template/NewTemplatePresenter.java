@@ -147,7 +147,8 @@ public class NewTemplatePresenter implements WizardPage {
     }
 
     public boolean isTemplateNameValid() {
-        return !view.getTemplateName().trim().isEmpty();
+        final String templateName = view.getTemplateName();
+        return templateName == null ? false : !templateName.trim().isEmpty();
     }
 
     public boolean isCapabilityValid() {

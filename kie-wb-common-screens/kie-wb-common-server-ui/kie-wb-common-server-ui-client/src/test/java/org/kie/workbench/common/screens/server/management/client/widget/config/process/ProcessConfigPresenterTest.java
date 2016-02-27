@@ -18,6 +18,10 @@ package org.kie.workbench.common.screens.server.management.client.widget.config.
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.controller.api.model.spec.ContainerSpecKey;
+import org.kie.server.controller.api.model.spec.ProcessConfig;
+import org.kie.workbench.common.screens.server.management.client.util.ClientMergeMode;
+import org.kie.workbench.common.screens.server.management.client.util.ClientRuntimeStrategy;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -40,6 +44,44 @@ public class ProcessConfigPresenterTest {
 
         verify(view).init(presenter);
         assertEquals(view, presenter.getView());
+    }
+
+    @Test
+    public void testClear() {
+        presenter.clear();
+        verify(view).clear();
+    }
+
+    @Test
+    public void testDisable() {
+        presenter.disable();
+
+        verify(view).disable();
+    }
+
+    @Test
+    public void testCancel() {
+        final ProcessConfig processConfig = new ProcessConfig(ClientRuntimeStrategy.SINGLETON.toString(), "kBase", "kSession", ClientMergeMode.KEEP_ALL.toString());
+        presenter.setProcessConfig(processConfig);
+
+        presenter.cancel();
+
+        verify(view, times(2)).setContent(ClientRuntimeStrategy.convert(processConfig.getRuntimeStrategy()).toString(),
+                processConfig.getKBase(),
+                processConfig.getKSession(),
+                ClientMergeMode.convert(processConfig.getMergeMode()).toString());
+    }
+
+    @Test
+    public void testSetup() {
+        final ContainerSpecKey containerSpecKey = new ContainerSpecKey();
+        final ProcessConfig processConfig = new ProcessConfig(ClientRuntimeStrategy.SINGLETON.toString(), "kBase", "kSession", ClientMergeMode.KEEP_ALL.toString());
+        presenter.setup(containerSpecKey, processConfig);
+
+        verify(view).setContent(ClientRuntimeStrategy.convert(processConfig.getRuntimeStrategy()).toString(),
+                processConfig.getKBase(),
+                processConfig.getKSession(),
+                ClientMergeMode.convert(processConfig.getMergeMode()).toString());
     }
 
 }
