@@ -42,49 +42,46 @@ public class ProcessConfigPresenterTest {
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
-        assertEquals(view, presenter.getView());
+        verify( view ).init( presenter );
+        assertEquals( view, presenter.getView() );
     }
 
     @Test
     public void testClear() {
         presenter.clear();
-        verify(view).clear();
+        verify( view ).clear();
     }
 
-<<<<<<< HEAD
-=======
     @Test
     public void testDisable() {
         presenter.disable();
 
-        verify(view).disable();
+        verify( view ).disable();
     }
 
     @Test
     public void testCancel() {
-        final ProcessConfig processConfig = new ProcessConfig(ClientRuntimeStrategy.SINGLETON.toString(), "kBase", "kSession", ClientMergeMode.KEEP_ALL.toString());
-        presenter.setProcessConfig(processConfig);
+        final ProcessConfig processConfig = new ProcessConfig( ClientRuntimeStrategy.SINGLETON.toString(), "kBase", "kSession", ClientMergeMode.KEEP_ALL.toString() );
+        presenter.setProcessConfig( processConfig );
 
         presenter.cancel();
 
-        verify(view, times(2)).setContent(ClientRuntimeStrategy.convert(processConfig.getRuntimeStrategy()).toString(),
-                processConfig.getKBase(),
-                processConfig.getKSession(),
-                ClientMergeMode.convert(processConfig.getMergeMode()).toString());
+        verify( view, times( 2 ) ).setContent( ClientRuntimeStrategy.convert( processConfig.getRuntimeStrategy() ).toString(),
+                                               processConfig.getKBase(),
+                                               processConfig.getKSession(),
+                                               ClientMergeMode.convert( processConfig.getMergeMode() ).toString() );
     }
 
     @Test
     public void testSetup() {
         final ContainerSpecKey containerSpecKey = new ContainerSpecKey();
-        final ProcessConfig processConfig = new ProcessConfig(ClientRuntimeStrategy.SINGLETON.toString(), "kBase", "kSession", ClientMergeMode.KEEP_ALL.toString());
-        presenter.setup(containerSpecKey, processConfig);
+        final ProcessConfig processConfig = new ProcessConfig( ClientRuntimeStrategy.SINGLETON.toString(), "kBase", "kSession", ClientMergeMode.KEEP_ALL.toString() );
+        presenter.setup( containerSpecKey, processConfig );
 
-        verify(view).setContent(ClientRuntimeStrategy.convert(processConfig.getRuntimeStrategy()).toString(),
-                processConfig.getKBase(),
-                processConfig.getKSession(),
-                ClientMergeMode.convert(processConfig.getMergeMode()).toString());
+        verify( view ).setContent( ClientRuntimeStrategy.convert( processConfig.getRuntimeStrategy() ).toString(),
+                                   processConfig.getKBase(),
+                                   processConfig.getKSession(),
+                                   ClientMergeMode.convert( processConfig.getMergeMode() ).toString() );
     }
 
->>>>>>> b0f555f... Enhanced tests for presenter classes
 }
