@@ -34,10 +34,9 @@ import org.kie.workbench.common.screens.server.management.client.widget.config.p
 public class ContainerProcessConfigView extends Composite
         implements ContainerProcessConfigPresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private ContainerProcessConfigPresenter presenter;
+
+    private TranslationService translationService;
 
     @Inject
     @DataField("form-definition")
@@ -50,6 +49,12 @@ public class ContainerProcessConfigView extends Composite
     @Inject
     @DataField("container-config-cancel-button")
     Button cancel;
+
+    @Inject
+    public ContainerProcessConfigView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final ContainerProcessConfigPresenter presenter ) {

@@ -42,10 +42,9 @@ import org.uberfire.mvp.Command;
 public class ServerNavigationView extends Composite
         implements ServerNavigationPresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private ServerNavigationPresenter presenter;
+
+    private TranslationService translationService;
 
     @DataField
     Element title = DOM.createElement( "strong" );
@@ -65,6 +64,12 @@ public class ServerNavigationView extends Composite
     private final Map<String, CustomGroupItem> idItem = new HashMap<String, CustomGroupItem>();
 
     private CustomGroupItem selected = null;
+
+    @Inject
+    public ServerNavigationView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final ServerNavigationPresenter presenter ) {

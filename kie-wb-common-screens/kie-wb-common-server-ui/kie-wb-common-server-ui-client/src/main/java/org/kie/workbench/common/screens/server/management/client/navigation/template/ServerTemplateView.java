@@ -44,10 +44,9 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 public class ServerTemplateView extends Composite
         implements ServerTemplatePresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private ServerTemplatePresenter presenter;
+
+    private TranslationService translationService;
 
     @DataField("current-server-template-name")
     Element serverTemplate = DOM.createElement( "strong" );
@@ -89,6 +88,12 @@ public class ServerTemplateView extends Composite
 
     private CustomGroupItem selected = null;
     private String templateId;
+
+    @Inject
+    public ServerTemplateView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final ServerTemplatePresenter presenter ) {
