@@ -77,10 +77,10 @@ public class ContainerCardPresenter {
                                       }
                                   } );
         final List<Message> collection = new ArrayList<Message>( container.getMessages() );
-
-        bodyPresenter.setMessage( collection.get( collection.size() - 1 ) );
+        if( collection.size() > 0 ) {
+            bodyPresenter.setMessage(collection.get(collection.size() - 1));
+        }
         footerPresenter.setup( container.getUrl(), container.getResolvedReleasedId().getVersion() );
-
     }
 
     CardPresenter newCard() {
