@@ -27,10 +27,9 @@ import org.kie.workbench.common.screens.server.management.client.util.StyleHelpe
 public class NewTemplateView extends Composite
         implements NewTemplatePresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private NewTemplatePresenter presenter;
+
+    private TranslationService translationService;
 
     @DataField("new-template-name-form")
     Element templateNameGroup = DOM.createDiv();
@@ -58,6 +57,12 @@ public class NewTemplateView extends Composite
     CheckBox planningEnabled;
 
     private final ArrayList<ContentChangeHandler> changeHandlers = new ArrayList<ContentChangeHandler>();
+
+    @Inject
+    public NewTemplateView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final NewTemplatePresenter presenter ) {

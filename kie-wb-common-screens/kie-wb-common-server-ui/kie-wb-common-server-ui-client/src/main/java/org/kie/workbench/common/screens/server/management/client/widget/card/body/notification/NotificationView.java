@@ -22,7 +22,6 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 public class NotificationView extends Composite
         implements NotificationPresenter.View {
 
-    @Inject
     private TranslationService translationService;
 
     @Inject
@@ -32,6 +31,12 @@ public class NotificationView extends Composite
     @Inject
     @DataField
     Span icon;
+
+    @Inject
+    public NotificationView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void setupOk() {

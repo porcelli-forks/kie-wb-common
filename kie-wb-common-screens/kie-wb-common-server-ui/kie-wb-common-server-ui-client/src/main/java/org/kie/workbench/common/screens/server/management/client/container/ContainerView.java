@@ -42,10 +42,9 @@ import org.uberfire.mvp.Command;
 public class ContainerView extends Composite
         implements ContainerPresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private ContainerPresenter presenter;
+
+    private TranslationService translationService;
 
     @DataField("container-name")
     Element containerName = DOM.createSpan();
@@ -112,6 +111,12 @@ public class ContainerView extends Composite
     @Inject
     @DataField("process-content")
     Div processContent;
+
+    @Inject
+    public ContainerView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final ContainerPresenter presenter ) {

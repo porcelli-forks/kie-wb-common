@@ -41,7 +41,8 @@ import org.kie.workbench.common.screens.server.management.client.resources.i18n.
 public class ArtifactListWidgetView
         extends Composite implements ArtifactListWidgetPresenter.View {
 
-    @Inject
+    private ArtifactListWidgetPresenter presenter;
+
     private TranslationService translationService;
 
     @Inject
@@ -56,7 +57,11 @@ public class ArtifactListWidgetView
     @DataField
     Button search;
 
-    private ArtifactListWidgetPresenter presenter;
+    @Inject
+    public ArtifactListWidgetView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final ArtifactListWidgetPresenter presenter ) {

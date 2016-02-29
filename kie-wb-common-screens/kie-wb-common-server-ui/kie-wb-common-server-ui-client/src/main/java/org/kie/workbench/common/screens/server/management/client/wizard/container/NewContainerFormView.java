@@ -43,7 +43,6 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 public class NewContainerFormView extends Composite
         implements NewContainerFormPresenter.View {
 
-    @Inject
     private TranslationService translationService;
 
     @DataField("new-container-name-form")
@@ -82,6 +81,12 @@ public class NewContainerFormView extends Composite
     Div content;
 
     private final ArrayList<ContentChangeHandler> changeHandlers = new ArrayList<ContentChangeHandler>();
+
+    @Inject
+    public NewContainerFormView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @Override
     public void init( final NewContainerFormPresenter presenter ) {
