@@ -15,12 +15,14 @@ import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.screens.server.management.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.server.management.client.util.StyleHelper;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
 
 @Dependent
+@Templated
 public class CopyPopupView extends Composite
         implements CopyPopupPresenter.View {
 
@@ -46,22 +48,9 @@ public class CopyPopupView extends Composite
 
     @Inject
     public CopyPopupView( final TranslationService translationService ) {
+        super();
         this.translationService = translationService;
         this.modal = new BaseModal();
-        this.modal.setTitle( getCopyServerTemplatePopupTitle() );
-        this.modal.setBody( this );
-        this.templateNameLabel.setText( getTemplateNameLabelText() );
-        this.modal.add( new ModalFooterOKCancelButtons( new Command() {
-            @Override
-            public void execute() {
-                presenter.save();
-            }
-        }, new Command() {
-            @Override
-            public void execute() {
-                hide();
-            }
-        } ) );
     }
 
     @Override
@@ -76,6 +65,21 @@ public class CopyPopupView extends Composite
                 }
             }
         } );
+        this.modal.setTitle( getCopyServerTemplatePopupTitle() );
+        this.modal.setBody( this );
+        this.templateNameLabel.setText( getTemplateNameLabelText() );
+        this.modal.add( new ModalFooterOKCancelButtons( new Command() {
+            @Override
+            public void execute() {
+                presenter.save();
+            }
+        }, new Command() {
+            @Override
+            public void execute() {
+                hide();
+            }
+        } ) );
+
     }
 
     @Override

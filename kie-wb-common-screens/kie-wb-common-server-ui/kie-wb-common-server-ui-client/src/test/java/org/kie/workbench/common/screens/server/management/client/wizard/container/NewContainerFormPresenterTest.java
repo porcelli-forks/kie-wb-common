@@ -64,89 +64,84 @@ public class NewContainerFormPresenterTest {
 
     @Before
     public void init() {
-        m2RepoServiceCaller = new CallerMock<M2RepoService>(m2RepoService);
-        specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
-        doNothing().when(wizardPageStatusChangeEvent).fire(any(WizardPageStatusChangeEvent.class));
-        presenter = spy(new NewContainerFormPresenter(
+        m2RepoServiceCaller = new CallerMock<M2RepoService>( m2RepoService );
+        specManagementServiceCaller = new CallerMock<SpecManagementService>( specManagementService );
+        doNothing().when( wizardPageStatusChangeEvent ).fire( any( WizardPageStatusChangeEvent.class ) );
+        presenter = spy( new NewContainerFormPresenter(
                 view,
                 m2RepoServiceCaller,
                 specManagementServiceCaller,
-                wizardPageStatusChangeEvent));
-        doReturn(artifactListWidgetPresenter).when(presenter).buildArtifactListWidgetPresenter();
+                wizardPageStatusChangeEvent ) );
+        doReturn( artifactListWidgetPresenter ).when( presenter ).buildArtifactListWidgetPresenter();
     }
 
     @Test
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
+        verify( view ).init( presenter );
     }
 
     @Test
     public void testClear() {
         presenter.clear();
 
-        verify(view).clear();
-<<<<<<< HEAD
-    }
-
-=======
-        assertEquals(NewContainerFormPresenter.Mode.OPTIONAL, presenter.getMode());
-        assertNull(presenter.getServerTemplate());
+        verify( view ).clear();
+        assertEquals( NewContainerFormPresenter.Mode.OPTIONAL, presenter.getMode() );
+        assertNull( presenter.getServerTemplate() );
     }
 
     @Test
     public void testIsEmpty() {
-        when(view.getContainerName()).thenReturn(" ");
-        when(view.getGroupId()).thenReturn(" ");
-        when(view.getArtifactId()).thenReturn(" ");
-        when(view.getVersion()).thenReturn(" ");
+        when( view.getContainerName() ).thenReturn( " " );
+        when( view.getGroupId() ).thenReturn( " " );
+        when( view.getArtifactId() ).thenReturn( " " );
+        when( view.getVersion() ).thenReturn( " " );
 
-        assertTrue(presenter.isEmpty());
+        assertTrue( presenter.isEmpty() );
     }
 
     @Test
     public void testIsValid() {
-        when(view.getContainerName()).thenReturn(" ").thenReturn("containerName").thenReturn("");
-        when(view.getGroupId()).thenReturn(" ").thenReturn("groupId").thenReturn("");
-        when(view.getArtifactId()).thenReturn(" ").thenReturn("artifactId").thenReturn("");
-        when(view.getVersion()).thenReturn(" ").thenReturn("1.0").thenReturn("");
+        when( view.getContainerName() ).thenReturn( " " ).thenReturn( "containerName" ).thenReturn( "" );
+        when( view.getGroupId() ).thenReturn( " " ).thenReturn( "groupId" ).thenReturn( "" );
+        when( view.getArtifactId() ).thenReturn( " " ).thenReturn( "artifactId" ).thenReturn( "" );
+        when( view.getVersion() ).thenReturn( " " ).thenReturn( "1.0" ).thenReturn( "" );
 
-        assertTrue(presenter.isValid());
+        assertTrue( presenter.isValid() );
 
-        verify(view).noErrors();
+        verify( view ).noErrors();
 
-        presenter.setServerTemplate(new ServerTemplate());
+        presenter.setServerTemplate( new ServerTemplate() );
 
-        assertTrue(presenter.isValid());
+        assertTrue( presenter.isValid() );
 
-        verify(view).noErrorOnContainerName();
-        verify(view).noErrorOnGroupId();
-        verify(view).noErrorOnArtifactId();
-        verify(view).noErrorOnVersion();
+        verify( view ).noErrorOnContainerName();
+        verify( view ).noErrorOnGroupId();
+        verify( view ).noErrorOnArtifactId();
+        verify( view ).noErrorOnVersion();
 
-        assertFalse(presenter.isValid());
+        assertFalse( presenter.isValid() );
 
-        verify(view).errorOnContainerName();
-        verify(view).errorOnGroupId();
-        verify(view).errorOnArtifactId();
-        verify(view).errorOnVersion();
+        verify( view ).errorOnContainerName();
+        verify( view ).errorOnGroupId();
+        verify( view ).errorOnArtifactId();
+        verify( view ).errorOnVersion();
     }
 
     @Test
     public void testOnDependencyPathSelectedEvent() {
         final String path = "org:kie:1.0";
-        final GAV gav = new GAV(path);
-        when(m2RepoService.loadGAVFromJar(path)).thenReturn(gav);
+        final GAV gav = new GAV( path );
+        when( m2RepoService.loadGAVFromJar( path ) ).thenReturn( gav );
         presenter.asWidget();
 
-        presenter.onDependencyPathSelectedEvent(new DependencyPathSelectedEvent(artifactListWidgetPresenter, path));
+        presenter.onDependencyPathSelectedEvent( new DependencyPathSelectedEvent( artifactListWidgetPresenter, path ) );
 
-        verify(m2RepoService).loadGAVFromJar(path);
-        verify(view).setGroupId(gav.getGroupId());
-        verify(view).setAtifactId(gav.getArtifactId());
-        verify(view).setVersion(gav.getVersion());
-        verify(wizardPageStatusChangeEvent).fire(any(WizardPageStatusChangeEvent.class));
+        verify( m2RepoService ).loadGAVFromJar( path );
+        verify( view ).setGroupId( gav.getGroupId() );
+        verify( view ).setArtifactId( gav.getArtifactId() );
+        verify( view ).setVersion( gav.getVersion() );
+        verify( wizardPageStatusChangeEvent ).fire( any( WizardPageStatusChangeEvent.class ) );
     }
->>>>>>> b0f555f... Enhanced tests for presenter classes
 }
