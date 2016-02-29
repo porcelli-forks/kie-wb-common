@@ -38,10 +38,9 @@ import org.kie.workbench.common.screens.server.management.client.resources.i18n.
 public class ProcessConfigView extends Composite
         implements ProcessConfigPresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private ProcessConfigPresenter presenter;
+
+    private TranslationService translationService;
 
     @DataField("container-config-runtime-strategy-label")
     Element runtimeStrategyLabel = DOM.createLabel();
@@ -84,6 +83,12 @@ public class ProcessConfigView extends Composite
     @Inject
     @DataField("container-config-merge-mode-dropdown-menu")
     DropDownMenu mergeModeDropdown;
+
+    @Inject
+    public ProcessConfigView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     @PostConstruct
     public void init() {

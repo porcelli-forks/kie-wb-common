@@ -136,4 +136,13 @@ public class Constants {
 
     @TranslationKey( defaultValue = "" )
     public static final String NewTemplateView_TitleText = "NewTemplateView.TitleText";
+
+    @TranslationKey( defaultValue = "" )
+    public static final String ContainerRulesConfigView_VersionTextBoxPlaceholder = "ContainerRulesConfigView.VersionTextBoxPlaceholder";
+
+    @TranslationKey( defaultValue = "" )
+    public static final String ContainerRulesConfigView_IntervalTextBoxPlaceholder = "ContainerRulesConfigView.IntervalTextBoxPlaceholder";
+
+    @TranslationKey( defaultValue = "" )
+    public static final String ContainerRulesConfigView_IntervalTextBoxDataOriginalTitle = "ContainerRulesConfigView.IntervalTextBoxDataOriginalTitle";
 }

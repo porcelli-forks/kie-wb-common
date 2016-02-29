@@ -44,10 +44,9 @@ import org.kie.workbench.common.screens.server.management.client.widget.NumericT
 public class ContainerRulesConfigView extends Composite
         implements ContainerRulesConfigPresenter.View {
 
-    @Inject
-    private TranslationService translationService;
-
     private ContainerRulesConfigPresenter presenter;
+
+    private TranslationService translationService;
 
     @DataField("container-config-alert-span")
     Element alert = DOM.createSpan();
@@ -60,7 +59,7 @@ public class ContainerRulesConfigView extends Composite
 
     @Inject
     @DataField("container-config-interval-textbox")
-    NumericTextBox interval; //data-original-title
+    NumericTextBox interval;
 
     @Inject
     @DataField("container-config-stop-scanner")
@@ -87,6 +86,12 @@ public class ContainerRulesConfigView extends Composite
     @Inject
     @DataField("container-config-upgrade-button")
     Button upgrade;
+
+    @Inject
+    public ContainerRulesConfigView( final TranslationService translationService ) {
+        super();
+        this.translationService = translationService;
+    }
 
     private org.uberfire.mvp.Command stopScannerActive = new org.uberfire.mvp.Command() {
         @Override
@@ -116,6 +121,7 @@ public class ContainerRulesConfigView extends Composite
                 }
             }
         } );
+        version.getElement().setAttribute( "placeholder", getVersionTextBoxPlaceholder() );
 
         interval.addKeyUpHandler( new KeyUpHandler() {
             @Override
@@ -125,6 +131,8 @@ public class ContainerRulesConfigView extends Composite
                 }
             }
         } );
+        interval.getElement().setAttribute( "placeholder", getIntervalTextBoxPlaceholder() );
+        interval.getElement().setAttribute( "data-original-title", getIntervalTextBoxDataOriginalTitle() );
     }
 
     @Override
@@ -264,5 +272,17 @@ public class ContainerRulesConfigView extends Composite
     @Override
     public String getUpgradeErrorMessage() {
         return translationService.format( Constants.ContainerRulesConfigView_UpgradeErrorMessage );
+    }
+
+    private String getVersionTextBoxPlaceholder() {
+        return translationService.format( Constants.ContainerRulesConfigView_VersionTextBoxPlaceholder );
+    }
+
+    private String getIntervalTextBoxPlaceholder() {
+        return translationService.format( Constants.ContainerRulesConfigView_IntervalTextBoxPlaceholder );
+    }
+
+    private String getIntervalTextBoxDataOriginalTitle() {
+        return translationService.format( Constants.ContainerRulesConfigView_IntervalTextBoxDataOriginalTitle );
     }
 }
