@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -40,6 +41,46 @@ public class CopyPopupPresenterTest {
 
         verify(view).init(presenter);
         assertEquals(view, presenter.getView());
+    }
+
+    @Test
+    public void testHide() {
+        presenter.hide();
+
+        verify(view).hide();
+    }
+
+    @Test
+    public void testCopy() {
+        final String newTemplateName = "NewTemplateName";
+        when(view.getNewTemplateName()).thenReturn(newTemplateName);
+        final ParameterizedCommand command = mock(ParameterizedCommand.class);
+        presenter.copy(command);
+
+        verify(view).clear();
+        verify(view).display();
+
+        presenter.save();
+
+        verify(command).execute(newTemplateName);
+    }
+
+    @Test
+    public void testCopyError() {
+        when(view.getNewTemplateName()).thenReturn("");
+
+        presenter.save();
+
+        verify(view).errorOnTemplateNameFromGroup();
+    }
+
+    @Test
+    public void testErrorOnTemplateNameFromGroup() {
+        final String errorMessage = "errorMessage";
+
+        presenter.errorDuringProcessing(errorMessage);
+
+        verify(view).errorOnTemplateNameFromGroup(errorMessage);
     }
 
 }

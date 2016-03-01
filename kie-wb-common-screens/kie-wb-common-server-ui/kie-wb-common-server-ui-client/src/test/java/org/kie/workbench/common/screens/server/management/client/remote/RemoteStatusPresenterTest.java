@@ -16,13 +16,23 @@
 
 package org.kie.workbench.common.screens.server.management.client.remote;
 
+import java.util.Collections;
+
+import com.google.gwt.user.client.ui.Widget;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.Message;
+import org.kie.server.controller.api.model.runtime.Container;
+import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
+import org.kie.workbench.common.screens.server.management.client.remote.card.ContainerCardPresenter;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteStatusPresenterTest {
@@ -30,8 +40,18 @@ public class RemoteStatusPresenterTest {
     @Mock
     RemoteStatusPresenter.View view;
 
+    @Mock
+    ContainerCardPresenter containerCardPresenter;
+
     @InjectMocks
+    @Spy
     RemoteStatusPresenter presenter;
+
+    @Before
+    public void setup() {
+        doReturn(containerCardPresenter).when(presenter).newCard();
+        when(containerCardPresenter.getView()).thenReturn(mock(org.kie.workbench.common.screens.server.management.client.container.status.card.ContainerCardPresenter.View.class));
+    }
 
     @Test
     public void testInit() {
@@ -40,4 +60,12 @@ public class RemoteStatusPresenterTest {
         assertEquals(view, presenter.getView());
     }
 
+    @Test
+    public void testSetup() {
+        final Container container = new Container("containerSpecId", "containerName", new ServerInstanceKey(), Collections.<Message>emptyList(), null, null);
+        presenter.setup(Collections.singletonList(container));
+
+        verify(containerCardPresenter).setup(container);
+        verify(view).addCard(any(Widget.class));
+    }
 }
