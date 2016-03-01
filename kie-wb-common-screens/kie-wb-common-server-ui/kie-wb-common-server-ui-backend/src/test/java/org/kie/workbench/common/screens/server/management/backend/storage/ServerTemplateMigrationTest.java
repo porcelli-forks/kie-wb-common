@@ -99,8 +99,8 @@ public class ServerTemplateMigrationTest {
         ServerInstanceKey serverInstanceKey = instances.iterator().next();
         assertNotNull(serverInstanceKey);
         assertEquals(serverTemplateId, serverInstanceKey.getServerTemplateId());
-        assertEquals("kie server name", serverInstanceKey.getServerName());
-        assertEquals("kie server name@http://localhost:8180/kie-server/services/rest/server", serverInstanceKey.getServerInstanceId());
+        assertEquals("kie_server@localhost:8180", serverInstanceKey.getServerName());
+        assertEquals("kie_server@localhost:8180", serverInstanceKey.getServerInstanceId());
         assertEquals("http://localhost:8180/kie-server/services/rest/server", serverInstanceKey.getUrl());
 
         // verify containers
@@ -268,8 +268,8 @@ public class ServerTemplateMigrationTest {
         ServerInstanceKey serverInstanceKey = instances.iterator().next();
         assertNotNull(serverInstanceKey);
         assertEquals(serverTemplateId, serverInstanceKey.getServerTemplateId());
-        assertEquals("kie server name", serverInstanceKey.getServerName());
-        assertEquals("kie server name@http://localhost:8180/kie-server/services/rest/server", serverInstanceKey.getServerInstanceId());
+        assertEquals("kie_server@localhost:8180", serverInstanceKey.getServerName());
+        assertEquals("kie_server@localhost:8180", serverInstanceKey.getServerInstanceId());
         assertEquals("http://localhost:8180/kie-server/services/rest/server", serverInstanceKey.getUrl());
 
         // verify containers
