@@ -246,7 +246,7 @@ public class ServerTemplateVFSStorageTest {
         fromStorage.addContainerSpec(newContainerSpec);
 
         // now let's add server instance
-        fromStorage.addServerInstance(ModelFactory.newServerInstanceKey(serverTemplate.getId(), "some invalid url"));
+        fromStorage.addServerInstance(ModelFactory.newServerInstanceKey(serverTemplate.getId(), "http://localhost:8080/server"));
 
         templateStorage.update(fromStorage);
 
@@ -263,9 +263,9 @@ public class ServerTemplateVFSStorageTest {
         ServerInstanceKey serverInstanceKey = instances.iterator().next();
         assertNotNull(serverInstanceKey);
         assertEquals(serverTemplate.getId(), serverInstanceKey.getServerTemplateId());
-        assertEquals(serverTemplate.getName(), serverInstanceKey.getServerName());
-        assertEquals(serverTemplate.getName()+"@some invalid url", serverInstanceKey.getServerInstanceId());
-        assertEquals("some invalid url", serverInstanceKey.getUrl());
+        assertEquals(serverTemplate.getId()+"@localhost:8080", serverInstanceKey.getServerName());
+        assertEquals(serverTemplate.getId() + "@localhost:8080", serverInstanceKey.getServerInstanceId());
+        assertEquals("http://localhost:8080/server", serverInstanceKey.getUrl());
 
         Collection<ContainerSpec> containerSpecs = template.getContainersSpec();
         assertNotNull(containerSpecs);
