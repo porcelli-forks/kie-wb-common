@@ -89,14 +89,14 @@ public class ServerNavigationView extends Composite
     @Override
     public void addTemplate( final String id,
                              final String name ) {
-        final CustomGroupItem template = new CustomGroupItem<String>( name,
-                                                                      IconType.FOLDER_O,
-                                                                      new Command() {
-                                                                          @Override
-                                                                          public void execute() {
-                                                                              presenter.select( id );
-                                                                          }
-                                                                      } );
+        final CustomGroupItem template = new CustomGroupItem( name,
+                                                              IconType.FOLDER_O,
+                                                              new Command() {
+                                                                  @Override
+                                                                  public void execute() {
+                                                                      presenter.select( id );
+                                                                  }
+                                                              } );
 
         idItem.put( id, template );
 

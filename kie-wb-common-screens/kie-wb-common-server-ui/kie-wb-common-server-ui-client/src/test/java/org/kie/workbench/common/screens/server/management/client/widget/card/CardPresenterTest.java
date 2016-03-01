@@ -18,6 +18,9 @@ package org.kie.workbench.common.screens.server.management.client.widget.card;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.server.management.client.widget.card.body.BodyPresenter;
+import org.kie.workbench.common.screens.server.management.client.widget.card.footer.FooterPresenter;
+import org.kie.workbench.common.screens.server.management.client.widget.card.title.TitlePresenter;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -38,8 +41,35 @@ public class CardPresenterTest {
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
-        assertEquals(view, presenter.getView());
+        verify( view ).init( presenter );
+        assertEquals( view, presenter.getView() );
+    }
+
+    @Test
+    public void testAddTitle() {
+        TitlePresenter titlePresenter = mock( TitlePresenter.class );
+        presenter.addTitle( titlePresenter );
+
+        verify( titlePresenter ).getView();
+        verify( view ).add( titlePresenter.getView() );
+    }
+
+    @Test
+    public void testAddBody() {
+        BodyPresenter bodyPresenter = mock( BodyPresenter.class );
+        presenter.addBody( bodyPresenter );
+
+        verify( bodyPresenter ).getView();
+        verify( view ).add( bodyPresenter.getView() );
+    }
+
+    @Test
+    public void testAddFooter() {
+        FooterPresenter footerPresenter = mock( FooterPresenter.class );
+        presenter.addFooter( footerPresenter );
+
+        verify( footerPresenter ).getView();
+        verify( view ).add( footerPresenter.getView() );
     }
 
 }

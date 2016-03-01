@@ -16,8 +16,12 @@
 
 package org.kie.workbench.common.screens.server.management.client.widget.card.body.notification;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.Message;
+import org.kie.server.api.model.Severity;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -36,13 +40,56 @@ public class NotificationPresenterTest {
 
     @Test
     public void testInit() {
-        assertEquals(view, presenter.getView());
+        assertEquals( view, presenter.getView() );
     }
 
     @Test
     public void testSetup() {
         presenter.setupOk();
 
-        verify(view).setupOk();
+        verify( view ).setupOk();
     }
+
+    @Test
+    public void testSetupOk() {
+        final Message message = new Message();
+        message.setSeverity( Severity.INFO );
+        presenter.setup( message );
+
+        verify( view ).setupOk();
+    }
+
+    @Test
+    public void testSetupEmptyMessage() {
+        final Message message = new Message();
+        message.setSeverity( Severity.ERROR );
+        presenter.setup( message );
+
+        verify( view ).setup( NotificationType.ERROR, "0" );
+    }
+
+    @Test
+    public void testSetupSingleMessage() {
+        final Message message = new Message( Severity.ERROR, "single error" );
+        presenter.setup( message );
+
+        verify( view ).setup( NotificationType.ERROR, "1", "1: single error" );
+    }
+
+    @Test
+    public void testSetupSingleEmptyMessage() {
+        final Message message = new Message( Severity.ERROR, "" );
+        presenter.setup( message );
+
+        verify( view ).setup( NotificationType.ERROR, "0", "" );
+    }
+
+    @Test
+    public void testSetupMultiMessage() {
+        final Message message = new Message( Severity.WARN, Arrays.asList( "first error", "second error" ) );
+        presenter.setup( message );
+
+        verify( view ).setup( NotificationType.WARNING, "2", "1: first error\n2: second error" );
+    }
+
 }

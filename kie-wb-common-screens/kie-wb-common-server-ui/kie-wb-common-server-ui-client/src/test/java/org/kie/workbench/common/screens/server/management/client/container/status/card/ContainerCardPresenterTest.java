@@ -92,7 +92,7 @@ public class ContainerCardPresenterTest {
         presenter.setup(serverInstanceKey, container);
 
         verify(linkTitlePresenter).setup(eq(serverInstanceKey.getServerName()), any(Command.class));
-        verify(bodyPresenter).setMessage(message);
+        verify(bodyPresenter).setup( message);
         verify(footerPresenter).setup(container.getUrl(), resolvedReleasedId.getVersion());
         verify(cardPresenter).addTitle(linkTitlePresenter);
         verify(cardPresenter).addBody(bodyPresenter);

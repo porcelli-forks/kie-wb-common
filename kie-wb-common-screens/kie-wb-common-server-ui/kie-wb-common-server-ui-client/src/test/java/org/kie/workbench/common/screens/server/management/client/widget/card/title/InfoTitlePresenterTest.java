@@ -18,13 +18,13 @@ package org.kie.workbench.common.screens.server.management.client.widget.card.ti
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.screens.server.management.client.widget.card.CardPresenter;
+import org.kie.server.api.model.ReleaseId;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InfoTitlePresenterTest {
@@ -37,7 +37,19 @@ public class InfoTitlePresenterTest {
 
     @Test
     public void testInit() {
-        assertEquals(view, presenter.getView());
+        assertEquals( view, presenter.getView() );
+    }
+
+    @Test
+    public void testSetup() {
+        final ReleaseId releaseId = new ReleaseId( "com.company", "artifact-id", "1.0.0" );
+        presenter.setup( releaseId );
+        verify( view ).setup( releaseId.getGroupId(), releaseId.getArtifactId() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullSetup() {
+        presenter.setup( null );
     }
 
 }

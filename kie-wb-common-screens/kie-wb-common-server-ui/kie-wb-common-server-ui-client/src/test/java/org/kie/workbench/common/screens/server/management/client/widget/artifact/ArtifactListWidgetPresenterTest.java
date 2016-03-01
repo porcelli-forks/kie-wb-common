@@ -16,9 +16,14 @@
 
 package org.kie.workbench.common.screens.server.management.client.widget.artifact;
 
+import java.util.Arrays;
+import javax.enterprise.event.Event;
+
 import org.guvnor.m2repo.client.widgets.ArtifactListPresenter;
+import org.guvnor.m2repo.client.widgets.ColumnType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.server.management.client.events.DependencyPathSelectedEvent;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -35,6 +40,9 @@ public class ArtifactListWidgetPresenterTest {
     @Mock
     ArtifactListPresenter artifactListPresenter;
 
+    @Mock
+    Event<DependencyPathSelectedEvent> dependencyPathSelectedEvent;
+
     @InjectMocks
     ArtifactListWidgetPresenter presenter;
 
@@ -42,8 +50,31 @@ public class ArtifactListWidgetPresenterTest {
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
-        assertEquals(view, presenter.getView());
+        verify( view ).init( presenter );
+        assertEquals( view, presenter.getView() );
+        assertEquals( artifactListPresenter.getView(), presenter.getArtifactListView() );
+        verify( artifactListPresenter ).notifyOnRefresh( false );
+        verify( artifactListPresenter ).defaultColumns( ColumnType.GAV );
     }
 
+    @Test
+    public void testSearch() {
+        presenter.search( "something" );
+
+        verify( artifactListPresenter ).search( "something", Arrays.asList( "*.jar" ) );
+    }
+
+    @Test
+    public void testRefresh() {
+        presenter.refresh();
+
+        verify( artifactListPresenter ).refresh();
+    }
+
+    @Test
+    public void testOnSelect() {
+        presenter.onSelect( "some path" );
+
+        verify( dependencyPathSelectedEvent ).fire( new DependencyPathSelectedEvent( presenter, "some path" ) );
+    }
 }

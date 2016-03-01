@@ -1,12 +1,9 @@
 package org.kie.workbench.common.screens.server.management.client.widget.card.footer;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.kie.workbench.common.screens.server.management.client.widget.card.body.notification.NotificationPresenter;
 
 @Dependent
 public class FooterPresenter {
@@ -18,8 +15,6 @@ public class FooterPresenter {
     }
 
     private final View view;
-
-    private final Collection<NotificationPresenter> presenters = new ArrayList<NotificationPresenter>();
 
     @Inject
     public FooterPresenter( final View view ) {
