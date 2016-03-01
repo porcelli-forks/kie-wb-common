@@ -16,9 +16,11 @@
 
 package org.kie.workbench.common.screens.server.management.client.widget.card.body;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.kie.server.api.model.Message;
+import org.kie.workbench.common.screens.server.management.client.widget.card.body.notification.NotificationPresenter;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -31,15 +33,35 @@ public class BodyPresenterTest {
     @Mock
     BodyPresenter.View view;
 
-    @InjectMocks
-    BodyPresenter presenter;
+    @Mock
+    NotificationPresenter notificationPresenter;
+
+    private BodyPresenter presenter;
+
+    @Before
+    public void setUp() {
+        presenter = new BodyPresenter( view ) {
+            @Override
+            NotificationPresenter newNotification() {
+                return notificationPresenter;
+            }
+        };
+    }
 
     @Test
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
-        assertEquals(view, presenter.getView());
+        verify( view ).init( presenter );
+        assertEquals( view, presenter.getView() );
+    }
+
+    @Test
+    public void testSetup() {
+        final Message message = mock( Message.class );
+        presenter.setup( message );
+        verify( notificationPresenter ).setup( message );
+        verify( view ).addNotification( notificationPresenter.getView() );
     }
 
 }

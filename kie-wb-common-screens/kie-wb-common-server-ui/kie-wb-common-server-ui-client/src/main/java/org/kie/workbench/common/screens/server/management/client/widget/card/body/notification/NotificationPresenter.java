@@ -47,15 +47,17 @@ public class NotificationPresenter {
             view.setupOk();
         } else {
             if ( message.getMessages().isEmpty() ) {
-                view.setup( notificationType, String.valueOf( message.getMessages().size() ) );
+                view.setup( notificationType, "0" );
             } else {
                 final StringBuilder sb = new StringBuilder();
                 int i = 0;
                 for ( final String msg : message.getMessages() ) {
-                    i++;
-                    sb.append( i ).append( ": " ).append( msg ).append( '\n' );
+                    if ( !msg.trim().isEmpty() ) {
+                        i++;
+                        sb.append( i ).append( ": " ).append( msg ).append( '\n' );
+                    }
                 }
-                view.setup( notificationType, String.valueOf( message.getMessages().size() ), clean( sb ) );
+                view.setup( notificationType, String.valueOf( i ), clean( sb ) );
             }
         }
     }
@@ -73,7 +75,7 @@ public class NotificationPresenter {
     private NotificationType toNotificationType( final Severity severity ) {
         checkNotNull( "severity", severity );
 
-        switch (severity) {
+        switch ( severity ) {
             case WARN:
                 return NotificationType.WARNING;
 

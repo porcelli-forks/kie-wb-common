@@ -114,9 +114,9 @@ public class ProcessConfigPresenter {
 
     public ProcessConfig buildProcessConfig() {
         return new ProcessConfig( view.getRuntimeStrategy(),
-                                      view.getKBase(),
-                                      view.getKSession(),
-                                      view.getMergeMode() ) ;
+                                  view.getKBase(),
+                                  view.getKSession(),
+                                  view.getMergeMode() );
     }
 
 }

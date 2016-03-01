@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FooterPresenterTest {
@@ -35,7 +36,13 @@ public class FooterPresenterTest {
 
     @Test
     public void testInit() {
-        assertEquals(view, presenter.getView());
+        assertEquals( view, presenter.getView() );
+    }
+
+    @Test
+    public void testSetup() {
+        presenter.setup( "url", "1.0.1" );
+        verify( view ).setup( "url", "1.0.1" );
     }
 
 }

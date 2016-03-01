@@ -26,6 +26,8 @@ import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerSpecKey;
 import org.kie.server.controller.api.model.spec.ProcessConfig;
 import org.kie.server.controller.api.model.spec.ServerTemplateKey;
+import org.kie.workbench.common.screens.server.management.client.util.ClientMergeMode;
+import org.kie.workbench.common.screens.server.management.client.util.ClientRuntimeStrategy;
 import org.kie.workbench.common.screens.server.management.client.widget.config.process.ProcessConfigPresenter;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.ArgumentCaptor;
@@ -72,56 +74,56 @@ public class ContainerProcessConfigPresenterTest {
 
     @Before
     public void init() {
-        doNothing().when(notification).fire(any(NotificationEvent.class));
-        specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
-        when(containerSpecKey.getServerTemplateKey()).thenReturn(serverTemplateKey);
-        when(processConfigPresenter.getProcessConfig()).thenReturn(processConfig);
-        when(processConfigPresenter.getContainerSpecKey()).thenReturn(containerSpecKey);
-        when(processConfigPresenter.getView()).thenReturn(processConfigPresenterView);
-        presenter = new ContainerProcessConfigPresenter(view, processConfigPresenter, specManagementServiceCaller, notification);
+        doNothing().when( notification ).fire( any( NotificationEvent.class ) );
+        specManagementServiceCaller = new CallerMock<SpecManagementService>( specManagementService );
+        when( containerSpecKey.getServerTemplateKey() ).thenReturn( serverTemplateKey );
+        when( processConfigPresenter.getProcessConfig() ).thenReturn( processConfig );
+        when( processConfigPresenter.getContainerSpecKey() ).thenReturn( containerSpecKey );
+        when( processConfigPresenter.getView() ).thenReturn( processConfigPresenterView );
+        presenter = new ContainerProcessConfigPresenter( view, processConfigPresenter, specManagementServiceCaller, notification );
     }
 
     @Test
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
-        verify(view).setProcessConfigView(processConfigPresenterView);
-        assertEquals(view, presenter.getView());
+        verify( view ).init( presenter );
+        verify( view ).setProcessConfigView( processConfigPresenterView );
+        assertEquals( view, presenter.getView() );
     }
 
     @Test
     public void testDisable() {
         presenter.disable();
 
-        verify(view).disable();
+        verify( view ).disable();
     }
 
     @Test
     public void testCancel() {
         presenter.cancel();
 
-        verify(view).enableActions();
-        verify(processConfigPresenter).setProcessConfig(processConfig);
+        verify( view ).enableActions();
+        verify( processConfigPresenter ).setProcessConfig( processConfig );
     }
 
     @Test
     public void testSave() {
         final String templateKey = "templateKey";
         final String containerKey = "containerKey";
-        when(serverTemplateKey.getId()).thenReturn(templateKey);
-        when(containerSpecKey.getId()).thenReturn(containerKey);
+        when( serverTemplateKey.getId() ).thenReturn( templateKey );
+        when( containerSpecKey.getId() ).thenReturn( containerKey );
 
         presenter.save();
 
-        verify(view).disableActions();
-        verify(processConfigPresenter).buildProcessConfig();
+        verify( view ).disableActions();
+        verify( processConfigPresenter ).buildProcessConfig();
 
-        final ArgumentCaptor<ProcessConfig> processConfigCaptor = ArgumentCaptor.forClass(ProcessConfig.class);
-        verify(specManagementService).updateContainerConfig(eq(templateKey), eq(containerKey), eq(Capability.PROCESS), processConfigCaptor.capture());
+        final ArgumentCaptor<ProcessConfig> processConfigCaptor = ArgumentCaptor.forClass( ProcessConfig.class );
+        verify( specManagementService ).updateContainerConfig( eq( templateKey ), eq( containerKey ), eq( Capability.PROCESS ), processConfigCaptor.capture() );
 
-        verify(view).enableActions();
-        verify(processConfigPresenter).setProcessConfig(processConfigCaptor.getValue());
+        verify( view ).enableActions();
+        verify( processConfigPresenter ).setProcessConfig( processConfigCaptor.getValue() );
     }
 
 }

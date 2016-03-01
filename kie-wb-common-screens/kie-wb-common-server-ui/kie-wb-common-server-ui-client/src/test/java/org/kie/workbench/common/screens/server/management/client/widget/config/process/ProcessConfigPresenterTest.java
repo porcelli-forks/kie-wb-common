@@ -82,6 +82,29 @@ public class ProcessConfigPresenterTest {
                                    processConfig.getKBase(),
                                    processConfig.getKSession(),
                                    ClientMergeMode.convert( processConfig.getMergeMode() ).toString() );
+
+        assertEquals( containerSpecKey, presenter.getContainerSpecKey() );
+        assertEquals( processConfig, presenter.getProcessConfig() );
+
+        presenter.clear();
+
+        assertNull( presenter.getContainerSpecKey() );
+        assertNull( presenter.getProcessConfig() );
+    }
+
+    @Test
+    public void testBuildProcessConfig() {
+        when( view.getRuntimeStrategy() ).thenReturn( "a" );
+        when( view.getKBase() ).thenReturn( "b" );
+        when( view.getKSession() ).thenReturn( "c" );
+        when( view.getMergeMode() ).thenReturn( "d" );
+
+        final ProcessConfig processConfig = presenter.buildProcessConfig();
+
+        assertEquals( "a", processConfig.getRuntimeStrategy() );
+        assertEquals( "b", processConfig.getKBase() );
+        assertEquals( "c", processConfig.getKSession() );
+        assertEquals( "d", processConfig.getMergeMode() );
     }
 
 }

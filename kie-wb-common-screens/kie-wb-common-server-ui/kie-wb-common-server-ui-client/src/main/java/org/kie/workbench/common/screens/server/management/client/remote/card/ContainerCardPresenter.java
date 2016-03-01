@@ -52,7 +52,7 @@ public class ContainerCardPresenter {
 
         final BodyPresenter bodyPresenter = newBody();
         final List<Message> collection = new ArrayList<Message>( container.getMessages() );
-        bodyPresenter.setMessage( collection.get( collection.size() - 1 ) );
+        bodyPresenter.setup( collection.get( collection.size() - 1 ) );
 
         final FooterPresenter footerPresenter = newFooter();
         footerPresenter.setup( container.getUrl(), container.getResolvedReleasedId().getVersion() );

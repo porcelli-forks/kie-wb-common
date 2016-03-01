@@ -9,7 +9,7 @@ import org.uberfire.mvp.Command;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
-public class CustomGroupItem<T> extends Anchor {
+public class CustomGroupItem extends Anchor {
 
     public CustomGroupItem( final String text,
                             final IconType icon,

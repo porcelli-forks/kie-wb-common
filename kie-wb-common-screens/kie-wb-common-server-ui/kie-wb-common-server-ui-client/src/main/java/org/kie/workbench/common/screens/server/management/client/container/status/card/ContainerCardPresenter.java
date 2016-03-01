@@ -78,7 +78,7 @@ public class ContainerCardPresenter {
                                   } );
         final List<Message> collection = new ArrayList<Message>( container.getMessages() );
         if( collection.size() > 0 ) {
-            bodyPresenter.setMessage(collection.get(collection.size() - 1));
+            bodyPresenter.setup( collection.get( collection.size() - 1));
         }
         footerPresenter.setup( container.getUrl(), container.getResolvedReleasedId().getVersion() );
     }

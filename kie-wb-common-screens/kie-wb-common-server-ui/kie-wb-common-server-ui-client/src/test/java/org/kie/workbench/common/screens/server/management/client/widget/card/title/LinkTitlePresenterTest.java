@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mvp.Command;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -38,8 +39,19 @@ public class LinkTitlePresenterTest {
     public void testInit() {
         presenter.init();
 
-        verify(view).init(presenter);
-        assertEquals(view, presenter.getView());
+        verify( view ).init( presenter );
+        assertEquals( view, presenter.getView() );
+    }
+
+    @Test
+    public void testSetup() {
+        final Command command = mock( Command.class );
+        presenter.setup( "title", command );
+        verify( view ).setText( "title" );
+
+        presenter.onSelect();
+
+        verify( command ).execute();
     }
 
 }

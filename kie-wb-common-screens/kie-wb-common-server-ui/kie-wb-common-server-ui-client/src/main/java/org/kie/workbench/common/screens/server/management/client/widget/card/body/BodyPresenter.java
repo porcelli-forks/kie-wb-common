@@ -1,7 +1,5 @@
 package org.kie.workbench.common.screens.server.management.client.widget.card.body;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -26,8 +24,6 @@ public class BodyPresenter {
 
     private final View view;
 
-    private final Collection<NotificationPresenter> presenters = new ArrayList<NotificationPresenter>();
-
     @Inject
     public BodyPresenter( final View view ) {
         this.view = view;
@@ -42,24 +38,17 @@ public class BodyPresenter {
         return view;
     }
 
-    public void setMessage( final Message message ) {
+    public void setup( final Message message ) {
         checkNotNull( "message", message );
-        view.addNotification( setupNotification( message ).getView() );
+
+        configNotification( message );
     }
 
-    NotificationPresenter setupNotification( final Message message ) {
-        final NotificationPresenter presenter = setupNotification( false );
-        presenter.setup( message );
-        return presenter;
-    }
-
-    NotificationPresenter setupNotification( boolean init ) {
+    private void configNotification( final Message message ) {
         final NotificationPresenter presenter = newNotification();
-        if ( init ) {
-            presenter.setupOk();
-        }
-        presenters.add( presenter );
-        return presenter;
+        presenter.setup( message );
+
+        view.addNotification( presenter.getView() );
     }
 
     NotificationPresenter newNotification() {
