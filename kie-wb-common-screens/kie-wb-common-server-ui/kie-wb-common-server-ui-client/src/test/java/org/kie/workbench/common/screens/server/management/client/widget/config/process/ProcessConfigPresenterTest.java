@@ -101,10 +101,25 @@ public class ProcessConfigPresenterTest {
 
         final ProcessConfig processConfig = presenter.buildProcessConfig();
 
-        assertEquals( "a", processConfig.getRuntimeStrategy() );
+        assertEquals( "SINGLETON", processConfig.getRuntimeStrategy() );
         assertEquals( "b", processConfig.getKBase() );
         assertEquals( "c", processConfig.getKSession() );
-        assertEquals( "d", processConfig.getMergeMode() );
+        assertEquals( "KEEP_ALL", processConfig.getMergeMode() );
+    }
+
+    @Test
+    public void testBuildProcessConfig2() {
+        when( view.getRuntimeStrategy() ).thenReturn( "Per Process Instance" );
+        when( view.getKBase() ).thenReturn( "b" );
+        when( view.getKSession() ).thenReturn( "c" );
+        when( view.getMergeMode() ).thenReturn( "Merge Collections" );
+
+        final ProcessConfig processConfig = presenter.buildProcessConfig();
+
+        assertEquals( "PER_PROCESS_INSTANCE", processConfig.getRuntimeStrategy() );
+        assertEquals( "b", processConfig.getKBase() );
+        assertEquals( "c", processConfig.getKSession() );
+        assertEquals( "MERGE_COLLECTIONS", processConfig.getMergeMode() );
     }
 
 }

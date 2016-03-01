@@ -113,10 +113,10 @@ public class ProcessConfigPresenter {
     }
 
     public ProcessConfig buildProcessConfig() {
-        return new ProcessConfig( view.getRuntimeStrategy(),
+        return new ProcessConfig( ClientRuntimeStrategy.convert( view.getRuntimeStrategy() ).getRuntimeStrategy().toString(),
                                   view.getKBase(),
                                   view.getKSession(),
-                                  view.getMergeMode() );
+                                  ClientMergeMode.convert( view.getMergeMode() ).getMergeMode().toString() );
     }
 
 }
