@@ -43,8 +43,6 @@ import org.kie.workbench.common.screens.server.management.client.events.ServerTe
 import org.kie.workbench.common.screens.server.management.client.navigation.ServerNavigationPresenter;
 import org.kie.workbench.common.screens.server.management.client.navigation.template.ServerTemplatePresenter;
 import org.kie.workbench.common.screens.server.management.client.remote.RemotePresenter;
-import org.kie.workbench.common.screens.server.management.client.wizard.NewContainerWizard;
-import org.kie.workbench.common.screens.server.management.client.wizard.NewServerTemplateWizard;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -97,9 +95,7 @@ public class ServerManagementBrowserPresenter {
                                              final ContainerPresenter containerPresenter,
                                              final RemotePresenter remotePresenter,
                                              final Caller<SpecManagementService> specManagementService,
-                                             final Event<ServerTemplateSelected> serverTemplateSelectedEvent,
-                                             final NewServerTemplateWizard newServerTemplateWizard,
-                                             final NewContainerWizard newContainerWizard ) {
+                                             final Event<ServerTemplateSelected> serverTemplateSelectedEvent ) {
         this.view = view;
         this.navigationPresenter = navigationPresenter;
         this.serverTemplatePresenter = serverTemplatePresenter;
@@ -205,13 +201,6 @@ public class ServerManagementBrowserPresenter {
                 break;
             }
         }
-    }
-
-    private String currentServerTemplateId() {
-        if ( serverTemplatePresenter.getCurrentServerTemplate() != null ) {
-            return serverTemplatePresenter.getCurrentServerTemplate().getId();
-        }
-        return null;
     }
 
     private void setup( final ServerTemplate serverTemplate,
