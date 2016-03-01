@@ -50,15 +50,18 @@ public class ClientMergeModeTest {
 
     @Test
     public void testConvertEnum() {
-        MergeMode mergeMode = MergeMode.OVERRIDE_ALL;
-        ClientMergeMode clientMergeMode = ClientMergeMode.convert( mergeMode );
-        assertEquals( ClientMergeMode.OVERRIDE_ALL, clientMergeMode );
+        assertEquals( ClientMergeMode.KEEP_ALL, ClientMergeMode.convert( MergeMode.KEEP_ALL ) );
+        assertEquals( ClientMergeMode.OVERRIDE_ALL, ClientMergeMode.convert( MergeMode.OVERRIDE_ALL ) );
+        assertEquals( ClientMergeMode.OVERRIDE_EMPTY, ClientMergeMode.convert( MergeMode.OVERRIDE_EMPTY ) );
+        assertEquals( ClientMergeMode.MERGE_COLLECTIONS, ClientMergeMode.convert( MergeMode.MERGE_COLLECTIONS ) );
     }
 
     @Test
     public void testConvertString() {
-        ClientMergeMode clientMergeMode = ClientMergeMode.convert( Constants.ClientMergeMode_OverrideAll, translationService );
-        assertEquals( ClientMergeMode.OVERRIDE_ALL, clientMergeMode );
+        assertEquals( ClientMergeMode.OVERRIDE_ALL, ClientMergeMode.convert( Constants.ClientMergeMode_OverrideAll, translationService ) );
+        assertEquals( ClientMergeMode.MERGE_COLLECTIONS, ClientMergeMode.convert( Constants.ClientMergeMode_MergeCollections, translationService ) );
+        assertEquals( ClientMergeMode.KEEP_ALL, ClientMergeMode.convert( Constants.ClientMergeMode_KeepAll, translationService ) );
+        assertEquals( ClientMergeMode.OVERRIDE_EMPTY, ClientMergeMode.convert( Constants.ClientMergeMode_OverrideEmpty, translationService ) );
     }
 
     @Test

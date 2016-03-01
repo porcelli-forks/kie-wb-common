@@ -50,15 +50,16 @@ public class ClientRuntimeStrategyTest {
 
     @Test
     public void testConvertEnum() {
-        RuntimeStrategy runtimeStrategy = RuntimeStrategy.PER_PROCESS_INSTANCE;
-        ClientRuntimeStrategy clientRuntimeStrategy = ClientRuntimeStrategy.convert( runtimeStrategy );
-        assertEquals( ClientRuntimeStrategy.PER_PROCESS_INSTANCE, clientRuntimeStrategy );
+        assertEquals( ClientRuntimeStrategy.PER_PROCESS_INSTANCE, ClientRuntimeStrategy.convert( RuntimeStrategy.PER_PROCESS_INSTANCE ) );
+        assertEquals( ClientRuntimeStrategy.PER_REQUEST, ClientRuntimeStrategy.convert( RuntimeStrategy.PER_REQUEST ) );
+        assertEquals( ClientRuntimeStrategy.SINGLETON, ClientRuntimeStrategy.convert( RuntimeStrategy.SINGLETON ) );
     }
 
     @Test
     public void testConvertString() {
-        ClientRuntimeStrategy clientRuntimeStrategy = ClientRuntimeStrategy.convert( Constants.ClientRuntimeStrategy_PerProcessInstance, translationService );
-        assertEquals( ClientRuntimeStrategy.PER_PROCESS_INSTANCE, clientRuntimeStrategy );
+        assertEquals( ClientRuntimeStrategy.PER_PROCESS_INSTANCE, ClientRuntimeStrategy.convert( Constants.ClientRuntimeStrategy_PerProcessInstance, translationService ) );
+        assertEquals( ClientRuntimeStrategy.PER_REQUEST, ClientRuntimeStrategy.convert( Constants.ClientRuntimeStrategy_PerRequest, translationService ) );
+        assertEquals( ClientRuntimeStrategy.SINGLETON, ClientRuntimeStrategy.convert( Constants.ClientRuntimeStrategy_Singleton, translationService ) );
     }
 
     @Test
