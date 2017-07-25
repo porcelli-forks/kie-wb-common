@@ -95,7 +95,6 @@ public class InternalNIOKieMetadataTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.INSTALL},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.FALSE);
         KieCompilationResponse res = compiler.compileSync(req);
 
@@ -157,7 +156,6 @@ public class InternalNIOKieMetadataTest {
             InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                          info,
                                                                                          new String[]{MavenCLIArgs.INSTALL},
-                                                                                         new HashMap<>(),
                                                                                          Boolean.TRUE);
             KieCompilationResponse res = compiler.compileSync(req);
 
@@ -212,7 +210,6 @@ public class InternalNIOKieMetadataTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.INSTALL},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.FALSE);
         KieCompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {

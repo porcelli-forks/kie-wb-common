@@ -34,7 +34,6 @@ public class DefaultAFBuilder implements AFBuilder {
     private NIOWorkspaceCompilationInfo info;
     private NIOCompilationRequest req;
     private String mavenRepo;
-    private String projectRepo;
 
     /***
      *Constructor to define the default behaviour called with the build method
@@ -48,7 +47,6 @@ public class DefaultAFBuilder implements AFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.projectRepo = projectRepo;
         compiler = NIOMavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new NIOWorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new NIODefaultCompilationRequest(mavenRepo,
@@ -63,7 +61,6 @@ public class DefaultAFBuilder implements AFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.projectRepo = projectRepo;
         compiler = NIOMavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new NIOWorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new NIODefaultCompilationRequest(mavenRepo,

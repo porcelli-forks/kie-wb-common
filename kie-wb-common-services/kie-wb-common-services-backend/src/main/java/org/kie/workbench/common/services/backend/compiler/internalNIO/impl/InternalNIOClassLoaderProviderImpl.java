@@ -82,7 +82,6 @@ public class InternalNIOClassLoaderProviderImpl implements AFClassLoaderProvider
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(localRepo,
                                                                                      info,
                                                                                      new String[]{MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.isSuccessful()) {

@@ -34,7 +34,7 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
     private InternalNIOWorkspaceCompilationInfo info;
     private InternalNIOCompilationRequest req;
     private String mavenRepo;
-    private String projectRepo;
+
 
     public DefaultInternalNIOAFBuilder(String projectRepo,
                                        String mavenRepo,
@@ -42,13 +42,11 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.projectRepo = projectRepo;
         compiler = InternalNIOMavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new InternalNIOWorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                        info,
                                                        args,
-                                                       new HashMap(),
                                                        Boolean.TRUE);
     }
 
@@ -57,13 +55,11 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.projectRepo = projectRepo;
         compiler = InternalNIOMavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new InternalNIOWorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                        info,
                                                        new String[]{MavenCLIArgs.COMPILE},
-                                                       new HashMap(),
                                                        Boolean.TRUE);
     }
 
@@ -78,7 +74,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                        info,
                                                        new String[]{MavenCLIArgs.PACKAGE},
-                                                       new HashMap(),
                                                        Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -88,7 +83,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                        info,
                                                        new String[]{MavenCLIArgs.INSTALL},
-                                                       new HashMap(),
                                                        Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -98,7 +92,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.COMPILE},
-                                                                                     new HashMap(),
                                                                                      Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -110,7 +103,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.COMPILE},
-                                                                                     new HashMap(),
                                                                                      Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -122,7 +114,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.PACKAGE},
-                                                                                     new HashMap(),
                                                                                      Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -134,7 +125,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.INSTALL},
-                                                                                     new HashMap(),
                                                                                      Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -147,7 +137,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                                                      info,
                                                                                      args,
-                                                                                     new HashMap(),
                                                                                      Boolean.TRUE);
         return compiler.compileSync(req);
     }
@@ -163,7 +152,6 @@ public class DefaultInternalNIOAFBuilder implements AFBuilder {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo,
                                                                                      info,
                                                                                      args,
-                                                                                     new HashMap(),
                                                                                      Boolean.TRUE);
         return compiler.compileSync(req);
     }

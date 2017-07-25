@@ -170,7 +170,6 @@ public class InternalNIOKieDefaultMavenCompilerOnInMemoryFSTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.COMPILE},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.TRUE);
 
         CompilationResponse res = compiler.compileSync(req);
@@ -298,7 +297,6 @@ public class InternalNIOKieDefaultMavenCompilerOnInMemoryFSTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.TRUE);
 
         CompilationResponse res = compiler.compileSync(req);
@@ -390,7 +388,6 @@ public class InternalNIOKieDefaultMavenCompilerOnInMemoryFSTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
@@ -502,7 +499,6 @@ public class InternalNIOKieDefaultMavenCompilerOnInMemoryFSTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.COMPILE},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.TRUE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {

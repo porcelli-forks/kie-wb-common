@@ -34,14 +34,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     private NIOWorkspaceCompilationInfo info;
     private NIOCompilationRequest req;
     private String mavenRepo;
-    private String projectRepo;
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo) {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.projectRepo = projectRepo;
         compiler = NIOKieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
         info = new NIOWorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new NIODefaultCompilationRequest(mavenRepo,
@@ -57,7 +55,6 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.projectRepo = projectRepo;
         compiler = NIOKieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
         info = new NIOWorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new NIODefaultCompilationRequest(mavenRepo,

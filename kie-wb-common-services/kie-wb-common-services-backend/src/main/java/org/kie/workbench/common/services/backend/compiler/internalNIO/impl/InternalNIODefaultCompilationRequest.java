@@ -17,6 +17,7 @@ package org.kie.workbench.common.services.backend.compiler.internalNIO.impl;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,32 +35,28 @@ public class InternalNIODefaultCompilationRequest implements InternalNIOCompilat
     private AFCliRequest req;
     private InternalNIOWorkspaceCompilationInfo info;
     private String requestUUID;
-    private Map map;
     private String mavenRepo;
 
     /***
      * @param mavenRepo a string representation of the Path
      * @param info
      * @param args param for maven, can be used {@link org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs}
-     * @param map to retrieve KieMetaInfo and KieModule when a Kie Plugin is present
      * @param logRequested if is true the output of the build will be provided as a List<String>
      */
     public InternalNIODefaultCompilationRequest(String mavenRepo,
                                                 InternalNIOWorkspaceCompilationInfo info,
                                                 String[] args,
-                                                Map<String, Object> map,
                                                 Boolean logRequested) {
         this.mavenRepo = mavenRepo;
         this.info = info;
-        this.requestUUID = UUID.randomUUID().toString();
-        this.map = map;
+        requestUUID = UUID.randomUUID().toString();
 
         String[] internalArgs = getInternalArgs(args,
                                                 logRequested);
-        this.req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
+        req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
                                     internalArgs,
-                                    this.map,
-                                    this.requestUUID,
+                                    new HashMap<>(),
+                                    requestUUID,
                                     logRequested);
     }
 

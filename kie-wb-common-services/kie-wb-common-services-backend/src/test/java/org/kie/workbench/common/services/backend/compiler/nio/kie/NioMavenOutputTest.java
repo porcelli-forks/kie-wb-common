@@ -42,15 +42,19 @@ public class NioMavenOutputTest {
         TestUtil.copyTree(Paths.get("src/test/projects/dummy"),
                           tmp);
 
-        NIOKieMavenCompiler compiler = NIOKieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
 
+        NIOKieMavenCompiler compiler = NIOKieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
         NIOWorkspaceCompilationInfo info = new NIOWorkspaceCompilationInfo(tmp);
+
         NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                      info,
                                                                      new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
                                                                      new HashMap<>(),
                                                                      Boolean.TRUE);
         CompilationResponse res = compiler.compileSync(req);
+
+
+
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
                                                       "NioMavenOutputTest.testOutputWithTakari");

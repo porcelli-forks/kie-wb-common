@@ -84,7 +84,6 @@ public class InternalNIODefaultIncrementalCompilerEnablerTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.FALSE);
         InternalNIODefaultIncrementalCompilerEnabler enabler = new InternalNIODefaultIncrementalCompilerEnabler(Compilers.JAVAC);
         Assert.assertTrue(enabler.process(req).getResult());
@@ -132,7 +131,6 @@ public class InternalNIODefaultIncrementalCompilerEnablerTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE, "-X"},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.FALSE);
         InternalNIODefaultIncrementalCompilerEnabler enabler = new InternalNIODefaultIncrementalCompilerEnabler(Compilers.JAVAC);
         assertTrue(enabler.process(req).getResult());

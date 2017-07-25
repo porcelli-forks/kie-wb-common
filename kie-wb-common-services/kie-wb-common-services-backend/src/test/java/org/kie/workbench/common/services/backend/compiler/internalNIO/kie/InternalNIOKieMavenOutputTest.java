@@ -53,7 +53,6 @@ public class InternalNIOKieMavenOutputTest {
         InternalNIOCompilationRequest req = new InternalNIODefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                                      info,
                                                                                      new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                                                     new HashMap<>(),
                                                                                      Boolean.TRUE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
