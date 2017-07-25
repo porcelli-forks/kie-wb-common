@@ -30,9 +30,10 @@ import org.kie.workbench.common.services.backend.builder.core.BuildHelper;
  * Executor for a LocalBuildExecConfig configuration.
  */
 @ApplicationScoped
-public class LocalBuildExecConfigExecutor
-        implements BiFunctionConfigExecutor< LocalBuildConfigInternal, LocalBuildExecConfig, LocalBinaryConfig > {
+public class LocalBuildExecConfigExecutor {
+        /*implements BiFunctionConfigExecutor< LocalBuildConfigInternal, LocalBuildExecConfig, LocalBinaryConfig > {
 
+@MAXWasHere
     private BuildHelper buildHelper;
 
     public LocalBuildExecConfigExecutor( ) {
@@ -54,6 +55,7 @@ public class LocalBuildExecConfigExecutor
      *
      * @return the information about the produced Binary and the build results in the local build system.
      */
+        /*
     @Override
     public Optional< LocalBinaryConfig > apply( LocalBuildConfigInternal localBuildConfigInternal, LocalBuildExecConfig localBuildExecConfig ) {
         Optional< LocalBinaryConfig > result = Optional.empty( );
@@ -92,8 +94,8 @@ public class LocalBuildExecConfigExecutor
         }
         return result;
     }
-
-
+*/
+/*
     @Override
     public Class< ? extends Config > executeFor( ) {
         return LocalBuildExecConfig.class;
@@ -107,5 +109,5 @@ public class LocalBuildExecConfigExecutor
     private DeploymentMode toDeploymentMode( LocalBuildConfig.DeploymentType deploymentType ) {
         return deploymentType == LocalBuildConfig.DeploymentType.VALIDATED ? DeploymentMode.VALIDATED : DeploymentMode.FORCED;
     }
-
+*/
 }

@@ -32,9 +32,14 @@ import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCac
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.shared.message.Level;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.file.DSLFileFilter;
 import org.kie.workbench.common.services.backend.file.EnumerationsFileFilter;
 import org.kie.workbench.common.services.backend.file.GlobalsFileFilter;
@@ -70,6 +75,8 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
 
     private BuildInfoService buildInfoService;
 
+    private GuvnorM2Repository guvnorM2Repository;
+
     public LRUDataModelOracleCache() {
         //CDI proxy
     }
@@ -79,12 +86,14 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
                                    final FileDiscoveryService fileDiscoveryService,
                                    final @Named("ProjectDataModelOracleCache") LRUProjectDataModelOracleCache cacheProjects,
                                    final KieProjectService projectService,
-                                   final BuildInfoService buildInfoService) {
+                                   final BuildInfoService buildInfoService,
+                                   final GuvnorM2Repository guvnorM2Repository) {
         this.ioService = ioService;
         this.fileDiscoveryService = fileDiscoveryService;
         this.cacheProjects = cacheProjects;
         this.projectService = projectService;
         this.buildInfoService = buildInfoService;
+        this.guvnorM2Repository = guvnorM2Repository;
     }
 
     public synchronized void invalidatePackageCache(@Observes final InvalidateDMOPackageCacheEvent event) {
@@ -178,7 +187,12 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
     private void loadEnumsForPackage(final PackageDataModelOracleBuilder dmoBuilder,
                                      final KieProject project,
                                      final Package pkg) {
-        final KieModule module = buildInfoService.getBuildInfo( project ).getKieModuleIgnoringErrors();
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        KieCompilationResponse res = builder.build();
+        if(res.isSuccessful() && res.getKieModule().isPresent()){
+
+        //final KieModule module = buildInfoService.getBuildInfo( project ).getKieModuleIgnoringErrors();
+        final KieModule module = res.getKieModule().get();
         final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
         final org.uberfire.java.nio.file.Path nioPackagePath = Paths.convert(pkg.getPackageMainResourcesPath());
         final Collection<org.uberfire.java.nio.file.Path> enumFiles = fileDiscoveryService.discoverFiles(nioPackagePath,
@@ -187,6 +201,7 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
             final String enumDefinition = ioService.readAllString(path);
             dmoBuilder.addEnum(enumDefinition,
                                classLoader);
+        }
         }
     }
 

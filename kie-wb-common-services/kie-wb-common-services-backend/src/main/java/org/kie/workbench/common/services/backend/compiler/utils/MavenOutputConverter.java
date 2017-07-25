@@ -20,7 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.guvnor.common.services.project.builder.model.BuildMessage;
+import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.kie.workbench.common.services.backend.builder.core.BuildHelper;
 
 /**
  * Maven output converter
@@ -52,6 +54,18 @@ public class MavenOutputConverter {
             return buildMsgs;
         }
         return Collections.emptyList();
+    }
+
+    public static BuildResults convertIntoBuildResults(List<String> mavenOutput){
+        BuildResults buildRs = new BuildResults();
+        if(mavenOutput.size()>0) {
+            for(String item: mavenOutput){
+                BuildMessage msg = new BuildMessage();
+                msg.setText(item);
+                buildRs.addBuildMessage(msg);
+            }
+        }
+        return buildRs;
     }
 
 }

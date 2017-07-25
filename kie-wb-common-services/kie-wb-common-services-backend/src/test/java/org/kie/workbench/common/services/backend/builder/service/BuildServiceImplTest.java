@@ -112,6 +112,8 @@ public class BuildServiceImplTest {
         verify( buildServiceHelper, times( 1 ) ).localBuild( eq( project ), any( Consumer.class ) );
     }
 
+    /*
+    @MAXWasHere
     @Test
     public void testIsBuiltTrue( ) {
         when( cache.assertBuilder( project ) ).thenReturn( builder );
@@ -124,7 +126,7 @@ public class BuildServiceImplTest {
         when( cache.assertBuilder( project ) ).thenReturn( builder );
         when( builder.isBuilt( ) ).thenReturn( false );
         assertFalse( buildService.isBuilt( project ) );
-    }
+    }*/
 
     @Test
     public void testBuildAndDeploy( ) {

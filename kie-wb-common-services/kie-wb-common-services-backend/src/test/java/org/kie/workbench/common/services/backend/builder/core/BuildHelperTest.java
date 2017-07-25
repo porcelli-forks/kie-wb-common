@@ -120,7 +120,8 @@ public class BuildHelperTest {
 
     @Mock
     private MavenRepositoryMetadata repositoryMetadata2;
-
+/*
+@MAXWasHere
     @BeforeClass
     public static void setupSystemProperties() {
         //These are not needed for the tests
@@ -362,5 +363,5 @@ public class BuildHelperTest {
                                               Charsets.UTF_8);
 
         return fileContent.contains("Bean");
-    }
+    }*/
 }

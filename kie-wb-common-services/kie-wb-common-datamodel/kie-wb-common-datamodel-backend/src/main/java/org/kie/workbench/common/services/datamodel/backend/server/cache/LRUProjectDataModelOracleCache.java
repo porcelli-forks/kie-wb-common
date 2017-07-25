@@ -77,8 +77,10 @@ public class LRUProjectDataModelOracleCache
     }
 
     private ProjectDataModelOracle makeProjectOracle( final KieProject project ) {
+        /*@MAXWasHere
         return builderProvider.newBuilder( project,
-                                           buildInfoService.getBuildInfo( project ) ).build();
+                                           buildInfoService.getBuildInfo( project ) ).build();*/
+        return builderProvider.newBuilder(project).build();
     }
 
 }

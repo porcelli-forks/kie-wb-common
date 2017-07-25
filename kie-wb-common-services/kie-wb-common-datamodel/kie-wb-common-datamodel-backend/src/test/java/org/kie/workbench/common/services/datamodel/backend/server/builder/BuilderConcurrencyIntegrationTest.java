@@ -103,7 +103,8 @@ public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegr
                     } );
                     break;
                 default:
-                    es.execute( new Runnable() {
+                    //@MAXWasHere
+                    /*es.execute( new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -116,7 +117,7 @@ public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegr
                                 logger.debug( e.getMessage() );
                             }
                         }
-                    } );
+                    } );*/
             }
         }
 

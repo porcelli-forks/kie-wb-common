@@ -31,11 +31,17 @@ import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
+import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultAFBuilder;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfo;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfoImpl;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
 import org.kie.workbench.common.services.backend.builder.core.Builder;
 import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
@@ -50,6 +56,7 @@ public class ValidatorBuildService {
     private LRUBuilderCache builderCache;
     private KieProjectService projectService;
     private BuildInfoService buildInfoService;
+    private GuvnorM2Repository guvnorM2Repository;
 
     public ValidatorBuildService() {
         //CDI proxies
@@ -59,7 +66,8 @@ public class ValidatorBuildService {
     public ValidatorBuildService( final @Named("ioStrategy") IOService ioService,
                                   final LRUBuilderCache builderCache,
                                   final KieProjectService projectService,
-                                  final BuildInfoService buildInfoService ) {
+                                  final BuildInfoService buildInfoService,
+                                  final GuvnorM2Repository guvnorM2Repository) {
         this.ioService = ioService;
         this.builderCache = builderCache;
         this.projectService = projectService;
@@ -71,13 +79,13 @@ public class ValidatorBuildService {
         InputStream inputStream = null;
         try {
             inputStream = new ByteArrayInputStream( content.getBytes( Charsets.UTF_8 ) );
-            final List<ValidationMessage> results = doValidation( resourcePath,
-                                                                  inputStream );
+            final List<ValidationMessage> results = doValidation( resourcePath/*,
+                                                                  inputStream*/ );
             return results;
 
-        } catch ( NoProjectException e ) {
+        } /*catch ( NoProjectException e ) {
             return new ArrayList<>();
-        } catch ( NoClassDefFoundError e ) {
+        }*/ catch ( NoClassDefFoundError e ) {
             return error( MessageFormat.format( ERROR_CLASS_NOT_FOUND,
                                                 e.getLocalizedMessage() ) );
         } catch ( Throwable e ) {
@@ -96,13 +104,13 @@ public class ValidatorBuildService {
         InputStream inputStream = null;
         try {
             inputStream = ioService.newInputStream( Paths.convert( resourcePath ) );
-            final List<ValidationMessage> results = doValidation( resourcePath,
-                                                                  inputStream );
+            final List<ValidationMessage> results = doValidation( resourcePath/*,
+                                                                  inputStream */);
             return results;
 
-        } catch ( NoProjectException e ) {
+        } /*catch ( NoProjectException e ) {
             return new ArrayList<>();
-        } catch ( NoClassDefFoundError e ) {
+        }*/ catch ( NoClassDefFoundError e ) {
             return error( MessageFormat.format( ERROR_CLASS_NOT_FOUND,
                                                 e.getLocalizedMessage() ) );
         } catch ( Throwable e ) {
@@ -117,6 +125,17 @@ public class ValidatorBuildService {
         }
     }
 
+    private List<ValidationMessage> doValidation( final Path resourcePath) {
+        final org.uberfire.java.nio.file.Path nioResourcePath = Paths.convert( resourcePath );
+        AFBuilder builder = new DefaultAFBuilder(nioResourcePath.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        CompilationResponse res = builder.build();
+        List<ValidationMessage> validationMsgs = MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get());
+        return validationMsgs;
+
+    }
+
+    /*
+    @MAXWasHere
     private List<ValidationMessage> doValidation( final Path resourcePath,
                                                   final InputStream inputStream ) throws NoProjectException {
         final ValidatorResultBuilder resultBuilder = new ValidatorResultBuilder();
@@ -145,7 +164,7 @@ public class ValidatorBuildService {
         }
 
         return resultBuilder.results();
-    }
+    }*/
 
     private boolean isIncrementalBuildPossible( final Path resourcePath ) throws NoProjectException {
         final boolean isResource = getDestinationPath( resourcePath ).startsWith( "src/main/resources/" );

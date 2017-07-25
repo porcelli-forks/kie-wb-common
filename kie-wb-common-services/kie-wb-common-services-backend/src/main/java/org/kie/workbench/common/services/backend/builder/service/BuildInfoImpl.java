@@ -19,15 +19,18 @@ package org.kie.workbench.common.services.backend.builder.service;
 import org.kie.api.builder.KieModule;
 import org.kie.api.runtime.KieContainer;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.core.Builder;
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
 
 public class BuildInfoImpl
-        implements BuildInfo {
+        /*implements BuildInfo*/ {
 
+    /*
+    @MAXWasHere
     private Builder builder;
 
-    public BuildInfoImpl( Builder builder ) {
+    public BuildInfoImpl( KieAFBuilder builder ) {
         this.builder = builder;
     }
 
@@ -74,5 +77,5 @@ public class BuildInfoImpl
     @Override
     public int hashCode( ) {
         return builder != null ? builder.hashCode( ) : 0;
-    }
+    }*/
 }

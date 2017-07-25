@@ -22,9 +22,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.cache.LRUCache;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
 import org.kie.workbench.common.services.shared.project.KieProject;
 
 @ApplicationScoped
@@ -32,13 +37,15 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject, ClassLoader> {
 
     private BuildInfoService buildInfoService;
+    private GuvnorM2Repository guvnorM2Repository;
 
     public LRUProjectDependenciesClassLoaderCache( ) {
     }
 
     @Inject
-    public LRUProjectDependenciesClassLoaderCache( BuildInfoService buildInfoService ) {
+    public LRUProjectDependenciesClassLoaderCache( BuildInfoService buildInfoService, GuvnorM2Repository guvnorM2Repository ) {
         this.buildInfoService = buildInfoService;
+        this.guvnorM2Repository = guvnorM2Repository;
     }
 
     protected void setBuildInfoService( final BuildInfoService buildInfoService ) {
@@ -62,9 +69,18 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     }
 
     private ClassLoader buildClassLoader(final KieProject project) {
-        final KieModule module = buildInfoService.getBuildInfo(project).getKieModuleIgnoringErrors();
-        return buildClassLoader(project,
-                                KieModuleMetaData.Factory.newKieModuleMetaData(module));
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        KieCompilationResponse res = builder.build();
+        if(res.isSuccessful() && res.getKieModule().isPresent()) {
+            //@MAXWasHere
+            //final KieModule module = buildInfoService.getBuildInfo(project).getKieModuleIgnoringErrors();
+            final KieModule module = res.getKieModule().get();
+            return buildClassLoader(project,
+                                    KieModuleMetaData.Factory.newKieModuleMetaData(module));
+        } else {
+            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
+                                               + project.getKModuleXMLPath());
+        }
     }
 
     /**
@@ -87,7 +103,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         } else {
             //this case should never happen. But if ProjectClassLoader calculation for KieModuleMetadata changes at
             //the error will be notified for implementation review.
-            throw new RuntimeException("It was not posible to calculate project dependencies class loader for project: "
+            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
                                                + project.getKModuleXMLPath());
         }
     }

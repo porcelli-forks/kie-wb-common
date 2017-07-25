@@ -205,7 +205,7 @@ public class DataModelServiceConstructorTest {
             super.setProjectSaver(projectSaver);
         }
     }
-
+/* @MAXWasHere
     @Test
     public void testConstructor()
             throws IllegalArgumentException, FileSystemNotFoundException, SecurityException, URISyntaxException {
@@ -438,8 +438,8 @@ public class DataModelServiceConstructorTest {
                      oracle.getProjectTypeSources().get("t1p2.Bean2"));
         assertEquals(TypeSource.JAVA_PROJECT,
                      oracle.getProjectTypeSources().get("java.lang.String"));
-    }
-
+    }*/
+/*
     private Collection< ConfigExecutor > getConfigExecutors( KieProjectService projectService, BuildHelper buildHelper ) {
         Collection< ConfigExecutor > configs = new ArrayList<>( );
         configs.add( new LocalSourceConfigExecutor() );
@@ -447,5 +447,5 @@ public class DataModelServiceConstructorTest {
         configs.add( new LocalBuildConfigExecutor() );
         configs.add( new LocalBuildExecConfigExecutor( buildHelper ) );
         return configs;
-    }
+    }*/
 }

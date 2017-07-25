@@ -37,7 +37,15 @@ import org.guvnor.common.services.project.service.DeploymentMode;
 import org.guvnor.common.services.project.service.POMService;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.m2repo.backend.server.ExtendedM2RepoService;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.internalNIOimpl.DefaultInternalNIOKieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
@@ -65,6 +73,8 @@ public class BuildHelper {
 
     private Instance< PostBuildHandler > handlers;
 
+    private GuvnorM2Repository guvnorM2Repository;
+
     public BuildHelper( ) {
     }
 
@@ -75,7 +85,8 @@ public class BuildHelper {
                         final DeploymentVerifier deploymentVerifier,
                         final LRUBuilderCache cache,
                         final Instance< PostBuildHandler > handlers,
-                        final Instance< User > identity ) {
+                        final Instance< User > identity,
+                        final GuvnorM2Repository guvnorM2Repository) {
         this.pomService = pomService;
         this.m2RepoService = m2RepoService;
         this.projectService = projectService;
@@ -83,22 +94,34 @@ public class BuildHelper {
         this.cache = cache;
         this.handlers = handlers;
         this.identity = identity;
+        this.guvnorM2Repository = guvnorM2Repository;
     }
 
     public BuildResult build( final Project project ) {
         try {
             cache.invalidateCache( project );
-            Builder builder = cache.assertBuilder( project );
-            final BuildResults results = builder.build( );
+            //Builder builder = cache.assertBuilder( project );
+            KieAFBuilder builder = new DefaultInternalNIOKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+            KieCompilationResponse res = builder.build();
+            if(res.isSuccessful()) {
+                //final BuildResults results = builder.build();
+                final BuildResults results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
 
-            BuildMessage infoMsg = new BuildMessage( );
 
-            infoMsg.setLevel( Level.INFO );
-            infoMsg.setText( buildResultMessage( project, results ).toString( ) );
+                BuildMessage infoMsg = new BuildMessage();
 
-            results.addBuildMessage( 0, infoMsg );
+                infoMsg.setLevel(Level.INFO);
+                infoMsg.setText(buildResultMessage(project,
+                                                   results).toString());
 
-            return new BuildResult( builder, results );
+                results.addBuildMessage(0,
+                                        infoMsg);
+
+                return new BuildResult(builder,
+                                       results);
+            }else{
+                return new BuildResult(builder, new BuildResults());
+            }
 
         } catch ( Exception e ) {
             logger.error( e.getMessage( ),
@@ -107,6 +130,14 @@ public class BuildHelper {
         }
     }
 
+    private KieCompilationResponse internalBuild(final Project project){
+        KieAFBuilder builder = new DefaultInternalNIOKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        KieCompilationResponse res = builder.build();
+        return res;
+    }
+
+    /*
+    @MAXWasHere
     public IncrementalBuildResults addPackageResource( final Path resource ) {
         try {
             IncrementalBuildResults results = new IncrementalBuildResults( );
@@ -197,7 +228,7 @@ public class BuildHelper {
                     e );
             throw ExceptionUtilities.handleException( e );
         }
-    }
+    }*/
 
     private StringBuffer buildResultMessage( final Project project,
                                              final BuildResults results ) {
@@ -261,23 +292,36 @@ public class BuildHelper {
 
     public class BuildResult {
 
-        private Builder builder;
+        //private Builder builder;
+        private KieAFBuilder builder;
 
         private BuildResults buildResults;
 
         private IncrementalBuildResults incrementalBuildResults;
 
-        public BuildResult( Builder builder, BuildResults buildResults ) {
+        /*public BuildResult( Builder builder, BuildResults buildResults ) {
+            this.builder = builder;
+            this.buildResults = buildResults;
+        }*/
+        public BuildResult( KieAFBuilder builder, BuildResults buildResults ) {
             this.builder = builder;
             this.buildResults = buildResults;
         }
 
-        public BuildResult( Builder builder, IncrementalBuildResults incrementalBuildResults ) {
+        /*public BuildResult( Builder builder, IncrementalBuildResults incrementalBuildResults ) {
+            this.builder = builder;
+            this.incrementalBuildResults = incrementalBuildResults;
+        }*/
+        public BuildResult( KieAFBuilder builder, IncrementalBuildResults incrementalBuildResults ) {
             this.builder = builder;
             this.incrementalBuildResults = incrementalBuildResults;
         }
 
-        public Builder getBuilder( ) {
+        /*public Builder getBuilder( ) {
+            return builder;
+        }*/
+
+        public KieAFBuilder getBuilder( ) {
             return builder;
         }
 
@@ -293,8 +337,16 @@ public class BuildHelper {
     private BuildResults doBuildAndDeploy( final Project project,
                                            final boolean suppressHandlers ) {
         try {
+            BuildResults results = new BuildResults();
             //Build
-            final BuildResults results = build( project ).getBuildResults();
+            //final BuildResults results = build( project ).getBuildResults();
+            KieCompilationResponse res = internalBuild(project);
+            if(!res.isSuccessful()){
+                return results;
+            }
+            if(res.getMavenOutput().isPresent()) {
+                results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
+            }
             StringBuffer message = new StringBuffer( );
             message.append( "Build of project '" + project.getProjectName( ) + "' (requested by " + getIdentifier( ) + ") completed.\n" );
             message.append( " Build: " + ( results.getErrorMessages( ).isEmpty( ) ? "SUCCESSFUL" : "FAILURE" ) );
@@ -302,8 +354,10 @@ public class BuildHelper {
             //Deploy, if no errors
             final POM pom = pomService.load( project.getPomXMLPath( ) );
             if ( results.getErrorMessages( ).isEmpty( ) ) {
-                final Builder builder = cache.assertBuilder( project );
-                final InternalKieModule kieModule = ( InternalKieModule ) builder.getKieModule( );
+                //final Builder builder = cache.assertBuilder( project );
+                //final InternalKieModule kieModule = ( InternalKieModule ) builder.getKieModule( );
+                final InternalKieModule kieModule = ( InternalKieModule )res.getKieModule().get();
+
                 final ByteArrayInputStream input = new ByteArrayInputStream( kieModule.getBytes( ) );
                 m2RepoService.deployJar( input,
                         pom.getGav( ) );

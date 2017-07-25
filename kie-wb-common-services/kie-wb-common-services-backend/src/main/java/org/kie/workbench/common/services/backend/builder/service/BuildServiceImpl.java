@@ -95,8 +95,10 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt( final Project project ) {
-        final Builder builder = cache.assertBuilder( project );
-        return builder.isBuilt( );
+        /*final Builder builder = cache.assertBuilder( project );
+        return builder.isBuilt( );*/
+        //@TODO MAX this can not be changed in this module org.guvnor.common.services.project.builder.service.BuildService
+        return Boolean.TRUE;
     }
 
     @Override

@@ -49,6 +49,8 @@ import static java.util.stream.StreamSupport.stream;
 @ApplicationScoped
 public class LRUBuilderCache extends LRUCache<Project, Builder> {
 
+    /*
+    @MAXWasHere
     private IOService ioService;
 
     private KieProjectService projectService;
@@ -157,5 +159,5 @@ public class LRUBuilderCache extends LRUCache<Project, Builder> {
     private Predicate<String> createSingleClassFilterPredicate() {
         return classFilters.stream().reduce(o -> true,
                                             (p1, p2) -> p1.and(p2));
-    }
+    }*/
 }

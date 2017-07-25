@@ -41,7 +41,9 @@ public class SessionServiceImpl
     @Override
     public KieSession newKieSession(KieProject project, String ksessionName) {
 
-        KieContainer kieContainer = buildInfoService.getBuildInfo( project ).getKieContainer();
+        //KieContainer kieContainer = buildInfoService.getBuildInfo( project ).getKieContainer();
+        //@MAXWasHere change with the new way to retrieve kiecontainer
+        KieContainer kieContainer = null;
 
         //If a KieContainer could not be built there is a build error somewhere; so return null to be handled elsewhere
         if (kieContainer == null) {
@@ -55,7 +57,9 @@ public class SessionServiceImpl
     @Override
     public KieSession newDefaultKieSessionWithPseudoClock(final KieProject project) {
 
-        KieContainer kieContainer = buildInfoService.getBuildInfo( project ).getKieContainer();
+        //KieContainer kieContainer = buildInfoService.getBuildInfo( project ).getKieContainer();
+        //@MAXWasHere change with the new way to retrieve kiecontainer
+        KieContainer kieContainer = null;
 
         //If a KieContainer could not be built there is a build error somewhere; so return null to be handled elsewhere
         if (kieContainer == null) {

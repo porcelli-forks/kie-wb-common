@@ -64,7 +64,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class BuilderTest
         extends BuilderTestBase {
-
+/*
+@MAXWasHere
     private static final Logger logger = LoggerFactory.getLogger( BuilderTest.class );
 
     private final Predicate<String> alwaysTrue = o -> true;
@@ -351,5 +352,5 @@ public class BuilderTest
                                                     new PackageNameWhiteListLoader( packageNameSearchProvider,
                                                                                     ioService ),
                                                     mock( PackageNameWhiteListSaver.class ) );
-    }
+    }*/
 }

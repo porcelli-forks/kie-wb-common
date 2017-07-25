@@ -83,6 +83,8 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 public class Builder implements Serializable {
 
+    /*
+    @MAXWasHere
     private static final Logger logger = LoggerFactory.getLogger( Builder.class );
 
     private final static String ERROR_CLASS_NOT_FOUND = "Definition of class \"{0}\" was not found.\n" +
@@ -696,4 +698,5 @@ public class Builder implements Serializable {
     KieFileSystem getKieFileSystem() {
         return kieFileSystem;
     }
+    */
 }
