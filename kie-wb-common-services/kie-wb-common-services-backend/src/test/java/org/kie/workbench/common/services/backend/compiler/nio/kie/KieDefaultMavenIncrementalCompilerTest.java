@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.workbench.common.services.backend.compiler.nio;
+package org.kie.workbench.common.services.backend.compiler.nio.kie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +25,15 @@ import org.junit.Test;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
+import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
+import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieMavenCompilerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.DirectoryStream;
@@ -35,10 +41,10 @@ import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
-public class DefaultMavenIncrementalCompilerTest {
+public class KieDefaultMavenIncrementalCompilerTest {
 
     private Path mavenRepo;
-    private Logger logger = LoggerFactory.getLogger(DefaultMavenIncrementalCompilerTest.class);
+    private Logger logger = LoggerFactory.getLogger(KieDefaultMavenIncrementalCompilerTest.class);
 
     @Before
     public void setUp() throws Exception {
@@ -61,11 +67,11 @@ public class DefaultMavenIncrementalCompilerTest {
         Path temp = Files.createDirectories(Paths.get(tmpRoot.toString(),
                                                       "dummy"));
         TestUtil.copyTree(Paths.get("src/test/projects/dummy"),
-                          temp);
+                                                                             temp);
         //end NIO
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+                KieDecorator.NONE);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -76,7 +82,7 @@ public class DefaultMavenIncrementalCompilerTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "DefaultMavenIncrementalCompilerTest.testIsValidMavenHome");
+                                                                                                         "KieDefaultMavenIncrementalCompilerTest.testIsValidMavenHome");
         }
         Assert.assertTrue(res.isSuccessful());
 
@@ -90,11 +96,11 @@ public class DefaultMavenIncrementalCompilerTest {
         Path temp = Files.createDirectories(Paths.get(tmpRoot.toString(),
                                                       "dummy"));
         TestUtil.copyTree(Paths.get("src/test/projects/dummy"),
-                          temp);
+                                                                             temp);
         //end NIO
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+                KieDecorator.NONE);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -105,7 +111,7 @@ public class DefaultMavenIncrementalCompilerTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "DefaultMavenIncrementalCompilerTest.testIncrementalWithPluginEnabled");
+                                                                                                         "KieDefaultMavenIncrementalCompilerTest.testIncrementalWithPluginEnabled");
         }
         Assert.assertTrue(res.isSuccessful());
 
@@ -123,11 +129,11 @@ public class DefaultMavenIncrementalCompilerTest {
         Path temp = Files.createDirectories(Paths.get(tmpRoot.toString(),
                                                       "dummy"));
         TestUtil.copyTree(Paths.get("src/test/projects/dummy"),
-                          temp);
+                                                                             temp);
         //end NIO
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+                KieDecorator.NONE);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -138,7 +144,7 @@ public class DefaultMavenIncrementalCompilerTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "DefaultMavenIncrementalCompilerTest.testIncrementalWithPluginEnabledThreeTime");
+                                                                                                         "KieDefaultMavenIncrementalCompilerTest.testIncrementalWithPluginEnabledThreeTime");
         }
         Assert.assertTrue(res.isSuccessful());
 
@@ -161,12 +167,14 @@ public class DefaultMavenIncrementalCompilerTest {
         //NIO creation and copy content
         Path temp = Files.createDirectories(Paths.get(tmpRoot.toString(),
                                                       "dummy"));
-        TestUtil.copyTree(Paths.get("src/test/projects/dummy_incremental"),
-                          temp);
+        TestUtil.copyTree(Paths.get("src/test/projects/dummy_kie_incremental"),
+                                                                             temp);
         //end NIO
 
         //compiler
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
+                Decorator.LOG_OUTPUT_AFTER);
+
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
@@ -176,13 +184,14 @@ public class DefaultMavenIncrementalCompilerTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "DefaultMavenIncrementalCompilerTest.testCheckIncrementalWithChanges");
+                                                                                                         "KieDefaultMavenIncrementalCompilerTest.testCheckIncrementalWithChanges");
         }
 
         //checks
         Assert.assertTrue(res.isSuccessful());
 
         List<String> fileNames = new ArrayList<>();
+        //nio
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(temp + "/target/classes/dummy"))) {
             for (Path path : directoryStream) {
                 fileNames.add(path.toString());
@@ -211,12 +220,15 @@ public class DefaultMavenIncrementalCompilerTest {
 
         //second compilation
         res = compiler.compileSync(req);
+        if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
+            TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
+                                                      "KieDefaultMavenIncrementalCompilerTest.testCheckIncrementalWithChanges");
+        }
 
         //checks
         Assert.assertTrue(res.isSuccessful());
 
         fileNames = new ArrayList<>();
-        //nio
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(temp + "/target/classes/dummy"))) {
             for (Path path : directoryStream) {
                 fileNames.add(path.toString());
