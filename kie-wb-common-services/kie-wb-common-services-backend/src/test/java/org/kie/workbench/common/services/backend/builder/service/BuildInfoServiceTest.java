@@ -32,7 +32,7 @@ import org.mockito.stubbing.Answer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( MockitoJUnitRunner.class )
+//@RunWith( MockitoJUnitRunner.class )
 public class BuildInfoServiceTest {
 
     @Mock

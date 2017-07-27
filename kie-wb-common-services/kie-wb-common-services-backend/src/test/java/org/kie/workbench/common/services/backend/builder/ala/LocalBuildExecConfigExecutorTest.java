@@ -34,7 +34,7 @@ import org.uberfire.backend.vfs.Path;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( MockitoJUnitRunner.class )
+//@RunWith( MockitoJUnitRunner.class )
 public class LocalBuildExecConfigExecutorTest {
 
     @Mock

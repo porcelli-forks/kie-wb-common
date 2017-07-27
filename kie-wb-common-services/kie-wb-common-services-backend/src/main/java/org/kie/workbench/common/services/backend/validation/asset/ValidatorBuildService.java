@@ -127,7 +127,13 @@ public class ValidatorBuildService {
 
     private List<ValidationMessage> doValidation( final Path resourcePath) {
         final org.uberfire.java.nio.file.Path nioResourcePath = Paths.convert( resourcePath );
-        AFBuilder builder = new DefaultAFBuilder(nioResourcePath.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        String destinationPath = null;
+        try {
+            destinationPath = getDestinationPath(resourcePath);
+        } catch (NoProjectException e) {
+            e.printStackTrace();
+        }
+        AFBuilder builder = new DefaultAFBuilder(destinationPath, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
         CompilationResponse res = builder.build();
         List<ValidationMessage> validationMsgs = MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get());
         return validationMsgs;

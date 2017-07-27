@@ -54,7 +54,7 @@ import org.uberfire.backend.vfs.Path;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class BuildHelperTest {
 
     private static final String GROUP_ID = "org.kie.workbench.common.services.builder.tests";
