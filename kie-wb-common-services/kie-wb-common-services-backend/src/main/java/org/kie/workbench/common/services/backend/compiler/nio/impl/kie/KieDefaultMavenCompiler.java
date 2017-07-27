@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.nio.impl.kie;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Run maven on Kie projects with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
  * to use Takari plugins like a black box
- *
  */
 public class KieDefaultMavenCompiler implements KieMavenCompiler {
 
@@ -80,5 +80,17 @@ public class KieDefaultMavenCompiler implements KieMavenCompiler {
         } else {
             return new DefaultKieCompilationResponse(Boolean.FALSE);
         }
+    }
+
+    @Override
+    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean value) {
+        return new DefaultKieCompilationResponse(value);
+    }
+
+    @Override
+    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean value,
+                                                                  final List<String> output) {
+        return new DefaultKieCompilationResponse(value,
+                                                 output);
     }
 }

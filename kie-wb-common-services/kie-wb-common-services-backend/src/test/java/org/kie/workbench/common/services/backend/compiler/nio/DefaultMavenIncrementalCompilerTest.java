@@ -64,8 +64,7 @@ public class DefaultMavenIncrementalCompilerTest {
                           temp);
         //end NIO
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -93,8 +92,7 @@ public class DefaultMavenIncrementalCompilerTest {
                           temp);
         //end NIO
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -126,8 +124,7 @@ public class DefaultMavenIncrementalCompilerTest {
                           temp);
         //end NIO
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -166,7 +163,7 @@ public class DefaultMavenIncrementalCompilerTest {
         //end NIO
 
         //compiler
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,

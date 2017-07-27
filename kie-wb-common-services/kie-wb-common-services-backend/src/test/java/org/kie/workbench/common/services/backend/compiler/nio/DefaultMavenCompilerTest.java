@@ -36,9 +36,6 @@ import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
-import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenCompilerFactory;
 import org.slf4j.Logger;
@@ -121,7 +118,7 @@ public class DefaultMavenCompilerTest {
         assertNotNull(cloned);
 
         //Compile the repo
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         Path prjFolder = Paths.get(gitClonedFolder + "/dummy/");
         byte[] encoded = Files.readAllBytes(Paths.get(prjFolder + "/pom.xml"));
         String pomAsAstring = new String(encoded,
@@ -200,7 +197,7 @@ public class DefaultMavenCompilerTest {
         assertTrue(rbResult.getStatus().isSuccessful());
 
         //Compile the repo
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
 
         byte[] encoded = Files.readAllBytes(Paths.get(tmpCloned + "/dummy/pom.xml"));
         String pomAsAstring = new String(encoded,
@@ -237,7 +234,7 @@ public class DefaultMavenCompilerTest {
 
     @Test
     public void buildWithJGitDecoratorTest() throws Exception {
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE);
 
         String MASTER_BRANCH = "master";
 
@@ -307,7 +304,7 @@ public class DefaultMavenCompilerTest {
     //
     @Test
     public void buildWithAllDecoratorsTest() throws Exception {
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE_AND_LOG_AFTER);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE_AND_LOG_AFTER);
 
         String MASTER_BRANCH = "master";
 

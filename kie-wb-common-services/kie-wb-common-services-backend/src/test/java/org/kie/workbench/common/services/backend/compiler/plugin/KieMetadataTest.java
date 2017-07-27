@@ -35,8 +35,8 @@ import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieMavenCompilerFactory;
@@ -84,7 +84,7 @@ public class KieMetadataTest {
                           temp);
         //end NIO
 
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
                 KieDecorator.KIE_AFTER);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
@@ -93,7 +93,7 @@ public class KieMetadataTest {
                                                                new String[]{MavenCLIArgs.INSTALL},
                                                                new HashMap<>(),
                                                                Boolean.FALSE);
-        KieCompilationResponse res = compiler.compileSync(req);
+        KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
@@ -145,7 +145,7 @@ public class KieMetadataTest {
             TestUtil.copyTree(Paths.get("src/test/projects/kjar-2-single-resources"),
                               tmp);
 
-            KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+            AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
                     KieDecorator.KIE_AND_LOG_AFTER);
 
             WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmp.toUri()));
@@ -155,7 +155,7 @@ public class KieMetadataTest {
                                                                    new String[]{MavenCLIArgs.INSTALL},
                                                                    new HashMap<>(),
                                                                    Boolean.TRUE);
-            KieCompilationResponse res = compiler.compileSync(req);
+            KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
             if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
                 TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
@@ -202,7 +202,7 @@ public class KieMetadataTest {
         TestUtil.copyTree(Paths.get("src/test/projects/kjar-2-single-resources"),
                           tmp);
 
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.KIE_AFTER);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.KIE_AFTER);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmp.toUri()));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -210,7 +210,7 @@ public class KieMetadataTest {
                                                                new String[]{MavenCLIArgs.INSTALL},
                                                                new HashMap<>(),
                                                                Boolean.FALSE);
-        KieCompilationResponse res = compiler.compileSync(req);
+        KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
                                                       "KieMetadataTest.compileAndloadKieJarSingleMetadataWithPackagedJar");

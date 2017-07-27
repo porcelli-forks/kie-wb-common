@@ -15,41 +15,41 @@
  */
 package org.kie.workbench.common.services.backend.compiler.nio.decorators;
 
+import java.util.List;
+
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.LogUtils;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
 
 /***
  * After decorator to read and store the maven output into a List<String> in the CompilationResponse
  */
-public class OutputLogAfterDecorator implements CompilerDecorator {
+public class OutputLogAfterDecorator<T extends CompilationResponse, C extends AFCompiler<T>> implements CompilerDecorator {
 
-    private MavenCompiler compiler;
+    private C compiler;
 
-    public OutputLogAfterDecorator(MavenCompiler compiler) {
+    public OutputLogAfterDecorator(C compiler) {
         this.compiler = compiler;
     }
 
     @Override
-    public CompilationResponse compileSync(CompilationRequest req) {
-        CompilationResponse res = compiler.compileSync(req);
+    public T compileSync(CompilationRequest req) {
+        T res = compiler.compileSync(req);
 
-        if (res.isSuccessful()) {
-            return getDefaultCompilationResponse(Boolean.TRUE,
-                                                 req);
-        } else {
-            return getDefaultCompilationResponse(Boolean.FALSE,
-                                                 req);
-        }
+        return compiler.buildDefaultCompilationResponse(res.isSuccessful(),
+                                                        LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
+                                                                           req.getKieCliRequest().getRequestUUID()));
     }
 
-    public DefaultCompilationResponse getDefaultCompilationResponse(Boolean result,
-                                                                    CompilationRequest req) {
-        return new DefaultCompilationResponse(result,
-                                              LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
-                                                                 req.getKieCliRequest().getRequestUUID())
-        );
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value) {
+        return compiler.buildDefaultCompilationResponse(value);
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value,
+                                             final List output) {
+        return compiler.buildDefaultCompilationResponse(value);
     }
 }

@@ -16,11 +16,12 @@
 
 package org.kie.workbench.common.services.backend.compiler.nio.decorators;
 
-import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 
 /***
  * Extends the Compiler behaviour to the decorators
  */
-public interface CompilerDecorator extends MavenCompiler {
+public interface CompilerDecorator<T extends CompilationResponse, C extends AFCompiler<T>> extends AFCompiler<T> {
 
 }

@@ -17,14 +17,14 @@
 package org.kie.workbench.common.services.backend.compiler.nio.decorators;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.JGitUtils;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
 import org.uberfire.java.nio.file.Path;
@@ -34,17 +34,17 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 /***
  * Before decorator to update a git repo before the build
  */
-public class JGITCompilerBeforeDecorator implements CompilerDecorator {
+public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extends AFCompiler<T>> implements CompilerDecorator {
 
     private Map<JGitFileSystem, Git> gitMap = new HashMap<>();
-    private MavenCompiler compiler;
+    private C compiler;
 
-    public JGITCompilerBeforeDecorator(MavenCompiler compiler) {
+    public JGITCompilerBeforeDecorator(C compiler) {
         this.compiler = compiler;
     }
 
     @Override
-    public CompilationResponse compileSync(CompilationRequest _req) {
+    public T compileSync(CompilationRequest _req) {
 
         final Path path = _req.getInfo().getPrjPath();
         Git repo;
@@ -67,6 +67,17 @@ public class JGITCompilerBeforeDecorator implements CompilerDecorator {
             return compiler.compileSync(req);
         }
 
-        return new DefaultCompilationResponse(Boolean.FALSE);
+        return compiler.buildDefaultCompilationResponse(Boolean.FALSE);
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value) {
+        return compiler.buildDefaultCompilationResponse(value);
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value,
+                                             final List output) {
+        return compiler.buildDefaultCompilationResponse(value);
     }
 }

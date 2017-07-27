@@ -20,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
-import org.kie.workbench.common.services.backend.compiler.nio.decorators.kie.KieAfterDecorator;
-import org.kie.workbench.common.services.backend.compiler.nio.decorators.kie.KieJGITCompilerBeforeDecorator;
-import org.kie.workbench.common.services.backend.compiler.nio.decorators.kie.KieOutputLogAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.nio.decorators.JGITCompilerBeforeDecorator;
+import org.kie.workbench.common.services.backend.compiler.nio.decorators.OutputLogAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.nio.decorators.KieAfterDecorator;
 
 /***
  * Factory to create compilers with correct order of decorators to build Kie Projects
@@ -31,7 +31,7 @@ import org.kie.workbench.common.services.backend.compiler.nio.decorators.kie.Kie
  */
 public class KieMavenCompilerFactory {
 
-    private static Map<String, KieMavenCompiler> compilers = new ConcurrentHashMap<>();
+    private static Map<String, AFCompiler> compilers = new ConcurrentHashMap<>();
 
     private KieMavenCompilerFactory() {
     }
@@ -39,17 +39,17 @@ public class KieMavenCompilerFactory {
     /**
      * Provides a Maven compiler decorated with a Decorator Behaviour
      */
-    public static KieMavenCompiler getCompiler(KieDecorator decorator) {
-        KieMavenCompiler compiler = compilers.get(decorator.name());
+    public static AFCompiler getCompiler(KieDecorator decorator) {
+        AFCompiler compiler = compilers.get(decorator.name());
         if (compiler == null) {
             compiler = createAndAddNewCompiler(decorator);
         }
         return compiler;
     }
 
-    private static KieMavenCompiler createAndAddNewCompiler(KieDecorator decorator) {
+    private static AFCompiler createAndAddNewCompiler(KieDecorator decorator) {
 
-        KieMavenCompiler compiler;
+        AFCompiler compiler;
         switch (decorator) {
             case NONE:
                 compiler = new KieDefaultMavenCompiler();
@@ -60,27 +60,27 @@ public class KieMavenCompilerFactory {
                 break;
 
             case KIE_AND_LOG_AFTER:
-                compiler = new KieAfterDecorator(new KieOutputLogAfterDecorator(new KieDefaultMavenCompiler()));
+                compiler = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
                 break;
 
             case JGIT_BEFORE:
-                compiler = new KieJGITCompilerBeforeDecorator(new KieDefaultMavenCompiler());
+                compiler = new JGITCompilerBeforeDecorator(new KieDefaultMavenCompiler());
                 break;
 
             case JGIT_BEFORE_AND_LOG_AFTER:
-                compiler = new KieJGITCompilerBeforeDecorator(new KieOutputLogAfterDecorator(new KieDefaultMavenCompiler()));
+                compiler = new JGITCompilerBeforeDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
                 break;
 
             case JGIT_BEFORE_AND_KIE_AFTER:
-                compiler = new KieJGITCompilerBeforeDecorator(new KieAfterDecorator(new KieDefaultMavenCompiler()));
+                compiler = new JGITCompilerBeforeDecorator(new KieAfterDecorator(new KieDefaultMavenCompiler()));
                 break;
 
             case LOG_OUTPUT_AFTER:
-                compiler = new KieOutputLogAfterDecorator(new KieDefaultMavenCompiler());
+                compiler = new OutputLogAfterDecorator(new KieDefaultMavenCompiler());
                 break;
 
             case JGIT_BEFORE_AND_KIE_AND_LOG_AFTER:
-                compiler = new KieJGITCompilerBeforeDecorator(new KieAfterDecorator(new KieOutputLogAfterDecorator(new KieDefaultMavenCompiler())));
+                compiler = new JGITCompilerBeforeDecorator(new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler())));
                 break;
 
             default:

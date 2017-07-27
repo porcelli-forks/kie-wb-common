@@ -69,8 +69,7 @@ public class ClassLoaderProviderTest {
         TestUtil.copyTree(Paths.get("src/test/projects/dummy_kie_multimodule_classloader"),
                           tmp);
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
 
         Path uberfireTmp = Paths.get(tmp.toAbsolutePath().toString());
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(uberfireTmp);
@@ -124,8 +123,7 @@ public class ClassLoaderProviderTest {
         TestUtil.copyTree(Paths.get("src/test/projects/dummy_kie_multimodule_classloader"),
                           tmp);
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
 
         Path uberfireTmp = Paths.get(tmp.toAbsolutePath().toString());
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(uberfireTmp);
@@ -177,8 +175,7 @@ public class ClassLoaderProviderTest {
         TestUtil.copyTree(Paths.get("src/test/projects/dummy_kie_multimodule_classloader"),
                           tmp);
 
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(
-                Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
 
         Path uberfireTmp = Paths.get(tmp.toAbsolutePath().toString());
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(uberfireTmp);

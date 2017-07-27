@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
-import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.nio.decorators.OutputLogAfterDecorator;
 
@@ -29,7 +29,7 @@ import org.kie.workbench.common.services.backend.compiler.nio.decorators.OutputL
  */
 public class MavenCompilerFactory {
 
-    private static Map<String, MavenCompiler> compilers = new ConcurrentHashMap<>();
+    private static Map<String, AFCompiler> compilers = new ConcurrentHashMap<>();
 
     private MavenCompilerFactory() {
     }
@@ -37,16 +37,16 @@ public class MavenCompilerFactory {
     /**
      * Provides a Maven compiler decorated with a Decorator Behaviour
      */
-    public static MavenCompiler getCompiler(Decorator decorator) {
-        MavenCompiler compiler = compilers.get(decorator.name());
+    public static AFCompiler getCompiler(Decorator decorator) {
+        AFCompiler compiler = compilers.get(decorator.name());
         if (compiler == null) {
             compiler = createAndAddNewCompiler(decorator);
         }
         return compiler;
     }
 
-    private static MavenCompiler createAndAddNewCompiler(Decorator decorator) {
-        MavenCompiler compiler;
+    private static AFCompiler createAndAddNewCompiler(Decorator decorator) {
+        AFCompiler<?> compiler;
         switch (decorator) {
             case NONE:
                 compiler = new DefaultMavenCompiler();

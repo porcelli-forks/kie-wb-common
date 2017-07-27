@@ -13,13 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.workbench.common.services.backend.compiler.nio.decorators.kie;
+package org.kie.workbench.common.services.backend.compiler.nio;
 
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
+import java.util.List;
+
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 
 /***
- * Extends the Compiler behaviour to the decorators
+ * Define the behaviour of a NIO compiler
  */
-public interface KieCompilerDecorator extends KieMavenCompiler {
+public interface AFCompiler<T extends CompilationResponse> {
 
+    /**
+     * Compile a project starting from the main POM in a sync way
+     */
+    T compileSync(final CompilationRequest req);
+
+    T buildDefaultCompilationResponse(final Boolean value);
+
+    T buildDefaultCompilationResponse(final Boolean successful,
+                                      final List<String> output);
 }

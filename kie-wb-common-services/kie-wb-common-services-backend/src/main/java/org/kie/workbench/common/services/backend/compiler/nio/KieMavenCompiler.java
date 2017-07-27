@@ -20,10 +20,6 @@ import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse
 /***
  * Define the behaviour of a compiler on KieProjects
  */
-public interface KieMavenCompiler {
+public interface KieMavenCompiler extends AFCompiler<KieCompilationResponse> {
 
-    /**
-     * Compile a project starting from the main POM in a sync way
-     */
-    KieCompilationResponse compileSync(CompilationRequest req);
 }

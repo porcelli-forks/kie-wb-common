@@ -8,8 +8,8 @@ import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieMavenCompilerFactory;
@@ -45,7 +45,7 @@ public class KieMavenOutputTest {
 
         Path tmp = Paths.get(tmpNio.toAbsolutePath().toString());
 
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
                 KieDecorator.LOG_OUTPUT_AFTER);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(tmp);

@@ -20,10 +20,6 @@ import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 /***
  * Define the behaviour of a NIO compiler
  */
-public interface MavenCompiler {
+public interface MavenCompiler extends AFCompiler<CompilationResponse> {
 
-    /**
-     * Compile a project starting from the main POM in a sync way
-     */
-    CompilationResponse compileSync(CompilationRequest req);
 }

@@ -36,8 +36,8 @@ import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieMavenCompilerFactory;
@@ -121,7 +121,7 @@ public class KieDefaultMavenCompilerTest {
         assertNotNull(cloned);
 
         //Compile the repo
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
                 KieDecorator.LOG_OUTPUT_AFTER);
         Path prjFolder = Paths.get(gitClonedFolder + "/dummy/");
         byte[] encoded = Files.readAllBytes(Paths.get(prjFolder + "/pom.xml"));
@@ -201,7 +201,7 @@ public class KieDefaultMavenCompilerTest {
         assertTrue(rbResult.getStatus().isSuccessful());
 
         //Compile the repo
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
 
         byte[] encoded = Files.readAllBytes(Paths.get(tmpCloned + "/dummy/pom.xml"));
         String pomAsAstring = new String(encoded,
@@ -238,7 +238,7 @@ public class KieDefaultMavenCompilerTest {
 
     @Test
     public void buildWithJGitDecoratorTest() throws Exception {
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
                 KieDecorator.JGIT_BEFORE);
 
         String MASTER_BRANCH = "master";
@@ -309,7 +309,7 @@ public class KieDefaultMavenCompilerTest {
     //
     @Test
     public void buildWithAllDecoratorsTest() throws Exception {
-        KieMavenCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.JGIT_BEFORE_AND_LOG_AFTER);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.JGIT_BEFORE_AND_LOG_AFTER);
 
         String MASTER_BRANCH = "master";
 

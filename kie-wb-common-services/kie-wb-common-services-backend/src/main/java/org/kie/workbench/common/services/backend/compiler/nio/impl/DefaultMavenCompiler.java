@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.nio.impl;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
@@ -34,11 +35,11 @@ import org.uberfire.java.nio.file.Path;
 /**
  * Run maven with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
  * to use Takari plugins like a black box
-
+ * <p>
  * MavenCompiler compiler = new DefaultMavenCompiler();
  * or
  * MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
- *
+ * <p>
  * WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(tmp);
  * CompilationRequest req = new DefaultCompilationRequest(mavenRepo, info,new String[]{MavenArgs.COMPILE},new HashMap<>(), Boolean.TRUE );
  * CompilationResponse res = compiler.compileSync(req);
@@ -102,5 +103,17 @@ public class DefaultMavenCompiler implements MavenCompiler {
         } else {
             return new DefaultCompilationResponse(Boolean.FALSE);
         }
+    }
+
+    @Override
+    public CompilationResponse buildDefaultCompilationResponse(final Boolean value) {
+        return new DefaultCompilationResponse(value);
+    }
+
+    @Override
+    public CompilationResponse buildDefaultCompilationResponse(final Boolean value,
+                                                               final List<String> output) {
+        return new DefaultCompilationResponse(value,
+                                              output);
     }
 }

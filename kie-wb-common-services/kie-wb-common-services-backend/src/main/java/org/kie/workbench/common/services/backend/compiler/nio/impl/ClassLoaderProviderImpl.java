@@ -38,6 +38,7 @@ import org.kie.workbench.common.services.backend.compiler.AFClassLoaderProvider;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.nio.MavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
@@ -76,7 +77,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
      */
     public Optional<ClassLoader> getClassloaderFromAllDependencies(String prjPath,
                                                                    String localRepo) {
-        MavenCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(prjPath));
         StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
         CompilationRequest req = new DefaultCompilationRequest(localRepo,

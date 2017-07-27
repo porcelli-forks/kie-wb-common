@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.workbench.common.services.backend.compiler.nio.decorators.kie;
+package org.kie.workbench.common.services.backend.compiler.nio.decorators;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,8 +34,8 @@ import org.kie.workbench.common.services.backend.compiler.AFClassLoaderProvider;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultKieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.impl.ClassLoaderProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,27 +43,37 @@ import org.slf4j.LoggerFactory;
 /***
  * After decorator that reads and store the Object created by the Kie takari plugin and placed in the CompilationResponse
  */
-public class KieAfterDecorator implements KieCompilerDecorator,
-                                          KieMavenCompiler {
+public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompiler<T>> implements CompilerDecorator {
 
     private static final Logger logger = LoggerFactory.getLogger(KieAfterDecorator.class);
-    private KieMavenCompiler compiler;
+    private C compiler;
 
-    public KieAfterDecorator(KieMavenCompiler compiler) {
+    public KieAfterDecorator(C compiler) {
         this.compiler = compiler;
     }
 
     @Override
-    public KieCompilationResponse compileSync(CompilationRequest req) {
-        KieCompilationResponse res = compiler.compileSync(req);
+    public T compileSync(CompilationRequest req) {
+        T res = compiler.compileSync(req);
         if (res.isSuccessful()) {
 
             if (req.getInfo().isKiePluginPresent()) {
-                return handleKieMavenPlugin(req,
-                                            res);
+                return (T) handleKieMavenPlugin(req,
+                                                res);
             }
         }
         return res;
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value) {
+        return compiler.buildDefaultCompilationResponse(value);
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value,
+                                             final List output) {
+        return compiler.buildDefaultCompilationResponse(value);
     }
 
     private KieCompilationResponse handleKieMavenPlugin(CompilationRequest req,
@@ -122,7 +132,7 @@ public class KieAfterDecorator implements KieCompilerDecorator,
             } else {
 
                 return new KieTuple(
-                                                                 tuple.getErrorMsg());
+                        tuple.getErrorMsg());
             }
         } else {
             return new KieTuple("kieModuleMetaInfo not present in the map");
@@ -146,7 +156,7 @@ public class KieAfterDecorator implements KieCompilerDecorator,
             } else {
 
                 return new KieTuple(
-                                                                 tuple.getErrorMsg());
+                        tuple.getErrorMsg());
             }
         } else {
 
