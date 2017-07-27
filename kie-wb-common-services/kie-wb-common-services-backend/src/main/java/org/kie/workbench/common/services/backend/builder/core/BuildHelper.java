@@ -41,7 +41,6 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.af.internalNIOimpl.DefaultInternalNIOKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
@@ -101,7 +100,7 @@ public class BuildHelper {
         try {
             cache.invalidateCache( project );
             //Builder builder = cache.assertBuilder( project );
-            KieAFBuilder builder = new DefaultInternalNIOKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+            KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
             KieCompilationResponse res = builder.build();
             if(res.isSuccessful()) {
                 //final BuildResults results = builder.build();
@@ -131,7 +130,7 @@ public class BuildHelper {
     }
 
     private KieCompilationResponse internalBuild(final Project project){
-        KieAFBuilder builder = new DefaultInternalNIOKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
         KieCompilationResponse res = builder.build();
         return res;
     }

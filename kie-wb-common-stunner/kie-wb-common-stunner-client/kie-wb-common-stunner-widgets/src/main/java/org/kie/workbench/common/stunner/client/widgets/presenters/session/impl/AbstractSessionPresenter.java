@@ -19,6 +19,7 @@ package org.kie.workbench.common.stunner.client.widgets.presenters.session.impl;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.kie.workbench.common.stunner.client.widgets.notification.CommandNotification;
 import org.kie.workbench.common.stunner.client.widgets.notification.Notification;
@@ -33,7 +34,8 @@ import org.kie.workbench.common.stunner.client.widgets.toolbar.Toolbar;
 import org.kie.workbench.common.stunner.client.widgets.toolbar.ToolbarFactory;
 import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
-import org.kie.workbench.common.stunner.core.client.components.palette.model.definition.DefinitionSetPalette;
+import org.kie.workbench.common.stunner.core.client.components.palette.model.PaletteDefinition;
+import org.kie.workbench.common.stunner.core.client.components.palette.model.definition.DefinitionsPalette;
 import org.kie.workbench.common.stunner.core.client.service.ClientRuntimeError;
 import org.kie.workbench.common.stunner.core.client.session.impl.AbstractClientReadOnlySession;
 import org.kie.workbench.common.stunner.core.diagram.Diagram;
@@ -44,13 +46,13 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
 
     private final SessionManager sessionManager;
     private final Optional<ToolbarFactory<S>> toolbarFactory;
-    private final Optional<PaletteWidgetFactory<DefinitionSetPalette, ?>> paletteFactory;
+    private final Optional<PaletteWidgetFactory<PaletteDefinition, ?>> paletteFactory;
     private final SessionPresenter.View view;
     private final NotificationsObserver notificationsObserver;
 
     private D diagram;
     private Toolbar<S> toolbar;
-    private PaletteWidget<DefinitionSetPalette> palette;
+    private PaletteWidget<PaletteDefinition> palette;
     private boolean hasToolbar = false;
     private boolean hasPalette = false;
     private Optional<Predicate<Notification.Type>> typePredicate;
@@ -59,7 +61,7 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
     protected AbstractSessionPresenter(final SessionManager sessionManager,
                                        final SessionPresenter.View view,
                                        final Optional<? extends ToolbarFactory<S>> toolbarFactory,
-                                       final Optional<PaletteWidgetFactory<DefinitionSetPalette, ?>> paletteFactory,
+                                       final Optional<PaletteWidgetFactory<PaletteDefinition, ?>> paletteFactory,
                                        final NotificationsObserver notificationsObserver) {
         this.sessionManager = sessionManager;
         this.toolbarFactory = (Optional<ToolbarFactory<S>>) toolbarFactory;
@@ -69,6 +71,10 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
         this.hasToolbar = true;
         this.hasPalette = true;
         this.typePredicate = Optional.empty();
+    }
+
+    private static String buildHtmlEscapedText(final String message) {
+        return new SafeHtmlBuilder().appendEscapedLines(message).toSafeHtml().asString();
     }
 
     protected abstract E getDisplayer();
@@ -202,7 +208,7 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
     }
 
     @Override
-    public PaletteWidget<DefinitionSetPalette> getPalette() {
+    public PaletteWidget<PaletteDefinition> getPalette() {
         return palette;
     }
 
@@ -255,7 +261,7 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
     private void showError(final ClientRuntimeError error) {
         if (isDisplayErrors()) {
             getView().showLoading(false);
-            getView().showError(error.getMessage());
+            getView().showError(buildHtmlEscapedText(error.getMessage()));
         }
     }
 
@@ -266,13 +272,15 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
         return toolbarFactory.get().build(session);
     }
 
-    private PaletteWidget<DefinitionSetPalette> buildPalette(final S session) {
+    @SuppressWarnings("unchecked")
+    private PaletteWidget<PaletteDefinition> buildPalette(final S session) {
         if (!paletteFactory.isPresent()) {
             throw new UnsupportedOperationException("This session presenter with type [" + this.getClass().getName() + "] does not supports the palette.");
         }
         final Diagram diagram = session.getCanvasHandler().getDiagram();
-        return paletteFactory.get().newPalette(diagram.getMetadata().getShapeSetId(),
-                                               session.getCanvasHandler());
+        return paletteFactory.get()
+                .newPalette(diagram.getMetadata().getShapeSetId(),
+                            session.getCanvasHandler());
     }
 
     private void destroyToolbar() {
@@ -291,22 +299,22 @@ public abstract class AbstractSessionPresenter<D extends Diagram, H extends Abst
 
     private void showNotificationMessage(final Notification notification) {
         if (isThisContext(notification)) {
-            showMessage(notification.getMessage());
+            showMessage(buildHtmlEscapedText(notification.getMessage()));
         }
     }
 
     private void showCommandError(final CommandNotification notification) {
         if (isThisContext(notification)) {
-            showError(notification.getMessage());
+            showError(buildHtmlEscapedText(notification.getMessage()));
         }
     }
 
     private void showValidationError(final ValidationFailedNotification notification) {
         if (isThisContext(notification)) {
             if (Notification.Type.ERROR.equals(notification.getType())) {
-                showError(notification.getMessage());
+                showError(buildHtmlEscapedText(notification.getMessage()));
             } else {
-                showWarning(notification.getMessage());
+                showWarning(buildHtmlEscapedText(notification.getMessage()));
             }
         }
     }

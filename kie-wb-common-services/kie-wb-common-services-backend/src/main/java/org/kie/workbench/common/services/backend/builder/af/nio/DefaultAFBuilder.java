@@ -15,24 +15,24 @@
  */
 package org.kie.workbench.common.services.backend.builder.af.nio;
 
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.nio.NIOCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.NIOMavenCompiler;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.NIODefaultCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.NIOMavenCompilerFactory;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.NIOWorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenCompilerFactory;
+import org.uberfire.java.nio.file.Paths;
 
 public class DefaultAFBuilder implements AFBuilder {
 
-    private NIOMavenCompiler compiler;
-    private NIOWorkspaceCompilationInfo info;
-    private NIOCompilationRequest req;
+    private AFCompiler compiler;
+    private WorkspaceCompilationInfo info;
+    private CompilationRequest req;
     private String mavenRepo;
 
     /***
@@ -47,13 +47,12 @@ public class DefaultAFBuilder implements AFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        compiler = NIOMavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
-        info = new NIOWorkspaceCompilationInfo(Paths.get(projectRepo));
-        req = new NIODefaultCompilationRequest(mavenRepo,
-                                               info,
-                                               args,
-                                               new HashMap(),
-                                               Boolean.TRUE);
+        compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            args,
+                                            Boolean.TRUE);
     }
 
     public DefaultAFBuilder(String projectRepo,
@@ -61,13 +60,12 @@ public class DefaultAFBuilder implements AFBuilder {
         /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        compiler = NIOMavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
-        info = new NIOWorkspaceCompilationInfo(Paths.get(projectRepo));
-        req = new NIODefaultCompilationRequest(mavenRepo,
-                                               info,
-                                               new String[]{MavenCLIArgs.COMPILE},
-                                               new HashMap(),
-                                               Boolean.TRUE);
+        compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            Boolean.TRUE);
     }
 
     @Override
@@ -78,67 +76,61 @@ public class DefaultAFBuilder implements AFBuilder {
 
     @Override
     public CompilationResponse buildAndPackage() {
-        req = new NIODefaultCompilationRequest(mavenRepo,
-                                               info,
-                                               new String[]{MavenCLIArgs.PACKAGE},
-                                               new HashMap(),
-                                               Boolean.TRUE);
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            new String[]{MavenCLIArgs.PACKAGE},
+                                            Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse buildAndInstall() {
-        req = new NIODefaultCompilationRequest(mavenRepo,
-                                               info,
-                                               new String[]{MavenCLIArgs.INSTALL},
-                                               new HashMap(),
-                                               Boolean.TRUE);
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            new String[]{MavenCLIArgs.INSTALL},
+                                            Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse build(String mavenRepo) {
-        NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo,
-                                                                     info,
-                                                                     new String[]{MavenCLIArgs.COMPILE},
-                                                                     new HashMap(),
-                                                                     Boolean.TRUE);
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
+                                                               info,
+                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse build(String projectPath,
                                      String mavenRepo) {
-        NIOWorkspaceCompilationInfo info = new NIOWorkspaceCompilationInfo(Paths.get(projectPath));
-        NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo,
-                                                                     info,
-                                                                     new String[]{MavenCLIArgs.COMPILE},
-                                                                     new HashMap(),
-                                                                     Boolean.TRUE);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
+                                                               info,
+                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse buildAndPackage(String projectPath,
                                                String mavenRepo) {
-        NIOWorkspaceCompilationInfo info = new NIOWorkspaceCompilationInfo(Paths.get(projectPath));
-        NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo,
-                                                                     info,
-                                                                     new String[]{MavenCLIArgs.PACKAGE},
-                                                                     new HashMap(),
-                                                                     Boolean.TRUE);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
+                                                               info,
+                                                               new String[]{MavenCLIArgs.PACKAGE},
+                                                               Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse buildAndInstall(String projectPath,
                                                String mavenRepo) {
-        NIOWorkspaceCompilationInfo info = new NIOWorkspaceCompilationInfo(Paths.get(projectPath));
-        NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo,
-                                                                     info,
-                                                                     new String[]{MavenCLIArgs.INSTALL},
-                                                                     new HashMap(),
-                                                                     Boolean.TRUE);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
+                                                               info,
+                                                               new String[]{MavenCLIArgs.INSTALL},
+                                                               Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
@@ -146,12 +138,11 @@ public class DefaultAFBuilder implements AFBuilder {
     public CompilationResponse buildSpecialized(String projectPath,
                                                 String mavenRepo,
                                                 String[] args) {
-        NIOWorkspaceCompilationInfo info = new NIOWorkspaceCompilationInfo(Paths.get(projectPath));
-        NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo,
-                                                                     info,
-                                                                     args,
-                                                                     new HashMap(),
-                                                                     Boolean.TRUE);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
+                                                               info,
+                                                               args,
+                                                               Boolean.TRUE);
         return compiler.compileSync(req);
     }
 
@@ -161,13 +152,12 @@ public class DefaultAFBuilder implements AFBuilder {
                                                 String[] args,
                                                 Decorator decorator) {
 
-        NIOMavenCompiler compiler = NIOMavenCompilerFactory.getCompiler(decorator);
-        NIOWorkspaceCompilationInfo info = new NIOWorkspaceCompilationInfo(Paths.get(projectPath));
-        NIOCompilationRequest req = new NIODefaultCompilationRequest(mavenRepo,
-                                                                     info,
-                                                                     args,
-                                                                     new HashMap(),
-                                                                     Boolean.TRUE);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(decorator);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
+                                                               info,
+                                                               args,
+                                                               Boolean.TRUE);
         return compiler.compileSync(req);
     }
 }

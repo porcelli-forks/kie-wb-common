@@ -97,15 +97,12 @@ public class BS3PaletteWidgetViewImpl implements BS3PaletteWidgetView,
     public void add(DefinitionPaletteCategoryWidget widget) {
         PortablePreconditions.checkNotNull("widget",
                                            widget);
-
-        palette.appendChild(ul);
-
         ul.appendChild(widget.getElement());
     }
 
     @Override
     public void clear() {
-        DOMUtil.removeAllChildren(palette);
+        DOMUtil.removeAllChildren(ul);
     }
 
     @Override
