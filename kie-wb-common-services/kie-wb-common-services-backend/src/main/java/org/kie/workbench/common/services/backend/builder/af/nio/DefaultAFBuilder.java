@@ -15,8 +15,6 @@
  */
 package org.kie.workbench.common.services.backend.builder.af.nio;
 
-import java.util.HashMap;
-
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
