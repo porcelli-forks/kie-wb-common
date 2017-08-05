@@ -38,7 +38,7 @@ import org.kie.workbench.common.forms.model.impl.TypeInfoImpl;
 @Portable
 @Bindable
 @FormDefinition(
-        i18n = @I18nSettings(keyPreffix = "FieldProperties.multipleSubform"),
+        i18n = @I18nSettings(keyPreffix = "FieldProperties"),
         startElement = "label"
 )
 public class MultipleSubFormFieldDefinition extends AbstractFieldDefinition implements IsCRUDDefinition {
@@ -46,7 +46,7 @@ public class MultipleSubFormFieldDefinition extends AbstractFieldDefinition impl
     public static final MultipleSubFormFieldType FIELD_TYPE = new MultipleSubFormFieldType();
 
     @FormField(
-            labelKey = "creationForm",
+            labelKey = "multipleSubform.creationForm",
             type = ListBoxFieldType.class,
             afterElement = "label"
     )
@@ -57,7 +57,7 @@ public class MultipleSubFormFieldDefinition extends AbstractFieldDefinition impl
     protected String creationForm = "";
 
     @FormField(
-            labelKey = "editionForm",
+            labelKey = "multipleSubform.editionForm",
             type = ListBoxFieldType.class,
             afterElement = "creationForm"
     )
@@ -68,7 +68,7 @@ public class MultipleSubFormFieldDefinition extends AbstractFieldDefinition impl
     protected String editionForm = "";
 
     @FormField(
-            labelKey = "columns",
+            labelKey = "multipleSubform.columns",
             afterElement = "editionForm"
     )
     private List<TableColumnMeta> columnMetas = new ArrayList<TableColumnMeta>();
@@ -128,5 +128,40 @@ public class MultipleSubFormFieldDefinition extends AbstractFieldDefinition impl
             setColumnMetas(otherForm.getColumnMetas());
         }
         setStandaloneClassName(other.getStandaloneClassName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        MultipleSubFormFieldDefinition that = (MultipleSubFormFieldDefinition) o;
+
+        if (creationForm != null ? !creationForm.equals(that.creationForm) : that.creationForm != null) {
+            return false;
+        }
+        if (editionForm != null ? !editionForm.equals(that.editionForm) : that.editionForm != null) {
+            return false;
+        }
+        return columnMetas != null ? columnMetas.equals(that.columnMetas) : that.columnMetas == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (creationForm != null ? creationForm.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (editionForm != null ? editionForm.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (columnMetas != null ? columnMetas.hashCode() : 0);
+        result = ~~result;
+        return result;
     }
 }

@@ -26,31 +26,31 @@ import org.kie.workbench.common.forms.model.FieldDefinition;
 @Portable
 @Bindable
 @FormDefinition(
-        i18n = @I18nSettings(keyPreffix = "FieldProperties.slider"),
+        i18n = @I18nSettings(keyPreffix = "FieldProperties"),
         startElement = "label"
 )
 public class DoubleSliderDefinition extends SliderBaseDefinition<Double> {
 
     @FormField(
-            labelKey = "min",
+            labelKey = "slider.min",
             afterElement = "label"
     )
     protected Double min;
 
     @FormField(
-            labelKey = "max",
+            labelKey = "slider.max",
             afterElement = "min"
     )
     protected Double max;
 
     @FormField(
-            labelKey = "precision",
+            labelKey = "slider.precision",
             afterElement = "max"
     )
     protected Double precision;
 
     @FormField(
-            labelKey = "step",
+            labelKey = "slider.step",
             afterElement = "precision"
     )
     protected Double step;
@@ -112,5 +112,45 @@ public class DoubleSliderDefinition extends SliderBaseDefinition<Double> {
             precision = otherSlider.getPrecision().doubleValue();
             step = otherSlider.getStep().doubleValue();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        DoubleSliderDefinition that = (DoubleSliderDefinition) o;
+
+        if (min != null ? !min.equals(that.min) : that.min != null) {
+            return false;
+        }
+        if (max != null ? !max.equals(that.max) : that.max != null) {
+            return false;
+        }
+        if (precision != null ? !precision.equals(that.precision) : that.precision != null) {
+            return false;
+        }
+        return step != null ? step.equals(that.step) : that.step == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (min != null ? min.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (max != null ? max.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (precision != null ? precision.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (step != null ? step.hashCode() : 0);
+        result = ~~result;
+        return result;
     }
 }
