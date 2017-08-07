@@ -72,7 +72,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
     /**
-     * Execute a maven run to create the classloaders with the dependencies in the Poms, transitive inclueded
+     * Execute a maven run to create the classloaders with the dependencies in the Poms, transitive included
      */
     public Optional<ClassLoader> getClassloaderFromAllDependencies(String prjPath,
                                                                    String localRepo) {
@@ -133,7 +133,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                                              List<Artifact> artifacts) throws MalformedURLException {
         List<URL> urls = new ArrayList<>(artifacts.size());
         for (Artifact artifact : artifacts) {
-            StringBuilder sb = new StringBuilder("file://");
+            StringBuilder sb = new StringBuilder(FILE_URI);
             sb.append(localRepo).append("/").append(artifact.getGroupId()).
                     append("/").append(artifact.getVersion()).append("/").append(artifact.getArtifactId()).
                     append("-").append(artifact.getVersion()).append(".").append(artifact.getType());
@@ -162,7 +162,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
             try {
                 for (String pomPath : pomsPaths) {
                     Path path = Paths.get(pomPath);
-                    StringBuilder sb = new StringBuilder("file://")
+                    StringBuilder sb = new StringBuilder(FILE_URI)
                             .append(path.getParent().toAbsolutePath().toString())
                             .append("/target/classes/");
                     targetModulesUrls.add(new URL(sb.toString()));
@@ -281,7 +281,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 StringTokenizer token = new StringTokenizer(sCurrentLine,
                                                             ":");
                 while (token.hasMoreTokens()) {
-                    StringBuilder sb = new StringBuilder("file://").append(token.nextToken());
+                    StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     urls.add(new URL(sb.toString()));
                 }
             }
@@ -319,6 +319,22 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<List<URL>> getURLSFromAllDependencies(String prjPath) {
+        List<String> classPathFiles = new ArrayList<>();
+        searchCPFiles(Paths.get(prjPath),
+                      classPathFiles,
+                      MavenConfig.CLASSPATH_EXT,
+                      JAVA_ARCHIVE_RESOURCE_EXT);
+        if (!classPathFiles.isEmpty()) {
+            List<URL> deps = processScannedFilesAsURLs(classPathFiles);
+            if (!deps.isEmpty()) {
+                return Optional.of(deps);
+            }
+        }
+        return Optional.empty();
+    }
+
     private List<URI> processScannedFiles(List<String> classPathFiles) {
         List<URI> deps = new ArrayList<>();
         for (String file : classPathFiles) {
@@ -329,6 +345,24 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 //the jar is added as is with file:// prefix
                 deps.add(URI.create(FILE_URI + file));
             }
+        }
+        return deps;
+    }
+
+    private List<URL> processScannedFilesAsURLs(List<String> classPathFiles) {
+        List<URL> deps = new ArrayList<>();
+        try{
+        for (String file : classPathFiles) {
+            if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
+                //the .cpath will be processed to extract the deps of each module
+                deps.addAll(readFileAsURL(file));
+            } else if (file.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
+                //the jar/class is added as is with file:// prefix
+                deps.add(new URL(FILE_URI+file));
+            }
+        }}
+        catch (MalformedURLException ex){
+            logger.error(ex.getMessage());
         }
         return deps;
     }
