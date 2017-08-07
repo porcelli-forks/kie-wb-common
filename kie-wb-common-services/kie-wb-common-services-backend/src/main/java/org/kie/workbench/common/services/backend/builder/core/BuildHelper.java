@@ -16,24 +16,19 @@
 
 package org.kie.workbench.common.services.backend.builder.core;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collection;
-import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.drools.compiler.kie.builder.impl.InternalKieModule;
-import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
-import org.guvnor.common.services.project.builder.service.PostBuildHandler;
+
 import org.guvnor.common.services.project.model.GAV;
-import org.guvnor.common.services.project.model.POM;
+
 import org.guvnor.common.services.project.model.Project;
-import org.guvnor.common.services.project.service.DeploymentMode;
+
 import org.guvnor.common.services.project.service.POMService;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.m2repo.backend.server.ExtendedM2RepoService;
@@ -42,19 +37,19 @@ import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+
 import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.utils.MavenOutputConverter;
-import org.kie.workbench.common.services.shared.project.KieProject;
+
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.backend.server.util.Paths;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.workbench.events.ResourceChange;
+
 
 @ApplicationScoped
 public class BuildHelper {
+
+    //@MAXWasHere
 
     private static final Logger logger = LoggerFactory.getLogger( BuildHelper.class );
 
@@ -66,11 +61,7 @@ public class BuildHelper {
 
     private KieProjectService projectService;
 
-    private DeploymentVerifier deploymentVerifier;
-
     private Instance< User > identity;
-
-    private Instance< PostBuildHandler > handlers;
 
     private GuvnorM2Repository guvnorM2Repository;
 
@@ -81,17 +72,13 @@ public class BuildHelper {
     public BuildHelper( final POMService pomService,
                         final ExtendedM2RepoService m2RepoService,
                         final KieProjectService projectService,
-                        final DeploymentVerifier deploymentVerifier,
                         final LRUBuilderCache cache,
-                        final Instance< PostBuildHandler > handlers,
                         final Instance< User > identity,
                         final GuvnorM2Repository guvnorM2Repository) {
         this.pomService = pomService;
         this.m2RepoService = m2RepoService;
         this.projectService = projectService;
-        this.deploymentVerifier = deploymentVerifier;
         this.cache = cache;
-        this.handlers = handlers;
         this.identity = identity;
         this.guvnorM2Repository = guvnorM2Repository;
     }
@@ -103,10 +90,7 @@ public class BuildHelper {
             KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
             KieCompilationResponse res = builder.build();
             if(res.isSuccessful()) {
-                //final BuildResults results = builder.build();
                 final BuildResults results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
-
-
                 BuildMessage infoMsg = new BuildMessage();
 
                 infoMsg.setLevel(Level.INFO);
@@ -128,106 +112,6 @@ public class BuildHelper {
             return new BuildResult( null, buildExceptionResults( e, project.getPom( ).getGav( ) ) );
         }
     }
-
-    private KieCompilationResponse internalBuild(final Project project){
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
-        KieCompilationResponse res = builder.build();
-        return res;
-    }
-
-    /*
-    @MAXWasHere
-    public IncrementalBuildResults addPackageResource( final Path resource ) {
-        try {
-            IncrementalBuildResults results = new IncrementalBuildResults( );
-            final KieProject project = projectService.resolveProject( resource );
-            if ( project == null ) {
-                return results;
-            }
-            final Builder builder = cache.assertBuilder( project );
-            if ( !builder.isBuilt( ) ) {
-                throw new IllegalStateException( "Incremental Build requires a full build be completed first." );
-            } else {
-                results = builder.addResource( Paths.convert( resource ) );
-            }
-
-            return results;
-
-        } catch ( Exception e ) {
-            logger.error( e.getMessage( ),
-                    e );
-            throw ExceptionUtilities.handleException( e );
-        }
-    }
-
-    public IncrementalBuildResults deletePackageResource( final Path resource ) {
-        try {
-            IncrementalBuildResults results = new IncrementalBuildResults( );
-            final KieProject project = projectService.resolveProject( resource );
-            if ( project == null ) {
-                return results;
-            }
-            final Builder builder = cache.assertBuilder( project );
-            if ( !builder.isBuilt( ) ) {
-                throw new IllegalStateException( "Incremental Build requires a full build be completed first." );
-            } else {
-                results = builder.deleteResource( Paths.convert( resource ) );
-            }
-
-            return results;
-
-        } catch ( Exception e ) {
-            logger.error( e.getMessage( ),
-                    e );
-            throw ExceptionUtilities.handleException( e );
-        }
-    }
-
-    public IncrementalBuildResults updatePackageResource( final Path resource ) {
-        try {
-            final Project project = projectService.resolveProject( resource );
-
-            if ( project == null ) {
-                return new IncrementalBuildResults( );
-            }
-
-            final Builder builder = cache.assertBuilder( project );
-
-            if ( !builder.isBuilt( ) ) {
-                throw new IllegalStateException( "Incremental Build requires a full build be completed first." );
-            }
-
-            return builder.updateResource( Paths.convert( resource ) );
-
-        } catch ( Exception e ) {
-            logger.error( e.getMessage( ),
-                    e );
-            throw ExceptionUtilities.handleException( e );
-        }
-    }
-
-    public IncrementalBuildResults applyBatchResourceChanges( final Project project,
-                                                              final Map< Path, Collection< ResourceChange > > changes ) {
-        IncrementalBuildResults results = new IncrementalBuildResults( );
-        try {
-            if ( project == null ) {
-                return results;
-            }
-            final Builder builder = cache.assertBuilder( project );
-            if ( !builder.isBuilt( ) ) {
-                throw new IllegalStateException( "Incremental Build requires a full build be completed first." );
-            } else {
-                results = builder.applyBatchResourceChanges( changes );
-            }
-
-            return results;
-
-        } catch ( Exception e ) {
-            logger.error( e.getMessage( ),
-                    e );
-            throw ExceptionUtilities.handleException( e );
-        }
-    }*/
 
     private StringBuffer buildResultMessage( final Project project,
                                              final BuildResults results ) {
@@ -262,63 +146,24 @@ public class BuildHelper {
         return exceptionResults;
     }
 
-    public BuildResults buildAndDeploy( final Project project ) {
-        return buildAndDeploy( project,
-                DeploymentMode.VALIDATED );
-    }
-
-    public BuildResults buildAndDeploy( final Project project,
-                                        final DeploymentMode mode ) {
-        deploymentVerifier.verifyWithException( project, mode );
-        return doBuildAndDeploy( project,
-                false );
-    }
-
-    public BuildResults buildAndDeploy( final Project project,
-                                        final boolean suppressHandlers ) {
-        return buildAndDeploy( project,
-                suppressHandlers,
-                DeploymentMode.VALIDATED );
-    }
-
-    public BuildResults buildAndDeploy( final Project project,
-                                        final boolean suppressHandlers,
-                                        final DeploymentMode mode ) {
-        deploymentVerifier.verifyWithException( project, mode );
-        return doBuildAndDeploy( project,
-                suppressHandlers );
-    }
 
     public class BuildResult {
 
-        //private Builder builder;
         private KieAFBuilder builder;
 
         private BuildResults buildResults;
 
         private IncrementalBuildResults incrementalBuildResults;
 
-        /*public BuildResult( Builder builder, BuildResults buildResults ) {
-            this.builder = builder;
-            this.buildResults = buildResults;
-        }*/
         public BuildResult( KieAFBuilder builder, BuildResults buildResults ) {
             this.builder = builder;
             this.buildResults = buildResults;
         }
 
-        /*public BuildResult( Builder builder, IncrementalBuildResults incrementalBuildResults ) {
-            this.builder = builder;
-            this.incrementalBuildResults = incrementalBuildResults;
-        }*/
         public BuildResult( KieAFBuilder builder, IncrementalBuildResults incrementalBuildResults ) {
             this.builder = builder;
             this.incrementalBuildResults = incrementalBuildResults;
         }
-
-        /*public Builder getBuilder( ) {
-            return builder;
-        }*/
 
         public KieAFBuilder getBuilder( ) {
             return builder;
@@ -330,57 +175,6 @@ public class BuildHelper {
 
         public IncrementalBuildResults getIncrementalBuildResults( ) {
             return incrementalBuildResults;
-        }
-    }
-
-    private BuildResults doBuildAndDeploy( final Project project,
-                                           final boolean suppressHandlers ) {
-        try {
-            BuildResults results = new BuildResults();
-            //Build
-            //final BuildResults results = build( project ).getBuildResults();
-            KieCompilationResponse res = internalBuild(project);
-            if(!res.isSuccessful()){
-                return results;
-            }
-            if(res.getMavenOutput().isPresent()) {
-                results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
-            }
-            StringBuffer message = new StringBuffer( );
-            message.append( "Build of project '" + project.getProjectName( ) + "' (requested by " + getIdentifier( ) + ") completed.\n" );
-            message.append( " Build: " + ( results.getErrorMessages( ).isEmpty( ) ? "SUCCESSFUL" : "FAILURE" ) );
-
-            //Deploy, if no errors
-            final POM pom = pomService.load( project.getPomXMLPath( ) );
-            if ( results.getErrorMessages( ).isEmpty( ) ) {
-                //final Builder builder = cache.assertBuilder( project );
-                //final InternalKieModule kieModule = ( InternalKieModule ) builder.getKieModule( );
-                final InternalKieModule kieModule = ( InternalKieModule )res.getKieModule().get();
-
-                final ByteArrayInputStream input = new ByteArrayInputStream( kieModule.getBytes( ) );
-                m2RepoService.deployJar( input,
-                        pom.getGav( ) );
-                message.append( " Maven: SUCCESSFUL" );
-                if ( !suppressHandlers ) {
-                    for ( PostBuildHandler handler : handlers ) {
-                        try {
-                            handler.process( results );
-                        } catch ( Exception e ) {
-                            logger.warn( "PostBuildHandler {} failed due to {}", handler, e.getMessage( ) );
-                        }
-                    }
-                    message.append( " Deploy: " + ( results.getErrorMessages( ).isEmpty( ) ? "SUCCESSFUL" : "FAILURE" ) );
-                }
-            }
-
-            return results;
-
-        } catch ( Exception e ) {
-            logger.error( e.getMessage( ), e );
-
-            // BZ-1007894: If throwing the exception, an error popup will be displayed, but it's not the expected behavior. The excepted one is to show the errors in problems widget.
-            // So, instead of throwing the exception, a BuildResults instance is produced on the fly to simulate the error in the problems widget.
-            return buildExceptionResults( e, project.getPom( ).getGav( ) );
         }
     }
 

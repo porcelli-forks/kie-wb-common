@@ -66,11 +66,8 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
             logger.error( "A Project could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );
             return null;
         }
-        //@MAXWasHere
-        //final KieModule module = buildInfoService.getBuildInfo( project ).getKieModuleIgnoringErrors();
         KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), project.getRepositoriesPath().toURI().toString());
         Optional<KieModule> optionalModule = builder.build().getKieModule();
-        //if ( module == null ) {
         if ( !optionalModule.isPresent()  ) {
             logger.error( "A KieModule could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );
             return null;
@@ -78,6 +75,7 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
 
 
         final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData( optionalModule.get() ).getClassLoader();
+
 
         return loadDropDownExpression( classLoader,
                                        valuePairs,
