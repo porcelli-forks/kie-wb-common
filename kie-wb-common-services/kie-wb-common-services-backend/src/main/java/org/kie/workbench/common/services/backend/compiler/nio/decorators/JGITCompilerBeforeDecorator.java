@@ -36,11 +36,17 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
  */
 public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extends AFCompiler<T>> implements CompilerDecorator {
 
-    private Map<JGitFileSystem, Git> gitMap = new HashMap<>();
+    private Map<JGitFileSystem, Git> gitMap;
     private C compiler;
 
     public JGITCompilerBeforeDecorator(C compiler) {
         this.compiler = compiler;
+        gitMap = new HashMap<>();
+    }
+
+    public JGITCompilerBeforeDecorator(C compiler, Map<JGitFileSystem, Git> gitMap ) {
+        this.compiler = compiler;
+        this.gitMap = gitMap;
     }
 
     @Override

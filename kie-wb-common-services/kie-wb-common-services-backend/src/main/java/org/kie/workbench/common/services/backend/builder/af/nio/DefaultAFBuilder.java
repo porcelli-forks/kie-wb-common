@@ -66,6 +66,20 @@ public class DefaultAFBuilder implements AFBuilder {
                                             Boolean.TRUE);
     }
 
+
+    public DefaultAFBuilder(String projectRepo,
+                            String mavenRepo, AFCompiler compiler) {
+        /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+         * only in the internal maven compilation new objects ill be created in the compileSync */
+        this.mavenRepo = mavenRepo;
+        this.compiler = compiler;
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            Boolean.TRUE);
+    }
+
     @Override
     public CompilationResponse build() {
         req.getKieCliRequest().getMap().clear();
