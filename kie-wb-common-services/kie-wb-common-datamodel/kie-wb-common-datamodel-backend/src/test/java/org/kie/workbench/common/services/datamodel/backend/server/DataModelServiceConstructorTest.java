@@ -159,10 +159,10 @@ public class DataModelServiceConstructorTest {
 
     private class HackedLRUProjectDependenciesClassLoaderCache extends LRUProjectDependenciesClassLoaderCache {
 
-        @Override
+        /*@Override
         public void setBuildInfoService(BuildInfoService buildInfoService) {
             super.setBuildInfoService(buildInfoService);
-        }
+        }*/
     }
 
     private class HackedKieProjectServiceImpl extends KieProjectServiceImpl {

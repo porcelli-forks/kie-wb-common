@@ -19,15 +19,17 @@ package org.kie.workbench.common.services.backend.validation.asset;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.common.base.Charsets;
-import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
+
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
@@ -35,10 +37,9 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultAFBuilder;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfo;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoImpl;
+
 import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
-import org.kie.workbench.common.services.backend.builder.core.Builder;
+
 import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.utils.MavenOutputConverter;
@@ -46,6 +47,14 @@ import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+
+import org.uberfire.java.nio.file.DeleteOption;
+import org.uberfire.java.nio.file.FileVisitResult;
+import org.uberfire.java.nio.file.Files;
+import org.uberfire.java.nio.file.SimpleFileVisitor;
+
+import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
+import org.uberfire.java.nio.file.attribute.FileAttribute;
 
 @ApplicationScoped
 public class ValidatorBuildService {
@@ -133,9 +142,43 @@ public class ValidatorBuildService {
         } catch (NoProjectException e) {
             e.printStackTrace();
         }
-        AFBuilder builder = new DefaultAFBuilder(destinationPath, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        /*for the validation we copy the entire prj into a temp folder to return the build message to the client code*/
+
+        UUID tmpUUID = UUID.randomUUID();
+        org.uberfire.java.nio.file.Path tempDir = ioService.createTempDirectory(tmpUUID.toString(),
+                                                     /*@TODO have we our FileAttribute impl ?*/
+                                                     new FileAttribute<Object>() {
+                                                         @Override
+                                                         public String name() {
+                                                             return "FileAttributeView";
+                                                         }
+
+                                                         @Override
+                                                         public Object value() {
+                                                             return "FileAttributeView";
+                                                         }
+                                                     });
+
+        org.uberfire.java.nio.file.Path src = org.uberfire.java.nio.file.Paths.get(destinationPath);
+        Files.walkFileTree(src, new SimpleFileVisitor<org.uberfire.java.nio.file.Path>() {
+
+            public FileVisitResult visitFile(org.uberfire.java.nio.file.Path file, BasicFileAttributes attrs )  {
+                return copy(file);
+            }
+            public FileVisitResult preVisitDirectory( org.uberfire.java.nio.file.Path dir, BasicFileAttributes attrs )  {
+                return copy(dir);
+            }
+            private FileVisitResult copy( org.uberfire.java.nio.file.Path fileOrDir ) {
+                Files.copy( fileOrDir, tempDir.resolve( src.relativize( fileOrDir ) ) );
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+
+        AFBuilder builder = new DefaultAFBuilder(tempDir.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
         CompilationResponse res = builder.build();
         List<ValidationMessage> validationMsgs = MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get());
+        ioService.delete(tempDir,new DeleteOption(){});
         return validationMsgs;
 
     }
