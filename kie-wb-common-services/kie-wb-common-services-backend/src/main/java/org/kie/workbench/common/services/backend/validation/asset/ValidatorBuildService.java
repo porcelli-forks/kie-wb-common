@@ -17,51 +17,45 @@
 package org.kie.workbench.common.services.backend.validation.asset;
 
 import java.io.ByteArrayInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.common.base.Charsets;
-
 import org.eclipse.jgit.api.Git;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
-
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultAFBuilder;
-
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-
+import org.kie.workbench.common.services.backend.compiler.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.JGitUtils;
 import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.nio.KieMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.nio.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.nio.decorators.OutputLogAfterDecorator;
-
 import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.utils.MavenOutputConverter;
+import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
-
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 @ApplicationScoped
@@ -72,127 +66,152 @@ public class ValidatorBuildService {
     private IOService ioService;
     private KieProjectService projectService;
     private GuvnorM2Repository guvnorM2Repository;
-    private Map<JGitFileSystem, Git> gitMap = new ConcurrentHashMap<>();
-    private Map<Project, AFBuilder> buildersMap = new ConcurrentHashMap<>();
+    private CompilerMapsHolder compilerMapsHolder;
     private Logger logger = LoggerFactory.getLogger(ValidatorBuildService.class);
-    private KieMavenCompiler kieCompiler;
+    //private AFCompiler afCompiler;
 
     public ValidatorBuildService() {
         //CDI proxies
     }
 
     @Inject
-    public ValidatorBuildService( final @Named("ioStrategy") IOService ioService,
-                                  final KieProjectService projectService,
-                                  final GuvnorM2Repository guvnorM2Repository) {
+    public ValidatorBuildService(final @Named("ioStrategy") IOService ioService,
+                                 final KieProjectService projectService,
+                                 final GuvnorM2Repository guvnorM2Repository,
+                                 final CompilerMapsHolder compilerMapsHolder) {
         this.ioService = ioService;
         this.projectService = projectService;
         this.guvnorM2Repository = guvnorM2Repository;
-        this.kieCompiler = (KieMavenCompiler) getCompiler();
+        //this.afCompiler = getCompiler();
+        this.compilerMapsHolder = compilerMapsHolder;
     }
 
-    private AFCompiler getCompiler(){
+    private AFCompiler getCompiler() {
         // we create the compiler in this weird mode to use the gitMap used internally
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
-        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator, this.gitMap);
+        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
+                                                                    compilerMapsHolder);
         return outerDecorator;
     }
 
-    private AFBuilder getBuilder(Project project){
-        AFBuilder builder = buildersMap.get(project);
-        if(builder == null){
-            AFBuilder newBuilder = new DefaultAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), kieCompiler);
-            buildersMap.put(project, newBuilder);
+    private AFBuilder getBuilder(Project project) {
+        AFBuilder builder = compilerMapsHolder.getBuilder(project.getProjectName());
+        if (builder == null) {
+            AFBuilder newBuilder = new DefaultAFBuilder(project.getRootPath().toURI().toString(),
+                                                        guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME),
+                                                        getCompiler());
+            compilerMapsHolder.addBuilder(project.getProjectName(), newBuilder);
             builder = newBuilder;
         }
         return builder;
     }
 
-    public List<ValidationMessage> validate( final Path resourcePath,
-                                             final String content ) {
+    public List<ValidationMessage> validate(final Path resourcePath,
+                                            final String content) {
         InputStream inputStream = null;
         try {
-            inputStream = new ByteArrayInputStream( content.getBytes( Charsets.UTF_8 ) );
-            final List<ValidationMessage> results = doValidation( resourcePath,
-                                                                  inputStream );
+            inputStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
+            final List<ValidationMessage> results = doValidation(resourcePath,
+                                                                 inputStream);
             return results;
-
-        }  catch ( NoClassDefFoundError e ) {
-            return error( MessageFormat.format( ERROR_CLASS_NOT_FOUND,
-                                                e.getLocalizedMessage() ) );
-        } catch ( Throwable e ) {
-            return error( e.getLocalizedMessage() );
+        } catch (NoClassDefFoundError e) {
+            return error(MessageFormat.format(ERROR_CLASS_NOT_FOUND,
+                                              e.getLocalizedMessage()));
+        } catch (Throwable e) {
+            return error(e.getLocalizedMessage());
         } finally {
-            if ( inputStream != null ) {
+            if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch ( IOException e ) {
+                } catch (IOException e) {
                 }
             }
         }
     }
 
-    public List<ValidationMessage> validate( final Path resourcePath ) {
+    public List<ValidationMessage> validate(final Path resourcePath) {
         InputStream inputStream = null;
         try {
-            inputStream = ioService.newInputStream( Paths.convert( resourcePath ) );
-            final List<ValidationMessage> results = doValidation( resourcePath, inputStream );
+            inputStream = ioService.newInputStream(Paths.convert(resourcePath));
+            final List<ValidationMessage> results = doValidation(resourcePath,
+                                                                 inputStream);
             return results;
-
-        }  catch ( NoClassDefFoundError e ) {
-            return error( MessageFormat.format( ERROR_CLASS_NOT_FOUND,
-                                                e.getLocalizedMessage() ) );
-        } catch ( Throwable e ) {
-            return error( e.getLocalizedMessage() );
+        } catch (NoClassDefFoundError e) {
+            return error(MessageFormat.format(ERROR_CLASS_NOT_FOUND,
+                                              e.getLocalizedMessage()));
+        } catch (Throwable e) {
+            return error(e.getLocalizedMessage());
         } finally {
-            if ( inputStream != null ) {
+            if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch ( IOException e ) {
+                } catch (IOException e) {
                 }
             }
         }
     }
 
     //@MAXWasHere*/
-    private List<ValidationMessage> doValidation( final Path resourcePath,
-                                                  final InputStream inputStream ) throws NoProjectException {
-        final Project project = project(resourcePath );//check if this works in the git filesystem
-        Git git = gitMap.get(project.getRootPath());
-        try {
-            if (git != null) {
-                    java.nio.file.Files.copy(inputStream,
-                                             java.nio.file.Paths.get(resourcePath.toURI().toString()),
-                                             StandardCopyOption.REPLACE_EXISTING);
-                AFBuilder builder = getBuilder(project);
-                CompilationResponse res = builder.build();
-                List<ValidationMessage> validationMsgs = MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get());
-                return validationMsgs;
-            } else {
-                throw new NoProjectException();
+    private List<ValidationMessage> doValidation(final Path resourcePath,
+                                                 final InputStream inputStream) throws NoProjectException {
+        Optional<KieProject> project = project(resourcePath);
+        if(!project.isPresent()) {
+            throw new NoProjectException();
+        }
+        KieProject kieProject = project.get();
+        org.uberfire.java.nio.file.Path path  = Paths.convert(project.get().getRootPath());
+        JGitFileSystem fs = (JGitFileSystem) path.getFileSystem();
+        Git git = compilerMapsHolder.getGit(fs);
+        if(git == null){
+            //one build discarded to create the git in compiler map
+            AFBuilder builder = compilerMapsHolder.getBuilder(kieProject.getProjectName());
+            builder.build();
+            git = compilerMapsHolder.getGit(fs);
+            if(git == null){
+                logger.error("Git not constructed in the JGitDecorator");
+                throw new RuntimeException("Git repo not found");
             }
-        }catch (IOException ex){
+        }
+
+        try {
+                return writeFileChangeAndBuild(resourcePath,
+                                               inputStream,
+                                               project.get(),
+                                               path);
+        } catch (IOException ex) {
             logger.error(ex.getMessage());
             throw new NoProjectException();
-        }finally {
-            git.revert();
+        } finally {
+            if(git != null) {
+                git.revert();
+            }
         }
     }
 
-
-    private Project project( final Path resourcePath ) throws NoProjectException {
-        final Project project = projectService.resolveProject( resourcePath );
-
-        if ( project == null ) {
-            throw new NoProjectException();
+    private List<ValidationMessage> writeFileChangeAndBuild(Path resourcePath,
+                                                            InputStream inputStream,
+                                                            KieProject project,
+                                                            org.uberfire.java.nio.file.Path path) throws IOException {
+        synchronized (path.getFileSystem()) {
+            Files.copy(inputStream,
+                       java.nio.file.Paths.get(resourcePath.toURI().toString()),
+                       StandardCopyOption.REPLACE_EXISTING);
         }
-
-        return project;
+        AFBuilder builder = getBuilder(project);
+        CompilationResponse res = builder.build();
+        List<ValidationMessage> validationMsgs = MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get());
+        return validationMsgs;
     }
 
-    private ArrayList<ValidationMessage> error( final String errorMessage ) {
+    private Optional<KieProject> project(final Path resourcePath) throws NoProjectException {
+        final KieProject project = projectService.resolveProject(resourcePath);
+        return Optional.ofNullable(project);
+    }
+
+    private ArrayList<ValidationMessage> error(final String errorMessage) {
         return new ArrayList<ValidationMessage>() {{
-            add( new ValidationMessage( Level.ERROR, errorMessage ) );
+            add(new ValidationMessage(Level.ERROR,
+                                      errorMessage));
         }};
     }
 }

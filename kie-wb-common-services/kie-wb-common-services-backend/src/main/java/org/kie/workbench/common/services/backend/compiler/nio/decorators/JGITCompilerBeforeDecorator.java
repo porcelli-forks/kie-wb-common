@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.JGitUtils;
 import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
@@ -37,16 +38,20 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extends AFCompiler<T>> implements CompilerDecorator {
 
     private Map<JGitFileSystem, Git> gitMap;
+    private CompilerMapsHolder compilerMapsHolder;
+    private boolean holder;
     private C compiler;
 
     public JGITCompilerBeforeDecorator(C compiler) {
         this.compiler = compiler;
         gitMap = new HashMap<>();
+        holder = Boolean.FALSE;
     }
 
-    public JGITCompilerBeforeDecorator(C compiler, Map<JGitFileSystem, Git> gitMap ) {
+    public JGITCompilerBeforeDecorator(C compiler, CompilerMapsHolder compilerMapsHolder) {
         this.compiler = compiler;
-        this.gitMap = gitMap;
+        this.compilerMapsHolder = compilerMapsHolder;
+        holder = Boolean.TRUE;
     }
 
     @Override
@@ -57,12 +62,7 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
         Git repo;
         if (path.getFileSystem() instanceof JGitFileSystem) {
             final JGitFileSystem fs = (JGitFileSystem) path.getFileSystem();
-            if (!gitMap.containsKey(fs)) {
-                repo = JGitUtils.tempClone(fs, _req.getRequestUUID());
-                gitMap.put(fs,
-                           repo);
-            }
-            repo = gitMap.get(fs);
+            repo = holder ? useHolder(fs,_req) : useInternalMap(fs,_req);
             JGitUtils.applyBefore(repo);
 
             req = new DefaultCompilationRequest(_req.getMavenRepo(),
@@ -75,6 +75,28 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
 
         return compiler.compileSync(req);
     }
+
+    private Git useInternalMap(JGitFileSystem fs, CompilationRequest _req){
+        Git repo;
+        if (!gitMap.containsKey(fs)) {
+            repo = JGitUtils.tempClone(fs, _req.getRequestUUID());
+            gitMap.put(fs,
+                       repo);
+        }
+        repo = gitMap.get(fs);
+        return repo;
+    }
+
+    private Git useHolder(JGitFileSystem fs, CompilationRequest _req){
+        Git repo;
+        if (!compilerMapsHolder.containsGit(fs)) {
+            repo = JGitUtils.tempClone(fs, _req.getRequestUUID());
+            compilerMapsHolder.addGit(fs, repo);
+        }
+        repo = compilerMapsHolder.getGit(fs);
+        return repo;
+    }
+
 
     @Override
     public T buildDefaultCompilationResponse(final Boolean value) {
