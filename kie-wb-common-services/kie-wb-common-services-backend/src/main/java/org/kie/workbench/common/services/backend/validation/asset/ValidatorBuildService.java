@@ -94,13 +94,15 @@ public class ValidatorBuildService {
         return outerDecorator;
     }
 
-    private AFBuilder getBuilder(Project project) {
-        AFBuilder builder = compilerMapsHolder.getBuilder(project.getProjectName());
+    private AFBuilder getBuilder(String key, Project project) {
+        String internalKey = key.replace("git://","");
+        AFBuilder builder = compilerMapsHolder.getBuilder(internalKey);
         if (builder == null) {
             AFBuilder newBuilder = new DefaultAFBuilder(project.getRootPath().toURI().toString(),
-                                                        guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME),
+                                                        "/home/garfield/.m2/repository/",
+                                                        //guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), stackoverflow
                                                         getCompiler());
-            compilerMapsHolder.addBuilder(project.getProjectName(), newBuilder);
+            compilerMapsHolder.addBuilder(project.getRootPath().toURI().toString(), newBuilder);
             builder = newBuilder;
         }
         return builder;
@@ -154,18 +156,25 @@ public class ValidatorBuildService {
     //@MAXWasHere*/
     private List<ValidationMessage> doValidation(final Path resourcePath,
                                                  final InputStream inputStream) throws NoProjectException {
+        String uri = resourcePath.toURI().toString();
         Optional<KieProject> project = project(resourcePath);
         if(!project.isPresent()) {
             throw new NoProjectException();
         }
         KieProject kieProject = project.get();
-        org.uberfire.java.nio.file.Path path  = Paths.convert(project.get().getRootPath());
+        String pathURI = project.get().getRootPath().toURI();
+        if(!pathURI.startsWith("git://")){
+            pathURI = pathURI.replace("default://", "git://");
+        }
+       // String tempPathUri = "git://localhost:9418/repo/"+kieProject.getProjectName();
+        String tempPathUri = "git://repo";
+        org.uberfire.java.nio.file.Path path  = org.uberfire.java.nio.file.Paths.get(tempPathUri);
         JGitFileSystem fs = (JGitFileSystem) path.getFileSystem();
         Git git = compilerMapsHolder.getGit(fs);
         if(git == null){
             //one build discarded to create the git in compiler map
-            AFBuilder builder = compilerMapsHolder.getBuilder(kieProject.getProjectName());
-            builder.build();
+            AFBuilder builder = getBuilder(pathURI, kieProject);
+            CompilationResponse res = builder.build();
             git = compilerMapsHolder.getGit(fs);
             if(git == null){
                 logger.error("Git not constructed in the JGitDecorator");
@@ -174,7 +183,7 @@ public class ValidatorBuildService {
         }
 
         try {
-                return writeFileChangeAndBuild(resourcePath,
+                return writeFileChangeAndBuild(pathURI,resourcePath,
                                                inputStream,
                                                project.get(),
                                                path);
@@ -188,7 +197,7 @@ public class ValidatorBuildService {
         }
     }
 
-    private List<ValidationMessage> writeFileChangeAndBuild(Path resourcePath,
+    private List<ValidationMessage> writeFileChangeAndBuild(String key, Path resourcePath,
                                                             InputStream inputStream,
                                                             KieProject project,
                                                             org.uberfire.java.nio.file.Path path) throws IOException {
@@ -197,7 +206,7 @@ public class ValidatorBuildService {
                        java.nio.file.Paths.get(resourcePath.toURI().toString()),
                        StandardCopyOption.REPLACE_EXISTING);
         }
-        AFBuilder builder = getBuilder(project);
+        AFBuilder builder = getBuilder(key, project);
         CompilationResponse res = builder.build();
         List<ValidationMessage> validationMsgs = MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get());
         return validationMsgs;

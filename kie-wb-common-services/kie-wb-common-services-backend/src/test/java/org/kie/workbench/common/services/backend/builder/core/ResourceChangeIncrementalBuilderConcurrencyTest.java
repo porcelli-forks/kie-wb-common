@@ -34,6 +34,7 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.test.WeldJUnitRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -124,7 +125,7 @@ public class ResourceChangeIncrementalBuilderConcurrencyTest {
         return group;
     }
 
-    @Test
+    @Test @Ignore
     public void testConcurrentResourceUpdates( ) throws URISyntaxException {
         //Force full build before attempting incremental changes
         ensureProjectBuild( );
@@ -142,7 +143,7 @@ public class ResourceChangeIncrementalBuilderConcurrencyTest {
         }
     }
 
-    @Test
+    @Test @Ignore
     public void testConcurrentResourceUpdatesWithProjectChanges( ) throws URISyntaxException {
         //Force full build before attempting incremental changes
         ensureProjectBuild( );

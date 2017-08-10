@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.services.backend.compiler.nio.decorators;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

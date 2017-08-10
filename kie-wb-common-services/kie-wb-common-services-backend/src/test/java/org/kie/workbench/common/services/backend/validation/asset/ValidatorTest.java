@@ -51,6 +51,7 @@ public class ValidatorTest {
     private DefaultGenericKieValidator validator;
     private ValidatorBuildService validatorBuildService;
 
+
     @Before
     public void setUp() throws Exception {
         testFileSystem = new TestFileSystem();
