@@ -22,13 +22,27 @@ import java.util.List;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
-import org.kie.workbench.common.services.backend.builder.core.BuildHelper;
 
 /**
  * Maven output converter
  *
  * */
 public class MavenOutputConverter {
+
+    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput, String filter){
+        if(mavenOutput.size()>0) {
+            List<ValidationMessage> validationMsgs = new ArrayList<>(mavenOutput.size());
+            for(String item: mavenOutput){
+                if(item.contains(filter)){
+                    ValidationMessage msg = new ValidationMessage();
+                    msg.setText(item);
+                    validationMsgs.add(msg);
+                }
+            }
+            return validationMsgs;
+        }
+        return Collections.emptyList();
+    }
 
     public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput){
         if(mavenOutput.size()>0) {

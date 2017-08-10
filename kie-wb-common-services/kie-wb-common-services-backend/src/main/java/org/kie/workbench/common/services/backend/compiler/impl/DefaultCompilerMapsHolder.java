@@ -2,75 +2,69 @@ package org.kie.workbench.common.services.backend.compiler.impl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilerMapsHolder;
+import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 @ApplicationScoped
 public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
-    private Map<JGitFileSystem, Git> gitMap ;
-    private Map<String, AFBuilder> buildersMap ;
+    private Map<JGitFileSystem, Git> gitMap;
+    private Map<Path, AFBuilder> buildersMap;
 
-    public DefaultCompilerMapsHolder(){
+    public DefaultCompilerMapsHolder() {
         gitMap = new ConcurrentHashMap<>();
         buildersMap = new ConcurrentHashMap<>();
     }
 
-    /** GIT */
+    /**
+     * GIT
+     */
 
-    public Git getGit(JGitFileSystem key){
+    public Git getGit(JGitFileSystem key) {
         return gitMap.get(key);
     }
 
-    public void addGit(JGitFileSystem key, Git git){
-        gitMap.putIfAbsent(key,git);
-    }
+    public void addGit(JGitFileSystem key, Git git) { gitMap.putIfAbsent(key, git); }
 
-    @Override
     public Git removeGit(JGitFileSystem key) {
         return gitMap.remove(key);
     }
 
-    @Override
     public boolean containsGit(JGitFileSystem key) {
-        return buildersMap.containsKey(key);
+        return gitMap.containsKey(key);
     }
 
-    @Override
     public void clearGitMap() {
         gitMap.clear();
     }
 
-    /** BUILDER*/
+    /**
+     * BUILDER
+     */
 
-    @Override
-    public AFBuilder getBuilder(String projectName) {
-        return buildersMap.get(projectName);
+    public AFBuilder getBuilder(Path projectRootPath) {
+        return buildersMap.get(projectRootPath);
     }
 
-    @Override
-    public void addBuilder(String projectName,
-                           AFBuilder builder) {
-        buildersMap.putIfAbsent(projectName, builder);
+    public void addBuilder(final Path projectRootPath, final AFBuilder builder) {
+        buildersMap.putIfAbsent(projectRootPath, builder);
     }
 
-    @Override
-    public AFBuilder removeBuilder(String projectName) {
-        return buildersMap.remove(projectName);
+    public AFBuilder removeBuilder(Path projectRootPath) {
+        return buildersMap.remove(projectRootPath);
     }
 
-    @Override
-    public boolean containsBuilder(String projectName) {
-        return buildersMap.containsKey(projectName);
+    public boolean containsBuilder(Path projectRootPath) {
+        return buildersMap.containsKey(projectRootPath);
     }
 
-    @Override
     public void clearBuilderMap() {
         buildersMap.clear();
     }
+
 }

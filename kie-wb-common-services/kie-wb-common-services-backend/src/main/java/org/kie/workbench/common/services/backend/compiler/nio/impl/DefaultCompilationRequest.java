@@ -88,6 +88,11 @@ public class DefaultCompilationRequest implements CompilationRequest {
     }
 
     @Override
+    public Boolean skipAutoSourceUpdate() {
+        return true;
+    }
+
+    @Override
     public WorkspaceCompilationInfo getInfo() {
         return info;
     }

@@ -26,23 +26,20 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.io.Resources;
-import org.eclipse.jgit.api.Git;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.test.TestFileSystem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.mocks.FileSystemTestingUtils;
 
 import static org.junit.Assert.*;
+import static org.uberfire.backend.server.util.Paths.convert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultGenericKieValidatorTest {
@@ -55,7 +52,7 @@ public class DefaultGenericKieValidatorTest {
     @Before
     public void setUp() throws Exception {
         testFileSystem = new TestFileSystem();
-        validator = testFileSystem.getReference( DefaultGenericKieValidator.class );
+        validator = testFileSystem.getReference(DefaultGenericKieValidator.class);
         fileSystemTestingUtils.setup();
         ioService = fileSystemTestingUtils.getIoService();
     }
@@ -70,14 +67,14 @@ public class DefaultGenericKieValidatorTest {
     public void testWorks() throws Exception {
         final URI originRepo = URI.create("git://repo");
         final JGitFileSystem fs = (JGitFileSystem) ioService.newFileSystem(originRepo,
-                                                                               new HashMap<String, Object>() {{
-                                                                                   put("init",
-                                                                                       Boolean.TRUE);
-                                                                                   put("internal",
-                                                                                       Boolean.TRUE);
-                                                                                   put("listMode",
-                                                                                       "ALL");
-                                                                               }});
+                                                                           new HashMap<String, Object>() {{
+                                                                               put("init",
+                                                                                   Boolean.TRUE);
+                                                                               put("internal",
+                                                                                   Boolean.TRUE);
+                                                                               put("listMode",
+                                                                                   "ALL");
+                                                                           }});
 
         ioService.startBatch(fs);
 
@@ -93,45 +90,36 @@ public class DefaultGenericKieValidatorTest {
                         new String(java.nio.file.Files.readAllBytes(new File("src/test/resources//GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl").toPath())));
         ioService.endBatch();
 
-        org.uberfire.java.nio.file.Path tmpRootCloned = Files.createTempDirectory("cloned");
-        org.uberfire.java.nio.file.Path tmpCloned = Files.createDirectories(org.uberfire.java.nio.file.Paths.get(tmpRootCloned.toString(),
-                                                                                                                 "GuvnorM2RepoDependencyExample1"));
-        final File gitClonedFolder = new File(tmpCloned.toFile(), ".clone.git");
+        final URL urlToValidate = this.getClass().getResource("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl");
+        final List<ValidationMessage> errors = validator.validate(convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl")),
+                                                                  Resources.toString(urlToValidate,
+                                                                                     Charset.forName("UTF-8")));
 
-        final Git cloned = Git.cloneRepository().setURI(fs.getGit().getRepository().getDirectory().toURI().toString()).setBare(false).setDirectory(gitClonedFolder).call();
-
-
-        assertNotNull(cloned);
-        final Path path = resourcePath( cloned.getRepository().getDirectory().getAbsolutePath()+"/../GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
-        final URL urlToValidate = this.getClass().getResource( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
-
-        //Path path2 = Paths.convert(org.uberfire.java.nio.file.Paths.get(originRepo)); this is for test with git://repo
-        final List<ValidationMessage> errors = validator.validate( path, Resources.toString( urlToValidate, Charset.forName( "UTF-8" ) ) );
-
-        assertTrue( errors.isEmpty() );
-        TestUtil.rm(tmpRootCloned.toFile());
+        assertTrue(errors.isEmpty());
     }
 
     @Test
     public void validatingAnAlreadyInvalidAssetShouldReportErrors() throws Exception {
-        final Path path = resourcePath( "/BuilderExampleBrokenSyntax/src/main/resources/rule1.drl" );
-        final URL urlToValidate = this.getClass().getResource( "/BuilderExampleBrokenSyntax/src/main/resources/rule1.drl" );
+        final Path path = resourcePath("/BuilderExampleBrokenSyntax/src/main/resources/rule1.drl");
+        final URL urlToValidate = this.getClass().getResource("/BuilderExampleBrokenSyntax/src/main/resources/rule1.drl");
 
-        final List<ValidationMessage> errors1 = validator.validate( path,
-                                                                    Resources.toString( urlToValidate, Charset.forName( "UTF-8" ) ) );
+        final List<ValidationMessage> errors1 = validator.validate(path,
+                                                                   Resources.toString(urlToValidate,
+                                                                                      Charset.forName("UTF-8")));
 
-        final List<ValidationMessage> errors2 = validator.validate( path,
-                                                                    Resources.toString( urlToValidate, Charset.forName( "UTF-8" ) ) );
+        final List<ValidationMessage> errors2 = validator.validate(path,
+                                                                   Resources.toString(urlToValidate,
+                                                                                      Charset.forName("UTF-8")));
 
-        assertFalse( errors1.isEmpty() );
-        assertFalse( errors2.isEmpty() );
-        assertEquals( errors1.size(),
-                      errors2.size() );
+        assertFalse(errors1.isEmpty());
+        assertFalse(errors2.isEmpty());
+        assertEquals(errors1.size(),
+                     errors2.size());
     }
 
-    private Path resourcePath( final String resourceName ) throws URISyntaxException, MalformedURLException {
+    private Path resourcePath(final String resourceName) throws URISyntaxException, MalformedURLException {
         //final URL url = this.getClass().getResource( resourceName );
-        final URL url = new URL("file://"+resourceName);
-        return Paths.convert( testFileSystem.fileSystemProvider.getPath( url.toURI() ) );
+        final URL url = new URL("file://" + resourceName);
+        return convert(testFileSystem.fileSystemProvider.getPath(url.toURI()));
     }
 }
