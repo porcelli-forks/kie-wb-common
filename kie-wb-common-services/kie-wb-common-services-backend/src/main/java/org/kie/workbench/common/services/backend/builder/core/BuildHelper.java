@@ -86,13 +86,12 @@ public class BuildHelper {
     public BuildResult build( final Project project ) {
         try {
             cache.invalidateCache( project );
-            //Builder builder = cache.assertBuilder( project );
+            //@TODO AFBuilder from the CompilerMapsHolder
             KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
             KieCompilationResponse res = builder.build();
             if(res.isSuccessful()) {
                 final BuildResults results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
                 BuildMessage infoMsg = new BuildMessage();
-
                 infoMsg.setLevel(Level.INFO);
                 infoMsg.setText(buildResultMessage(project,
                                                    results).toString());

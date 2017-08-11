@@ -42,7 +42,7 @@ import org.uberfire.backend.server.util.Paths;
 @ApplicationScoped
 @Named("LRUProjectDependenciesClassLoaderCache")
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject, ClassLoader> {
-
+    //@MAXWasHere
     private GuvnorM2Repository guvnorM2Repository;
 
     public LRUProjectDependenciesClassLoaderCache( ) {
@@ -64,7 +64,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         return classLoader;
     }
 
-    /**When is called @MAXWasHere*/
+    //@TODO idea told never used, when is called this method  ?
     public synchronized void setDependenciesClassLoader(final KieProject project,
                                                         ClassLoader classLoader) {
         setEntry(project,

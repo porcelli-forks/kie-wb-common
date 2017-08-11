@@ -394,7 +394,7 @@ public class AFMavenCli {
         if (cliRequest.getCommandLine().hasOption(CLIManager.LOG_FILE)) {
             File logFile = new File(cliRequest.getCommandLine().getOptionValue(CLIManager.LOG_FILE).trim());
             logFile = resolveFile(logFile,
-                                  cliRequest.getWorkingDirectory()); //@MAX
+                                  cliRequest.getWorkingDirectory());
 
             try {
                 PrintStream ps = new PrintStream(new FileOutputStream(logFile));

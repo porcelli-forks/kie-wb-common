@@ -80,12 +80,12 @@ public class ProjectDataModelOracleBuilderProvider {
         KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
-            //final KieModuleMetaData kieModuleMetaData = buildInfo.getKieModuleMetaDataIgnoringErrors();
             final KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                                   res.getProjectDependencies().get());
             //final TypeSourceResolver typeSourceResolver = buildInfo.getTypeSourceResolver(kieModuleMetaData);
             //@MAXWasHere this javaresources are the result of addJavaClass and remove in the Builder
             final Set<String> javaResources = new HashSet<String>();
+            //@TODO this javaresources logic must be moved from the builder addJavaClass,removeJavaClass,getFullyQualifiedClassName
             final TypeSourceResolver typeSourceResolver = new TypeSourceResolver( kieModuleMetaData,
                                                                                   javaResources );
 

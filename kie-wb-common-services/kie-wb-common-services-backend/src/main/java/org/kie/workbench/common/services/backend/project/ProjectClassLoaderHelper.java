@@ -26,7 +26,6 @@ import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -38,8 +37,6 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 public class ProjectClassLoaderHelper {
 
     @Inject
-    private BuildInfoService buildInfoService;
-    @Inject
     private GuvnorM2Repository guvnorM2Repository;
 
     @Inject
@@ -47,10 +44,10 @@ public class ProjectClassLoaderHelper {
     private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;
 
     public ClassLoader getProjectClassLoader( KieProject project ) {
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        //@TODO retrieve the AFBuilder from CompilerMapsHolder
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
         KieCompilationResponse res = builder.build();
         //@MAXWasHere
-        //final KieModule module = buildInfoService.getBuildInfo( project ).getKieModuleIgnoringErrors();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             final KieModule module = res.getKieModule().get();
             ClassLoader dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
