@@ -33,10 +33,8 @@ import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.test.TestFileSystem;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
@@ -50,9 +48,6 @@ import static org.uberfire.backend.server.util.Paths.convert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidatorTest {
-
-    @Mock
-    Path path;
 
     private TestFileSystem testFileSystem;
 
@@ -97,8 +92,6 @@ public class ValidatorTest {
     @Test
     public void testValidateWithAInvalidDRLFile() throws Throwable {
         final JGitFileSystem fs = prepareTheFS();
-
-       // final Path path = path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
         final String content = "package org.kie.workbench.common.services.builder.tests.test1\n" +
                 "\n" +
                 "rule R2\n" +
@@ -110,7 +103,7 @@ public class ValidatorTest {
         List<ValidationMessage> errors = validator.validate(
                 convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl")), content );
 
-        assertFalse( errors.isEmpty() );
+        assertFalse( errors.isEmpty() );// how can run a kie plugin if the pom is empty of plugin and kjar ?
     }
 
     @Test
@@ -132,9 +125,10 @@ public class ValidatorTest {
         assertTrue( errors.isEmpty() );
     }
 
-    @Test @Ignore //@TODO CHANGE
+    @Test
     public void testValidateWithAInvalidJavaFile() throws Throwable {
-        final Path path1 = path( "/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java" );
+        final JGitFileSystem fs = prepareTheFS();
+       // final Path path1 = path( "/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java" );
         final String content = "package org.kie.workbench.common.services.builder.tests.test1;\n" +
                 "\n" +
                 "public class Bean {\n" +
@@ -142,25 +136,26 @@ public class ValidatorTest {
                 "\n" +
                 "}\n";
 
-        List<ValidationMessage> validate = validator.validate( path1,
-                                                               content );
 
-        assertFalse( validate.isEmpty() );
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java")), content );
+
+
+        assertFalse( errors.isEmpty() );
     }
 
-    @Test @Ignore //@TODO CHANGE
-    public void testValidateWhenTheresNoProject() throws Exception {
-        Path path = path( "/META-INF/beans.xml" );
+    @Test
+    public void testValidateWhenTheresNoProject() throws Throwable {
+        final JGitFileSystem fs = prepareTheFS();
         URL urlToValidate = this.getClass().getResource( "/META-INF/beans.xml" );
 
-        List<ValidationMessage> errors = validator.validate( path,
-                                                             Resources.toString( urlToValidate,
-                                                                                 Charsets.UTF_8 ) );
-
-        assertTrue( errors.isEmpty() );
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/META-INF/beans.xml")),  Resources.toString( urlToValidate,
+                                                                                                                                                                           Charsets.UTF_8 ) );
+        assertTrue( errors.isEmpty() );// why no error when the project isn't present ?
     }
 
-    @Test @Ignore //@TODO CHANGE
+    @Test
     public void testFilterMessageWhenMessageIsInvalid() throws Throwable {
         Path path = path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
         ValidationMessage errorMessage = errorMessage( path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule1.drl" ) );
@@ -171,7 +166,7 @@ public class ValidatorTest {
         assertTrue( result.isEmpty() );
     }
 
-    @Test @Ignore //@TODO CHANGE
+    @Test
     public void testFilterMessageWhenMessageIsValid() throws Throwable {
         Path path = path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
         ValidationMessage errorMessage = errorMessage( path );
@@ -182,7 +177,7 @@ public class ValidatorTest {
         assertFalse( result.isEmpty() );
     }
 
-    @Test @Ignore //@TODO CHANGE
+    @Test
     public void testFilterMessageWhenMessageIsBlank() throws Throwable {
         Path path = path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
         ValidationMessage errorMessage = errorMessage( null );

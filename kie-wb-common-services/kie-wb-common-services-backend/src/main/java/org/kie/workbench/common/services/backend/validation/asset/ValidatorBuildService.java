@@ -132,9 +132,11 @@ public class ValidatorBuildService {
     public List<ValidationMessage> validate(final Path resourcePath) {
         InputStream inputStream = null;
         try {
+
             inputStream = ioService.newInputStream(convert(resourcePath));
             final List<ValidationMessage> results = doValidation(resourcePath, inputStream);
             return results;
+
         } catch (NoClassDefFoundError e) {
             return error(MessageFormat.format(ERROR_CLASS_NOT_FOUND,
                                               e.getLocalizedMessage()));
@@ -152,10 +154,10 @@ public class ValidatorBuildService {
 
     private List<ValidationMessage> doValidation(final Path _resourcePath,
                                                  final InputStream inputStream) throws NoProjectException {
+
         final Optional<KieProject> project = project(_resourcePath);
-        if (!project.isPresent()) {
-            throw new NoProjectException();
-        }
+        if (!project.isPresent()) {  return getNoProjectExceptionMsgs(); }
+
         final KieProject kieProject = project.get();
         final org.uberfire.java.nio.file.Path resourcePath = convert(_resourcePath);
         final JGitFileSystem fs = (JGitFileSystem) resourcePath.getFileSystem();
@@ -163,7 +165,7 @@ public class ValidatorBuildService {
         if (git == null) {
             //one build discarded to create the git in compiler map
             final AFBuilder builder = getBuilder(kieProject);
-            builder.build();
+            CompilationResponse res = builder.build();
             git = compilerMapsHolder.getGit(fs);
             if (git == null) {
                 logger.error("Git not constructed in the JGitDecorator");
@@ -181,7 +183,7 @@ public class ValidatorBuildService {
 
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
-            throw new NoProjectException();
+            return getNoProjectExceptionMsgs();
         } finally {
             try {
 
@@ -192,6 +194,14 @@ public class ValidatorBuildService {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private List<ValidationMessage> getNoProjectExceptionMsgs() {
+        List<ValidationMessage> msgs = new ArrayList<>();
+        ValidationMessage msg = new ValidationMessage();
+        msg.setText("ERROR no project found");
+        msgs.add(msg);
+        return msgs;
     }
 
     private List<ValidationMessage> writeFileChangeAndBuild(final java.nio.file.Path tempResourcePath,
