@@ -19,7 +19,6 @@ package org.kie.workbench.common.services.backend.builder.ala;
 import org.guvnor.ala.config.BinaryConfig;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
-import org.kie.workbench.common.services.backend.builder.core.Builder;
 
 /**
  * This interface represents the basic information about a Binary produced by the local build system.
@@ -36,9 +35,5 @@ public interface LocalBinaryConfig extends BinaryConfig {
      */
     IncrementalBuildResults getIncrementalBuildResults( );
 
-    /**
-     * @return the builder used for building the project.
-     */
-    Builder getBuilder();
 
 }

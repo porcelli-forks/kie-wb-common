@@ -16,7 +16,6 @@
 package org.kie.workbench.common.services.backend.session;
 
 import java.io.File;
-import javax.inject.Inject;
 
 import org.drools.core.ClockType;
 import org.drools.core.SessionConfiguration;
@@ -24,7 +23,7 @@ import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+
 import org.kie.workbench.common.services.shared.project.KieProject;
 
 public class SessionServiceImpl

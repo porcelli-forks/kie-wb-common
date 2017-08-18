@@ -18,7 +18,6 @@ package org.kie.workbench.common.services.backend.builder.service;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.function.Consumer;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -29,8 +28,7 @@ import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.DeploymentMode;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.services.backend.builder.ala.LocalBuildConfig;
-import org.kie.workbench.common.services.backend.builder.core.Builder;
-import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
+
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.ResourceChange;
@@ -43,19 +41,15 @@ public class BuildServiceImpl implements BuildService {
 
     private KieProjectService projectService;
 
-    private LRUBuilderCache cache;
-
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
     }
 
     @Inject
     public BuildServiceImpl( final KieProjectService projectService,
-                             final BuildServiceHelper buildServiceHelper,
-                             final LRUBuilderCache cache ) {
+                             final BuildServiceHelper buildServiceHelper) {
         this.projectService = projectService;
         this.buildServiceHelper = buildServiceHelper;
-        this.cache = cache;
     }
 
     @Override
@@ -63,10 +57,10 @@ public class BuildServiceImpl implements BuildService {
         return buildServiceHelper.localBuild( project );
     }
 
-    public void build( final Project project, final Consumer< Builder > consumer ) {
+    /*public void build( final Project project, final Consumer< Builder > consumer ) {
         buildServiceHelper.localBuild( project, localBinaryConfig ->
                 consumer.accept( localBinaryConfig.getBuilder( ) ) );
-    }
+    }*/
 
     @Override
     public BuildResults buildAndDeploy( final Project project ) {

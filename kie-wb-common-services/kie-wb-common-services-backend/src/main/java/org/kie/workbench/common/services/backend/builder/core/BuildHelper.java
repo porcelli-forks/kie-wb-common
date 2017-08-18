@@ -57,8 +57,6 @@ public class BuildHelper {
 
     private ExtendedM2RepoService m2RepoService;
 
-    private LRUBuilderCache cache;
-
     private KieProjectService projectService;
 
     private Instance< User > identity;
@@ -72,20 +70,17 @@ public class BuildHelper {
     public BuildHelper( final POMService pomService,
                         final ExtendedM2RepoService m2RepoService,
                         final KieProjectService projectService,
-                        final LRUBuilderCache cache,
                         final Instance< User > identity,
                         final GuvnorM2Repository guvnorM2Repository) {
         this.pomService = pomService;
         this.m2RepoService = m2RepoService;
         this.projectService = projectService;
-        this.cache = cache;
         this.identity = identity;
         this.guvnorM2Repository = guvnorM2Repository;
     }
 
     public BuildResult build( final Project project ) {
         try {
-            cache.invalidateCache( project );
             //@TODO AFBuilder from the CompilerMapsHolder
             KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
             KieCompilationResponse res = builder.build();

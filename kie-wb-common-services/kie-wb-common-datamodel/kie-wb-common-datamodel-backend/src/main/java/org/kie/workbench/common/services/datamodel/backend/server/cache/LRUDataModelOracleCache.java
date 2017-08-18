@@ -38,7 +38,6 @@ import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
 import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.file.DSLFileFilter;
 import org.kie.workbench.common.services.backend.file.EnumerationsFileFilter;
@@ -73,8 +72,6 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
 
     private KieProjectService projectService;
 
-    private BuildInfoService buildInfoService;
-
     private GuvnorM2Repository guvnorM2Repository;
 
     public LRUDataModelOracleCache() {
@@ -86,13 +83,11 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
                                    final FileDiscoveryService fileDiscoveryService,
                                    final @Named("ProjectDataModelOracleCache") LRUProjectDataModelOracleCache cacheProjects,
                                    final KieProjectService projectService,
-                                   final BuildInfoService buildInfoService,
                                    final GuvnorM2Repository guvnorM2Repository) {
         this.ioService = ioService;
         this.fileDiscoveryService = fileDiscoveryService;
         this.cacheProjects = cacheProjects;
         this.projectService = projectService;
-        this.buildInfoService = buildInfoService;
         this.guvnorM2Repository = guvnorM2Repository;
     }
 

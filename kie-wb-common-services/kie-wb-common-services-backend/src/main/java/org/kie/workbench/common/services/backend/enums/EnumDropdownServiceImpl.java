@@ -31,7 +31,6 @@ import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
 import org.kie.workbench.common.services.shared.enums.EnumDropdownService;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -48,9 +47,6 @@ import org.uberfire.backend.vfs.Path;
 public class EnumDropdownServiceImpl implements EnumDropdownService {
 
     private static final Logger logger = LoggerFactory.getLogger( EnumDropdownServiceImpl.class );
-
-    @Inject
-    private BuildInfoService buildInfoService;
 
     @Inject
     private KieProjectService projectService;

@@ -23,7 +23,6 @@ import javax.inject.Named;
 import org.drools.workbench.models.datamodel.oracle.ProjectDataModelOracle;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
