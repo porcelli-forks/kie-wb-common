@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -28,6 +29,8 @@ import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
 import org.kie.workbench.common.services.shared.enums.EnumDropdownService;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -63,12 +66,16 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
             logger.error( "A Project could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );
             return null;
         }
-        final KieModule module = buildInfoService.getBuildInfo( project ).getKieModuleIgnoringErrors();
-        if ( module == null ) {
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), project.getRepositoriesPath().toURI().toString());
+        Optional<KieModule> optionalModule = builder.build().getKieModule();
+        if ( !optionalModule.isPresent()  ) {
             logger.error( "A KieModule could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );
             return null;
         }
-        final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData( module ).getClassLoader();
+
+
+        final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData( optionalModule.get() ).getClassLoader();
+
 
         return loadDropDownExpression( classLoader,
                                        valuePairs,

@@ -32,7 +32,8 @@ import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
 @ApplicationScoped
 public class BuildInfoService {
 
-    private BuildService buildService;
+    //  @MAXWasHere
+    /*private BuildService buildService;
 
     private LRUBuilderCache builderCache;
 
@@ -54,11 +55,11 @@ public class BuildInfoService {
      *
      * @return the BuildInfo for the given project.
      */
-    public BuildInfo getBuildInfo( Project project ) {
+    /*public BuildInfo getBuildInfo( Project project ) {
         final Builder[] result = { builderCache.getBuilder( project ) };
         if ( result[ 0 ] == null || !result[ 0 ].isBuilt() ) {
             ( (BuildServiceImpl ) buildService ).build( project, builder -> result[ 0 ] = builder );
         }
         return new BuildInfoImpl( result[ 0 ] );
-    }
+    }*/
 }

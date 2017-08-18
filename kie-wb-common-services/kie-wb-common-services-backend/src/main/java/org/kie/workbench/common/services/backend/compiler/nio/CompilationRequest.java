@@ -42,4 +42,6 @@ public interface CompilationRequest {
     Map<String, Object> getMap();
 
     String getRequestUUID();
+
+    Boolean skipAutoSourceUpdate();
 }

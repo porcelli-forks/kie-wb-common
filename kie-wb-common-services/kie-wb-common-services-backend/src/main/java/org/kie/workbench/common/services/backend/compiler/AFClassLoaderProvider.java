@@ -17,6 +17,7 @@
 package org.kie.workbench.common.services.backend.compiler;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,10 +64,17 @@ public interface AFClassLoaderProvider {
                                                             String localRepo);
 
     /***
-     * Build a list of URL reading the cp file produced by the Maven dependency plugin
+     * Build a list of URI reading the cp file produced by the Maven dependency plugin
      * @param prjPath
      * @return
      */
     Optional<List<URI>> getURISFromAllDependencies(String prjPath);
+
+    /***
+     * Build a list of URL reading the cp file produced by the Maven dependency plugin
+     * @param prjPath
+     * @return
+     */
+    Optional<List<URL>> getURLSFromAllDependencies(String prjPath);
 }
 

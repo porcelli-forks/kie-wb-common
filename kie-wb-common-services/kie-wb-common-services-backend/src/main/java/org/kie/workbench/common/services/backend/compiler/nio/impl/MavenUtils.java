@@ -17,6 +17,7 @@
 package org.kie.workbench.common.services.backend.compiler.nio.impl;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +30,10 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
+//import org.uberfire.backend.vfs.Path;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
@@ -46,6 +49,7 @@ public class MavenUtils {
         try {
             for (String pomx : pomsPaths) {
                 Path pom = Paths.get(pomx);
+                //Path pom = PathFactory.newPath("pom.xml",pomx);
                 Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
                 if (model.getDependencyManagement() != null && model.getDependencyManagement().getDependencies() != null) {
                     createArtifacts(model.getDependencyManagement().getDependencies(),
@@ -94,4 +98,5 @@ public class MavenUtils {
             logger.error(e.getMessage());
         }
     }
+
 }

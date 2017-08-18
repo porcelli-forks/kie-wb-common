@@ -51,10 +51,9 @@ import static org.junit.Assert.*;
 
 public class DefaultMavenCompilerTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(DefaultMavenCompilerTest.class);
     private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
     private IOService ioService;
-    private static final Logger logger = LoggerFactory.getLogger(DefaultMavenCompilerTest.class);
-
     private Path mavenRepo;
 
     @Before
@@ -129,7 +128,6 @@ public class DefaultMavenCompilerTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.COMPILE},
-                                                               new HashMap<>(),
                                                                Boolean.TRUE);
 
         CompilationResponse res = compiler.compileSync(req);
@@ -210,7 +208,6 @@ public class DefaultMavenCompilerTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                               new HashMap<>(),
                                                                Boolean.TRUE);
 
         CompilationResponse res = compiler.compileSync(req);
@@ -275,7 +272,6 @@ public class DefaultMavenCompilerTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                               new HashMap<>(),
                                                                Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
@@ -351,7 +347,6 @@ public class DefaultMavenCompilerTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.COMPILE},
-                                                               new HashMap<>(),
                                                                Boolean.TRUE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {

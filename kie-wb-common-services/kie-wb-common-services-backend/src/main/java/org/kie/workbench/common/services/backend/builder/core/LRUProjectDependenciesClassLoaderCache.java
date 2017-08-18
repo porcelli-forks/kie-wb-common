@@ -16,34 +16,43 @@
 
 package org.kie.workbench.common.services.backend.builder.core;
 
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.cache.LRUCache;
-import org.kie.api.builder.KieModule;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.scanner.KieModuleMetaData;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
+
+import org.kie.workbench.common.services.backend.compiler.AFClassLoaderProvider;
+import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.nio.impl.ClassLoaderProviderImpl;
+import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
+import org.uberfire.backend.server.util.Paths;
 
 @ApplicationScoped
 @Named("LRUProjectDependenciesClassLoaderCache")
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject, ClassLoader> {
-
-    private BuildInfoService buildInfoService;
+    //@MAXWasHere
+    private GuvnorM2Repository guvnorM2Repository;
 
     public LRUProjectDependenciesClassLoaderCache( ) {
     }
 
     @Inject
-    public LRUProjectDependenciesClassLoaderCache( BuildInfoService buildInfoService ) {
-        this.buildInfoService = buildInfoService;
+    public LRUProjectDependenciesClassLoaderCache( GuvnorM2Repository guvnorM2Repository ) {
+        this.guvnorM2Repository = guvnorM2Repository;
     }
 
-    protected void setBuildInfoService( final BuildInfoService buildInfoService ) {
-        this.buildInfoService = buildInfoService;
-    }
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
         ClassLoader classLoader = getEntry(project);
@@ -55,6 +64,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         return classLoader;
     }
 
+    //@TODO idea told never used, when is called this method  ?
     public synchronized void setDependenciesClassLoader(final KieProject project,
                                                         ClassLoader classLoader) {
         setEntry(project,
@@ -62,9 +72,14 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     }
 
     private ClassLoader buildClassLoader(final KieProject project) {
-        final KieModule module = buildInfoService.getBuildInfo(project).getKieModuleIgnoringErrors();
-        return buildClassLoader(project,
-                                KieModuleMetaData.Factory.newKieModuleMetaData(module));
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        KieCompilationResponse res = builder.build();
+        if(res.isSuccessful() && res.getKieModule().isPresent()) {
+            return buildClassLoader(project);
+        } else {
+            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
+                                               + project.getKModuleXMLPath());
+        }
     }
 
     /**
@@ -81,14 +96,44 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         //calculate this URL class loader given that we have the pom.xml and we can use maven libraries classes
         //to calculate project maven dependencies. This is basically what the KieModuleMetaData already does. The
         //optimization was added to avoid the maven transitive calculation on complex projects.
-        final ClassLoader classLoader = kieModuleMetaData.getClassLoader().getParent();
+        //final ClassLoader classLoader = kieModuleMetaData.getClassLoader().getParent();
+        final ClassLoader classLoader = buildClassloaderFromAllProjectDeps(project);
         if (classLoader instanceof URLClassLoader) {
             return classLoader;
         } else {
             //this case should never happen. But if ProjectClassLoader calculation for KieModuleMetadata changes at
             //the error will be notified for implementation review.
-            throw new RuntimeException("It was not posible to calculate project dependencies class loader for project: "
+            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
                                                + project.getKModuleXMLPath());
+        }
+    }
+
+
+    /** This method create a classloader only from the target folders*/
+    private static ClassLoader buildClassloaderFromTargetFolders(final KieProject project){
+        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
+        List<String> pomList = new ArrayList<>();
+        MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
+        Optional<ClassLoader> clazzLoader = kieClazzLoaderProvider.getClassloaderFromProjectTargets(pomList,
+                                                                                                    Boolean.FALSE);
+        if(clazzLoader.isPresent()){
+            return clazzLoader.get();
+        }else{
+            return new URLClassLoader(new URL[0]);
+        }
+    }
+
+    /** This method creates a classloader only from the deps from poms (transitives included)*/
+    private static ClassLoader buildClassloaderFromAllProjectDeps(final KieProject project){
+        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
+        List<String> pomList = new ArrayList<>();
+        MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
+        Optional<List<URL>> depsURLs = kieClazzLoaderProvider.getURLSFromAllDependencies(project.getRootPath().toString());
+        if(depsURLs.isPresent()){
+            List<URL> urls = depsURLs.get();
+            return new URLClassLoader(urls.toArray(new URL[urls.size()]));
+        }else{
+            return new URLClassLoader(new URL[0]);
         }
     }
 }

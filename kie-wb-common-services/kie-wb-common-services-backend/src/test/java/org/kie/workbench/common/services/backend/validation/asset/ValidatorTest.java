@@ -16,9 +16,12 @@
 
 package org.kie.workbench.common.services.backend.validation.asset;
 
+import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -32,40 +35,46 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.io.IOService;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+import org.uberfire.mocks.FileSystemTestingUtils;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.uberfire.backend.server.util.Paths.convert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidatorTest {
-
-    @Mock
-    Path path;
 
     private TestFileSystem testFileSystem;
 
     private DefaultGenericKieValidator validator;
     private ValidatorBuildService validatorBuildService;
+    private IOService ioService;
+    private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
+
 
     @Before
     public void setUp() throws Exception {
         testFileSystem = new TestFileSystem();
         validatorBuildService = testFileSystem.getReference( ValidatorBuildService.class );
         validator = new DefaultGenericKieValidator( validatorBuildService );
+        fileSystemTestingUtils.setup();
+        ioService = fileSystemTestingUtils.getIoService();
     }
 
     @After
     public void tearDown() throws Exception {
         testFileSystem.tearDown();
+        fileSystemTestingUtils.cleanup();
     }
 
     @Test
     public void testValidateWithAValidDRLFile() throws Throwable {
-        final Path path = path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
+        final JGitFileSystem fs = prepareTheFS();
         final String content = "package org.kie.workbench.common.services.builder.tests.test1\n" +
                 "\n" +
                 "rule R2\n" +
@@ -74,15 +83,15 @@ public class ValidatorTest {
                 "then\n" +
                 "end";
 
-        List<ValidationMessage> errors = validator.validate( path,
-                                                             content );
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl")), content );
 
         assertTrue( errors.isEmpty() );
     }
 
     @Test
     public void testValidateWithAInvalidDRLFile() throws Throwable {
-        final Path path = path( "/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl" );
+        final JGitFileSystem fs = prepareTheFS();
         final String content = "package org.kie.workbench.common.services.builder.tests.test1\n" +
                 "\n" +
                 "rule R2\n" +
@@ -91,15 +100,15 @@ public class ValidatorTest {
                 "then\n" +
                 "end";
 
-        List<ValidationMessage> errors = validator.validate( path,
-                                                             content );
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl")), content );
 
-        assertFalse( errors.isEmpty() );
+        assertFalse( errors.isEmpty() );// how can run a kie plugin if the pom is empty of plugin and kjar ?
     }
 
     @Test
     public void testValidateWithAValidJavaFile() throws Throwable {
-        final Path path1 = path( "/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java" );
+        final JGitFileSystem fs = prepareTheFS();
         final String content = "package org.kie.workbench.common.services.builder.tests.test1;\n" +
                 "\n" +
                 "public class Bean {\n" +
@@ -110,16 +119,16 @@ public class ValidatorTest {
                 "    }\n" +
                 "\n" +
                 "}";
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java")), content );
 
-        List<ValidationMessage> validate = validator.validate( path1,
-                                                               content );
-
-        assertTrue( validate.isEmpty() );
+        assertTrue( errors.isEmpty() );
     }
 
     @Test
     public void testValidateWithAInvalidJavaFile() throws Throwable {
-        final Path path1 = path( "/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java" );
+        final JGitFileSystem fs = prepareTheFS();
+       // final Path path1 = path( "/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java" );
         final String content = "package org.kie.workbench.common.services.builder.tests.test1;\n" +
                 "\n" +
                 "public class Bean {\n" +
@@ -127,22 +136,23 @@ public class ValidatorTest {
                 "\n" +
                 "}\n";
 
-        List<ValidationMessage> validate = validator.validate( path1,
-                                                               content );
 
-        assertFalse( validate.isEmpty() );
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java")), content );
+
+
+        assertFalse( errors.isEmpty() );
     }
 
     @Test
-    public void testValidateWhenTheresNoProject() throws Exception {
-        Path path = path( "/META-INF/beans.xml" );
+    public void testValidateWhenTheresNoProject() throws Throwable {
+        final JGitFileSystem fs = prepareTheFS();
         URL urlToValidate = this.getClass().getResource( "/META-INF/beans.xml" );
 
-        List<ValidationMessage> errors = validator.validate( path,
-                                                             Resources.toString( urlToValidate,
-                                                                                 Charsets.UTF_8 ) );
-
-        assertTrue( errors.isEmpty() );
+        List<ValidationMessage> errors = validator.validate(
+                convert(fs.getPath("/META-INF/beans.xml")),  Resources.toString( urlToValidate,
+                                                                                                                                                                           Charsets.UTF_8 ) );
+        assertTrue( errors.isEmpty() );// why no error when the project isn't present ?
     }
 
     @Test
@@ -176,6 +186,35 @@ public class ValidatorTest {
                                                          validator.fromValidatedPath( path ) );
 
         assertFalse( result.isEmpty() );
+    }
+
+    private JGitFileSystem prepareTheFS() throws Throwable{
+        final URI originRepo = URI.create("git://repo");
+        final JGitFileSystem fs = (JGitFileSystem) ioService.newFileSystem(originRepo,
+                                                                           new HashMap<String, Object>() {{
+                                                                               put("init",
+                                                                                   Boolean.TRUE);
+                                                                               put("internal",
+                                                                                   Boolean.TRUE);
+                                                                               put("listMode",
+                                                                                   "ALL");
+                                                                           }});
+
+        ioService.startBatch(fs);
+
+        ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/pom.xml"),
+                        new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/pom.xml").toPath())));
+        ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java"),
+                        new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java").toPath())));
+        ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/META-INF/kmodule.xml"),
+                        new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/src/main/resources/META-INF/kmodule.xml").toPath())));
+        ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule1.drl"),
+                        new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/src/main/resources/rule1.drl").toPath())));
+        ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl"),
+                        new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl").toPath())));
+        ioService.endBatch();
+
+        return fs;
     }
 
     private List<ValidationMessage> applyPredicate( final ValidationMessage errorMessage,

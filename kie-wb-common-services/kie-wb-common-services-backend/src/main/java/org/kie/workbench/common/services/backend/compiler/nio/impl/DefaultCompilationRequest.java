@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.nio.impl;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,7 +35,6 @@ public class DefaultCompilationRequest implements CompilationRequest {
     private WorkspaceCompilationInfo info;
     private String requestUUID;
     private String[] originalArgs;
-    private Map<String, Object> map;
     private String mavenRepo;
     private Boolean logRequested;
 
@@ -42,18 +42,15 @@ public class DefaultCompilationRequest implements CompilationRequest {
      * @param mavenRepo a string representation of the Path
      * @param info
      * @param args param for maven, can be used {@link org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs}
-     * @param map to retrieve KieMetaInfo and KieModule when a Kie Plugin is present
      * @param logRequested if is true the output of the build will be provided as a List<String>
      */
     public DefaultCompilationRequest(String mavenRepo,
                                      WorkspaceCompilationInfo info,
                                      String[] args,
-                                     Map<String, Object> map,
                                      Boolean logRequested) {
         this.mavenRepo = mavenRepo;
         this.info = info;
         this.requestUUID = UUID.randomUUID().toString();
-        this.map = map;
 
         this.originalArgs = args;
         this.logRequested = logRequested;
@@ -61,7 +58,7 @@ public class DefaultCompilationRequest implements CompilationRequest {
                                                 logRequested);
         this.req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
                                     internalArgs,
-                                    this.map,
+                                    new HashMap<>(),
                                     this.requestUUID,
                                     logRequested);
     }
@@ -88,6 +85,11 @@ public class DefaultCompilationRequest implements CompilationRequest {
     @Override
     public String getRequestUUID() {
         return requestUUID;
+    }
+
+    @Override
+    public Boolean skipAutoSourceUpdate() {
+        return true;
     }
 
     @Override
@@ -121,7 +123,7 @@ public class DefaultCompilationRequest implements CompilationRequest {
 
     @Override
     public Map<String, Object> getMap() {
-        return map;
+        return req.getMap();
     }
 
     @Override

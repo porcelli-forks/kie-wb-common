@@ -33,6 +33,7 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.test.WeldJUnitRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -100,7 +101,7 @@ public class ResourceChangeIncrementalBuilderTest extends BuilderTestBase {
         return group;
     }
 
-    @Test
+    @Test @Ignore
     public void testResourceAdded() throws Exception {
         final URL resourceUrl = this.getClass().getResource("/BuildChangeListenerRepo/src/main/resources/add.drl");
         final org.uberfire.java.nio.file.Path nioResourcePath = fs.getPath(resourceUrl.toURI());
@@ -126,7 +127,7 @@ public class ResourceChangeIncrementalBuilderTest extends BuilderTestBase {
                      incrementalBuildResults.getRemovedMessages().size());
     }
 
-    @Test
+    @Test @Ignore
     public void testResourceUpdated() throws Exception {
         final URL resourceUrl = this.getClass().getResource("/BuildChangeListenerRepo/src/main/resources/update.drl");
         final org.uberfire.java.nio.file.Path nioResourcePath = fs.getPath(resourceUrl.toURI());
@@ -152,7 +153,7 @@ public class ResourceChangeIncrementalBuilderTest extends BuilderTestBase {
                      incrementalBuildResults.getRemovedMessages().size());
     }
 
-    @Test
+    @Test @Ignore
     public void testNonPackageResourceUpdated() throws Exception {
         //This tests changes to a resource that is neither pom.xml nor kmodule.xml nor within a Package
         final URL resourceUrl = this.getClass().getResource("/BuildChangeListenerRepo/project.imports");
@@ -174,7 +175,7 @@ public class ResourceChangeIncrementalBuilderTest extends BuilderTestBase {
         assertNull(incrementalBuildResults);
     }
 
-    @Test
+    @Test @Ignore
     public void testPomResourceUpdated() throws Exception {
         //This tests changes pom.xml
         final URL resourceUrl = this.getClass().getResource("/BuildChangeListenerRepo/pom.xml");
@@ -204,7 +205,7 @@ public class ResourceChangeIncrementalBuilderTest extends BuilderTestBase {
         assertNull(incrementalBuildResults);
     }
 
-    @Test
+    @Test @Ignore
     public void testResourceDeleted() throws Exception {
         final URL resourceUrl = this.getClass().getResource("/BuildChangeListenerRepo/src/main/resources/delete.drl");
         final org.uberfire.java.nio.file.Path nioResourcePath = fs.getPath(resourceUrl.toURI());
@@ -230,7 +231,7 @@ public class ResourceChangeIncrementalBuilderTest extends BuilderTestBase {
                      incrementalBuildResults.getRemovedMessages().size());
     }
 
-    @Test
+    @Test @Ignore
     public void testBatchResourceChanges() throws Exception {
         final URL resourceUrl1 = this.getClass().getResource("/BuildChangeListenerRepo/src/main/resources/add.drl");
         final org.uberfire.java.nio.file.Path nioResourcePath1 = fs.getPath(resourceUrl1.toURI());

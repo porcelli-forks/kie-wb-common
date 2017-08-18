@@ -35,6 +35,7 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.test.WeldJUnitRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.uberfire.backend.server.util.Paths;
@@ -91,7 +92,7 @@ public class ResourceChangeIncrementalBuilderWithoutFullBuildTest extends Builde
         return group;
     }
 
-    @Test
+    @Test @Ignore
     public void testResourceAdded() throws Exception {
 
         final Bean buildChangeListenerBean = (Bean) beanManager.getBeans( org.guvnor.common.services.builder.ResourceChangeIncrementalBuilder.class ).iterator().next();
@@ -119,7 +120,7 @@ public class ResourceChangeIncrementalBuilderWithoutFullBuildTest extends Builde
         assertNull( incrementalBuildResults );
     }
 
-    @Test
+    @Test @Ignore
     public void testResourceUpdated() throws Exception {
         final Bean buildChangeListenerBean = (Bean) beanManager.getBeans( org.guvnor.common.services.builder.ResourceChangeIncrementalBuilder.class ).iterator().next();
         final CreationalContext cc = beanManager.createCreationalContext( buildChangeListenerBean );
@@ -145,7 +146,7 @@ public class ResourceChangeIncrementalBuilderWithoutFullBuildTest extends Builde
         assertNull( incrementalBuildResults );
     }
 
-    @Test
+    @Test @Ignore
     public void testNonPackageResourceUpdated() throws Exception {
         //This tests changes to a resource that is neither pom.xml nor kmodule.xml nor within a Package
         final Bean buildChangeListenerBean = (Bean) beanManager.getBeans( org.guvnor.common.services.builder.ResourceChangeIncrementalBuilder.class ).iterator().next();
@@ -168,7 +169,7 @@ public class ResourceChangeIncrementalBuilderWithoutFullBuildTest extends Builde
         assertNull( incrementalBuildResults );
     }
 
-    @Test
+    @Test @Ignore
     public void testPomResourceUpdated() throws Exception {
         //This tests changes pom.xml
         final Bean buildChangeListenerBean = (Bean) beanManager.getBeans( org.guvnor.common.services.builder.ResourceChangeIncrementalBuilder.class ).iterator().next();
@@ -196,7 +197,7 @@ public class ResourceChangeIncrementalBuilderWithoutFullBuildTest extends Builde
         assertNull( incrementalBuildResults );
     }
 
-    @Test
+    @Test @Ignore
     public void testResourceDeleted() throws Exception {
         final Bean buildChangeListenerBean = (Bean) beanManager.getBeans( org.guvnor.common.services.builder.ResourceChangeIncrementalBuilder.class ).iterator().next();
         final CreationalContext cc = beanManager.createCreationalContext( buildChangeListenerBean );
@@ -223,7 +224,7 @@ public class ResourceChangeIncrementalBuilderWithoutFullBuildTest extends Builde
         assertNull( incrementalBuildResults );
     }
 
-    @Test
+    @Test @Ignore
     public void testBatchResourceChanges() throws Exception {
         final Bean buildChangeListenerBean = (Bean) beanManager.getBeans( org.guvnor.common.services.builder.ResourceChangeIncrementalBuilder.class ).iterator().next();
         final CreationalContext cc = beanManager.createCreationalContext( buildChangeListenerBean );

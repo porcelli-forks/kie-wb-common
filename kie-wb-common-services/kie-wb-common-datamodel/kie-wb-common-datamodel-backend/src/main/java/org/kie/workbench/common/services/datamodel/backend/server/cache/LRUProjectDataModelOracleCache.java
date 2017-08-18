@@ -39,18 +39,15 @@ public class LRUProjectDataModelOracleCache
 
     private ProjectDataModelOracleBuilderProvider builderProvider;
     private KieProjectService projectService;
-    private BuildInfoService buildInfoService;
 
     public LRUProjectDataModelOracleCache() {
     }
 
     @Inject
     public LRUProjectDataModelOracleCache( final ProjectDataModelOracleBuilderProvider builderProvider,
-                                           final KieProjectService projectService,
-                                           final BuildInfoService buildInfoService ) {
+                                           final KieProjectService projectService) {
         this.builderProvider = builderProvider;
         this.projectService = projectService;
-        this.buildInfoService = buildInfoService;
     }
 
     public synchronized void invalidateProjectCache( @Observes final InvalidateDMOProjectCacheEvent event ) {
@@ -77,8 +74,8 @@ public class LRUProjectDataModelOracleCache
     }
 
     private ProjectDataModelOracle makeProjectOracle( final KieProject project ) {
-        return builderProvider.newBuilder( project,
-                                           buildInfoService.getBuildInfo( project ) ).build();
+        //@TODO check with an additional test
+        return builderProvider.newBuilder(project).build();
     }
 
 }

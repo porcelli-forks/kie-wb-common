@@ -91,8 +91,7 @@ public class KieMetadataTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.INSTALL},
-                                                               new HashMap<>(),
-                                                               Boolean.TRUE);
+                                                               Boolean.FALSE);
         KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
@@ -153,7 +152,6 @@ public class KieMetadataTest {
             CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                    info,
                                                                    new String[]{MavenCLIArgs.INSTALL},
-                                                                   new HashMap<>(),
                                                                    Boolean.TRUE);
             KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
@@ -208,7 +206,6 @@ public class KieMetadataTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.INSTALL},
-                                                               new HashMap<>(),
                                                                Boolean.FALSE);
         KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
