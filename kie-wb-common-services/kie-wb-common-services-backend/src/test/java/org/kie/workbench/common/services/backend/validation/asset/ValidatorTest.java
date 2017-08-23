@@ -117,7 +117,12 @@ public class ValidatorTest {
                 "    public Bean(int value) {\n" +
                 "        this.value = value;\n" +
                 "    }\n" +
-                "\n" +
+                "    public int getValue() {\n" +
+                "        return value*7;\n" +
+                "    }\n"+
+                "    public String toString(){\n"+
+                "        return String.valueOf(value); \n"+
+                "    }\n" +
                 "}";
         List<ValidationMessage> errors = validator.validate(
                 convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java")), content );
