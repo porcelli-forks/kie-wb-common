@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilerMapsHolder;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
@@ -14,7 +15,7 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     private Map<JGitFileSystem, Git> gitMap;
-    private Map<Path, AFBuilder> buildersMap;
+    private Map<Path, KieAFBuilder> buildersMap;
 
     public DefaultCompilerMapsHolder() {
         gitMap = new ConcurrentHashMap<>();
@@ -47,15 +48,15 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
      * BUILDER
      */
 
-    public AFBuilder getBuilder(Path projectRootPath) {
+    public KieAFBuilder getBuilder(Path projectRootPath) {
         return buildersMap.get(projectRootPath);
     }
 
-    public void addBuilder(final Path projectRootPath, final AFBuilder builder) {
+    public void addBuilder(final Path projectRootPath, final KieAFBuilder builder) {
         buildersMap.putIfAbsent(projectRootPath, builder);
     }
 
-    public AFBuilder removeBuilder(Path projectRootPath) {
+    public KieAFBuilder removeBuilder(Path projectRootPath) {
         return buildersMap.remove(projectRootPath);
     }
 

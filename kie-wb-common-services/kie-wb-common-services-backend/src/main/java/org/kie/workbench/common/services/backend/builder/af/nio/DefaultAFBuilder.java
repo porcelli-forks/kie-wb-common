@@ -33,29 +33,9 @@ public class DefaultAFBuilder implements AFBuilder {
     private CompilationRequest req;
     private String mavenRepo;
 
-    /***
-     *Constructor to define the default behaviour called with the build method
-     * @param projectRepo
-     * @param mavenRepo
-     * @param args maven cli args
-     */
-    public DefaultAFBuilder(String projectRepo,
-                            String mavenRepo,
-                            String[] args) {
-        /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
-         * only in the internal maven compilation new objects ill be created in the compileSync */
-        this.mavenRepo = mavenRepo;
-        compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
-        req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            args,
-                                            Boolean.TRUE);
-    }
-
     public DefaultAFBuilder(String projectRepo,
                             String mavenRepo) {
-        /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
         compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
@@ -66,10 +46,32 @@ public class DefaultAFBuilder implements AFBuilder {
                                             Boolean.TRUE);
     }
 
+    /***
+     *Constructor to define the default behaviour called with the build method
+     * @param projectRepo
+     * @param mavenRepo
+     * @param args maven cli args
+     */
+    public DefaultAFBuilder(String projectRepo,
+                            String mavenRepo,
+                            String[] args) {
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+         * only in the internal maven compilation new objects ill be created in the compileSync */
+        this.mavenRepo = mavenRepo;
+        compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            args,
+                                            Boolean.TRUE);
+    }
+
+
+
 
     public DefaultAFBuilder(String projectRepo,
                             String mavenRepo, AFCompiler compiler) {
-        /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects ill be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compiler = compiler;

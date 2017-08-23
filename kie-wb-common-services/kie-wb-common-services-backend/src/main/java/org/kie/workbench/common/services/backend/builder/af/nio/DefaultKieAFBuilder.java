@@ -35,7 +35,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo) {
-        /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
@@ -49,7 +49,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
                                String[] args) {
-        /**In the default construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+        /**In the  construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
@@ -57,6 +57,20 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             args,
+                                            Boolean.TRUE);
+    }
+
+    public DefaultKieAFBuilder(String projectRepo,
+                               String mavenRepo,
+                               AFCompiler compiler) {
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+         * only in the internal maven compilation new objects will be created in the compileSync */
+        this.mavenRepo = mavenRepo;
+        this.compiler = compiler;
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
                                             Boolean.TRUE);
     }
 

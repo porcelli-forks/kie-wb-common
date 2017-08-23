@@ -38,7 +38,9 @@ import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
@@ -93,13 +95,13 @@ public class ValidatorBuildService {
         return outerDecorator;
     }
 
-    private AFBuilder getBuilder(final Project project) {
+    private KieAFBuilder getBuilder(final Project project) {
         final org.uberfire.java.nio.file.Path projectRootPath = convert(project.getRootPath());
-        final AFBuilder builder = compilerMapsHolder.getBuilder(projectRootPath);
+        final KieAFBuilder builder = compilerMapsHolder.getBuilder(projectRootPath);
         if (builder == null) {
-            final AFBuilder newBuilder = new DefaultAFBuilder(projectRootPath.toUri().toString(),
-                                                              guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), //repositories/kie/global
-                                                              getCompiler());
+            final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
+                                                                    guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),//repositories/kie/global
+                                                                    getCompiler());
             compilerMapsHolder.addBuilder(projectRootPath,
                                           newBuilder);
             return newBuilder;
@@ -164,7 +166,7 @@ public class ValidatorBuildService {
         Git git = compilerMapsHolder.getGit(fs);
         if (git == null) {
             //one build discarded to create the git in compiler map
-            final AFBuilder builder = getBuilder(kieProject);
+            final KieAFBuilder builder = getBuilder(kieProject);
             CompilationResponse res = builder.build();
             git = compilerMapsHolder.getGit(fs);
             if (git == null) {
@@ -209,7 +211,7 @@ public class ValidatorBuildService {
                                                             final KieProject project) throws IOException {
 
         Files.copy(inputStream, tempResourcePath, StandardCopyOption.REPLACE_EXISTING);
-        final AFBuilder builder = getBuilder(project);
+        final KieAFBuilder builder = getBuilder(project);
         final CompilationResponse res = builder.build();
         return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
     }

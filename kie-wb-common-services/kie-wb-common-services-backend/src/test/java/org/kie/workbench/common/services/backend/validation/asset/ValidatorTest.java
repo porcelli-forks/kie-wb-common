@@ -85,7 +85,7 @@ public class ValidatorTest {
 
         List<ValidationMessage> errors = validator.validate(
                 convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl")), content );
-
+        //"No value present"
         assertTrue( errors.isEmpty() );
     }
 
@@ -152,7 +152,8 @@ public class ValidatorTest {
         List<ValidationMessage> errors = validator.validate(
                 convert(fs.getPath("/META-INF/beans.xml")),  Resources.toString( urlToValidate,
                                                                                                                                                                            Charsets.UTF_8 ) );
-        assertTrue( errors.isEmpty() );// why no error when the project isn't present ?
+        assertFalse( errors.isEmpty() );
+        assertTrue(errors.get(0).getText().equals("ERROR no project found"));
     }
 
     @Test

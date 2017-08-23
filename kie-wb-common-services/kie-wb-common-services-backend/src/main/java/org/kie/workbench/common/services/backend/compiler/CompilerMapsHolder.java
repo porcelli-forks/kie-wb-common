@@ -1,7 +1,7 @@
 package org.kie.workbench.common.services.backend.compiler;
 
 import org.eclipse.jgit.api.Git;
-import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
@@ -24,11 +24,11 @@ public interface CompilerMapsHolder {
 
     //BUILDER
 
-    AFBuilder getBuilder(Path projectRootPath);
+    KieAFBuilder getBuilder(Path projectRootPath);
 
-    void addBuilder(Path projectRootPath, AFBuilder builder);
+    void addBuilder(Path projectRootPath, KieAFBuilder builder);
 
-    AFBuilder removeBuilder(Path projectRootPath);
+    KieAFBuilder removeBuilder(Path projectRootPath);
 
     boolean containsBuilder(Path projectRootPath);
 
