@@ -31,6 +31,7 @@
       </testResource>
       <testResource>
          <directory>src/test/resources</directory>
+        <filtering>true</filtering>
        </testResource>
     </testResources>
     <plugins>
@@ -78,6 +79,12 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>org.uberfire</artifactId>
+          <groupId>uberfire-maven-support</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>

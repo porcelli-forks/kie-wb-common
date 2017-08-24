@@ -216,7 +216,7 @@ public class ValidatorTest {
         ioService.startBatch(fs);
 
         ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/pom.xml"),
-                        new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/pom.xml").toPath())));
+                        new String(java.nio.file.Files.readAllBytes(new File("target/test-classes/GuvnorM2RepoDependencyExample1/pom.xml").toPath())));
         ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java"),
                         new String(java.nio.file.Files.readAllBytes(new File("src/test/resources/GuvnorM2RepoDependencyExample1/src/main/java/org/kie/workbench/common/services/builder/tests/test1/Bean.java").toPath())));
         ioService.write(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/META-INF/kmodule.xml"),

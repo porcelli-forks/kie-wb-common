@@ -40,7 +40,7 @@
       <plugin>
         <groupId>org.kie</groupId>
         <artifactId>kie-takari-plugin</artifactId>
-        <version>7.2.0.Final</version>
+        <version>${version.org.kie}</version>
         <extensions>true</extensions>
         <configuration>
           <properties>
