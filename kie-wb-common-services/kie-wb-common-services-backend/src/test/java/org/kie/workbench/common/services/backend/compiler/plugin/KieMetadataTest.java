@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.services.backend.compiler.plugin;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -75,6 +76,7 @@ public class KieMetadataTest {
         /**
          * If the test fail check if the Drools core classes used, KieModuleMetaInfo and TypeMetaInfo implements Serializable
          * */
+        String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
         //compile and install
         Path tmpRoot = Files.createTempDirectory("repo");
         //NIO creation and copy content
@@ -90,8 +92,8 @@ public class KieMetadataTest {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(temp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
-                                                               new String[]{MavenCLIArgs.INSTALL},
-                                                               Boolean.FALSE);
+                                                               new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS + alternateSettingsAbsPath},
+                                                               Boolean.TRUE);
         KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
@@ -136,7 +138,7 @@ public class KieMetadataTest {
         /**
          * If the test fail check if the Drools core classes used, KieModuleMetaInfo and TypeMetaInfo implements Serializable
          * */
-
+        String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
         try {
             Path tmpRoot = Files.createTempDirectory("repo");
             Path tmp = Files.createDirectories(Paths.get(tmpRoot.toString(),
@@ -151,7 +153,7 @@ public class KieMetadataTest {
 
             CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                    info,
-                                                                   new String[]{MavenCLIArgs.INSTALL},
+                                                                   new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS +alternateSettingsAbsPath},
                                                                    Boolean.TRUE);
             KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
@@ -194,6 +196,7 @@ public class KieMetadataTest {
         /**
          * If the test fail check if the Drools core classes used, KieModuleMetaInfo and TypeMetaInfo implements Serializable
          * */
+        String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
         Path tmpRoot = Files.createTempDirectory("repo");
         Path tmp = Files.createDirectories(Paths.get(tmpRoot.toString(),
                                                      "dummy"));
@@ -205,7 +208,7 @@ public class KieMetadataTest {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmp.toUri()));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
-                                                               new String[]{MavenCLIArgs.INSTALL},
+                                                               new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS +alternateSettingsAbsPath},
                                                                Boolean.FALSE);
         KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {

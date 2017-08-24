@@ -54,9 +54,10 @@ import static org.junit.Assert.*;
 
 public class KieDefaultMavenCompilerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(KieDefaultMavenCompilerTest.class);
     private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
     private IOService ioService;
+    private static final Logger logger = LoggerFactory.getLogger(KieDefaultMavenCompilerTest.class);
+
     private Path mavenRepo;
 
     @Before
@@ -305,6 +306,7 @@ public class KieDefaultMavenCompilerTest {
     //
     @Test
     public void buildWithAllDecoratorsTest() throws Exception {
+        String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.JGIT_BEFORE_AND_LOG_AFTER);
 
         String MASTER_BRANCH = "master";
@@ -351,7 +353,7 @@ public class KieDefaultMavenCompilerTest {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmpCloned + "/dummy"));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
-                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.ALTERNATE_USER_SETTINGS + alternateSettingsAbsPath},
                                                                Boolean.TRUE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {

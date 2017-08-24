@@ -35,19 +35,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.mocks.FileSystemTestingUtils;
+import org.uberfire.java.nio.file.FileSystem;
+import org.uberfire.mocks.FileSystemTestingUtils;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.uberfire.backend.server.util.Paths.convert;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidatorTest {
+
+    @Mock
+    Path path;
 
     private TestFileSystem testFileSystem;
 
@@ -103,7 +110,7 @@ public class ValidatorTest {
         List<ValidationMessage> errors = validator.validate(
                 convert(fs.getPath("/GuvnorM2RepoDependencyExample1/src/main/resources/rule2.drl")), content );
 
-        assertFalse( errors.isEmpty() );// how can run a kie plugin if the pom is empty of plugin and kjar ?
+        assertFalse( errors.isEmpty() );
     }
 
     @Test

@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 
+import org.appformer.project.datamodel.imports.Import;
+import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
+import org.appformer.project.datamodel.oracle.TypeSource;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
-import org.drools.workbench.models.datamodel.imports.Import;
-import org.drools.workbench.models.datamodel.oracle.ProjectDataModelOracle;
-import org.drools.workbench.models.datamodel.oracle.TypeSource;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.scanner.KieModuleMetaData;

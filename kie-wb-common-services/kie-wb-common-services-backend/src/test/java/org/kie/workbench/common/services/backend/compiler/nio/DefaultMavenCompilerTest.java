@@ -51,9 +51,10 @@ import static org.junit.Assert.*;
 
 public class DefaultMavenCompilerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultMavenCompilerTest.class);
     private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
     private IOService ioService;
+    private static final Logger logger = LoggerFactory.getLogger(DefaultMavenCompilerTest.class);
+
     private Path mavenRepo;
 
     @Before
@@ -300,6 +301,7 @@ public class DefaultMavenCompilerTest {
     //
     @Test
     public void buildWithAllDecoratorsTest() throws Exception {
+        String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
         AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE_AND_LOG_AFTER);
 
         String MASTER_BRANCH = "master";
@@ -341,8 +343,6 @@ public class DefaultMavenCompilerTest {
 
         assertNotNull(cloned);
 
-        //@TODO refactor and use only one between the URI or Git
-        //@TODO find a way to resolve the problem of the prjname inside .git folder
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmpCloned + "/dummy"));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
