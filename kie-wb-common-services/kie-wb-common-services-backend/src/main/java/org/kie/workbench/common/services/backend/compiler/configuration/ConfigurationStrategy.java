@@ -18,8 +18,8 @@ package org.kie.workbench.common.services.backend.compiler.configuration;
 
 import java.util.Map;
 
-import org.kie.workbench.common.services.backend.compiler.Order;
-import org.kie.workbench.common.services.backend.compiler.Valid;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Valid;
 
 /**
  * Define the behaviour of a ConfigurationStrategy,

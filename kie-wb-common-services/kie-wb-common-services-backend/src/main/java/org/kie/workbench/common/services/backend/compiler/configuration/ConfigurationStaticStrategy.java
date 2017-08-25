@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.workbench.common.services.backend.compiler.Order;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
 
 /**
  * Default implementation, this class can be extended to change the protected configuration Map

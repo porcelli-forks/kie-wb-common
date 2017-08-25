@@ -22,8 +22,8 @@ import java.util.List;
 import org.apache.maven.artifact.Artifact;
 import org.junit.Test;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultIncrementalCompilerEnabler;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler.DefaultIncrementalCompilerEnabler;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.uberfire.java.nio.file.Paths;
 
 import static org.junit.Assert.*;

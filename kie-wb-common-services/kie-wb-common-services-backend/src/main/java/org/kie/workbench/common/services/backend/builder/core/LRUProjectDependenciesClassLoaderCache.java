@@ -32,10 +32,10 @@ import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
-import org.kie.workbench.common.services.backend.compiler.AFClassLoaderProvider;
-import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.ClassLoaderProviderImpl;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 

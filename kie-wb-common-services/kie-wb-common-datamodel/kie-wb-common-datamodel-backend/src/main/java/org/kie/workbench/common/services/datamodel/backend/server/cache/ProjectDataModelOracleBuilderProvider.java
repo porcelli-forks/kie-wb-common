@@ -34,7 +34,7 @@ import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.service.BuildInfo;
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
-import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.ProjectImportsService;

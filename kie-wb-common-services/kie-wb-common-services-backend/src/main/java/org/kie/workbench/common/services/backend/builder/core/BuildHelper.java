@@ -38,8 +38,8 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
-import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.utils.MavenOutputConverter;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;

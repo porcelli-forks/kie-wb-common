@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kie.workbench.common.services.backend.compiler.Order;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

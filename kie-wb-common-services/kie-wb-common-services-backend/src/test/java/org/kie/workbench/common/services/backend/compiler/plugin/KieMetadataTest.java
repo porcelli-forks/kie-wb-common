@@ -17,7 +17,6 @@
 package org.kie.workbench.common.services.backend.compiler.plugin;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,15 +31,15 @@ import org.junit.Test;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
-import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieMavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
@@ -93,7 +92,7 @@ public class KieMetadataTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS + alternateSettingsAbsPath},
-                                                               Boolean.TRUE);
+                                                               Boolean.TRUE, Boolean.FALSE);
         KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
@@ -154,7 +153,7 @@ public class KieMetadataTest {
             CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                    info,
                                                                    new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS +alternateSettingsAbsPath},
-                                                                   Boolean.TRUE);
+                                                                   Boolean.TRUE, Boolean.FALSE);
             KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
 
             if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
@@ -209,7 +208,7 @@ public class KieMetadataTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS +alternateSettingsAbsPath},
-                                                               Boolean.FALSE);
+                                                               Boolean.FALSE, Boolean.FALSE);
         KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),

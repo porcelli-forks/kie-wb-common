@@ -17,7 +17,6 @@ package org.kie.workbench.common.services.backend.compiler.nio.kie;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Assert;
@@ -28,12 +27,12 @@ import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.nio.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.nio.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.WorkspaceCompilationInfo;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenCompilerFactory;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.kie.KieMavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.DirectoryStream;

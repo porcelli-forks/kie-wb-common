@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
-import org.kie.workbench.common.services.backend.compiler.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 
 /***
  * Default implementation of a Kie Compilation response,

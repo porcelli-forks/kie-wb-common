@@ -19,21 +19,23 @@ package org.kie.workbench.common.services.backend.compiler.nio;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.compiler.AFClassLoaderProvider;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.ClassLoaderProviderImpl;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.DefaultCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenCompilerFactory;
-import org.kie.workbench.common.services.backend.compiler.nio.impl.MavenUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
+import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
@@ -76,7 +78,7 @@ public class ClassLoaderProviderTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE, MavenCLIArgs.INSTALL},
-                                                               Boolean.FALSE);
+                                                               Boolean.FALSE, Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
@@ -129,7 +131,7 @@ public class ClassLoaderProviderTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE, MavenCLIArgs.INSTALL},
-                                                               Boolean.FALSE);
+                                                               Boolean.FALSE, Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
@@ -180,7 +182,7 @@ public class ClassLoaderProviderTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                               Boolean.FALSE);
+                                                               Boolean.FALSE, Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),

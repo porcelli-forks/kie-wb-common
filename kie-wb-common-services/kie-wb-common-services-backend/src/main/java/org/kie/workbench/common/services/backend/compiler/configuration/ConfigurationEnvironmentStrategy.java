@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.workbench.common.services.backend.compiler.Order;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
 import org.slf4j.LoggerFactory;
 
 public class ConfigurationEnvironmentStrategy implements ConfigurationStrategy,
