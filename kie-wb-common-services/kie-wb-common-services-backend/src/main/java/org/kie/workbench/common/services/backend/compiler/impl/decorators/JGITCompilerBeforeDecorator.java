@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.exporter.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;

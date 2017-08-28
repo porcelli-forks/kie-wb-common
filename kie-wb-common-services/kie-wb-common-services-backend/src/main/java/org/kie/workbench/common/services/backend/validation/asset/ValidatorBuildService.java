@@ -40,7 +40,7 @@ import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.exporter.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;

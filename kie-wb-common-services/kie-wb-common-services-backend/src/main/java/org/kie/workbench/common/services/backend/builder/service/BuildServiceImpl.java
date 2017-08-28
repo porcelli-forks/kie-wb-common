@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.services.backend.builder.service;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
@@ -26,10 +27,20 @@ import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.DeploymentMode;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.ala.LocalBuildConfig;
 
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
+import org.kie.workbench.common.services.backend.project.KieResourceResolver;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.ResourceChange;
 
@@ -41,81 +52,96 @@ public class BuildServiceImpl implements BuildService {
 
     private KieProjectService projectService;
 
+    private KieAFBuilder kieAfBuilder;
+
+    private GuvnorM2Repository guvnorM2Repository;
+
+    private ClassloadersResourcesHolder classloadersResourcesHolder;
+
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
     }
 
     @Inject
-    public BuildServiceImpl( final KieProjectService projectService,
-                             final BuildServiceHelper buildServiceHelper) {
+    public BuildServiceImpl(final KieProjectService projectService,
+                            final BuildServiceHelper buildServiceHelper,
+                            final GuvnorM2Repository guvnorM2Repository,
+                            final ClassloadersResourcesHolder classloadersResourcesHolder) {
         this.projectService = projectService;
         this.buildServiceHelper = buildServiceHelper;
+        this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        this.guvnorM2Repository = guvnorM2Repository;
+        this.classloadersResourcesHolder = classloadersResourcesHolder;
     }
 
     @Override
     public BuildResults build( final Project project ) {
-        return buildServiceHelper.localBuild( project );
+        return buildInternal(project);
     }
 
-    /*public void build( final Project project, final Consumer< Builder > consumer ) {
-        buildServiceHelper.localBuild( project, localBinaryConfig ->
-                consumer.accept( localBinaryConfig.getBuilder( ) ) );
-    }*/
+    private BuildResults buildAndDeployInternal(final Project project){
+        KieCompilationResponse res = kieAfBuilder.buildAndInstall(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
+    }
+
+    private BuildResults buildInternal(final Project project){
+        KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
+    }
+
+    private IncrementalBuildResults buildIncrementallyInternal(final Project project){
+        KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
+    }
 
     @Override
     public BuildResults buildAndDeploy( final Project project ) {
-        return buildAndDeploy( project, DeploymentMode.VALIDATED );
+        return buildAndDeployInternal(project);
     }
 
     @Override
     public BuildResults buildAndDeploy( final Project project,
                                         final DeploymentMode mode ) {
-
-        return buildAndDeploy( project, false, mode );
+        return buildAndDeployInternal(project);
     }
 
     @Override
     public BuildResults buildAndDeploy( final Project project,
                                         final boolean suppressHandlers ) {
-        return buildAndDeploy( project, suppressHandlers, DeploymentMode.VALIDATED );
+        return buildAndDeployInternal(project);
     }
 
     @Override
     public BuildResults buildAndDeploy( final Project project,
                                         final boolean suppressHandlers,
                                         final DeploymentMode mode ) {
-        return buildServiceHelper.localBuildAndDeploy( project, mode, suppressHandlers );
+        return buildAndDeployInternal(project);
     }
 
     @Override
     public boolean isBuilt( final Project project ) {
-        /*final Builder builder = cache.assertBuilder( project );
-        return builder.isBuilt( );*/
         //@TODO MAX this can not be changed in this module org.guvnor.common.services.project.builder.service.BuildService
-        return Boolean.TRUE;
+        org.uberfire.java.nio.file.Path path = org.uberfire.java.nio.file.Paths.get(URI.create(project.toString()));
+        return classloadersResourcesHolder.containsPomDependencies( path);
+        //return Boolean.TRUE;
     }
 
     @Override
     public IncrementalBuildResults addPackageResource( final Path resource ) {
-        return buildIncrementally( resource, LocalBuildConfig.BuildType.INCREMENTAL_ADD_RESOURCE );
+        Project project = projectService.resolveProject( resource );
+        return buildIncrementallyInternal(project);
     }
 
     @Override
     public IncrementalBuildResults deletePackageResource( final Path resource ) {
-        return buildIncrementally( resource, LocalBuildConfig.BuildType.INCREMENTAL_DELETE_RESOURCE );
+        Project project = projectService.resolveProject( resource );
+        return buildIncrementallyInternal(project);
     }
 
     @Override
     public IncrementalBuildResults updatePackageResource( final Path resource ) {
-        return buildIncrementally( resource, LocalBuildConfig.BuildType.INCREMENTAL_UPDATE_RESOURCE );
-    }
-
-    private IncrementalBuildResults buildIncrementally( Path resource, LocalBuildConfig.BuildType buildType ) {
         Project project = projectService.resolveProject( resource );
-        if ( project == null ) {
-            return new IncrementalBuildResults( );
-        }
-        return buildServiceHelper.localBuild( project, buildType, resource );
+        return buildIncrementallyInternal(project);
     }
 
     @Override
@@ -124,7 +150,7 @@ public class BuildServiceImpl implements BuildService {
         if ( project == null ) {
             return new IncrementalBuildResults( );
         }
-        return buildServiceHelper.localBuild( project, changes );
+        return buildIncrementallyInternal(project);
     }
 
 }

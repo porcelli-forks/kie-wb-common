@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
+import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 
 /**
@@ -80,6 +81,17 @@ public class MavenOutputConverter {
             }
         }
         return buildRs;
+    }
+    public static IncrementalBuildResults convertIntoIncrementalBuildResults(List<String> mavenOutput){
+        IncrementalBuildResults incrmBuildRes = new IncrementalBuildResults();
+        if(mavenOutput.size()>0) {
+            for(String item: mavenOutput){
+                BuildMessage msg = new BuildMessage();
+                msg.setText(item);
+                incrmBuildRes.addAddedMessage(msg);
+            }
+        }
+        return incrmBuildRes;
     }
 
 }
