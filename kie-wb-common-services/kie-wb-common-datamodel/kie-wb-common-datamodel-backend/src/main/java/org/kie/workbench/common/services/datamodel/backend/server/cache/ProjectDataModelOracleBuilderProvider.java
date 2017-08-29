@@ -16,16 +16,14 @@
 package org.kie.workbench.common.services.datamodel.backend.server.cache;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.inject.Inject;
 
 import org.appformer.project.datamodel.imports.Import;
 import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
 import org.appformer.project.datamodel.oracle.TypeSource;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
+import org.eclipse.jgit.api.Git;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.scanner.KieModuleMetaData;
@@ -35,6 +33,8 @@ import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuil
 import org.kie.workbench.common.services.backend.builder.service.BuildInfo;
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.ProjectImportsService;
@@ -44,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Files;
+import org.uberfire.java.nio.file.Path;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class ProjectDataModelOracleBuilderProvider {
 
@@ -52,6 +54,7 @@ public class ProjectDataModelOracleBuilderProvider {
     private ProjectImportsService importsService;
     private PackageNameWhiteListService packageNameWhiteListService;
     private GuvnorM2Repository guvnorM2Repository;
+    private CompilerMapsHolder compilerMapsHolder;
 
     public ProjectDataModelOracleBuilderProvider() {
         //CDI proxy
@@ -59,10 +62,12 @@ public class ProjectDataModelOracleBuilderProvider {
 
     @Inject
     public ProjectDataModelOracleBuilderProvider(final PackageNameWhiteListService packageNameWhiteListService,
-                                                 final ProjectImportsService importsService, GuvnorM2Repository guvnorM2Repository) {
+                                                 final ProjectImportsService importsService, final GuvnorM2Repository guvnorM2Repository,
+                                                 final CompilerMapsHolder compilerMapsHolder) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
         this.guvnorM2Repository = guvnorM2Repository;
+        this.compilerMapsHolder = compilerMapsHolder;
     }
 
     public InnerBuilder newBuilder( final KieProject project,
@@ -77,7 +82,19 @@ public class ProjectDataModelOracleBuilderProvider {
     }
 
     public InnerBuilder newBuilder( final KieProject project ) {
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        Path nioPath = Paths.convert(project.getRootPath());
+        KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
+        if(builder == null) {
+            if(nioPath.getFileSystem() instanceof JGitFileSystem){
+                Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
+                Path pathOnFS = org.uberfire.java.nio.file.Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(nioPath.getFileName().toString()).normalize().toUri());
+                compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
+                builder = new DefaultKieAFBuilder(pathOnFS.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+            }
+
+        }
+
+        //KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             final KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),

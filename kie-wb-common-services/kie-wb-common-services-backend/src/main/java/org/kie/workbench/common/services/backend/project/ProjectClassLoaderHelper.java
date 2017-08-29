@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
+import org.eclipse.jgit.api.Git;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.api.builder.KieModule;
@@ -28,7 +29,14 @@ import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
+import org.uberfire.backend.server.util.Paths;
+import org.uberfire.java.nio.file.Path;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+
+import java.util.UUID;
 
 /**
  *
@@ -43,9 +51,22 @@ public class ProjectClassLoaderHelper {
     @Named("LRUProjectDependenciesClassLoaderCache")
     private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;
 
+    @Inject
+    private CompilerMapsHolder compilerMapsHolder;
+
     public ClassLoader getProjectClassLoader( KieProject project ) {
         //@TODO retrieve the AFBuilder from CompilerMapsHolder
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        Path nioPath = Paths.convert(project.getRootPath());
+        KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
+        if(builder == null) {
+            if(nioPath.getFileSystem() instanceof JGitFileSystem ){
+                Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
+                Path pathOnFS = org.uberfire.java.nio.file.Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(nioPath.getFileName().toString()).normalize().toUri());
+                compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
+                builder = new DefaultKieAFBuilder(pathOnFS.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+            }
+
+        }
         KieCompilationResponse res = builder.build();
         //@MAXWasHere
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
