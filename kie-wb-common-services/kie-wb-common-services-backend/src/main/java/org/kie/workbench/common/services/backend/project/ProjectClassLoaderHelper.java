@@ -36,6 +36,7 @@ import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
+import java.net.URI;
 import java.util.UUID;
 
 /**
@@ -43,6 +44,8 @@ import java.util.UUID;
  */
 @ApplicationScoped
 public class ProjectClassLoaderHelper {
+
+    protected String FILE_URI = "file://";
 
     @Inject
     private GuvnorM2Repository guvnorM2Repository;
@@ -55,20 +58,18 @@ public class ProjectClassLoaderHelper {
     private CompilerMapsHolder compilerMapsHolder;
 
     public ClassLoader getProjectClassLoader( KieProject project ) {
-        //@TODO retrieve the AFBuilder from CompilerMapsHolder
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         if(builder == null) {
             if(nioPath.getFileSystem() instanceof JGitFileSystem ){
                 Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
-                Path pathOnFS = org.uberfire.java.nio.file.Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(nioPath.getFileName().toString()).normalize().toUri());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
-                builder = new DefaultKieAFBuilder(pathOnFS.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+                Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString()+ nioPath.toString()));
+                builder = new DefaultKieAFBuilder(prj, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
             }
-
         }
         KieCompilationResponse res = builder.build();
-        //@MAXWasHere
+
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             final KieModule module = res.getKieModule().get();
             ClassLoader dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
@@ -83,8 +84,7 @@ public class ProjectClassLoaderHelper {
             }
             return projectClassLoader;
         }else{
-            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
-                                               + project.getKModuleXMLPath());
+            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: " + project.toString());
         }
     }
 

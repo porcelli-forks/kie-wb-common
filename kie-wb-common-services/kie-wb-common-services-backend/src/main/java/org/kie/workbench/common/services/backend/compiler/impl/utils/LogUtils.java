@@ -15,6 +15,7 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import org.uberfire.java.nio.file.Paths;
 
 public class LogUtils {
 
+    protected static String FILE_URI = "file://";
+
     public static List<String> getOutput(String prj,
                                          String uuid) {
         StringBuilder sb = new StringBuilder(prj.trim()).append("/").append("log").append(".").append(uuid).append(".log");
@@ -33,7 +36,7 @@ public class LogUtils {
     }
 
     public static List<String> readTmpLog(String logFile) {
-        Path logPath = Paths.get(logFile);
+        Path logPath = Paths.get(URI.create(FILE_URI + logFile));
         List<String> log = new ArrayList<>();
         if (Files.isReadable(logPath)) {
             for (String line : Files.readAllLines(logPath,

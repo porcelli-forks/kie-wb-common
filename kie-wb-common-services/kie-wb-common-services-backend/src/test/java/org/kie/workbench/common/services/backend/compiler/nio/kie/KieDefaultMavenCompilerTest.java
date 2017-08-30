@@ -272,8 +272,6 @@ public class KieDefaultMavenCompilerTest {
 
         assertNotNull(lastCommit);
 
-        //@TODO refactor and use only one between the URI or Git
-        //@TODO find a way to resolve the problem of the prjname inside .git folder
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(origin.getPath("/dummy/"));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
@@ -287,7 +285,7 @@ public class KieDefaultMavenCompilerTest {
         assertTrue(res.isSuccessful());
 
         lastCommit = origin.getGit().resolveRevCommit(origin.getGit().getRef(MASTER_BRANCH).getObjectId());
-        ;
+
         assertNotNull(lastCommit);
 
         ioService.write(origin.getPath("/dummy/dummyA/src/main/java/dummy/DummyA.java"),

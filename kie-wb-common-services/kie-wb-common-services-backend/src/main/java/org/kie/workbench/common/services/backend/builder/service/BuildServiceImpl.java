@@ -37,6 +37,7 @@ import org.kie.workbench.common.services.backend.builder.ala.LocalBuildConfig;
 
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.project.KieResourceResolver;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -58,6 +59,8 @@ public class BuildServiceImpl implements BuildService {
 
     private ClassloadersResourcesHolder classloadersResourcesHolder;
 
+    private   CompilerMapsHolder compilerMapsHolder;
+
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
     }
@@ -66,10 +69,11 @@ public class BuildServiceImpl implements BuildService {
     public BuildServiceImpl(final KieProjectService projectService,
                             final BuildServiceHelper buildServiceHelper,
                             final GuvnorM2Repository guvnorM2Repository,
+                            final CompilerMapsHolder compilerMapsHolder,
                             final ClassloadersResourcesHolder classloadersResourcesHolder) {
         this.projectService = projectService;
         this.buildServiceHelper = buildServiceHelper;
-        this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
         this.guvnorM2Repository = guvnorM2Repository;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
     }

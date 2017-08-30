@@ -15,22 +15,26 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
 import org.kie.workbench.common.services.backend.compiler.configuration.ConfigurationContextProvider;
 import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.DefaultPomEditor;
 import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.PomPlaceHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.ProcessedPoms;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 /***
  * It process all the poms found into a prj changing the build tag accordingly to the internal algo
@@ -38,6 +42,7 @@ import org.uberfire.java.nio.file.Paths;
 public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEnabler {
 
     private final String POM_NAME = "pom.xml";
+    protected String FILE_URI = "file://";
 
     private DefaultPomEditor editor;
 
@@ -49,8 +54,18 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
 
     @Override
     public ProcessedPoms process(final CompilationRequest req) {
-        Path mainPom = Paths.get(req.getInfo().getPrjPath().toString(),
-                                 POM_NAME);
+        Path mainPom = null;
+        /*if(req.getInfo().getPrjPath().getFileSystem() instanceof JGitFileSystem) {
+            if(req.getInfo().getCompilerMapsHolder().isPresent()){
+                CompilerMapsHolder compilerMapsHolder = req.getInfo().getCompilerMapsHolder().get();
+                Git repo = compilerMapsHolder.getGit((JGitFileSystem)req.getInfo().getPrjPath().getFileSystem());
+                mainPom = Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString()+ req.getInfo().getPrjPath().toString()+"/pom.xml"));
+                req.getInfo().lateAdditionEnhancedMainPomFile(mainPom);
+            }
+
+        } else{*/
+            mainPom = Paths.get(URI.create(FILE_URI + req.getKieCliRequest().getWorkingDirectory()+"/"+POM_NAME));
+       // }
         if (!Files.isReadable(mainPom)) {
             return new ProcessedPoms(Boolean.FALSE,
                                      Collections.emptyList());
@@ -60,8 +75,8 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
         Boolean isPresent = isPresent(placeHolder);   // check if the main pom is already scanned and edited
         if (placeHolder.isValid() && !isPresent) {
             List<String> pomsList = new ArrayList<>();
-            MavenUtils.searchPoms(Paths.get(req.getInfo().getPrjPath().toString()),
-                                  pomsList);// recursive NIO search in all subfolders
+                MavenUtils.searchPoms(mainPom.getParent(), pomsList);// recursive NIO search in all subfolders
+
             if (pomsList.size() > 0) {
                 processFoundPoms(pomsList,
                                    req);
@@ -78,16 +93,13 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
                                     CompilationRequest request) {
 
         for (String pom : poms) {
-            Path tmpPom = Paths.get(pom);
+            Path tmpPom = Paths.get(URI.create(FILE_URI + pom));
             PomPlaceHolder tmpPlaceHolder = editor.readSingle(tmpPom);
             if (!isPresent(tmpPlaceHolder)) {
                 editor.write(tmpPom,
                              request);
             }
         }
-        Path mainPom = Paths.get(request.getInfo().getPrjPath().toAbsolutePath().toString(),
-                                 POM_NAME);
-        request.getInfo().lateAdditionEnhancedMainPomFile(mainPom);
     }
 
     /**

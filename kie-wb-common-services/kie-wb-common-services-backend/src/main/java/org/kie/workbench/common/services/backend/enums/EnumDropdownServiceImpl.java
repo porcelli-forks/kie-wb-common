@@ -31,6 +31,7 @@ import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.shared.enums.EnumDropdownService;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -51,6 +52,9 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
     @Inject
     private KieProjectService projectService;
 
+    @Inject
+    private CompilerMapsHolder compilerMapsHolder;
+
     @Override
     public String[] loadDropDownExpression( final Path resource,
                                             final String[] valuePairs,
@@ -62,7 +66,7 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
             logger.error( "A Project could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );
             return null;
         }
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), project.getRepositoriesPath().toURI().toString());
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), project.getRepositoriesPath().toURI().toString(), compilerMapsHolder);
         Optional<KieModule> optionalModule = builder.build().getKieModule();
         if ( !optionalModule.isPresent()  ) {
             logger.error( "A KieModule could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );

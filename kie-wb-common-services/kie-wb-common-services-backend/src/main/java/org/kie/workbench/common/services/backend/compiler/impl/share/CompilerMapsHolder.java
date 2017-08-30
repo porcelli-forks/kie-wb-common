@@ -29,7 +29,7 @@ public interface CompilerMapsHolder {
 
     Git getGit(JGitFileSystem key);
 
-    void addGit(JGitFileSystem key, Git git);
+    boolean addGit(JGitFileSystem key, Git git);
 
     Git removeGit(JGitFileSystem key);
 
@@ -41,7 +41,7 @@ public interface CompilerMapsHolder {
 
     KieAFBuilder getBuilder(Path projectRootPath);
 
-    void addBuilder(Path projectRootPath, KieAFBuilder builder);
+    boolean addBuilder(Path projectRootPath, KieAFBuilder builder);
 
     KieAFBuilder removeBuilder(Path projectRootPath);
 

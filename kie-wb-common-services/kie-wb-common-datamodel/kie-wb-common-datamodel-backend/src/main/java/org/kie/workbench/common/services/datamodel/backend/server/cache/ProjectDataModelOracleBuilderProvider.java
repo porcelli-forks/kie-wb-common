@@ -87,9 +87,8 @@ public class ProjectDataModelOracleBuilderProvider {
         if(builder == null) {
             if(nioPath.getFileSystem() instanceof JGitFileSystem){
                 Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
-                Path pathOnFS = org.uberfire.java.nio.file.Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(nioPath.getFileName().toString()).normalize().toUri());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
-                builder = new DefaultKieAFBuilder(pathOnFS.toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+                builder = new DefaultKieAFBuilder(nioPath, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
             }
 
         }

@@ -39,6 +39,7 @@ import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -63,6 +64,8 @@ public class BuildHelper {
 
     private GuvnorM2Repository guvnorM2Repository;
 
+    private CompilerMapsHolder compilerMapsHolder;
+
     public BuildHelper( ) {
     }
 
@@ -71,18 +74,19 @@ public class BuildHelper {
                         final ExtendedM2RepoService m2RepoService,
                         final KieProjectService projectService,
                         final Instance< User > identity,
-                        final GuvnorM2Repository guvnorM2Repository) {
+                        final GuvnorM2Repository guvnorM2Repository, final CompilerMapsHolder compilerMapsHolder) {
         this.pomService = pomService;
         this.m2RepoService = m2RepoService;
         this.projectService = projectService;
         this.identity = identity;
         this.guvnorM2Repository = guvnorM2Repository;
+        this.compilerMapsHolder = compilerMapsHolder;
     }
 
     public BuildResult build( final Project project ) {
         try {
             //@TODO AFBuilder from the CompilerMapsHolder
-            KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+            KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), compilerMapsHolder);
             KieCompilationResponse res = builder.build();
             if(res.isSuccessful()) {
                 final BuildResults results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());

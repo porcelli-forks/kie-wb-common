@@ -18,6 +18,7 @@ package org.kie.workbench.common.services.backend.compiler.impl.pomprocessor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +53,7 @@ import org.uberfire.java.nio.file.StandardOpenOption;
 public class DefaultPomEditor implements PomEditor {
 
     public final String POM = "pom";
+    protected String FILE_URI = "file://";
     public final String TRUE = "true";
     public final String POM_NAME = "pom.xml";
     public final String KJAR_EXT = "kjar";
@@ -265,13 +267,13 @@ public class DefaultPomEditor implements PomEditor {
                                                       model.getGroupId(),
                                                       model.getVersion(),
                                                       model.getPackaging(),
-                                                      Files.readAllBytes(Paths.get(pom.toAbsolutePath().toString())));
+                                                      Files.readAllBytes(pom));
 
             if (!history.contains(pomPH)) {
 
                 PluginPresents plugs = updatePom(model);
                 request.getInfo().lateAdditionKiePluginPresent(plugs.isKiePluginPresent());
-                if (!request.skipPrjDependenciesCreationList() /*&& plugs.isKiePluginPresent()*/) {
+                if (!request.skipPrjDependenciesCreationList()) {
                     // we add the mvn cli args to run the dependency:build-classpath
                     String args[] = addCreateClasspathMavenArgs(request.getKieCliRequest().getArgs());
                     request.getKieCliRequest().setArgs(args);
@@ -285,8 +287,13 @@ public class DefaultPomEditor implements PomEditor {
                                      new String(baos.toByteArray(),
                                                 StandardCharsets.UTF_8));
                     }
-                    Path pomParent = Paths.get(pom.getParent().toAbsolutePath().toString(),
-                                               POM_NAME);
+
+                    Path pomParent = Paths.get(URI.create(
+                                new StringBuffer().
+                                        append(FILE_URI).
+                                        append(pom.getParent().toAbsolutePath().toString()).
+                                        append("/").
+                                        append(POM_NAME).toString()));
                     Files.delete(pomParent);
                     Files.write(pomParent,
                                 baos.toByteArray(),

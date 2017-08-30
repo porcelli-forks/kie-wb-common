@@ -98,8 +98,8 @@ public class ValidatorBuildService {
         final KieAFBuilder builder = compilerMapsHolder.getBuilder(projectRootPath);
         if (builder == null) {
             final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
-                                                                    guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),//repositories/kie/global
-                                                                    getCompiler());
+                                                                    guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),
+                                                                    getCompiler(), compilerMapsHolder);
             compilerMapsHolder.addBuilder(projectRootPath,
                                           newBuilder);
             return newBuilder;

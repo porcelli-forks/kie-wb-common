@@ -35,6 +35,7 @@ import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuil
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
@@ -44,13 +45,15 @@ import org.uberfire.backend.server.util.Paths;
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject, ClassLoader> {
     //@MAXWasHere
     private GuvnorM2Repository guvnorM2Repository;
+    private CompilerMapsHolder compilerMapsHolder;
 
     public LRUProjectDependenciesClassLoaderCache( ) {
     }
 
     @Inject
-    public LRUProjectDependenciesClassLoaderCache( GuvnorM2Repository guvnorM2Repository ) {
+    public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository , CompilerMapsHolder compilerMapsHolder) {
         this.guvnorM2Repository = guvnorM2Repository;
+        this.compilerMapsHolder = compilerMapsHolder;
     }
 
 
@@ -72,7 +75,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     }
 
     private ClassLoader buildClassLoader(final KieProject project) {
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), compilerMapsHolder);
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             return buildClassLoader(project);
