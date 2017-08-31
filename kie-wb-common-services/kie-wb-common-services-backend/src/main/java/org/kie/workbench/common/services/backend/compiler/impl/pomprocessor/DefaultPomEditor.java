@@ -94,6 +94,7 @@ public class DefaultPomEditor implements PomEditor {
         Boolean defaultCompilerPluginPresent = Boolean.FALSE;
         Boolean alternativeCompilerPluginPresent = Boolean.FALSE;
         Boolean kiePluginPresent = Boolean.FALSE;
+        Boolean kieTakariPresent = Boolean.FALSE;
         int alternativeCompilerPosition = 0;
         int defaultMavenCompilerPosition = 0;
         int kieMavenPluginPosition = 0;
@@ -125,6 +126,11 @@ public class DefaultPomEditor implements PomEditor {
                 kiePluginPresent = Boolean.TRUE;
                 kieMavenPluginPosition = i;
             }
+
+            if (plugin.getGroupId().equals(conf.get(ConfigurationKey.KIE_MAVEN_PLUGINS)) &&
+                    plugin.getArtifactId().equals(conf.get(ConfigurationKey.KIE_TAKARI_PLUGIN))) {
+                kieTakariPresent = Boolean.TRUE;
+            }
             i++;
         }
 
@@ -132,6 +138,7 @@ public class DefaultPomEditor implements PomEditor {
                                               defaultCompilerPluginPresent,
                                               alternativeCompilerPluginPresent,
                                               kiePluginPresent,
+                                              kieTakariPresent,
                                               defaultMavenCompilerPosition,
                                               alternativeCompilerPosition,
                                               kieMavenPluginPosition);
@@ -146,6 +153,7 @@ public class DefaultPomEditor implements PomEditor {
                                    Boolean defaultCompilerPluginPresent,
                                    Boolean alternativeCompilerPluginPresent,
                                    Boolean kiePluginPresent,
+                                   Boolean kieTakariPresent,
                                    int defaultMavenCompilerPosition,
                                    int alternativeCompilerPosition,
                                    int kieMavenPluginPosition) {
@@ -178,6 +186,28 @@ public class DefaultPomEditor implements PomEditor {
                                        alternativeCompiler);
                 build.getPlugins().set(alternativeCompilerPosition,
                                        defaultMavenCompiler);
+                overwritePOM = Boolean.TRUE;
+            }
+        }
+
+        // Change the kie-maven-plugin into kie-takari-plugin
+        if(kiePluginPresent && !kieTakariPresent){
+            List<Plugin> plugins = build.getPlugins();
+            Plugin kieMavenPlugin = build.getPlugins().get(kieMavenPluginPosition);
+
+            if(kieMavenPlugin.getArtifactId().equals(conf.get(ConfigurationKey.KIE_MAVEN_PLUGIN))){
+                //kieMavenPlugin.setArtifactId(conf.get(ConfigurationKey.KIE_TAKARI_PLUGIN));
+
+                Plugin kieTakariPlugin = new Plugin();
+                kieTakariPlugin.setGroupId(kieMavenPlugin.getGroupId());
+                kieTakariPlugin.setArtifactId(conf.get(ConfigurationKey.KIE_TAKARI_PLUGIN));
+                kieTakariPlugin.setVersion(kieMavenPlugin.getVersion());
+                kieTakariPlugin.setExtensions(Boolean.parseBoolean(kieMavenPlugin.getExtensions()));
+                plugins.set(kieMavenPluginPosition, kieTakariPlugin);
+                build.setPlugins(plugins);
+                //build.addPlugin(kieTakariPlugin);
+                //build.removePlugin(kieMavenPlugin);
+                //build.set
                 overwritePOM = Boolean.TRUE;
             }
         }

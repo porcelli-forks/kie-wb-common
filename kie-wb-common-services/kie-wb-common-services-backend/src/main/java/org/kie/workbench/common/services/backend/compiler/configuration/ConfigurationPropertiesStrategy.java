@@ -61,6 +61,8 @@ public class ConfigurationPropertiesStrategy implements ConfigurationStrategy,
                      props.getProperty(ConfigurationKey.KIE_MAVEN_PLUGINS.name()));
             conf.put(ConfigurationKey.KIE_MAVEN_PLUGIN,
                      props.getProperty(ConfigurationKey.KIE_MAVEN_PLUGIN.name()));
+            conf.put(ConfigurationKey.KIE_TAKARI_PLUGIN,
+                    props.getProperty(ConfigurationKey.KIE_TAKARI_PLUGIN.name()));
         }
     }
 

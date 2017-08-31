@@ -33,7 +33,8 @@ import java.util.Map;
  * ALTERNATIVE_COMPILER_PLUGIN_VERSION =1.12.6
  *
  * KIE_MAVEN_PLUGINS=org.kie
- * KIE_MAVEN_PLUGIN=kie-takari-plugin
+ * KIE_MAVEN_PLUGIN=kie-maven-plugin
+ * KIE_TAKARI_PLUGIN=kie-takari-plugin
  *
  */
 public class ConfigurationContextProvider implements ConfigurationProvider {
