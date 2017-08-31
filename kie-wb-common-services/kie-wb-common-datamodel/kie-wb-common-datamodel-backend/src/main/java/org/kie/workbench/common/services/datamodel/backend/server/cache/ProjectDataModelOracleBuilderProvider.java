@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
-import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+//import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class ProjectDataModelOracleBuilderProvider {
 
@@ -84,14 +84,14 @@ public class ProjectDataModelOracleBuilderProvider {
     public InnerBuilder newBuilder( final KieProject project ) {
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
-        if(builder == null) {
+        /*if(builder == null) {
             if(nioPath.getFileSystem() instanceof JGitFileSystem){
                 Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 builder = new DefaultKieAFBuilder(nioPath, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
             }
 
-        }
+        }*/
 
         //KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME));
         KieCompilationResponse res = builder.build();
