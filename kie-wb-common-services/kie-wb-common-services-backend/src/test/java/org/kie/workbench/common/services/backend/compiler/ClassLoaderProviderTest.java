@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.services.backend.compiler.nio;
+package org.kie.workbench.common.services.backend.compiler;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import javassist.util.proxy.ProxyFactory;
+import org.drools.compiler.kie.builder.impl.InternalKieModule;
+import org.drools.core.rule.KieModuleMetaInfo;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.TestUtil;
+import org.kie.api.builder.KieModule;
+import org.kie.scanner.KieModuleMetaData;
+import org.kie.scanner.KieModuleMetaDataImpl;
+import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
@@ -35,6 +42,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.classloader.Class
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,5 +251,67 @@ public class ClassLoaderProviderTest {
         ClassLoader classloader = classloaderOptional.get();
         URLClassLoader urlsc = (URLClassLoader) classloader;
         assertTrue(urlsc.getURLs().length == 7);
+    }
+
+    @Test
+    public void getResourcesFromADroolsPRJ() throws Exception {
+        /**
+         * If the test fail check if the Drools core classes used, KieModuleMetaInfo and TypeMetaInfo implements Serializable
+         * */
+        String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
+        Path tmpRoot = Files.createTempDirectory("repo");
+        Path tmp = Files.createDirectories(Paths.get(tmpRoot.toString(),
+                                                     "dummy"));
+        TestUtil.copyTree(Paths.get("target/test-classes/kjar-2-single-resources"),
+                          tmp);
+
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.KIE_AFTER);
+
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmp.toUri()));
+        CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
+                                                               info,
+                                                               new String[]{MavenCLIArgs.INSTALL, MavenCLIArgs.ALTERNATE_USER_SETTINGS +alternateSettingsAbsPath},
+                                                               Boolean.FALSE, Boolean.FALSE);
+        KieCompilationResponse res = (KieCompilationResponse) compiler.compileSync(req);
+        if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
+            TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
+                                                      "KieMetadataTest.compileAndloadKieJarSingleMetadataWithPackagedJar");
+        }
+        if (res.getErrorMessage().isPresent()) {
+            logger.info(res.getErrorMessage().get());
+        }
+
+        Assert.assertTrue(res.isSuccessful());
+
+        Optional<KieModuleMetaInfo> metaDataOptional = res.getKieModuleMetaInfo();
+        Assert.assertTrue(metaDataOptional.isPresent());
+        KieModuleMetaInfo kieModuleMetaInfo = metaDataOptional.get();
+        Assert.assertNotNull(kieModuleMetaInfo);
+
+        Map<String, Set<String>> rulesBP = kieModuleMetaInfo.getRulesByPackage();
+        Assert.assertEquals(rulesBP.size(),
+                            1);
+
+        Optional<KieModule> kieModuleOptional = res.getKieModule();
+        Assert.assertTrue(kieModuleOptional.isPresent());
+        KieModule kModule = kieModuleOptional.get();
+
+        Assert.assertTrue(res.getProjectDependencies().isPresent());
+        Assert.assertTrue(res.getProjectDependencies().get().size() == 5);
+
+        KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
+                                                                        res.getProjectDependencies().get());
+
+        //KieModuleMetaData kieModuleMetaData = KieModuleMetaData.Factory.newKieModuleMetaData(kModule); // broken
+        Assert.assertNotNull(kieModuleMetaData);
+
+
+        ClassLoaderProviderImpl kieClazzLoaderProvider = new ClassLoaderProviderImpl();
+        Optional<List<String>> classloaderOptional = kieClazzLoaderProvider.getStringFromTargets(tmpRoot);
+        assertTrue(classloaderOptional.isPresent());
+        List<String> resources = classloaderOptional.get();
+
+        TestUtil.rm(tmpRoot.toFile());
+
     }
 }

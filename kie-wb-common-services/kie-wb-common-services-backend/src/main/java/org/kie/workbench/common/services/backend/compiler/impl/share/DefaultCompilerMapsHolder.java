@@ -43,7 +43,11 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
         return gitMap.get(key);
     }
 
-    public boolean addGit(JGitFileSystem key, Git git) { return gitMap.put(key, git) != null; }
+    public boolean addGit(JGitFileSystem key,
+                          Git git) {
+        return gitMap.put(key,
+                          git) != null;
+    }
 
     public Git removeGit(JGitFileSystem key) {
         return gitMap.remove(key);
@@ -65,8 +69,10 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
         return buildersMap.get(projectRootPath);
     }
 
-    public boolean addBuilder(final Path projectRootPath, final KieAFBuilder builder) {
-        return buildersMap.put(projectRootPath, builder) != null;
+    public boolean addBuilder(final Path projectRootPath,
+                              final KieAFBuilder builder) {
+        return buildersMap.put(projectRootPath,
+                               builder) != null;
     }
 
     public KieAFBuilder removeBuilder(Path projectRootPath) {
@@ -80,5 +86,4 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public void clearBuilderMap() {
         buildersMap.clear();
     }
-
 }

@@ -22,14 +22,15 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 /**
  * Holder of the maps used in the compiler
- * **/
+ **/
 public interface CompilerMapsHolder {
 
     //GIT
 
     Git getGit(JGitFileSystem key);
 
-    boolean addGit(JGitFileSystem key, Git git);
+    boolean addGit(JGitFileSystem key,
+                   Git git);
 
     Git removeGit(JGitFileSystem key);
 
@@ -41,12 +42,12 @@ public interface CompilerMapsHolder {
 
     KieAFBuilder getBuilder(Path projectRootPath);
 
-    boolean addBuilder(Path projectRootPath, KieAFBuilder builder);
+    boolean addBuilder(Path projectRootPath,
+                       KieAFBuilder builder);
 
     KieAFBuilder removeBuilder(Path projectRootPath);
 
     boolean containsBuilder(Path projectRootPath);
 
     void clearBuilderMap();
-
 }

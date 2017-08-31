@@ -18,7 +18,10 @@ package org.kie.workbench.common.services.backend.builder.service;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -35,6 +38,7 @@ import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.ala.LocalBuildConfig;
 
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
@@ -59,7 +63,9 @@ public class BuildServiceImpl implements BuildService {
 
     private ClassloadersResourcesHolder classloadersResourcesHolder;
 
-    private   CompilerMapsHolder compilerMapsHolder;
+    private CompilerMapsHolder compilerMapsHolder;
+
+    private ClassLoaderProviderImpl provider ;
 
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
@@ -76,6 +82,7 @@ public class BuildServiceImpl implements BuildService {
         this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
         this.guvnorM2Repository = guvnorM2Repository;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
+        provider = new ClassLoaderProviderImpl();
     }
 
     @Override
@@ -94,8 +101,31 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
-        KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        //@TODO check if is correct this conversion
+        org.uberfire.java.nio.file.Path nioPath = Paths.convert(project.getRootPath());
+        KieCompilationResponse res;
+
+        if(classloadersResourcesHolder.containsPomDependencies(nioPath)){ //the pom deps are present we refresh the target deps
+            res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+            readAndSetResourcesFromTargetFolders(nioPath);
+        }else{
+            res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), Boolean.FALSE);
+            if(res.getProjectDependencies().isPresent()){
+                List<String> urisTOStrings = res.getProjectDependencies().get().stream()
+                        .map(URI::toString)
+                        .collect(Collectors.toList());
+                classloadersResourcesHolder.addPomDependencies(nioPath, urisTOStrings);
+            }
+            readAndSetResourcesFromTargetFolders(nioPath);
+        }
         return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
+    }
+
+    private void readAndSetResourcesFromTargetFolders(org.uberfire.java.nio.file.Path nioPath) {
+        Optional<List<String>> targetResources = provider.getStringFromTargets(nioPath);
+        if(targetResources.isPresent()) {
+            classloadersResourcesHolder.replaceTargetDependencies(nioPath, targetResources.get());
+        }
     }
 
     @Override
@@ -124,10 +154,8 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt( final Project project ) {
-        //@TODO MAX this can not be changed in this module org.guvnor.common.services.project.builder.service.BuildService
         org.uberfire.java.nio.file.Path path = org.uberfire.java.nio.file.Paths.get(URI.create(project.toString()));
         return classloadersResourcesHolder.containsPomDependencies( path);
-        //return Boolean.TRUE;
     }
 
     @Override

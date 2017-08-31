@@ -1,23 +1,22 @@
-package org.kie.workbench.common.services.backend.compiler.nio.kie;
+package org.kie.workbench.common.services.backend.compiler;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.TestUtil;
-import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
-import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.TestUtil;
+import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
+import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
-import static junit.framework.TestCase.assertTrue;
-
-public class KieMavenOutputTest {
+public class MavenOutputTest {
 
     private Path mavenRepo;
 
@@ -43,8 +42,7 @@ public class KieMavenOutputTest {
 
         Path tmp = Paths.get(tmpNio.toAbsolutePath().toString());
 
-        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
-                KieDecorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
 
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(tmp);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
@@ -54,11 +52,11 @@ public class KieMavenOutputTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "KieMavenOutputTest.testOutputWithTakari");
+                                                      "MavenOutputTest.testOutputWithTakari");
         }
-        assertTrue(res.isSuccessful());
-        assertTrue(res.getMavenOutput().isPresent());
-        assertTrue(res.getMavenOutput().get().size() > 0);
+        Assert.assertTrue(res.isSuccessful());
+        Assert.assertTrue(res.getMavenOutput().isPresent());
+        Assert.assertTrue(res.getMavenOutput().get().size() > 0);
 
         TestUtil.rm(tmpRoot.toFile());
     }

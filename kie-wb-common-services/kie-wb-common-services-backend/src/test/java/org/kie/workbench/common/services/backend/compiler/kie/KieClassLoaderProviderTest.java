@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.services.backend.compiler.nio.kie;
+package org.kie.workbench.common.services.backend.compiler.kie;
 
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;

@@ -16,21 +16,38 @@
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
 import java.util.List;
+
 import org.uberfire.java.nio.file.Path;
 
+/***
+ * Contract to manage Resources URI in terms of pom dependencies (included transient)
+ * and .class and resources present in the target folders
+ */
 public interface ClassloadersResourcesHolder {
-
-    Boolean removeProjectDeps(Path projectRootPath);
-
-    List<String> getPomDependencies(Path projectRootPath);
-
-    List<String> getTargetsProjectDependencies(Path projectRootPath);
-
-    void replacePomDependencies(Path projectRootPath, List<String> uris);
-
-    void replaceTargetDependencies(Path projectRootPath, List<String> uris);
 
     boolean containsPomDependencies(Path projectRootPath);
 
     void clearClassloaderResourcesMap();
+
+    Boolean removeProjectDeps(Path projectRootPath);
+
+    //POM deps
+
+    void addPomDependencies(Path projectRootPath,
+                            List<String> uri);
+
+    List<String> getPomDependencies(Path projectRootPath);
+
+    void replacePomDependencies(Path projectRootPath,
+                                List<String> uris);
+
+    //Target deps
+
+    void addTargetProjectDependencies(Path projectRootPath,
+                                      List<String> uri);
+
+    List<String> getTargetsProjectDependencies(Path projectRootPath);
+
+    void replaceTargetDependencies(Path projectRootPath,
+                                   List<String> uris);
 }

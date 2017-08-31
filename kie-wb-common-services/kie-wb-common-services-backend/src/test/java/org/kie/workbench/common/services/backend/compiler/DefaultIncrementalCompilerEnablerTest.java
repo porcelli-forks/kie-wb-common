@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.services.backend.compiler.nio;
+package org.kie.workbench.common.services.backend.compiler;
 
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.TestUtil;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;

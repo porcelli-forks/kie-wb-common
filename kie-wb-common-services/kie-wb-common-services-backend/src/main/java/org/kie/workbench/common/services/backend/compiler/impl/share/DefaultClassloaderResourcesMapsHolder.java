@@ -19,13 +19,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
+
 import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
-public class DefaultClassloaderResourcesMapsHolder implements  ClassloadersResourcesHolder{
+public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResourcesHolder {
 
     private Map<Path, Tuple> internalMap;
+
+    public DefaultClassloaderResourcesMapsHolder() {
+        internalMap = new ConcurrentHashMap<>();
+    }
 
     @Override
     public List<String> getPomDependencies(Path projectRootPath) {
@@ -64,36 +70,57 @@ public class DefaultClassloaderResourcesMapsHolder implements  ClassloadersResou
         return internalMap.remove(projectRootPath) != null;
     }
 
-    class Tuple{
+    @Override
+    public void addPomDependencies(Path projectRootPath,
+                                   List<String> uris) {
+        internalMap.get(projectRootPath).addProjectDeps(uris);
+    }
+
+    @Override
+    public void addTargetProjectDependencies(Path projectRootPath,
+                                             List<String> uris) {
+        internalMap.get(projectRootPath).addTargetDeps(uris);
+    }
+
+    class Tuple {
+
         private List<String> targetDeps;
         private List<String> projectsDeps;
 
-        public Tuple(){
+        public Tuple() {
             targetDeps = new ArrayList<>();
             projectsDeps = new ArrayList<>();
         }
 
-        public List<String> getTargetDeps(){
+        public List<String> getTargetDeps() {
             return Collections.unmodifiableList(targetDeps);
         }
 
-        public List<String> getProjectDeps(){
+        public List<String> getProjectDeps() {
             return Collections.unmodifiableList(projectsDeps);
         }
 
-        public void addTargetDep(String resource){
+        public void addTargetDep(String resource) {
             targetDeps.add(resource);
         }
 
-        public void addProjectDep(String resource){
+        public void addTargetDeps(List<String> resources) {
+            targetDeps.addAll(resources);
+        }
+
+        public void addProjectDep(String resource) {
             projectsDeps.add(resource);
         }
 
-        public void replaceTargetDeps(List<String> newTargetDeps){
+        public void addProjectDeps(List<String> resources) {
+            projectsDeps.addAll(resources);
+        }
+
+        public void replaceTargetDeps(List<String> newTargetDeps) {
             this.targetDeps = newTargetDeps;
         }
 
-        public void replaceProjectsDeps(List<String> newProjectDeps){
+        public void replaceProjectsDeps(List<String> newProjectDeps) {
             this.projectsDeps = newProjectDeps;
         }
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.services.backend.compiler.nio;
+package org.kie.workbench.common.services.backend.compiler;
 
 import java.util.ArrayList;
 import java.util.List;

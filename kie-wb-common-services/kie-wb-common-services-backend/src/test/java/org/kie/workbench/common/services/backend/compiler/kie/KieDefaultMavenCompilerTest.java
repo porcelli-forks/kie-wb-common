@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.services.backend.compiler.nio;
+package org.kie.workbench.common.services.backend.compiler.kie;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,15 +32,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.TestUtil;
-import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
+import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
@@ -52,11 +52,11 @@ import org.uberfire.mocks.FileSystemTestingUtils;
 
 import static org.junit.Assert.*;
 
-public class DefaultMavenCompilerTest {
+public class KieDefaultMavenCompilerTest {
 
     private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
     private IOService ioService;
-    private static final Logger logger = LoggerFactory.getLogger(DefaultMavenCompilerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(KieDefaultMavenCompilerTest.class);
 
     private Path mavenRepo;
 
@@ -97,15 +97,15 @@ public class DefaultMavenCompilerTest {
         ioService.startBatch(fs);
 
         ioService.write(fs.getPath("/dummy/pom.xml"),
-                        new String(java.nio.file.Files.readAllBytes(new File("src/test/projects/dummy_multimodule_untouched/pom.xml").toPath())));
+                        new String(java.nio.file.Files.readAllBytes(new File("target/test-classes/dummy_multimodule_untouched/pom.xml").toPath())));
         ioService.write(fs.getPath("/dummy/dummyA/src/main/java/dummy/DummyA.java"),
-                        new String(java.nio.file.Files.readAllBytes(new File("src/test/projects/dummy_multimodule_untouched/dummyA/src/main/java/dummy/DummyA.java").toPath())));
+                        new String(java.nio.file.Files.readAllBytes(new File("target/test-classes/dummy_multimodule_untouched/dummyA/src/main/java/dummy/DummyA.java").toPath())));
         ioService.write(fs.getPath("/dummy/dummyB/src/main/java/dummy/DummyB.java"),
-                        new String(java.nio.file.Files.readAllBytes(new File("src/test/projects/dummy_multimodule_untouched/dummyB/src/main/java/dummy/DummyB.java").toPath())));
+                        new String(java.nio.file.Files.readAllBytes(new File("target/test-classes/dummy_multimodule_untouched/dummyB/src/main/java/dummy/DummyB.java").toPath())));
         ioService.write(fs.getPath("/dummy/dummyA/pom.xml"),
-                        new String(java.nio.file.Files.readAllBytes(new File("src/test/projects/dummy_multimodule_untouched/dummyA/pom.xml").toPath())));
+                        new String(java.nio.file.Files.readAllBytes(new File("target/test-classes/dummy_multimodule_untouched/dummyA/pom.xml").toPath())));
         ioService.write(fs.getPath("/dummy/dummyB/pom.xml"),
-                        new String(java.nio.file.Files.readAllBytes(new File("src/test/projects/dummy_multimodule_untouched/dummyB/pom.xml").toPath())));
+                        new String(java.nio.file.Files.readAllBytes(new File("target/test-classes/dummy_multimodule_untouched/dummyB/pom.xml").toPath())));
         ioService.endBatch();
 
         Path tmpRootCloned = Files.createTempDirectory("cloned");
@@ -121,7 +121,8 @@ public class DefaultMavenCompilerTest {
         assertNotNull(cloned);
 
         //Compile the repo
-        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
+                KieDecorator.LOG_OUTPUT_AFTER);
         Path prjFolder = Paths.get(gitClonedFolder + "/dummy/");
         byte[] encoded = Files.readAllBytes(Paths.get(prjFolder + "/pom.xml"));
         String pomAsAstring = new String(encoded,
@@ -137,7 +138,7 @@ public class DefaultMavenCompilerTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "KieDefaultMavenCompilerOnInMemoryFSTest.buildWithCloneTest");
+                                                      "KieDefaultMavenCompilerTest.buildWithCloneTest");
         }
         assertTrue(res.getMavenOutput().isPresent());
         assertTrue(res.isSuccessful());
@@ -199,7 +200,7 @@ public class DefaultMavenCompilerTest {
         assertTrue(rbResult.getStatus().isSuccessful());
 
         //Compile the repo
-        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
 
         byte[] encoded = Files.readAllBytes(Paths.get(tmpCloned + "/dummy/pom.xml"));
         String pomAsAstring = new String(encoded,
@@ -212,12 +213,12 @@ public class DefaultMavenCompilerTest {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
                                                                new String[]{MavenCLIArgs.CLEAN, MavenCLIArgs.COMPILE},
-                                                               Boolean.TRUE, Boolean.TRUE);
+                                                               Boolean.TRUE);
 
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "KieDefaultMavenCompilerOnInMemoryFSTest.buildWithPullRebaseUberfireTest");
+                                                      "KieDefaultMavenCompilerTest.buildWithPullRebaseUberfireTest");
         }
 
         assertTrue(res.isSuccessful());
@@ -235,7 +236,8 @@ public class DefaultMavenCompilerTest {
 
     @Test
     public void buildWithJGitDecoratorTest() throws Exception {
-        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(
+                KieDecorator.JGIT_BEFORE);
 
         String MASTER_BRANCH = "master";
 
@@ -270,8 +272,6 @@ public class DefaultMavenCompilerTest {
 
         assertNotNull(lastCommit);
 
-        //@TODO refactor and use only one between the URI or Git
-        //@TODO find a way to resolve the problem of the prjname inside .git folder
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(origin.getPath("/dummy/"));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
@@ -280,12 +280,12 @@ public class DefaultMavenCompilerTest {
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "KieDefaultMavenCompilerOnInMemoryFSTest.buildWithJGitDecoratorTest");
+                                                      "KieDefaultMavenCompilerTest.buildWithJGitDecoratorTest");
         }
         assertTrue(res.isSuccessful());
 
         lastCommit = origin.getGit().resolveRevCommit(origin.getGit().getRef(MASTER_BRANCH).getObjectId());
-        ;
+
         assertNotNull(lastCommit);
 
         ioService.write(origin.getPath("/dummy/dummyA/src/main/java/dummy/DummyA.java"),
@@ -305,7 +305,7 @@ public class DefaultMavenCompilerTest {
     @Test
     public void buildWithAllDecoratorsTest() throws Exception {
         String alternateSettingsAbsPath = new File("src/test/settings.xml").getAbsolutePath();
-        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.JGIT_BEFORE_AND_LOG_AFTER);
+        AFCompiler compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.JGIT_BEFORE_AND_LOG_AFTER);
 
         String MASTER_BRANCH = "master";
 
@@ -346,15 +346,17 @@ public class DefaultMavenCompilerTest {
 
         assertNotNull(cloned);
 
+        //@TODO refactor and use only one between the URI or Git
+        //@TODO find a way to resolve the problem of the prjname inside .git folder
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(tmpCloned + "/dummy"));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo.toAbsolutePath().toString(),
                                                                info,
-                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.ALTERNATE_USER_SETTINGS + alternateSettingsAbsPath},
                                                                Boolean.TRUE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "KieDefaultMavenCompilerOnInMemoryFSTest.buildWithAllDecoratorsTest");
+                                                      "KieDefaultMavenCompilerTest.buildWithAllDecoratorsTest");
         }
         assertTrue(res.getMavenOutput().isPresent());
         assertTrue(res.isSuccessful());
@@ -374,7 +376,7 @@ public class DefaultMavenCompilerTest {
         res = compiler.compileSync(req);
         if (res.getMavenOutput().isPresent() && !res.isSuccessful()) {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
-                                                      "KieDefaultMavenCompilerOnInMemoryFSTest.buildWithAllDecoratorsTest");
+                                                      "KieDefaultMavenCompilerTest.buildWithAllDecoratorsTest");
         }
         assertTrue(res.isSuccessful());
         assertTrue(res.getMavenOutput().isPresent());
