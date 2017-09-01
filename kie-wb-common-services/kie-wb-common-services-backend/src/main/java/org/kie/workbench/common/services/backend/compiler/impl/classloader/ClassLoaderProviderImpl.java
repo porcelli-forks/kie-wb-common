@@ -76,6 +76,22 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         }
     }
 
+    public static void searchTargetFiles(Path file,
+                                     List<String> classPathFiles,
+                                     String... extensions) {
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(file.toAbsolutePath())) {
+            for (Path p : ds) {
+                if (Files.isDirectory(p)) {
+                    searchTargetFiles(p,
+                                  classPathFiles,
+                                  extensions);
+                } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith) && p.toString().contains("/target/")) {
+                    classPathFiles.add(p.toAbsolutePath().toString());
+                }
+            }
+        }
+    }
+
     /**
      * Execute a maven run to create the classloaders with the dependencies in the Poms, transitive included
      */
@@ -190,16 +206,6 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         }
     }
 
-    private Optional<ClassLoader> buildResult(List<URL> urls,
-                                              ClassLoader parent) {
-        if (urls.isEmpty()) {
-            return Optional.empty();
-        } else {
-            URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]),
-                                                               parent);
-            return Optional.of(urlClassLoader);
-        }
-    }
 
     private Optional<ClassLoader> createClassloaderFromCpFiles(String prjPath) {
         List<URL> deps = readAllCpFilesAsUrls(prjPath,
@@ -345,7 +351,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
 
     public Optional<List<String>> getStringFromTargets(Path prjPath) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create("file://"+prjPath.toAbsolutePath().toString()+"/target"+ @TODO_TOMORROW_HERE)),
+        searchTargetFiles(prjPath,
                       classPathFiles,
                       JAVA_CLASS_EXT, DROOLS_EXT, XML_EXT);
         if (!classPathFiles.isEmpty()) {
@@ -355,7 +361,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
     /**
-     * Provides a list of String of all resources foudned in the target folders
+     * Provides a list of String of all resources foudned in the target folders, accordingly to the extensions passed as argument
      */
 
     public Optional<List<String>> getStringFromTargets(Path prjPath, String... extensions) {

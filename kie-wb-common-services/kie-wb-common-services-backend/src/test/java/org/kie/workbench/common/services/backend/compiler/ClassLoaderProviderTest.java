@@ -302,15 +302,13 @@ public class ClassLoaderProviderTest {
         KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
                                                                         res.getProjectDependencies().get());
 
-        //KieModuleMetaData kieModuleMetaData = KieModuleMetaData.Factory.newKieModuleMetaData(kModule); // broken
         Assert.assertNotNull(kieModuleMetaData);
-
 
         ClassLoaderProviderImpl kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         Optional<List<String>> classloaderOptional = kieClazzLoaderProvider.getStringFromTargets(tmpRoot);
         assertTrue(classloaderOptional.isPresent());
         List<String> resources = classloaderOptional.get();
-
+        Assert.assertTrue(resources.size() == 3);
         TestUtil.rm(tmpRoot.toFile());
 
     }
