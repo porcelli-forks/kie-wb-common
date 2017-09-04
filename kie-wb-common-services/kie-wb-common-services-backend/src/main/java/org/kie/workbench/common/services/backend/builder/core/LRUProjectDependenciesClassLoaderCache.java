@@ -25,25 +25,38 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.tools.ant.taskdefs.Classloader;
+import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
+import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
+import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
+import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 @Named("LRUProjectDependenciesClassLoaderCache")
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject, ClassLoader> {
-    //@MAXWasHere
+
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
 
@@ -67,22 +80,44 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         return classLoader;
     }
 
-    //@TODO idea told never used, when is called this method  ?
     public synchronized void setDependenciesClassLoader(final KieProject project,
                                                         ClassLoader classLoader) {
-        setEntry(project,
-                 classLoader);
+        setEntry(project, classLoader);
     }
 
     private ClassLoader buildClassLoader(final KieProject project) {
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), compilerMapsHolder);
+        Path nioPath = Paths.convert(project.getRootPath());
+
+        KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
+        if(builder == null) {
+            AFCompiler compiler = getCompiler();
+            //compilerMapsHolder.getBuilder(project.getRootPath());
+            builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME),
+                    new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.DEBUG},
+                    compiler, Boolean.FALSE, compilerMapsHolder);
+            compilerMapsHolder.addBuilder(nioPath, builder);
+        }
+
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
-            return buildClassLoader(project);
+            KieModule kModule =  res.getKieModule().get();
+            KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
+                    res.getProjectDependencies().get());
+            ClassLoader classloader = buildClassLoader(project, kieModuleMetaData);
+            setEntry(project, classloader);
+            return classloader;
         } else {
             throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
                                                + project.getKModuleXMLPath());
         }
+    }
+
+    private AFCompiler getCompiler() {
+        // we create the compiler in this weird mode to use the gitMap used internally
+        AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
+        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
+                compilerMapsHolder);
+        return outerDecorator;
     }
 
     /**
@@ -99,8 +134,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         //calculate this URL class loader given that we have the pom.xml and we can use maven libraries classes
         //to calculate project maven dependencies. This is basically what the KieModuleMetaData already does. The
         //optimization was added to avoid the maven transitive calculation on complex projects.
-        //final ClassLoader classLoader = kieModuleMetaData.getClassLoader().getParent();
-        final ClassLoader classLoader = buildClassloaderFromAllProjectDeps(project);
+        final ClassLoader classLoader = kieModuleMetaData.getClassLoader().getParent();
         if (classLoader instanceof URLClassLoader) {
             return classLoader;
         } else {
@@ -118,7 +152,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
         Optional<ClassLoader> clazzLoader = kieClazzLoaderProvider.getClassloaderFromProjectTargets(pomList,
-                                                                                                    Boolean.FALSE);
+                Boolean.FALSE);
         if(clazzLoader.isPresent()){
             return clazzLoader.get();
         }else{

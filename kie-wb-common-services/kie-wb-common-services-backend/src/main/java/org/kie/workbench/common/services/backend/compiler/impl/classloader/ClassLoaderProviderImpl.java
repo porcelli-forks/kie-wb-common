@@ -98,7 +98,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     public Optional<ClassLoader> getClassloaderFromAllDependencies(String prjPath,
                                                                    String localRepo) {
         AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(prjPath));
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+prjPath)));
         StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
         CompilationRequest req = new DefaultCompilationRequest(localRepo,
                                                                info,
@@ -124,7 +124,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     public Optional<ClassLoader> loadDependenciesClassloaderFromProject(String prjPath,
                                                                         String localRepo) {
         List<String> poms = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.get(prjPath),
+        MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI+prjPath)),
                               poms);
         List<URL> urls = getDependenciesURL(poms,
                                             localRepo);
@@ -182,7 +182,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
             List<URL> targetModulesUrls = new ArrayList(pomsPaths.size());
             try {
                 for (String pomPath : pomsPaths) {
-                    Path path = Paths.get(pomPath);
+                    Path path = Paths.get(URI.create(FILE_URI+pomPath));
                     StringBuilder sb = new StringBuilder(FILE_URI)
                             .append(path.getParent().toAbsolutePath().toString())
                             .append("/target/classes/");
@@ -221,7 +221,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     private List<URL> readAllCpFilesAsUrls(String prjPath,
                                            String extension) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(prjPath),
+        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
                       classPathFiles,
                       extension);
         if (!classPathFiles.isEmpty()) {
@@ -270,7 +270,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 if (br != null) {
                     br.close();
                 }
-                Files.delete(Paths.get(filePath));
+                Files.delete(Paths.get(URI.create(FILE_URI+filePath)));
             } catch (IOException ex) {
                 logger.error(ex.getMessage());
             }
@@ -403,7 +403,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
 
     public Optional<List<URI>> getURISFromAllDependencies(String prjPath) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(prjPath),
+        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
                       classPathFiles,
                       MavenConfig.CLASSPATH_EXT,
                       JAVA_ARCHIVE_RESOURCE_EXT);
@@ -421,7 +421,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
      */
     public Optional<List<URL>> getURLSFromAllDependencies(String prjPath) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(prjPath),
+        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
                       classPathFiles,
                       MavenConfig.CLASSPATH_EXT,
                       JAVA_ARCHIVE_RESOURCE_EXT);

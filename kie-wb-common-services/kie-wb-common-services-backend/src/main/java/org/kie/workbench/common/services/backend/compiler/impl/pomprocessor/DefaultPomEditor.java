@@ -196,8 +196,6 @@ public class DefaultPomEditor implements PomEditor {
             Plugin kieMavenPlugin = build.getPlugins().get(kieMavenPluginPosition);
 
             if(kieMavenPlugin.getArtifactId().equals(conf.get(ConfigurationKey.KIE_MAVEN_PLUGIN))){
-                //kieMavenPlugin.setArtifactId(conf.get(ConfigurationKey.KIE_TAKARI_PLUGIN));
-
                 Plugin kieTakariPlugin = new Plugin();
                 kieTakariPlugin.setGroupId(kieMavenPlugin.getGroupId());
                 kieTakariPlugin.setArtifactId(conf.get(ConfigurationKey.KIE_TAKARI_PLUGIN));
@@ -205,9 +203,6 @@ public class DefaultPomEditor implements PomEditor {
                 kieTakariPlugin.setExtensions(Boolean.parseBoolean(kieMavenPlugin.getExtensions()));
                 plugins.set(kieMavenPluginPosition, kieTakariPlugin);
                 build.setPlugins(plugins);
-                //build.addPlugin(kieTakariPlugin);
-                //build.removePlugin(kieMavenPlugin);
-                //build.set
                 overwritePOM = Boolean.TRUE;
             }
         }

@@ -139,6 +139,22 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                             Boolean.TRUE, skipPrjDependenciesCreationList);
     }
 
+    public DefaultKieAFBuilder(String projectRepo,
+                               String mavenRepo,
+                               String[] mavenArgs,
+                               AFCompiler compiler,Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+         * only in the internal maven compilation new objects will be created in the compileSync */
+        this.mavenRepo = mavenRepo;
+        this.compilerMapsHolder = compilerMapsHolder;
+        this.compiler = compiler;
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        req = new DefaultCompilationRequest(mavenRepo,
+                info,
+                mavenArgs,
+                Boolean.TRUE, skipPrjDependenciesCreationList);
+    }
+
     @Override
     public KieCompilationResponse build() {
         req.getKieCliRequest().getMap().clear();
