@@ -58,6 +58,8 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     protected String JAVA_CLASS_EXT = ".class";
     protected String XML_EXT = ".xml";
     protected String DROOLS_EXT = ".drl";
+    protected String GDROOLS_EXT = ".gdrl";
+    protected String RDROOLS_EXT = ".rdrl";
     protected String FILE_URI = "file://";
 
     public static void searchCPFiles(Path file,
@@ -353,7 +355,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         List<String> classPathFiles = new ArrayList<>();
         searchTargetFiles(prjPath,
                       classPathFiles,
-                      JAVA_CLASS_EXT, DROOLS_EXT, XML_EXT);
+                      JAVA_CLASS_EXT, DROOLS_EXT, GDROOLS_EXT, RDROOLS_EXT, XML_EXT);
         if (!classPathFiles.isEmpty()) {
                 return Optional.of(classPathFiles);
         }
@@ -385,7 +387,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                       classPathFiles,
                       MavenConfig.CLASSPATH_EXT,
                       JAVA_ARCHIVE_RESOURCE_EXT,
-                      JAVA_CLASS_EXT, DROOLS_EXT);
+                      JAVA_CLASS_EXT, DROOLS_EXT, GDROOLS_EXT, RDROOLS_EXT);
         if (!classPathFiles.isEmpty()) {
             List<String> deps = processScannedFilesAsString(classPathFiles);
             if (!deps.isEmpty()) {

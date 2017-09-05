@@ -37,6 +37,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     private CompilationRequest req;
     private String mavenRepo;
     private CompilerMapsHolder compilerMapsHolder;
+    private String FILE_URI = "file://";
 
     public DefaultKieAFBuilder(Path projectRepo,
                                String mavenRepo, CompilerMapsHolder compilerMapsHolder) {
@@ -73,7 +74,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -87,7 +88,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -133,7 +134,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compiler = compiler;
         this.compilerMapsHolder = compilerMapsHolder;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -148,7 +149,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -164,7 +165,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 mavenArgs,
