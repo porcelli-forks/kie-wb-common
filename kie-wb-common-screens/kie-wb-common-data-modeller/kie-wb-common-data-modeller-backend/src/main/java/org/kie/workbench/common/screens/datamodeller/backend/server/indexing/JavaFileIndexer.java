@@ -77,7 +77,7 @@ public class JavaFileIndexer extends AbstractFileIndexer {
     protected Instance<JavaFileIndexerExtension> javaFileIndexerExtensions;
 
     @Inject
-    ProjectClassLoaderHelper classLoaderHelper;
+    protected ProjectClassLoaderHelper classLoaderHelper;
 
     @Override
     public boolean supportsPath( final Path path ) {

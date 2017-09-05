@@ -28,7 +28,12 @@ import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
@@ -60,46 +65,44 @@ public class ProjectClassLoaderHelper {
     @Inject
     private ClassloadersResourcesHolder resourcesHolder;
 
-
-
-    public ClassLoader getProjectClassLoader( KieProject project ) {
+    public ClassLoader getProjectClassLoader(KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        ClassLoader dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
-        if(dependenciesClassLoader == null){
-            //List<String> prjDeps = resourcesHolder.getPomDependencies(nioPath);
-            List<String> targetDeps = resourcesHolder.getTargetsProjectDependencies(nioPath);
-
-        }
-            KieAFBuilder builder = getKieAFBuilder(nioPath);
-            KieCompilationResponse res = builder.build();
-
-            if(res.isSuccessful() && res.getKieModule().isPresent()) {
-                dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
-                ClassLoader projectClassLoader;
-                final KieModule module = res.getKieModule().get();
-                if (module instanceof InternalKieModule) {
-                    //will always be an internal kie module
-                    InternalKieModule internalModule = (InternalKieModule) module;
-                    projectClassLoader = new MapClassLoader(internalModule.getClassesMap(true),
-                            dependenciesClassLoader);
-                } else {
-                    projectClassLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
-                }
-                return projectClassLoader;
-            }else{
-                throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: " + project.toString());
+        KieAFBuilder builder = getKieAFBuilder(nioPath);
+        KieCompilationResponse res = builder.build();
+        if (res.isSuccessful() && res.getKieModule().isPresent()) {
+            ClassLoader dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
+            ClassLoader projectClassLoader;
+            final KieModule module = res.getKieModule().get();
+            if (module instanceof InternalKieModule) {
+                //will always be an internal kie module
+                InternalKieModule internalModule = (InternalKieModule) module;
+                projectClassLoader = new MapClassLoader(internalModule.getClassesMap(true),
+                        dependenciesClassLoader);
+            } else {
+                projectClassLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
             }
-      //  }
+            return projectClassLoader;
+        } else {
+            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: " + project.toString());
+        }
+    }
+
+    private AFCompiler getCompiler() {
+        // we create the compiler in this weird mode to use the gitMap used internally
+        AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
+        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
+                compilerMapsHolder);
+        return outerDecorator;
     }
 
     private KieAFBuilder getKieAFBuilder(Path nioPath) {
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
-        if(builder == null) {
-            if(nioPath.getFileSystem() instanceof JGitFileSystem){
-                Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
+        if (builder == null) {
+            if (nioPath.getFileSystem() instanceof JGitFileSystem) {
+                Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
-                Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString()+ nioPath.toString()));
-                builder = new DefaultKieAFBuilder(prj, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
+                Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
+                builder = new DefaultKieAFBuilder(prj, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), getCompiler(), compilerMapsHolder);
                 compilerMapsHolder.addBuilder(nioPath, builder);
             }
         }

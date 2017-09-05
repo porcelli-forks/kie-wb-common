@@ -79,7 +79,7 @@ public class BuildServiceImpl implements BuildService {
                             final ClassloadersResourcesHolder classloadersResourcesHolder) {
         this.projectService = projectService;
         this.buildServiceHelper = buildServiceHelper;
-        this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
+        //this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
         this.guvnorM2Repository = guvnorM2Repository;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
         provider = new ClassLoaderProviderImpl();
@@ -96,6 +96,9 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildInternal(final Project project){
+        if(kieAfBuilder == null){
+            this.kieAfBuilder = new DefaultKieAFBuilder(org.uberfire.java.nio.file.Paths.get("file://"+project.getRootPath().toURI().toString()), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
+        }
         KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }

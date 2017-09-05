@@ -28,6 +28,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMap
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
+import java.net.URI;
+
 public class DefaultKieAFBuilder implements KieAFBuilder {
 
     private AFCompiler compiler;
@@ -50,6 +52,20 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                 Boolean.TRUE, Boolean.FALSE);
     }
 
+    public DefaultKieAFBuilder(Path projectRepo,
+                               String mavenRepo, AFCompiler compiler , CompilerMapsHolder compilerMapsHolder) {
+        /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
+         * only in the internal maven compilation new objects will be created in the compileSync */
+        this.mavenRepo = mavenRepo;
+        this.compilerMapsHolder = compilerMapsHolder;
+        this.compiler = compiler;
+        info = new WorkspaceCompilationInfo(projectRepo,compilerMapsHolder);
+        req = new DefaultCompilationRequest(mavenRepo,
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, Boolean.FALSE);
+    }
+
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo, CompilerMapsHolder compilerMapsHolder) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
@@ -57,7 +73,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -71,7 +87,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -117,7 +133,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compiler = compiler;
         this.compilerMapsHolder = compilerMapsHolder;
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -132,7 +148,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
                                             new String[]{MavenCLIArgs.COMPILE},
@@ -148,7 +164,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create("file://"+projectRepo)),compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 mavenArgs,

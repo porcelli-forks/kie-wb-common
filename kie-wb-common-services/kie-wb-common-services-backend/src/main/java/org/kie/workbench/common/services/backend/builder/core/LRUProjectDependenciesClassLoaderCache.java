@@ -91,13 +91,13 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         if(builder == null) {
             AFCompiler compiler = getCompiler();
-            //compilerMapsHolder.getBuilder(project.getRootPath());
-            builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME),
+            builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),
                     new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.DEBUG},
                     compiler, Boolean.FALSE, compilerMapsHolder);
             compilerMapsHolder.addBuilder(nioPath, builder);
         }
-
+        ClassLoader classLoader = getEntry(project);
+        if(classLoader != null) return classLoader;
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             KieModule kModule =  res.getKieModule().get();
