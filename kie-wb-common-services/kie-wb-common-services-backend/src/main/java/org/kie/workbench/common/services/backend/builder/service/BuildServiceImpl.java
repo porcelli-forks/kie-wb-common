@@ -17,14 +17,12 @@
 package org.kie.workbench.common.services.backend.builder.service;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.jgit.api.Git;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
@@ -36,14 +34,23 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.workbench.events.ResourceChange;
 
 @Service
@@ -76,6 +83,7 @@ public class BuildServiceImpl implements BuildService {
                             final ClassloadersResourcesHolder classloadersResourcesHolder) {
         this.projectService = projectService;
         this.buildServiceHelper = buildServiceHelper;
+        this.compilerMapsHolder = compilerMapsHolder;
         //this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
         this.guvnorM2Repository = guvnorM2Repository;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
@@ -93,12 +101,25 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildInternal(final Project project){
+        org.uberfire.java.nio.file.Path nioPath;
         if(kieAfBuilder == null){
-            this.kieAfBuilder = new DefaultKieAFBuilder(org.uberfire.java.nio.file.Paths.get("file://"+project.getRootPath().toURI().toString()), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
+
+            if(!project.getRootPath().toString().startsWith("file://")){
+                nioPath = Paths.convert(project.getRootPath());
+            }else{
+                nioPath = PathConverter.createPathFromVFS(project.getRootPath());
+            }
+            kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository);
+            /*kieAfBuilder =  compilerMapsHolder.getBuilder(nioPath);
+            if(kieAfBuilder == null) {
+                kieAfBuilder = new DefaultKieAFBuilder(org.uberfire.java.nio.file.Paths.get("file://" + project.getRootPath().toURI().toString()), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), compilerMapsHolder);
+            }*/
         }
         KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }
+
+
 
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
         //@TODO check if is correct this conversion

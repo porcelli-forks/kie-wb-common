@@ -95,12 +95,12 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
                                                          (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                          (KieModule) kieModuleTuple.getOptionalObject().get(),
                                                          res.getMavenOutput().get(),
-                        resources);
+                        resources, req.getInfo().getPrjPath());
             } else {
                 return new DefaultKieCompilationResponse(Boolean.TRUE,
                                                          (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                          (KieModule) kieModuleTuple.getOptionalObject().get(),
-                        resources);
+                        resources, req.getInfo().getPrjPath());
             }
         } else {
             StringBuilder sb = new StringBuilder();

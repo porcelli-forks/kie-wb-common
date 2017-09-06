@@ -28,6 +28,7 @@ import org.kie.api.builder.KieModule;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.uberfire.java.nio.file.Path;
 
 /***
  * Default implementation of a Kie Compilation response,
@@ -43,18 +44,29 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     private List<URI> projectDependenciesAsURI;
     private List<URL> projectDependenciesAsURL;
     private DefaultCompilationResponse defaultResponse;
+    private Path workingDir;
 
     public DefaultKieCompilationResponse(Boolean successful) {
         this(successful,
              null,
-             null);
+             null,
+             null, null);
+    }
+
+    public DefaultKieCompilationResponse(Boolean successful,
+                                         List<String> mavenOutput, Path workingDir) {
+        defaultResponse = new DefaultCompilationResponse(successful,
+                                                         null,
+                                                         mavenOutput);
+        this.kieModuleMetaInfo = null;
+        this.workingDir = workingDir;
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
                                          List<String> mavenOutput) {
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         null,
-                                                         mavenOutput);
+                null,
+                mavenOutput);
         this.kieModuleMetaInfo = null;
     }
 
@@ -80,24 +92,28 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
                                          List<String> mavenOutput,
-                                         List<String> projectDependenciesRaw) {
+                                         List<String> projectDependenciesRaw,
+                                         Path workingDir) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
                 mavenOutput);
         this.kieModuleMetaInfo = kieModuleMetaInfo;
         this.kieModule = kieModule;
         this.projectDependenciesRaw = projectDependenciesRaw;
+        this.workingDir = workingDir;
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
-                                         List<String> projectDependenciesRaw) {
+                                         List<String> projectDependenciesRaw,
+                                         Path workingDir) {
 
         defaultResponse = new DefaultCompilationResponse(successful);
         this.kieModuleMetaInfo = kieModuleMetaInfo;
         this.kieModule = kieModule;
         this.projectDependenciesRaw = projectDependenciesRaw;
+        this.workingDir = workingDir;
     }
 
 
@@ -133,6 +149,11 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     @Override
     public Optional<List<String>> getMavenOutput() {
         return defaultResponse.getMavenOutput();
+    }
+
+    @Override
+    public Optional<Path>getWorkingDir() {
+        return Optional.ofNullable(workingDir);
     }
 
     private List<URL> getRawAsURLs(){

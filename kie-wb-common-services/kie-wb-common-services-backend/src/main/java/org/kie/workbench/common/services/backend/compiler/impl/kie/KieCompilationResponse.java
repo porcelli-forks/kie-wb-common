@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.uberfire.java.nio.file.Path;
 
 /**
  * Compilation response with benefits of Kie
@@ -48,4 +49,10 @@ public interface KieCompilationResponse extends CompilationResponse {
      * Provides a KieModule if a kie maven plugin is used in the project
      */
     Optional<KieModule> getKieModule();
+
+    /**
+     * Provides the PAyh of the working dir
+     * @return
+     */
+    Optional<Path> getWorkingDir();
 }

@@ -25,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import javassist.util.proxy.ProxyFactory;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
@@ -45,7 +46,9 @@ import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilatio
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
@@ -56,6 +59,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
+    private AFClassLoaderProvider classLoaderProvider;
 
     public LRUProjectDependenciesClassLoaderCache( ) {
     }
@@ -64,6 +68,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository , CompilerMapsHolder compilerMapsHolder) {
         this.guvnorM2Repository = guvnorM2Repository;
         this.compilerMapsHolder = compilerMapsHolder;
+        classLoaderProvider = new ClassLoaderProviderImpl();
     }
 
 
@@ -84,15 +89,15 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     protected ClassLoader buildClassLoader(final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-
-        KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,compilerMapsHolder, guvnorM2Repository);
+        /*KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         if(builder == null) {
             AFCompiler compiler = getCompiler();
             builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),
                     new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.DEBUG},
                     compiler, Boolean.FALSE, compilerMapsHolder);
             compilerMapsHolder.addBuilder(nioPath, builder);
-        }
+        }*/
         ClassLoader classLoader = getEntry(project);
         if(classLoader != null) return classLoader;
         KieCompilationResponse res = builder.build();
@@ -101,6 +106,16 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
                     res.getProjectDependenciesAsURI().get());
             ClassLoader classloader = buildClassLoader(project, kieModuleMetaData);
+            if(res.getWorkingDir().isPresent()) {
+                Optional<List<String>> optionalString = classLoaderProvider.getStringFromTargets(res.getWorkingDir().get());
+                if (optionalString.isPresent()) {
+                    List<URL> urls = PathConverter.createURLSFromString(optionalString.get());
+                    URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), classloader);
+                    setEntry(project, urlClassLoader);
+                    return urlClassLoader;
+                }
+            }
+
             setEntry(project, classloader);
             return classloader;
         } else {

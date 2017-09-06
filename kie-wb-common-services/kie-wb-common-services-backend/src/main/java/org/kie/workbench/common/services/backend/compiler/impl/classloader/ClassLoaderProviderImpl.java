@@ -273,7 +273,11 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 if (br != null) {
                     br.close();
                 }
-                Files.delete(Paths.get(URI.create(FILE_URI+filePath)));
+                if(filePath.startsWith(FILE_URI)){
+                    Files.delete(Paths.get(filePath));
+                }else{
+                    Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
+                }
             } catch (IOException ex) {
                 logger.error(ex.getMessage());
             }
@@ -306,7 +310,11 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 if (br != null) {
                     br.close();
                 }
-                Files.delete(Paths.get(filePath));
+                if(filePath.startsWith(FILE_URI)){
+                    Files.delete(Paths.get(filePath));
+                }else{
+                    Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
+                }
             } catch (IOException ex) {
                 logger.error(ex.getMessage());
             }
@@ -339,7 +347,11 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 if (br != null) {
                     br.close();
                 }
-                Files.delete(Paths.get(filePath));
+                if(filePath.startsWith(FILE_URI)){
+                    Files.delete(Paths.get(filePath));
+                }else{
+                    Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
+                }
             } catch (IOException ex) {
                 logger.error(ex.getMessage());
             }
@@ -495,7 +507,11 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 deps.addAll(readFileAsURL(file));
             } else if (file.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
                 //the jar/class is added as is with file:// prefix
-                deps.add(new URL(FILE_URI+file));
+                if(file.startsWith(FILE_URI)){
+                    deps.add(new URL(file));
+                }else{
+                    deps.add(new URL(FILE_URI+file));
+                }
             }
         }}
         catch (MalformedURLException ex){

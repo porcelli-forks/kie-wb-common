@@ -87,6 +87,13 @@ public interface AFClassLoaderProvider {
     Optional<List<String>> getStringsFromTargets(Path prjPath, String... extensions);
 
     /***
+     * Build a list of String containing the files founded into target folder
+     * @param prjPath
+     * @return
+     */
+    Optional<List<String>> getStringFromTargets(Path prjPath);
+
+    /***
      * Build a list of URL reading the cp file produced by the Maven dependency plugin
      * @param prjPath
      * @return
