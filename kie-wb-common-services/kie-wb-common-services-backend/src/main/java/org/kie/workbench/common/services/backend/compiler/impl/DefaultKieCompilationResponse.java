@@ -15,13 +15,18 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
+import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 
 /***
@@ -32,9 +37,11 @@ import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilatio
  */
 public class DefaultKieCompilationResponse implements KieCompilationResponse {
 
-    private Optional<KieModuleMetaInfo> kieModuleMetaInfo;
-    private Optional<KieModule> kieModule;
-    private Optional<List<URI>> projectDependencies;
+    private KieModuleMetaInfo kieModuleMetaInfo;
+    private KieModule kieModule;
+    private List<String> projectDependenciesRaw;
+    private List<URI> projectDependenciesAsURI;
+    private List<URL> projectDependenciesAsURL;
     private DefaultCompilationResponse defaultResponse;
 
     public DefaultKieCompilationResponse(Boolean successful) {
@@ -48,9 +55,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         defaultResponse = new DefaultCompilationResponse(successful,
                                                          null,
                                                          mavenOutput);
-        this.kieModuleMetaInfo = Optional.empty();
-        this.kieModule = Optional.empty();
-        this.projectDependencies = Optional.empty();
+        this.kieModuleMetaInfo = null;
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -59,9 +64,6 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         defaultResponse = new DefaultCompilationResponse(successful,
                                                          errorMessage,
                                                          Collections.emptyList());
-        this.kieModuleMetaInfo = Optional.empty();
-        this.kieModule = Optional.empty();
-        this.projectDependencies = Optional.empty();
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -71,48 +73,51 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         defaultResponse = new DefaultCompilationResponse(successful,
                                                          errorMessage,
                                                          mavenOutput);
-        this.kieModuleMetaInfo = Optional.empty();
-        this.kieModule = Optional.empty();
-        this.projectDependencies = Optional.empty();
     }
+
 
     public DefaultKieCompilationResponse(Boolean successful,
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
                                          List<String> mavenOutput,
-                                         List<URI> projectDependencies) {
+                                         List<String> projectDependenciesRaw) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         mavenOutput);
-        this.kieModuleMetaInfo = Optional.ofNullable(kieModuleMetaInfo);
-        this.kieModule = Optional.ofNullable(kieModule);
-        this.projectDependencies = Optional.ofNullable(projectDependencies);
+                mavenOutput);
+        this.kieModuleMetaInfo = kieModuleMetaInfo;
+        this.kieModule = kieModule;
+        this.projectDependenciesRaw = projectDependenciesRaw;
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
-                                         List<URI> projectDependencies) {
+                                         List<String> projectDependenciesRaw) {
 
         defaultResponse = new DefaultCompilationResponse(successful);
-        this.kieModuleMetaInfo = Optional.ofNullable(kieModuleMetaInfo);
-        this.kieModule = Optional.ofNullable(kieModule);
-        this.projectDependencies = Optional.ofNullable(projectDependencies);
+        this.kieModuleMetaInfo = kieModuleMetaInfo;
+        this.kieModule = kieModule;
+        this.projectDependenciesRaw = projectDependenciesRaw;
     }
 
+
     @Override
-    public Optional<List<URI>> getProjectDependencies() {
-        return projectDependencies;
+    public Optional<List<URI>> getProjectDependenciesAsURI() {
+        return Optional.ofNullable(getRawAsURIs());
+    }
+
+    public Optional<List<URL>> getProjectDependenciesAsURL() {
+        return Optional.ofNullable(getRawAsURLs());
     }
 
     @Override
     public Optional<KieModuleMetaInfo> getKieModuleMetaInfo() {
-        return kieModuleMetaInfo;
+        return Optional.ofNullable(kieModuleMetaInfo);
     }
 
     @Override
     public Optional<KieModule> getKieModule() {
-        return kieModule;
+        return Optional.ofNullable(kieModule);
     }
 
     @Override
@@ -128,5 +133,27 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     @Override
     public Optional<List<String>> getMavenOutput() {
         return defaultResponse.getMavenOutput();
+    }
+
+    private List<URL> getRawAsURLs(){
+        if(projectDependenciesAsURL != null){
+            return projectDependenciesAsURL;
+        }
+        if(projectDependenciesAsURL == null && projectDependenciesRaw != null ){
+            projectDependenciesAsURL =  ClassLoaderProviderImpl.processScannedFilesAsURLs(projectDependenciesRaw);
+            return  projectDependenciesAsURL;
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    private List<URI> getRawAsURIs(){
+        if(projectDependenciesAsURI != null){
+            return projectDependenciesAsURI;
+        }
+        if(projectDependenciesAsURI == null && projectDependenciesRaw != null ){
+            projectDependenciesAsURI =  ClassLoaderProviderImpl.processScannedFilesAsURIs(projectDependenciesRaw);
+            return  projectDependenciesAsURI;
+        }
+        return Collections.EMPTY_LIST;
     }
 }

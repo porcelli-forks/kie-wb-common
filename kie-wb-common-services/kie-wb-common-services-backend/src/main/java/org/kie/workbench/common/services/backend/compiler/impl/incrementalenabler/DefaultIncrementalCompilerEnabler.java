@@ -54,18 +54,8 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
 
     @Override
     public ProcessedPoms process(final CompilationRequest req) {
-        Path mainPom = null;
-        /*if(req.getInfo().getPrjPath().getFileSystem() instanceof JGitFileSystem) {
-            if(req.getInfo().getCompilerMapsHolder().isPresent()){
-                CompilerMapsHolder compilerMapsHolder = req.getInfo().getCompilerMapsHolder().get();
-                Git repo = compilerMapsHolder.getGit((JGitFileSystem)req.getInfo().getPrjPath().getFileSystem());
-                mainPom = Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString()+ req.getInfo().getPrjPath().toString()+"/pom.xml"));
-                req.getInfo().lateAdditionEnhancedMainPomFile(mainPom);
-            }
+        Path mainPom  = Paths.get(URI.create(FILE_URI + req.getKieCliRequest().getWorkingDirectory()+"/"+POM_NAME));
 
-        } else{*/
-            mainPom = Paths.get(URI.create(FILE_URI + req.getKieCliRequest().getWorkingDirectory()+"/"+POM_NAME));
-       // }
         if (!Files.isReadable(mainPom)) {
             return new ProcessedPoms(Boolean.FALSE,
                                      Collections.emptyList());

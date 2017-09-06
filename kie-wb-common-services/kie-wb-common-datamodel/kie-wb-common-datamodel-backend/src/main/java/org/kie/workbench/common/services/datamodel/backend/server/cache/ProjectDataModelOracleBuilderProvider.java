@@ -85,7 +85,7 @@ public class ProjectDataModelOracleBuilderProvider {
         KieCompilationResponse res = builder.get().build();
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             final KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
-                                                                                  res.getProjectDependencies().get());
+                                                                                  res.getProjectDependenciesAsURI().get());
             final Set<String> javaResources = new HashSet<String>(resourcesHolder.getTargetsProjectDependencies(nioPath));
             final TypeSourceResolver typeSourceResolver = new TypeSourceResolver( kieModuleMetaData, javaResources );
 

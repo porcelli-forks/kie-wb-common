@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import org.apache.maven.artifact.Artifact;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
+import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
@@ -54,13 +55,13 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
 
     protected static final Logger logger = LoggerFactory.getLogger(ClassLoaderProviderImpl.class);
     protected final DirectoryStream.Filter<Path> dotFileFilter = new DotFileFilter();
-    protected String JAVA_ARCHIVE_RESOURCE_EXT = ".jar";
-    protected String JAVA_CLASS_EXT = ".class";
+    protected static String JAVA_ARCHIVE_RESOURCE_EXT = ".jar";
+    protected static String JAVA_CLASS_EXT = ".class";
     protected String XML_EXT = ".xml";
     protected String DROOLS_EXT = ".drl";
     protected String GDROOLS_EXT = ".gdrl";
     protected String RDROOLS_EXT = ".rdrl";
-    protected String FILE_URI = "file://";
+    protected static String FILE_URI = "file://";
 
     public static void searchCPFiles(Path file,
                                      List<String> classPathFiles,
@@ -104,8 +105,8 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
         CompilationRequest req = new DefaultCompilationRequest(localRepo,
                                                                info,
-                                                               new String[]{MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
-                                                               Boolean.FALSE, Boolean.FALSE);
+                                                               new String[]{MavenCLIArgs.DEBUG, MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
+                                                               Boolean.TRUE, Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.isSuccessful()) {
             /** Maven dependency plugin is not able to append the modules classpath using an absolute path in -Dmdep.outputFile,
@@ -248,7 +249,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return Collections.emptyList();
     }
 
-    private List<URI> readFileAsURI(String filePath) {
+    public static List<URI> readFileAsURI(String filePath) {
 
         BufferedReader br = null;
         List<URI> urls = new ArrayList<>();
@@ -280,7 +281,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return urls;
     }
 
-    private List<URL> readFileAsURL(String filePath) {
+    private static List<URL> readFileAsURL(String filePath) {
 
         BufferedReader br = null;
         List<URL> urls = new ArrayList<>();
@@ -366,7 +367,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
      * Provides a list of String of all resources foudned in the target folders, accordingly to the extensions passed as argument
      */
 
-    public Optional<List<String>> getStringFromTargets(Path prjPath, String... extensions) {
+    public Optional<List<String>> getStringsFromTargets(Path prjPath, String... extensions) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(prjPath,
                       classPathFiles,
@@ -381,7 +382,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
      * Provides a list of String of all jar used in the project, dependencies plus jar created in the target folder
      */
 
-    public Optional<List<String>> getStringFromAllDependencies(Path prjPath) {
+    public Optional<List<String>> getStringsFromAllDependencies(Path prjPath) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(prjPath,
                       classPathFiles,
@@ -400,6 +401,22 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
 
 
     /**
+     * Provides a list of String of all jar used in the project, dependencies plus jar created in the target folder
+     */
+
+    public Optional<List<String>> getStringsFromAllDependencies(String prjPath) {
+        List<String> classPathFiles = new ArrayList<>();
+        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
+                classPathFiles,
+                MavenConfig.CLASSPATH_EXT,
+                JAVA_ARCHIVE_RESOURCE_EXT);
+        if (!classPathFiles.isEmpty()) {
+            return Optional.ofNullable(classPathFiles);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Provides a list of URI of all jar used in the project, dependencies plus jar created in the target folder
      */
 
@@ -410,7 +427,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                       MavenConfig.CLASSPATH_EXT,
                       JAVA_ARCHIVE_RESOURCE_EXT);
         if (!classPathFiles.isEmpty()) {
-            List<URI> deps = processScannedFiles(classPathFiles);
+            List<URI> deps = processScannedFilesAsURIs(classPathFiles);
             if (!deps.isEmpty()) {
                 return Optional.of(deps);
             }
@@ -436,7 +453,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return Optional.empty();
     }
 
-    private List<URI> processScannedFiles(List<String> classPathFiles) {
+    public static List<URI> processScannedFilesAsURIs(List<String> classPathFiles) {
         List<URI> deps = new ArrayList<>();
         for (String file : classPathFiles) {
             if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
@@ -444,7 +461,12 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                 deps.addAll(readFileAsURI(file));
             } else if (file.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
                 //the jar is added as is with file:// prefix
-                deps.add(URI.create(FILE_URI + file));
+                if(file.startsWith(FILE_URI)){
+                    deps.add(URI.create(file));
+                } else{
+                    deps.add(URI.create(FILE_URI + file));
+                }
+
             }
         }
         return deps;
@@ -464,7 +486,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return deps;
     }
 
-    private List<URL> processScannedFilesAsURLs(List<String> classPathFiles) {
+    public static List<URL> processScannedFilesAsURLs(List<String> classPathFiles) {
         List<URL> deps = new ArrayList<>();
         try{
         for (String file : classPathFiles) {

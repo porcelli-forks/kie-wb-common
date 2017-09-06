@@ -35,12 +35,22 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
 
     @Override
     public List<String> getPomDependencies(Path projectRootPath) {
-        return internalMap.get(projectRootPath).projectsDeps;
+        if(internalMap.get(projectRootPath) != null){
+            return internalMap.get(projectRootPath).projectsDeps;
+        }else{
+            return Collections.emptyList();
+        }
+
     }
 
     @Override
     public List<String> getTargetsProjectDependencies(Path projectRootPath) {
-        return internalMap.get(projectRootPath).targetDeps;
+        if(internalMap.get(projectRootPath) != null){
+            return internalMap.get(projectRootPath).targetDeps;
+        }else{
+            return Collections.emptyList();
+        }
+
     }
 
     @Override

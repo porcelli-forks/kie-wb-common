@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javassist.util.proxy.ProxyFactory;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.junit.Assert;
@@ -234,7 +233,8 @@ public class ClassLoaderProviderTest {
     @Test
     public void getClassloaderFromAllDependenciesTestSimple() {
         AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
-        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies("src/test/projects/dummy_deps_simple",
+        Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_simple");
+        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
                                                                                                              mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
@@ -245,7 +245,8 @@ public class ClassLoaderProviderTest {
     @Test
     public void getClassloaderFromAllDependenciesTestComplex() {
         AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
-        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies("src/test/projects/dummy_deps_complex",
+        Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_complex");
+        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
                                                                                                              mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
@@ -296,11 +297,11 @@ public class ClassLoaderProviderTest {
         Assert.assertTrue(kieModuleOptional.isPresent());
         KieModule kModule = kieModuleOptional.get();
 
-        Assert.assertTrue(res.getProjectDependencies().isPresent());
-        Assert.assertTrue(res.getProjectDependencies().get().size() == 5);
+        Assert.assertTrue(res.getProjectDependenciesAsURI().isPresent());
+        Assert.assertTrue(res.getProjectDependenciesAsURI().get().size() == 5);
 
         KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
-                                                                        res.getProjectDependencies().get());
+                                                                        res.getProjectDependenciesAsURI().get());
 
         Assert.assertNotNull(kieModuleMetaData);
 

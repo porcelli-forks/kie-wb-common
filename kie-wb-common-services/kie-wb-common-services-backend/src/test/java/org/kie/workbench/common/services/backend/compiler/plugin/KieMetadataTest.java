@@ -121,12 +121,12 @@ public class KieMetadataTest {
         Optional<KieModule> kieModuleOptional = res.getKieModule();
         Assert.assertTrue(kieModuleOptional.isPresent());
 
-        Assert.assertTrue(res.getProjectDependencies().isPresent());
-        Assert.assertTrue(res.getProjectDependencies().get().size() == 5);
+        Assert.assertTrue(res.getProjectDependenciesAsURI().isPresent());
+        Assert.assertTrue(res.getProjectDependenciesAsURI().get().size() == 5);
         KieModule kModule = kieModuleOptional.get();
 
         KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
-                                                                        res.getProjectDependencies().get());
+                                                                        res.getProjectDependenciesAsURI().get());
         Assert.assertNotNull(kieModuleMetaData);
         //comment if you want read the log file after the test run
         TestUtil.rm(tmpRoot.toFile());
@@ -180,8 +180,8 @@ public class KieMetadataTest {
             Optional<KieModule> kieModuleOptional = res.getKieModule();
             Assert.assertTrue(kieModuleOptional.isPresent());
 
-            Assert.assertTrue(res.getProjectDependencies().isPresent());
-            Assert.assertTrue(res.getProjectDependencies().get().size() == 5);
+            Assert.assertTrue(res.getProjectDependenciesAsURI().isPresent());
+            Assert.assertTrue(res.getProjectDependenciesAsURI().get().size() == 5);
 
             //comment if you want read the log file after the test run
             TestUtil.rm(tmpRoot.toFile());
@@ -233,11 +233,11 @@ public class KieMetadataTest {
         Assert.assertTrue(kieModuleOptional.isPresent());
         KieModule kModule = kieModuleOptional.get();
 
-        Assert.assertTrue(res.getProjectDependencies().isPresent());
-        Assert.assertTrue(res.getProjectDependencies().get().size() == 5);
+        Assert.assertTrue(res.getProjectDependenciesAsURI().isPresent());
+        Assert.assertTrue(res.getProjectDependenciesAsURI().get().size() == 5);
 
         KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
-                                                                        res.getProjectDependencies().get());
+                                                                        res.getProjectDependenciesAsURI().get());
 
         //KieModuleMetaData kieModuleMetaData = KieModuleMetaData.Factory.newKieModuleMetaData(kModule); // broken
         Assert.assertNotNull(kieModuleMetaData);

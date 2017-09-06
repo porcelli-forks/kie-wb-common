@@ -28,6 +28,7 @@ import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
+import org.kie.workbench.common.services.backend.builder.core.LRUProjectPOMDependenciesClassloaderCache;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
@@ -60,6 +61,10 @@ public class ProjectClassLoaderHelper {
     private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;
 
     @Inject
+    @Named("LRUProjectPOMDependenciesClassloaderCache")
+    private LRUProjectPOMDependenciesClassloaderCache pomDependenciesClassloaderCache;
+
+    @Inject
     private CompilerMapsHolder compilerMapsHolder;
 
     @Inject
@@ -67,9 +72,14 @@ public class ProjectClassLoaderHelper {
 
     public ClassLoader getProjectClassLoader(KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
+        ClassLoader pomClassloader = pomDependenciesClassloaderCache.assertPOMClassLoader(project);
+        if(pomClassloader != null){
+            return dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
+        }
         KieAFBuilder builder = getKieAFBuilder(nioPath);
         KieCompilationResponse res = builder.build();
         if (res.isSuccessful() && res.getKieModule().isPresent()) {
+
             ClassLoader dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
             ClassLoader projectClassLoader;
             final KieModule module = res.getKieModule().get();

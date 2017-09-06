@@ -33,17 +33,14 @@ import org.guvnor.common.services.project.service.DeploymentMode;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.ala.LocalBuildConfig;
 
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
-import org.kie.workbench.common.services.backend.project.KieResourceResolver;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
@@ -113,8 +110,8 @@ public class BuildServiceImpl implements BuildService {
             readAndSetResourcesFromTargetFolders(nioPath);
         }else{
             res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), Boolean.FALSE);
-            if(res.getProjectDependencies().isPresent()){
-                List<String> urisTOStrings = res.getProjectDependencies().get().stream()
+            if(res.getProjectDependenciesAsURI().isPresent()){
+                List<String> urisTOStrings = res.getProjectDependenciesAsURI().get().stream()
                         .map(URI::toString)
                         .collect(Collectors.toList());
                 classloadersResourcesHolder.addPomDependencies(nioPath, urisTOStrings);

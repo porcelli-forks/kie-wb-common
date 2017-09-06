@@ -223,7 +223,9 @@ public class KieClassLoaderProviderTest {
     @Test
     public void getClassloaderFromAllDependenciesTestSimple() {
         AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
-        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies("src/test/projects/dummy_deps_simple",
+
+        Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_simple");
+        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
                                                                                                              mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
@@ -234,7 +236,8 @@ public class KieClassLoaderProviderTest {
     @Test
     public void getClassloaderFromAllDependenciesTestComplex() {
         AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
-        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies("src/test/projects/dummy_deps_complex",
+        Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_complex");
+        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
                                                                                                              mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();

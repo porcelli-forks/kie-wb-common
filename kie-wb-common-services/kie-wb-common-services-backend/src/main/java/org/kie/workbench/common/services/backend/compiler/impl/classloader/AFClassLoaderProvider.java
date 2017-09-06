@@ -16,6 +16,8 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.classloader;
 
+import org.uberfire.java.nio.file.Path;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -76,5 +78,26 @@ public interface AFClassLoaderProvider {
      * @return
      */
     Optional<List<URL>> getURLSFromAllDependencies(String prjPath);
+
+    /***
+     * Build a list of URL reading the cp file produced by the Maven dependency plugin
+     * @param prjPath
+     * @return
+     */
+    Optional<List<String>> getStringsFromTargets(Path prjPath, String... extensions);
+
+    /***
+     * Build a list of URL reading the cp file produced by the Maven dependency plugin
+     * @param prjPath
+     * @return
+     */
+    Optional<List<String>> getStringsFromAllDependencies(Path prjPath);
+
+    /***
+     * Build a list of URL reading the cp file produced by the Maven dependency plugin
+     * @param prjPath
+     * @return
+     */
+    Optional<List<String>> getStringsFromAllDependencies(String prjPath);
 }
 

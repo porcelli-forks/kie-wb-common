@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.kie;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,12 @@ public interface KieCompilationResponse extends CompilationResponse {
     /**
      * Provides the list of all dependencies used by the project, included transitive
      */
-    Optional<List<URI>> getProjectDependencies();
+    Optional<List<URI>> getProjectDependenciesAsURI();
+
+    /**
+     * Provides the list of all dependencies used by the project, included transitive
+     */
+    Optional<List<URL>> getProjectDependenciesAsURL();
 
     /**
      * Provides a KieModuleMetaInfo if a kie maven plugin is used in the project
