@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.services.backend.builder.core;
 
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -101,15 +102,19 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         ClassLoader classLoader = getEntry(project);
         if(classLoader != null) return classLoader;
         KieCompilationResponse res = builder.build();
-        if(res.isSuccessful() && res.getKieModule().isPresent()) {
+        if(res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
             KieModule kModule =  res.getKieModule().get();
-            KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule,
-                    res.getProjectDependenciesAsURI().get());
-            ClassLoader classloader = buildClassLoader(project, kieModuleMetaData);
+            Optional<List<String>> optionalString = classLoaderProvider.getStringFromTargets(res.getWorkingDir().get());
+            List<URI> urls = PathConverter.createURISFromString(optionalString.get());
+
+            //KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule, res.getProjectDependenciesAsURI().get());
+            KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule, urls);
+            ClassLoader classloader = new URLClassLoader(res.getProjectDependenciesAsURI().get().toArray(new URL[res.getProjectDependenciesAsURI().get().size()]), kieModuleMetaData.getClassLoader().getParent());
+            //ClassLoader classloader = buildClassLoader(project, kieModuleMetaData);
             if(res.getWorkingDir().isPresent()) {
-                Optional<List<String>> optionalString = classLoaderProvider.getStringFromTargets(res.getWorkingDir().get());
+                //Optional<List<String>> optionalString = classLoaderProvider.getStringFromTargets(res.getWorkingDir().get());
                 if (optionalString.isPresent()) {
-                    List<URL> urls = PathConverter.createURLSFromString(optionalString.get());
+                    //List<URL> urls = PathConverter.createURLSFromString(optionalString.get());
                     URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), classloader);
                     setEntry(project, urlClassLoader);
                     return urlClassLoader;

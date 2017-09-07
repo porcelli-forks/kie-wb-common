@@ -30,6 +30,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilatio
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
@@ -85,7 +86,7 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<KieProje
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
-                builder = new DefaultKieAFBuilder(prj, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), getCompiler(), compilerMapsHolder);
+                builder = new DefaultKieAFBuilder(prj, MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)), getCompiler(), compilerMapsHolder);
                 compilerMapsHolder.addBuilder(nioPath, builder);
             }
         }
@@ -98,7 +99,7 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<KieProje
         KieAFBuilder builder = getKieAFBuilder(nioPath);
         if(builder == null) {
             AFCompiler compiler = getCompiler();
-            builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),
+            builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                     new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.DEBUG},
                     compiler, Boolean.FALSE, compilerMapsHolder);
             compilerMapsHolder.addBuilder(nioPath, builder);
