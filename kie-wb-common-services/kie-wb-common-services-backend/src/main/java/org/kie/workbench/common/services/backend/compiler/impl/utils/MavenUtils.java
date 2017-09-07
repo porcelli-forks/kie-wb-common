@@ -97,4 +97,8 @@ public class MavenUtils {
         }
     }
 
+    public static String getMavenRepoDir(String defaultName){
+        return "/tmp/maven/repo/"+defaultName;
+    }
+
 }

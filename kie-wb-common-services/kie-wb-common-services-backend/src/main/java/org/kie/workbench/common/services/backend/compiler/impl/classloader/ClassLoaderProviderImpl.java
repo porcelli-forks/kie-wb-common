@@ -16,23 +16,21 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.classloader;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
+import org.drools.compiler.kproject.models.KieModuleModelImpl;
+import org.drools.core.rule.KieModuleMetaInfo;
+import org.drools.core.rule.TypeMetaInfo;
+import org.drools.core.util.IoUtils;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
@@ -50,6 +48,8 @@ import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
+
+import static org.drools.core.util.ClassUtils.convertResourceToClassName;
 
 public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
 
@@ -89,6 +89,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
                                   classPathFiles,
                                   extensions);
                 } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith) && p.toString().contains("/target/")) {
+                    if(FilenameUtils.getName(p.getFileName().toString()).startsWith(".")) continue;
                     classPathFiles.add(p.toAbsolutePath().toString());
                 }
             }
@@ -269,20 +270,24 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if(filePath.startsWith(FILE_URI)){
-                    Files.delete(Paths.get(filePath));
-                }else{
-                    Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
-                }
-            } catch (IOException ex) {
-                logger.error(ex.getMessage());
-            }
+            close(filePath, br);
         }
         return urls;
+    }
+
+    private static void close(String filePath, BufferedReader br) {
+        try {
+            if (br != null) {
+                br.close();
+            }
+            if(filePath.startsWith(FILE_URI)){
+                Files.delete(Paths.get(filePath));
+            }else{
+                Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
+            }
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
     }
 
     private static List<URL> readFileAsURL(String filePath) {
@@ -306,18 +311,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if(filePath.startsWith(FILE_URI)){
-                    Files.delete(Paths.get(filePath));
-                }else{
-                    Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
-                }
-            } catch (IOException ex) {
-                logger.error(ex.getMessage());
-            }
+            close(filePath, br);
         }
         return urls;
     }
@@ -343,18 +337,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if(filePath.startsWith(FILE_URI)){
-                    Files.delete(Paths.get(filePath));
-                }else{
-                    Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
-                }
-            } catch (IOException ex) {
-                logger.error(ex.getMessage());
-            }
+            close(filePath, br);
         }
         return items;
     }
@@ -468,6 +451,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     public static List<URI> processScannedFilesAsURIs(List<String> classPathFiles) {
         List<URI> deps = new ArrayList<>();
         for (String file : classPathFiles) {
+            if(FilenameUtils.getName(file).startsWith(".")) continue;
             if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
                 //the .cpath will be processed to extract the deps of each module
                 deps.addAll(readFileAsURI(file));
@@ -487,6 +471,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     private List<String> processScannedFilesAsString(List<String> classPathFiles) {
         List<String> deps = new ArrayList<>();
         for (String file : classPathFiles) {
+            if(FilenameUtils.getName(file).startsWith(".")) continue;
             if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
                 //the .cpath will be processed to extract the deps of each module
                 deps.addAll(readFileAsString(file));
@@ -502,6 +487,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         List<URL> deps = new ArrayList<>();
         try{
         for (String file : classPathFiles) {
+            if(FilenameUtils.getName(file).startsWith(".")) continue;
             if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
                 //the .cpath will be processed to extract the deps of each module
                 deps.addAll(readFileAsURL(file));
@@ -550,4 +536,45 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         }
         return urls;
     }
+
+
+    public Map<String, byte[]> getClassesMap(boolean includeTypeDeclarations, List<String> fileNames, File folder) {
+        Map<String, byte[]> classes = new HashMap<String, byte[]>();
+        for (String fileName : fileNames) {
+            if(FilenameUtils.getName(fileName).startsWith(".")) continue;
+            if (fileName.endsWith(".class")) {
+                if (includeTypeDeclarations || !isTypeDeclaration(fileName)) {
+                    classes.put(fileName, getBytes(fileName));
+                }
+            }
+        }
+        return classes;
+    }
+
+    private boolean isTypeDeclaration(String fileName) {
+        Map<String, TypeMetaInfo> info = getTypesMetaInfo();
+        TypeMetaInfo typeInfo = info == null ? null : info.get(convertResourceToClassName(fileName));
+        return typeInfo != null && typeInfo.isDeclaredType();
+    }
+
+    private Map<String, TypeMetaInfo> getTypesMetaInfo() {
+         Map<String, TypeMetaInfo> typesMetaInfo = null;
+        if (typesMetaInfo == null) {
+            byte[] bytes = getBytes(KieModuleModelImpl.KMODULE_INFO_JAR_PATH);
+            if (bytes != null) {
+                typesMetaInfo = KieModuleMetaInfo.unmarshallMetaInfos(new String(bytes, IoUtils.UTF8_CHARSET)).getTypeMetaInfos();
+            }
+        }
+        return typesMetaInfo;
+    }
+
+    private byte[] getBytes(String pResourceName ) {
+        try {
+            File resource = new File( pResourceName);
+            return resource.exists() ? IoUtils.readBytesFromInputStream( new FileInputStream( pResourceName ) ) : null;
+        } catch ( IOException e ) {
+            throw new RuntimeException("Unable to get bytes for: " + new File(pResourceName) + " " +e.getMessage());
+        }
+    }
+
 }

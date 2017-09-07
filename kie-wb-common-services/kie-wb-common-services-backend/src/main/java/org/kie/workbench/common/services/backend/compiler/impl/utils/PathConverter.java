@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Path;
@@ -55,6 +56,7 @@ public class PathConverter {
         List<URL> urls = new ArrayList<>(items.size());
         try{
         for(String item: items){
+            if(FilenameUtils.getName(item).startsWith(".")) continue;
             if(item.startsWith(FILE_URI)){
                 urls.add(new URL(item));
             }else{
@@ -65,6 +67,18 @@ public class PathConverter {
                 logger.error(ex.getMessage());
             }
         return urls;
+    }
 
+    public static List<URI> createURISFromString(List<String> items){
+        List<URI> uris = new ArrayList<>(items.size());
+            for(String item: items){
+                if(FilenameUtils.getName(item).startsWith(".")) continue;
+                if(item.startsWith(FILE_URI)){
+                    uris.add(URI.create(item));
+                }else{
+                    uris.add(URI.create(FILE_URI+item));
+                }
+            }
+        return uris;
     }
 }

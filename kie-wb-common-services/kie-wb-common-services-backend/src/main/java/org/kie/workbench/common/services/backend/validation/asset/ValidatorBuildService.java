@@ -47,6 +47,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAft
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public class ValidatorBuildService {
         final KieAFBuilder builder = compilerMapsHolder.getBuilder(projectRootPath);
         if (builder == null) {
             final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
-                                                                    guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),
+                    MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                                     getCompiler(), compilerMapsHolder);
             compilerMapsHolder.addBuilder(projectRootPath,
                                           newBuilder);

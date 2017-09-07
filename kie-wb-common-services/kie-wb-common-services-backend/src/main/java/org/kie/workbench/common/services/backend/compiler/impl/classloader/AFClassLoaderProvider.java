@@ -18,9 +18,11 @@ package org.kie.workbench.common.services.backend.compiler.impl.classloader;
 
 import org.uberfire.java.nio.file.Path;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -106,5 +108,8 @@ public interface AFClassLoaderProvider {
      * @return
      */
     Optional<List<String>> getStringsFromAllDependencies(String prjPath);
+
+
+    Map<String, byte[]> getClassesMap(boolean includeTypeDeclarations, List<String> fileNames, File folder);
 }
 

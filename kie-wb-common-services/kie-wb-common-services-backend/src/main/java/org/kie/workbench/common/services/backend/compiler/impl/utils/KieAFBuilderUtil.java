@@ -41,7 +41,7 @@ public class KieAFBuilderUtil {
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
-                builder = new DefaultKieAFBuilder(prj, guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), getCompiler(compilerMapsHolder), compilerMapsHolder);
+                builder = new DefaultKieAFBuilder(prj, MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)), getCompiler(compilerMapsHolder), compilerMapsHolder);
                 compilerMapsHolder.addBuilder(nioPath, builder);
             }
         }
