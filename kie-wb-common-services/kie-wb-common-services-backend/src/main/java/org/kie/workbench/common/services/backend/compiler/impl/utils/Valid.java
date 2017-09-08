@@ -23,6 +23,7 @@ public interface Valid {
 
     /***
      * Signals if is in a valid state using an internal algo to check a particular implementations
+     *
      * @return
      */
     Boolean isValid();

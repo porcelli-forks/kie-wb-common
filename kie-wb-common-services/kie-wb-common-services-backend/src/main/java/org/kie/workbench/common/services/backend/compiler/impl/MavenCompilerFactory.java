@@ -16,13 +16,13 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /***
  * Factory to create compilers with correct order of decorators
@@ -68,7 +68,7 @@ public class MavenCompilerFactory {
                 compiler = new DefaultMavenCompiler();
         }
         compilers.put(Decorator.NONE.name(),
-                      compiler);
+                compiler);
         return compiler;
     }
 

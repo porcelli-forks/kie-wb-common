@@ -15,16 +15,15 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+
 import java.util.List;
 import java.util.Optional;
-
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 
 /***
  * Default implementation of a basic (Non Kie) Compilation response,
  * it contains a boolean flag as a result of the build, an optional String error message,
- *  and an optional List of String with the maven output
- *
+ * and an optional List of String with the maven output
  */
 public class DefaultCompilationResponse implements CompilationResponse {
 

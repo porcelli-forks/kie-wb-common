@@ -22,13 +22,13 @@ public class BuilderUtils {
     @Inject
     private GuvnorM2Repository guvnorM2Repository;
 
-    public Optional<KieAFBuilder> getBuilder(Path nioPath){
+    public Optional<KieAFBuilder> getBuilder(Path nioPath) {
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
-        if(builder == null) {
-            if(nioPath.getFileSystem() instanceof JGitFileSystem){
-                Git repo = JGitUtils.tempClone((JGitFileSystem)nioPath.getFileSystem(), UUID.randomUUID().toString());
+        if (builder == null) {
+            if (nioPath.getFileSystem() instanceof JGitFileSystem) {
+                Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
-                builder = new DefaultKieAFBuilder(nioPath, MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),compilerMapsHolder);
+                builder = new DefaultKieAFBuilder(nioPath, MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)), compilerMapsHolder);
             }
         }
         return Optional.ofNullable(builder);

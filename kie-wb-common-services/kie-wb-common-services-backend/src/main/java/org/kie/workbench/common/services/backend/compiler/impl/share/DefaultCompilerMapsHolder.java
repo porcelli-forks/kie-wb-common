@@ -15,14 +15,14 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.enterprise.context.ApplicationScoped;
-
 import org.eclipse.jgit.api.Git;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+
+import javax.enterprise.context.ApplicationScoped;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
@@ -46,7 +46,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public boolean addGit(JGitFileSystem key,
                           Git git) {
         return gitMap.put(key,
-                          git) != null;
+                git) != null;
     }
 
     public Git removeGit(JGitFileSystem key) {
@@ -72,7 +72,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public boolean addBuilder(final Path projectRootPath,
                               final KieAFBuilder builder) {
         return buildersMap.put(projectRootPath,
-                               builder) != null;
+                builder) != null;
     }
 
     public KieAFBuilder removeBuilder(Path projectRootPath) {

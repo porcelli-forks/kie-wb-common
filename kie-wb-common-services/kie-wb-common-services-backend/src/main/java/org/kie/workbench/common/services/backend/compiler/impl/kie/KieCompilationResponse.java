@@ -15,15 +15,15 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.kie;
 
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.uberfire.java.nio.file.Path;
+
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Compilation response with benefits of Kie
@@ -52,6 +52,7 @@ public interface KieCompilationResponse extends CompilationResponse {
 
     /**
      * Provides the PAyh of the working dir
+     *
      * @return
      */
     Optional<Path> getWorkingDir();

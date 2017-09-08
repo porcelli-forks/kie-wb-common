@@ -16,6 +16,10 @@
 
 package org.kie.workbench.common.services.backend.compiler.configuration;
 
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -23,12 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ConfigurationPropertiesStrategy implements ConfigurationStrategy,
-                                                        Order {
+        Order {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesStrategy.class);
 
@@ -44,23 +44,23 @@ public class ConfigurationPropertiesStrategy implements ConfigurationStrategy,
             conf = new HashMap<>();
 
             conf.put(ConfigurationKey.MAVEN_PLUGINS,
-                     props.getProperty(ConfigurationKey.MAVEN_PLUGINS.name()));
+                    props.getProperty(ConfigurationKey.MAVEN_PLUGINS.name()));
             conf.put(ConfigurationKey.MAVEN_COMPILER_PLUGIN,
-                     props.getProperty(ConfigurationKey.MAVEN_COMPILER_PLUGIN.name()));
+                    props.getProperty(ConfigurationKey.MAVEN_COMPILER_PLUGIN.name()));
             conf.put(ConfigurationKey.MAVEN_COMPILER_PLUGIN_VERSION,
-                     props.getProperty(ConfigurationKey.MAVEN_COMPILER_PLUGIN_VERSION.name()));
+                    props.getProperty(ConfigurationKey.MAVEN_COMPILER_PLUGIN_VERSION.name()));
 
             conf.put(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGINS,
-                     props.getProperty(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGINS.name()));
+                    props.getProperty(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGINS.name()));
             conf.put(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN,
-                     props.getProperty(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN.name()));
+                    props.getProperty(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN.name()));
             conf.put(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN_VERSION,
-                     props.getProperty(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN_VERSION.name()));
+                    props.getProperty(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN_VERSION.name()));
 
             conf.put(ConfigurationKey.KIE_MAVEN_PLUGINS,
-                     props.getProperty(ConfigurationKey.KIE_MAVEN_PLUGINS.name()));
+                    props.getProperty(ConfigurationKey.KIE_MAVEN_PLUGINS.name()));
             conf.put(ConfigurationKey.KIE_MAVEN_PLUGIN,
-                     props.getProperty(ConfigurationKey.KIE_MAVEN_PLUGIN.name()));
+                    props.getProperty(ConfigurationKey.KIE_MAVEN_PLUGIN.name()));
             conf.put(ConfigurationKey.KIE_TAKARI_PLUGIN,
                     props.getProperty(ConfigurationKey.KIE_TAKARI_PLUGIN.name()));
         }
@@ -71,7 +71,7 @@ public class ConfigurationPropertiesStrategy implements ConfigurationStrategy,
         InputStream in = getClass().getClassLoader().getResourceAsStream(propertiesFile);
         if (in == null) {
             logger.info("{} not available with the classloader, skip to the next ConfigurationStrategy. \n",
-                        propertiesFile);
+                    propertiesFile);
             valid = Boolean.FALSE;
         } else {
             try {

@@ -34,13 +34,12 @@ import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
@@ -94,11 +93,10 @@ public class ClassLoaderProviderTest {
         }
         assertTrue(res.isSuccessful());
 
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.get("src/test/projects/dummy_kie_multimodule_classloader/"),
                               pomList);
-        Optional<ClassLoader> clazzLoader = kieClazzLoaderProvider.loadDependenciesClassloaderFromProject(pomList,
+        Optional<ClassLoader> clazzLoader = ClassloaderUtils.loadDependenciesClassloaderFromProject(pomList,
                                                                                                           mavenRepo.toAbsolutePath().toString());
         assertNotNull(clazzLoader);
         assertTrue(clazzLoader.isPresent());
@@ -147,9 +145,8 @@ public class ClassLoaderProviderTest {
         }
         assertTrue(res.isSuccessful());
 
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
 
-        Optional<ClassLoader> clazzLoader = kieClazzLoaderProvider.loadDependenciesClassloaderFromProject(uberfireTmp.toAbsolutePath().toString(),
+        Optional<ClassLoader> clazzLoader = ClassloaderUtils.loadDependenciesClassloaderFromProject(uberfireTmp.toAbsolutePath().toString(),
                                                                                                           mavenRepo.toAbsolutePath().toString());
         assertNotNull(clazzLoader);
         assertTrue(clazzLoader.isPresent());
@@ -198,11 +195,10 @@ public class ClassLoaderProviderTest {
         }
         assertTrue(res.isSuccessful());
 
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(uberfireTmp,
                               pomList);
-        Optional<ClassLoader> clazzLoader = kieClazzLoaderProvider.getClassloaderFromProjectTargets(pomList,
+        Optional<ClassLoader> clazzLoader = ClassloaderUtils.getClassloaderFromProjectTargets(pomList,
                                                                                                     Boolean.FALSE);
         assertNotNull(clazzLoader);
         assertTrue(clazzLoader.isPresent());
@@ -232,9 +228,8 @@ public class ClassLoaderProviderTest {
 
     @Test
     public void getClassloaderFromAllDependenciesTestSimple() {
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_simple");
-        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
+        Optional<ClassLoader> classloaderOptional = ClassloaderUtils.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
                                                                                                              mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
@@ -244,9 +239,8 @@ public class ClassLoaderProviderTest {
 
     @Test
     public void getClassloaderFromAllDependenciesTestComplex() {
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_complex");
-        Optional<ClassLoader> classloaderOptional = kieClazzLoaderProvider.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
+        Optional<ClassLoader> classloaderOptional = ClassloaderUtils.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
                                                                                                              mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
@@ -305,8 +299,7 @@ public class ClassLoaderProviderTest {
 
         Assert.assertNotNull(kieModuleMetaData);
 
-        ClassLoaderProviderImpl kieClazzLoaderProvider = new ClassLoaderProviderImpl();
-        Optional<List<String>> classloaderOptional = kieClazzLoaderProvider.getStringFromTargets(tmpRoot);
+        Optional<List<String>> classloaderOptional = ClassloaderUtils.getStringFromTargets(tmpRoot);
         assertTrue(classloaderOptional.isPresent());
         List<String> resources = classloaderOptional.get();
         Assert.assertTrue(resources.size() == 3);

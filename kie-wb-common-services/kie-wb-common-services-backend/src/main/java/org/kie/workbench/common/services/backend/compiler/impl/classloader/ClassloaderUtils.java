@@ -1,29 +1,5 @@
-/*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.kie.workbench.common.services.backend.compiler.impl.classloader;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.*;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
@@ -31,15 +7,15 @@ import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.drools.core.rule.TypeMetaInfo;
 import org.drools.core.util.IoUtils;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.DotFileFilter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.slf4j.Logger;
@@ -49,19 +25,85 @@ import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import static org.drools.core.util.ClassUtils.convertResourceToClassName;
 
-public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
+public class ClassloaderUtils {
 
-    protected static final Logger logger = LoggerFactory.getLogger(ClassLoaderProviderImpl.class);
-    protected final DirectoryStream.Filter<Path> dotFileFilter = new DotFileFilter();
+    protected static final Logger logger = LoggerFactory.getLogger(ClassloaderUtils.class);
+    protected static final DirectoryStream.Filter<Path> dotFileFilter = new DotFileFilter();
+    protected static String DOT_FILE = ".";
     protected static String JAVA_ARCHIVE_RESOURCE_EXT = ".jar";
     protected static String JAVA_CLASS_EXT = ".class";
-    protected String XML_EXT = ".xml";
-    protected String DROOLS_EXT = ".drl";
-    protected String GDROOLS_EXT = ".gdrl";
-    protected String RDROOLS_EXT = ".rdrl";
+    protected static String XML_EXT = ".xml";
+    protected static String DROOLS_EXT = ".drl";
+    protected static String GDROOLS_EXT = ".gdrl";
+    protected static String RDROOLS_EXT = ".rdrl";
     protected static String FILE_URI = "file://";
+    protected static String MAVEN_TARGET ="target/classes/";
+
+    /**
+     * Execute a maven run to create the classloaders with the dependencies in the Poms, transitive included
+     */
+    public static Optional<ClassLoader> getClassloaderFromAllDependencies(String prjPath,
+                                                                          String localRepo) {
+        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + prjPath)));
+        StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
+        CompilationRequest req = new DefaultCompilationRequest(localRepo,
+                info,
+                new String[]{MavenCLIArgs.DEBUG, MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
+                Boolean.TRUE, Boolean.FALSE);
+        CompilationResponse res = compiler.compileSync(req);
+        if (res.isSuccessful()) {
+            /** Maven dependency plugin is not able to append the modules classpath using an absolute path in -Dmdep.outputFile,
+             it override each time and at the end only the last writted is present in  the file,
+             for this reason we use a relative path and then we read each file present in each module to build a unique classpath file
+             * */
+            Optional<ClassLoader> urlClassLoader = ClassloaderUtils.createClassloaderFromCpFiles(prjPath);
+            if (urlClassLoader != null) {
+                return urlClassLoader;
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static List<String> getCleanedPathClassesAsString(String path){
+        List<String> keys = IoUtils.recursiveListFile(new File(path), "", filterClasses());
+        List<String> out = new ArrayList<>(keys.size());
+        for(String item : keys){
+            out.add(item.substring(item.lastIndexOf(MAVEN_TARGET) + 15 ));
+        }
+        return out;
+    }
+
+    public static Map<String, byte[]> getMapClasses(String path){
+        List<String> keys = IoUtils.recursiveListFile(new File(path), "", filterClasses());
+        Map<String, byte[]> classes = new HashMap<String, byte[]>(keys.size());
+
+        for(String item : keys){
+            byte[] bytez = getBytes(path + "/" + item);
+            String fqn = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15 , item.length() - 6);
+            String className = item.substring(item.lastIndexOf("/")+1, item.lastIndexOf(JAVA_CLASS_EXT));
+            classes.put(fqn, bytez);
+            classes.put(className, bytez);
+        }
+        return classes;
+    }
+
+    public static List<String> getPathClassesAsString(String path) {
+        return IoUtils.recursiveListFile(new File(path), "", filterClasses());
+    }
+
+    public static Predicate<File> filterClasses() {
+        return f -> f.toString().endsWith(JAVA_CLASS_EXT) && !FilenameUtils.getName(f.toString()).startsWith(DOT_FILE);
+    }
+
 
     public static void searchCPFiles(Path file,
                                      List<String> classPathFiles,
@@ -70,8 +112,8 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
                     searchCPFiles(p,
-                                  classPathFiles,
-                                  extensions);
+                            classPathFiles,
+                            extensions);
                 } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith)) {
                     classPathFiles.add(p.toAbsolutePath().toString());
                 }
@@ -80,82 +122,50 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
     public static void searchTargetFiles(Path file,
-                                     List<String> classPathFiles,
-                                     String... extensions) {
+                                         List<String> classPathFiles,
+                                         String... extensions) {
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(file.toAbsolutePath())) {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
                     searchTargetFiles(p,
-                                  classPathFiles,
-                                  extensions);
-                } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith) && p.toString().contains("/target/")) {
-                    if(FilenameUtils.getName(p.getFileName().toString()).startsWith(".")) continue;
+                            classPathFiles,
+                            extensions);
+                } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith) && p.toString().contains(MAVEN_TARGET)) {
+                    if (FilenameUtils.getName(p.getFileName().toString()).startsWith(DOT_FILE)) continue;
                     classPathFiles.add(p.toAbsolutePath().toString());
                 }
             }
         }
     }
 
-    /**
-     * Execute a maven run to create the classloaders with the dependencies in the Poms, transitive included
-     */
-    public Optional<ClassLoader> getClassloaderFromAllDependencies(String prjPath,
-                                                                   String localRepo) {
-        AFCompiler compiler = MavenCompilerFactory.getCompiler(Decorator.NONE);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+prjPath)));
-        StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
-        CompilationRequest req = new DefaultCompilationRequest(localRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.DEBUG, MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
-                                                               Boolean.TRUE, Boolean.FALSE);
-        CompilationResponse res = compiler.compileSync(req);
-        if (res.isSuccessful()) {
-            /** Maven dependency plugin is not able to append the modules classpath using an absolute path in -Dmdep.outputFile,
-             it override each time and at the end only the last writted is present in  the file,
-             for this reason we use a relative path and then we read each file present in each module to build a unique classpath file
-             * */
-            Optional<ClassLoader> urlClassLoader = createClassloaderFromCpFiles(prjPath);
-            if (urlClassLoader != null) {
-                return urlClassLoader;
-            }
-        }
-        return Optional.empty();
-    }
 
-    /**
-     * Load the dependencies from the Poms, transitive included
-     */
-    public Optional<ClassLoader> loadDependenciesClassloaderFromProject(String prjPath,
-                                                                        String localRepo) {
+    public static Optional<ClassLoader> loadDependenciesClassloaderFromProject(String prjPath,
+                                                                               String localRepo) {
         List<String> poms = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI+prjPath)),
-                              poms);
+        MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI + prjPath)),
+                poms);
         List<URL> urls = getDependenciesURL(poms,
-                                            localRepo);
+                localRepo);
         return buildResult(urls);
     }
 
-    /**
-     * Load the dependencies from the Poms, transitive included
-     */
-    public Optional<ClassLoader> loadDependenciesClassloaderFromProject(List<String> poms,
-                                                                        String localRepo) {
+
+    public static Optional<ClassLoader> loadDependenciesClassloaderFromProject(List<String> poms,
+                                                                               String localRepo) {
         List<URL> urls = getDependenciesURL(poms,
-                                            localRepo);
+                localRepo);
         return buildResult(urls);
     }
 
-    /**
-     * Load the dependencies from the Poms, transitive included
-     */
-    public Optional<ClassLoader> getClassloaderFromProjectTargets(List<String> pomsPaths,
-                                                                  Boolean loadIntoClassloader) {
+
+    public static Optional<ClassLoader> getClassloaderFromProjectTargets(List<String> pomsPaths,
+                                                                         Boolean loadIntoClassloader) {
         List<URL> urls = loadIntoClassloader ? loadFiles(pomsPaths) : getTargetModulesURL(pomsPaths);
         return buildResult(urls);
     }
 
-    private List<URL> buildUrlsFromArtifacts(String localRepo,
-                                             List<Artifact> artifacts) throws MalformedURLException {
+    public static List<URL> buildUrlsFromArtifacts(String localRepo,
+                                                   List<Artifact> artifacts) throws MalformedURLException {
         List<URL> urls = new ArrayList<>(artifacts.size());
         for (Artifact artifact : artifacts) {
             StringBuilder sb = new StringBuilder(FILE_URI);
@@ -168,28 +178,28 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return urls;
     }
 
-    private List<URL> getDependenciesURL(List<String> poms,
-                                         String localRepo) {
+    public static List<URL> getDependenciesURL(List<String> poms,
+                                               String localRepo) {
         List<Artifact> artifacts = MavenUtils.resolveDependenciesFromMultimodulePrj(poms);
         List<URL> urls = Collections.emptyList();
         try {
             urls = buildUrlsFromArtifacts(localRepo,
-                                          artifacts);
+                    artifacts);
         } catch (MalformedURLException ex) {
             logger.error(ex.getMessage());
         }
         return urls;
     }
 
-    private List<URL> getTargetModulesURL(List<String> pomsPaths) {
+    public static List<URL> getTargetModulesURL(List<String> pomsPaths) {
         if (pomsPaths != null && pomsPaths.size() > 0) {
             List<URL> targetModulesUrls = new ArrayList(pomsPaths.size());
             try {
                 for (String pomPath : pomsPaths) {
-                    Path path = Paths.get(URI.create(FILE_URI+pomPath));
+                    Path path = Paths.get(URI.create(FILE_URI + pomPath));
                     StringBuilder sb = new StringBuilder(FILE_URI)
                             .append(path.getParent().toAbsolutePath().toString())
-                            .append("/target/classes/");
+                            .append("/").append(MAVEN_TARGET);
                     targetModulesUrls.add(new URL(sb.toString()));
                 }
             } catch (MalformedURLException ex) {
@@ -201,7 +211,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         }
     }
 
-    private Optional<ClassLoader> buildResult(List<URL> urls) {
+    public static Optional<ClassLoader> buildResult(List<URL> urls) {
         if (urls.isEmpty()) {
             return Optional.empty();
         } else {
@@ -211,9 +221,9 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
 
-    private Optional<ClassLoader> createClassloaderFromCpFiles(String prjPath) {
+    public static Optional<ClassLoader> createClassloaderFromCpFiles(String prjPath) {
         List<URL> deps = readAllCpFilesAsUrls(prjPath,
-                                              MavenConfig.CLASSPATH_EXT);
+                MavenConfig.CLASSPATH_EXT);
         if (deps.isEmpty()) {
             return Optional.empty();
         } else {
@@ -222,12 +232,12 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         }
     }
 
-    private List<URL> readAllCpFilesAsUrls(String prjPath,
-                                           String extension) {
+    public static List<URL> readAllCpFilesAsUrls(String prjPath,
+                                                 String extension) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
-                      classPathFiles,
-                      extension);
+        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
+                classPathFiles,
+                extension);
         if (!classPathFiles.isEmpty()) {
             List<URL> deps = new ArrayList<>();
             for (String file : classPathFiles) {
@@ -241,10 +251,10 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return Collections.emptyList();
     }
 
-    private List<URL> loadFiles(List<String> pomsPaths) {
+    public static List<URL> loadFiles(List<String> pomsPaths) {
         List<URL> targetModulesUrls = getTargetModulesURL(pomsPaths);
         if (!targetModulesUrls.isEmpty()) {
-            List<URL> targetFiles = addFilesURL(targetModulesUrls);
+            List<URL> targetFiles = ClassloaderUtils.addFilesURL(targetModulesUrls);
             return targetFiles;
         }
         return Collections.emptyList();
@@ -257,11 +267,11 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         try {
 
             br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
+                    "UTF-8"));
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
                 StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                        ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     urls.add(new URI(sb.toString()));
@@ -275,34 +285,34 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return urls;
     }
 
-    private static void close(String filePath, BufferedReader br) {
+    public static void close(String filePath, BufferedReader br) {
         try {
             if (br != null) {
                 br.close();
             }
-            if(filePath.startsWith(FILE_URI)){
+            if (filePath.startsWith(FILE_URI)) {
                 Files.delete(Paths.get(filePath));
-            }else{
-                Files.delete(Paths.get(URI.create(FILE_URI +filePath)));
+            } else {
+                Files.delete(Paths.get(URI.create(FILE_URI + filePath)));
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
     }
 
-    private static List<URL> readFileAsURL(String filePath) {
+    public static List<URL> readFileAsURL(String filePath) {
 
         BufferedReader br = null;
         List<URL> urls = new ArrayList<>();
         try {
 
             br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
+                    "UTF-8"));
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
                 StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                        ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     urls.add(new URL(sb.toString()));
@@ -316,19 +326,19 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return urls;
     }
 
-    private List<String> readFileAsString(String filePath) {
+    public static List<String> readFileAsString(String filePath) {
 
         BufferedReader br = null;
         List<String> items = new ArrayList<>();
         try {
 
             br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
+                    "UTF-8"));
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
                 StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                        ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     items.add(sb.toString());
@@ -343,47 +353,37 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
 
-    /**
-     * Provides a list of String of all jar used in the project, dependencies plus jar created in the target folder
-     */
-
-    public Optional<List<String>> getStringFromTargets(Path prjPath) {
+    public static Optional<List<String>> getStringFromTargets(Path prjPath) {
         List<String> classPathFiles = new ArrayList<>();
         searchTargetFiles(prjPath,
-                      classPathFiles,
-                      JAVA_CLASS_EXT, DROOLS_EXT, GDROOLS_EXT, RDROOLS_EXT, XML_EXT);
-        if (!classPathFiles.isEmpty()) {
-                return Optional.of(classPathFiles);
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Provides a list of String of all resources foudned in the target folders, accordingly to the extensions passed as argument
-     */
-
-    public Optional<List<String>> getStringsFromTargets(Path prjPath, String... extensions) {
-        List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(prjPath,
-                      classPathFiles,
-                      extensions);
+                classPathFiles,
+                JAVA_CLASS_EXT, DROOLS_EXT, GDROOLS_EXT, RDROOLS_EXT, XML_EXT);
         if (!classPathFiles.isEmpty()) {
             return Optional.of(classPathFiles);
         }
         return Optional.empty();
     }
 
-    /**
-     * Provides a list of String of all jar used in the project, dependencies plus jar created in the target folder
-     */
 
-    public Optional<List<String>> getStringsFromAllDependencies(Path prjPath) {
+    public static Optional<List<String>> getStringsFromTargets(Path prjPath, String... extensions) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(prjPath,
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT,
-                      JAVA_CLASS_EXT, DROOLS_EXT, GDROOLS_EXT, RDROOLS_EXT);
+                classPathFiles,
+                extensions);
+        if (!classPathFiles.isEmpty()) {
+            return Optional.of(classPathFiles);
+        }
+        return Optional.empty();
+    }
+
+
+    public static Optional<List<String>> getStringsFromAllDependencies(Path prjPath) {
+        List<String> classPathFiles = new ArrayList<>();
+        searchCPFiles(prjPath,
+                classPathFiles,
+                MavenConfig.CLASSPATH_EXT,
+                JAVA_ARCHIVE_RESOURCE_EXT,
+                JAVA_CLASS_EXT, DROOLS_EXT, GDROOLS_EXT, RDROOLS_EXT);
         if (!classPathFiles.isEmpty()) {
             List<String> deps = processScannedFilesAsString(classPathFiles);
             if (!deps.isEmpty()) {
@@ -394,14 +394,9 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
 
-
-    /**
-     * Provides a list of String of all jar used in the project, dependencies plus jar created in the target folder
-     */
-
     public Optional<List<String>> getStringsFromAllDependencies(String prjPath) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
+        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
                 classPathFiles,
                 MavenConfig.CLASSPATH_EXT,
                 JAVA_ARCHIVE_RESOURCE_EXT);
@@ -411,16 +406,13 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return Optional.empty();
     }
 
-    /**
-     * Provides a list of URI of all jar used in the project, dependencies plus jar created in the target folder
-     */
 
-    public Optional<List<URI>> getURISFromAllDependencies(String prjPath) {
+    public static Optional<List<URI>> getURISFromAllDependencies(String prjPath) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT);
+        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
+                classPathFiles,
+                MavenConfig.CLASSPATH_EXT,
+                JAVA_ARCHIVE_RESOURCE_EXT);
         if (!classPathFiles.isEmpty()) {
             List<URI> deps = processScannedFilesAsURIs(classPathFiles);
             if (!deps.isEmpty()) {
@@ -430,15 +422,13 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return Optional.empty();
     }
 
-    /**
-     * Provides a list of URL of all jar used in the project, dependencies plus jar created in the target folder
-     */
-    public Optional<List<URL>> getURLSFromAllDependencies(String prjPath) {
+
+    public static Optional<List<URL>> getURLSFromAllDependencies(String prjPath) {
         List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI+prjPath)),
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT);
+        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
+                classPathFiles,
+                MavenConfig.CLASSPATH_EXT,
+                JAVA_ARCHIVE_RESOURCE_EXT);
         if (!classPathFiles.isEmpty()) {
             List<URL> deps = processScannedFilesAsURLs(classPathFiles);
             if (!deps.isEmpty()) {
@@ -451,15 +441,15 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     public static List<URI> processScannedFilesAsURIs(List<String> classPathFiles) {
         List<URI> deps = new ArrayList<>();
         for (String file : classPathFiles) {
-            if(FilenameUtils.getName(file).startsWith(".")) continue;
+            if (FilenameUtils.getName(file).startsWith(".")) continue;
             if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
                 //the .cpath will be processed to extract the deps of each module
                 deps.addAll(readFileAsURI(file));
             } else if (file.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
                 //the jar is added as is with file:// prefix
-                if(file.startsWith(FILE_URI)){
+                if (file.startsWith(FILE_URI)) {
                     deps.add(URI.create(file));
-                } else{
+                } else {
                     deps.add(URI.create(FILE_URI + file));
                 }
 
@@ -468,10 +458,10 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return deps;
     }
 
-    private List<String> processScannedFilesAsString(List<String> classPathFiles) {
+    public static List<String> processScannedFilesAsString(List<String> classPathFiles) {
         List<String> deps = new ArrayList<>();
         for (String file : classPathFiles) {
-            if(FilenameUtils.getName(file).startsWith(".")) continue;
+            if (FilenameUtils.getName(file).startsWith(".")) continue;
             if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
                 //the .cpath will be processed to extract the deps of each module
                 deps.addAll(readFileAsString(file));
@@ -485,28 +475,28 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
 
     public static List<URL> processScannedFilesAsURLs(List<String> classPathFiles) {
         List<URL> deps = new ArrayList<>();
-        try{
-        for (String file : classPathFiles) {
-            if(FilenameUtils.getName(file).startsWith(".")) continue;
-            if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
-                //the .cpath will be processed to extract the deps of each module
-                deps.addAll(readFileAsURL(file));
-            } else if (file.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
-                //the jar/class is added as is with file:// prefix
-                if(file.startsWith(FILE_URI)){
-                    deps.add(new URL(file));
-                }else{
-                    deps.add(new URL(FILE_URI+file));
+        try {
+            for (String file : classPathFiles) {
+                if (FilenameUtils.getName(file).startsWith(".")) continue;
+                if (file.endsWith(MavenConfig.CLASSPATH_EXT)) {
+                    //the .cpath will be processed to extract the deps of each module
+                    deps.addAll(readFileAsURL(file));
+                } else if (file.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
+                    //the jar/class is added as is with file:// prefix
+                    if (file.startsWith(FILE_URI)) {
+                        deps.add(new URL(file));
+                    } else {
+                        deps.add(new URL(FILE_URI + file));
+                    }
                 }
             }
-        }}
-        catch (MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             logger.error(ex.getMessage());
         }
         return deps;
     }
 
-    private List<URL> addFilesURL(List<URL> targetModulesUrls) {
+    public static List<URL> addFilesURL(List<URL> targetModulesUrls) {
         List<URL> targetFiles = new ArrayList<>(targetModulesUrls.size());
         for (URL url : targetModulesUrls) {
             try {
@@ -518,7 +508,7 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return targetFiles;
     }
 
-    private List<URL> visitFolders(final DirectoryStream<Path> directoryStream) {
+    public static List<URL> visitFolders(final DirectoryStream<Path> directoryStream) {
         List<URL> urls = new ArrayList<>();
         for (final Path path : directoryStream) {
             if (Files.isDirectory(path)) {
@@ -538,11 +528,11 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
     }
 
 
-    public Map<String, byte[]> getClassesMap(boolean includeTypeDeclarations, List<String> fileNames, File folder) {
+    public static Map<String, byte[]> getClassesMap(boolean includeTypeDeclarations, List<String> fileNames, File folder) {
         Map<String, byte[]> classes = new HashMap<String, byte[]>();
         for (String fileName : fileNames) {
-            if(FilenameUtils.getName(fileName).startsWith(".")) continue;
-            if (fileName.endsWith(".class")) {
+            if (FilenameUtils.getName(fileName).startsWith(".")) continue;
+            if (fileName.endsWith(JAVA_CLASS_EXT)) {
                 if (includeTypeDeclarations || !isTypeDeclaration(fileName)) {
                     classes.put(fileName, getBytes(fileName));
                 }
@@ -551,14 +541,14 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return classes;
     }
 
-    private boolean isTypeDeclaration(String fileName) {
+    public static boolean isTypeDeclaration(String fileName) {
         Map<String, TypeMetaInfo> info = getTypesMetaInfo();
         TypeMetaInfo typeInfo = info == null ? null : info.get(convertResourceToClassName(fileName));
         return typeInfo != null && typeInfo.isDeclaredType();
     }
 
-    private Map<String, TypeMetaInfo> getTypesMetaInfo() {
-         Map<String, TypeMetaInfo> typesMetaInfo = null;
+    public static Map<String, TypeMetaInfo> getTypesMetaInfo() {
+        Map<String, TypeMetaInfo> typesMetaInfo = null;
         if (typesMetaInfo == null) {
             byte[] bytes = getBytes(KieModuleModelImpl.KMODULE_INFO_JAR_PATH);
             if (bytes != null) {
@@ -568,13 +558,14 @@ public class ClassLoaderProviderImpl implements AFClassLoaderProvider {
         return typesMetaInfo;
     }
 
-    private byte[] getBytes(String pResourceName ) {
+    public static byte[] getBytes(String pResourceName) {
         try {
-            File resource = new File( pResourceName);
-            return resource.exists() ? IoUtils.readBytesFromInputStream( new FileInputStream( pResourceName ) ) : null;
-        } catch ( IOException e ) {
-            throw new RuntimeException("Unable to get bytes for: " + new File(pResourceName) + " " +e.getMessage());
+            File resource = new File(pResourceName);
+            return resource.exists() ? IoUtils.readBytesFromInputStream(new FileInputStream(pResourceName)) : null;
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to get bytes for: " + new File(pResourceName) + " " + e.getMessage());
         }
     }
+
 
 }

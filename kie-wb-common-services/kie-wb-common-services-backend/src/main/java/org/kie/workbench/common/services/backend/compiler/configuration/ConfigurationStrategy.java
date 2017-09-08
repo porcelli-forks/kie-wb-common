@@ -16,17 +16,17 @@
 
 package org.kie.workbench.common.services.backend.compiler.configuration;
 
-import java.util.Map;
-
 import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.Valid;
+
+import java.util.Map;
 
 /**
  * Define the behaviour of a ConfigurationStrategy,
  * load the configuration and check if it's valid
  */
 public interface ConfigurationStrategy extends Valid,
-                                               Order {
+        Order {
 
     Map<ConfigurationKey, String> loadConfiguration();
 }

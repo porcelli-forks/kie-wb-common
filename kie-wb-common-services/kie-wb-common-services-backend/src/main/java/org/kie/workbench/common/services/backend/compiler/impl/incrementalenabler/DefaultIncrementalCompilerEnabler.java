@@ -15,26 +15,19 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.eclipse.jgit.api.Git;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
 import org.kie.workbench.common.services.backend.compiler.configuration.ConfigurationContextProvider;
 import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.DefaultPomEditor;
 import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.PomPlaceHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.ProcessedPoms;
-import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
-import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+
+import java.net.URI;
+import java.util.*;
 
 /***
  * It process all the poms found into a prj changing the build tag accordingly to the internal algo
@@ -48,46 +41,46 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
 
     public DefaultIncrementalCompilerEnabler(Compilers compiler) {
         editor = new DefaultPomEditor(new HashSet<PomPlaceHolder>(),
-                                      new ConfigurationContextProvider(),
-                                      compiler);
+                new ConfigurationContextProvider(),
+                compiler);
     }
 
     @Override
     public ProcessedPoms process(final CompilationRequest req) {
-        Path mainPom  = Paths.get(URI.create(FILE_URI + req.getKieCliRequest().getWorkingDirectory()+"/"+POM_NAME));
+        Path mainPom = Paths.get(URI.create(FILE_URI + req.getKieCliRequest().getWorkingDirectory() + "/" + POM_NAME));
 
         if (!Files.isReadable(mainPom)) {
             return new ProcessedPoms(Boolean.FALSE,
-                                     Collections.emptyList());
+                    Collections.emptyList());
         }
 
         PomPlaceHolder placeHolder = editor.readSingle(mainPom);
         Boolean isPresent = isPresent(placeHolder);   // check if the main pom is already scanned and edited
         if (placeHolder.isValid() && !isPresent) {
             List<String> pomsList = new ArrayList<>();
-                MavenUtils.searchPoms(mainPom.getParent(), pomsList);// recursive NIO search in all subfolders
+            MavenUtils.searchPoms(mainPom.getParent(), pomsList);// recursive NIO search in all subfolders
 
             if (pomsList.size() > 0) {
                 processFoundPoms(pomsList,
-                                   req);
+                        req);
             }
             return new ProcessedPoms(Boolean.TRUE,
-                                     pomsList);
+                    pomsList);
         } else {
             return new ProcessedPoms(Boolean.FALSE,
-                                     Collections.emptyList());
+                    Collections.emptyList());
         }
     }
 
     private void processFoundPoms(List<String> poms,
-                                    CompilationRequest request) {
+                                  CompilationRequest request) {
 
         for (String pom : poms) {
             Path tmpPom = Paths.get(URI.create(FILE_URI + pom));
             PomPlaceHolder tmpPlaceHolder = editor.readSingle(tmpPom);
             if (!isPresent(tmpPlaceHolder)) {
                 editor.write(tmpPom,
-                             request);
+                        request);
             }
         }
     }
@@ -101,6 +94,7 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
 
     /***
      * Return a unmodifiable history
+     *
      * @return
      */
     public Set<PomPlaceHolder> getHistory() {

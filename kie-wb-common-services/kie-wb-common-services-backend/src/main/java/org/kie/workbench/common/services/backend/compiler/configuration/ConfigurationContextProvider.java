@@ -15,27 +15,22 @@
  */
 package org.kie.workbench.common.services.backend.compiler.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * THis implementation first try to load configuration keys from environment variables then load properties with a files called IncrementalCompiler.properties then an hard coded configuration like the following example
- *
+ * <p>
  * MAVEN_PLUGINS =org.apache.maven.plugins
  * MAVEN_COMPILER_PLUGIN =maven-compiler-plugin
  * MAVEN_COMPILER_PLUGIN_VERSION=3.6.1
- *
+ * <p>
  * ALTERNATIVE_COMPILER_PLUGINS =io.takari.maven.plugins
  * ALTERNATIVE_COMPILER_PLUGIN =takari-lifecycle-plugin
  * ALTERNATIVE_COMPILER_PLUGIN_VERSION =1.12.6
- *
+ * <p>
  * KIE_MAVEN_PLUGINS=org.kie
  * KIE_MAVEN_PLUGIN=kie-maven-plugin
  * KIE_TAKARI_PLUGIN=kie-takari-plugin
- *
  */
 public class ConfigurationContextProvider implements ConfigurationProvider {
 
@@ -47,10 +42,10 @@ public class ConfigurationContextProvider implements ConfigurationProvider {
 
     private void initializeWorkingConfig() {
         List<ConfigurationStrategy> confs = new ArrayList<ConfigurationStrategy>(Arrays.asList(new ConfigurationEnvironmentStrategy(),
-                                                                                               new ConfigurationPropertiesStrategy(),
-                                                                                               new ConfigurationStaticStrategy()));
+                new ConfigurationPropertiesStrategy(),
+                new ConfigurationStaticStrategy()));
         Collections.sort(confs,
-                         (ConfigurationStrategy one, ConfigurationStrategy two) -> one.getOrder().compareTo(two.getOrder()));
+                (ConfigurationStrategy one, ConfigurationStrategy two) -> one.getOrder().compareTo(two.getOrder()));
         for (ConfigurationStrategy item : confs) {
             if (item.isValid()) {
                 conf = item.loadConfiguration();

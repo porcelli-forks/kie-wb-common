@@ -16,13 +16,13 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.external339;
 
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.codehaus.plexus.classworlds.ClassWorld;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Used to open the API of Maven embedder

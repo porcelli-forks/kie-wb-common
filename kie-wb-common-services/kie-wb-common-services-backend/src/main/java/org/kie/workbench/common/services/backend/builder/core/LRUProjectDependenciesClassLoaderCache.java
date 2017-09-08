@@ -26,25 +26,20 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import javassist.util.proxy.ProxyFactory;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
-import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.AFClassLoaderProvider;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
@@ -60,7 +55,6 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
-    private AFClassLoaderProvider classLoaderProvider;
 
     public LRUProjectDependenciesClassLoaderCache( ) {
     }
@@ -69,7 +63,6 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository , CompilerMapsHolder compilerMapsHolder) {
         this.guvnorM2Repository = guvnorM2Repository;
         this.compilerMapsHolder = compilerMapsHolder;
-        classLoaderProvider = new ClassLoaderProviderImpl();
     }
 
 
@@ -104,7 +97,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
             KieModule kModule =  res.getKieModule().get();
-            Optional<List<String>> optionalString = classLoaderProvider.getStringFromTargets(res.getWorkingDir().get());
+            Optional<List<String>> optionalString = ClassloaderUtils.getStringFromTargets(res.getWorkingDir().get());
             List<URI> urls = PathConverter.createURISFromString(optionalString.get());
 
             //KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule, res.getProjectDependenciesAsURI().get());
@@ -165,10 +158,9 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     /** This method create a classloader only from the target folders*/
     protected static ClassLoader buildClassloaderFromTargetFolders(final KieProject project){
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
-        Optional<ClassLoader> clazzLoader = kieClazzLoaderProvider.getClassloaderFromProjectTargets(pomList,
+        Optional<ClassLoader> clazzLoader = ClassloaderUtils.getClassloaderFromProjectTargets(pomList,
                 Boolean.FALSE);
         if(clazzLoader.isPresent()){
             return clazzLoader.get();
@@ -179,10 +171,9 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     /** This method creates a classloader only from the deps from poms (transitives included)*/
     protected static ClassLoader buildClassloaderFromAllProjectDeps(final KieProject project){
-        AFClassLoaderProvider kieClazzLoaderProvider = new ClassLoaderProviderImpl();
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
-        Optional<List<URL>> depsURLs = kieClazzLoaderProvider.getURLSFromAllDependencies(project.getRootPath().toString());
+        Optional<List<URL>> depsURLs = ClassloaderUtils.getURLSFromAllDependencies(project.getRootPath().toString());
         if(depsURLs.isPresent()){
             List<URL> urls = depsURLs.get();
             return new URLClassLoader(urls.toArray(new URL[urls.size()]));

@@ -15,15 +15,15 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.kie;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /***
  * Factory to create compilers with correct order of decorators to build Kie Projects
@@ -87,7 +87,7 @@ public class KieMavenCompilerFactory {
                 compiler = new KieDefaultMavenCompiler();
         }
         compilers.put(Decorator.NONE.name(),
-                      compiler);
+                compiler);
         return compiler;
     }
 

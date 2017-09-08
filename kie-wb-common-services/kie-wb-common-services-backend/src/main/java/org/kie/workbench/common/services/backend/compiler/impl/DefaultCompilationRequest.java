@@ -15,15 +15,11 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.kie.workbench.common.services.backend.compiler.impl.external339.AFCliRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.external339.AFCliRequest;
 import org.uberfire.java.nio.file.Path;
+
+import java.util.*;
 
 /***
  * Implementation of CompilationRequest, holds the information for the AFMavenCli
@@ -40,9 +36,9 @@ public class DefaultCompilationRequest implements CompilationRequest {
 
 
     /***
-     * @param mavenRepo a string representation of the Path
+     * @param mavenRepo    a string representation of the Path
      * @param info
-     * @param args param for maven, can be used {@link org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs}
+     * @param args         param for maven, can be used {@link org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs}
      * @param logRequested if is true the output of the build will be provided as a List<String>
      */
     public DefaultCompilationRequest(String mavenRepo,
@@ -57,18 +53,19 @@ public class DefaultCompilationRequest implements CompilationRequest {
         this.originalArgs = args;
         this.logRequested = logRequested;
         String[] internalArgs = getInternalArgs(args,
-                                                logRequested);
+                logRequested);
         this.req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
-                                    internalArgs,
-                                    new HashMap<>(),
-                                    this.requestUUID,
-                                    logRequested);
+                internalArgs,
+                new HashMap<>(),
+                this.requestUUID,
+                logRequested);
     }
+
     /***
-     * @param mavenRepo a string representation of the Path
+     * @param mavenRepo                       a string representation of the Path
      * @param info
-     * @param args param for maven, can be used {@link org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs}
-     * @param logRequested if is true the output of the build will be provided as a List<String>
+     * @param args                            param for maven, can be used {@link org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs}
+     * @param logRequested                    if is true the output of the build will be provided as a List<String>
      * @param skipPrjDependenciesCreationList if false a List with all dependencies of the project will be available in the response
      */
     public DefaultCompilationRequest(String mavenRepo,
@@ -83,12 +80,12 @@ public class DefaultCompilationRequest implements CompilationRequest {
         this.originalArgs = args;
         this.logRequested = logRequested;
         String[] internalArgs = getInternalArgs(args,
-                                                logRequested);
+                logRequested);
         this.req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
-                                    internalArgs,
-                                    new HashMap<>(),
-                                    this.requestUUID,
-                                    logRequested);
+                internalArgs,
+                new HashMap<>(),
+                this.requestUUID,
+                logRequested);
     }
 
     private String[] getInternalArgs(String[] args,
@@ -99,11 +96,11 @@ public class DefaultCompilationRequest implements CompilationRequest {
         if (logRequested) {
             StringBuilder sbLogID = new StringBuilder().append("-l ").append("log").append(".").append(requestUUID).append(".log");
             internalArgs = Arrays.copyOf(args,
-                                         args.length + 2);
+                    args.length + 2);
             internalArgs[args.length + 1] = sbLogID.toString();
         } else {
             internalArgs = Arrays.copyOf(args,
-                                         args.length + 1);
+                    args.length + 1);
         }
 
         internalArgs[args.length] = sbCompilationID.toString();

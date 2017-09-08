@@ -16,12 +16,6 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -32,9 +26,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
-//import org.uberfire.backend.vfs.Path;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
+
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+//import org.uberfire.backend.vfs.Path;
 
 public class MavenUtils {
 
@@ -47,15 +48,15 @@ public class MavenUtils {
         List<Artifact> deps = new ArrayList<>();
         try {
             for (String pomx : pomsPaths) {
-                Path pom = Paths.get(URI.create("default:///"+pomx));
+                Path pom = Paths.get(URI.create("default:///" + pomx));
                 Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
                 if (model.getDependencyManagement() != null && model.getDependencyManagement().getDependencies() != null) {
                     createArtifacts(model.getDependencyManagement().getDependencies(),
-                                    deps);
+                            deps);
                 }
                 if (model.getDependencies() != null) {
                     createArtifacts(model.getDependencies(),
-                                    deps);
+                            deps);
                 }
             }
         } catch (Exception ex) {
@@ -70,12 +71,12 @@ public class MavenUtils {
         if (pomDeps != null && pomDeps.size() > 0) {
             for (Dependency dep : pomDeps) {
                 Artifact artifact = new DefaultArtifact(dep.getGroupId(),
-                                                        dep.getArtifactId(),
-                                                        dep.getVersion(),
-                                                        dep.getScope(),
-                                                        dep.getType(),
-                                                        dep.getClassifier(),
-                                                        new DefaultArtifactHandler());
+                        dep.getArtifactId(),
+                        dep.getVersion(),
+                        dep.getScope(),
+                        dep.getType(),
+                        dep.getClassifier(),
+                        new DefaultArtifactHandler());
                 deps.add(artifact);
             }
         }
@@ -87,7 +88,7 @@ public class MavenUtils {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
                     searchPoms(p,
-                               pomsList);
+                            pomsList);
                 } else if (p.endsWith(POM_NAME)) {
                     pomsList.add(p.toAbsolutePath().toString());
                 }
@@ -97,8 +98,8 @@ public class MavenUtils {
         }
     }
 
-    public static String getMavenRepoDir(String defaultName){
-        return "/tmp/maven/repo/"+defaultName;
+    public static String getMavenRepoDir(String defaultName) {
+        return "/tmp/maven/repo/" + defaultName;
     }
 
 }

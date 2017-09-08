@@ -16,8 +16,8 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.decorators;
 
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 
 /***
  * Extends the Compiler behaviour to the decorators

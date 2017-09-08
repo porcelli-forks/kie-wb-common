@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Path;
+import org.uberfire.java.nio.file.Paths;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -27,58 +28,56 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.uberfire.java.nio.file.Paths;
-
 public class PathConverter {
 
     protected static final Logger logger = LoggerFactory.getLogger(PathConverter.class);
 
     public final static String FILE_URI = "file://";
 
-    public static Path createPathFromString(String path){
-        if(path.startsWith(FILE_URI)){
+    public static Path createPathFromString(String path) {
+        if (path.startsWith(FILE_URI)) {
             return Paths.get(URI.create(path));
-        }else{
+        } else {
             return Paths.get(URI.create(FILE_URI + path));
         }
     }
 
-    public static Path createPathFromVFS(org.uberfire.backend.vfs.Path path){
+    public static Path createPathFromVFS(org.uberfire.backend.vfs.Path path) {
         Path nioPath = org.uberfire.backend.server.util.Paths.convert(path);
-        if(nioPath.startsWith(FILE_URI)){
+        if (nioPath.startsWith(FILE_URI)) {
             return nioPath;
-        }else{
+        } else {
             return Paths.get(URI.create(FILE_URI + path));
         }
     }
 
-    public static List<URL> createURLSFromString(List<String> items){
+    public static List<URL> createURLSFromString(List<String> items) {
         List<URL> urls = new ArrayList<>(items.size());
-        try{
-        for(String item: items){
-            if(FilenameUtils.getName(item).startsWith(".")) continue;
-            if(item.startsWith(FILE_URI)){
-                urls.add(new URL(item));
-            }else{
-                urls.add(new URL(FILE_URI+item));
+        try {
+            for (String item : items) {
+                if (FilenameUtils.getName(item).startsWith(".")) continue;
+                if (item.startsWith(FILE_URI)) {
+                    urls.add(new URL(item));
+                } else {
+                    urls.add(new URL(FILE_URI + item));
+                }
             }
+        } catch (MalformedURLException ex) {
+            logger.error(ex.getMessage());
         }
-        } catch (MalformedURLException ex){
-                logger.error(ex.getMessage());
-            }
         return urls;
     }
 
-    public static List<URI> createURISFromString(List<String> items){
+    public static List<URI> createURISFromString(List<String> items) {
         List<URI> uris = new ArrayList<>(items.size());
-            for(String item: items){
-                if(FilenameUtils.getName(item).startsWith(".")) continue;
-                if(item.startsWith(FILE_URI)){
-                    uris.add(URI.create(item));
-                }else{
-                    uris.add(URI.create(FILE_URI+item));
-                }
+        for (String item : items) {
+            if (FilenameUtils.getName(item).startsWith(".")) continue;
+            if (item.startsWith(FILE_URI)) {
+                uris.add(URI.create(item));
+            } else {
+                uris.add(URI.create(FILE_URI + item));
             }
+        }
         return uris;
     }
 }

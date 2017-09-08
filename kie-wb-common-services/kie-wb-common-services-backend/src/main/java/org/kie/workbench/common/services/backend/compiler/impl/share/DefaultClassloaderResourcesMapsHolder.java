@@ -15,14 +15,14 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
+import org.uberfire.java.nio.file.Path;
+
+import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.enterprise.context.ApplicationScoped;
-
-import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResourcesHolder {
@@ -35,9 +35,9 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
 
     @Override
     public List<String> getPomDependencies(Path projectRootPath) {
-        if(internalMap.get(projectRootPath) != null){
+        if (internalMap.get(projectRootPath) != null) {
             return internalMap.get(projectRootPath).projectsDeps;
-        }else{
+        } else {
             return Collections.emptyList();
         }
 
@@ -45,9 +45,9 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
 
     @Override
     public List<String> getTargetsProjectDependencies(Path projectRootPath) {
-        if(internalMap.get(projectRootPath) != null){
+        if (internalMap.get(projectRootPath) != null) {
             return internalMap.get(projectRootPath).targetDeps;
-        }else{
+        } else {
             return Collections.emptyList();
         }
 

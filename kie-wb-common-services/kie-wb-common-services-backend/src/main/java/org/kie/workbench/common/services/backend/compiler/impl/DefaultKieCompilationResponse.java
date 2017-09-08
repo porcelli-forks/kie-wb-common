@@ -15,26 +15,22 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import java.net.MalformedURLException;
+import org.drools.core.rule.KieModuleMetaInfo;
+import org.kie.api.builder.KieModule;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.uberfire.java.nio.file.Path;
+
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.drools.core.rule.KieModuleMetaInfo;
-import org.kie.api.builder.KieModule;
-import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
-import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.uberfire.java.nio.file.Path;
-
 /***
  * Default implementation of a Kie Compilation response,
  * it contains a boolean flag as a result of the build, an optional String error message,
- *  and a  List of String with the maven output
- *
+ * and a  List of String with the maven output
  */
 public class DefaultKieCompilationResponse implements KieCompilationResponse {
 
@@ -48,16 +44,16 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
 
     public DefaultKieCompilationResponse(Boolean successful) {
         this(successful,
-             null,
-             null,
-             null, null);
+                null,
+                null,
+                null, null);
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
                                          List<String> mavenOutput, Path workingDir) {
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         null,
-                                                         mavenOutput);
+                null,
+                mavenOutput);
         this.kieModuleMetaInfo = null;
         this.workingDir = workingDir;
     }
@@ -74,8 +70,8 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          String errorMessage) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         errorMessage,
-                                                         Collections.emptyList());
+                errorMessage,
+                Collections.emptyList());
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -83,8 +79,8 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          List<String> mavenOutput) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         errorMessage,
-                                                         mavenOutput);
+                errorMessage,
+                mavenOutput);
     }
 
 
@@ -152,28 +148,28 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     }
 
     @Override
-    public Optional<Path>getWorkingDir() {
+    public Optional<Path> getWorkingDir() {
         return Optional.ofNullable(workingDir);
     }
 
-    private List<URL> getRawAsURLs(){
-        if(projectDependenciesAsURL != null){
+    private List<URL> getRawAsURLs() {
+        if (projectDependenciesAsURL != null) {
             return projectDependenciesAsURL;
         }
-        if(projectDependenciesAsURL == null && projectDependenciesRaw != null ){
-            projectDependenciesAsURL =  ClassLoaderProviderImpl.processScannedFilesAsURLs(projectDependenciesRaw);
-            return  projectDependenciesAsURL;
+        if (projectDependenciesAsURL == null && projectDependenciesRaw != null) {
+            projectDependenciesAsURL = ClassloaderUtils.processScannedFilesAsURLs(projectDependenciesRaw);
+            return projectDependenciesAsURL;
         }
         return Collections.EMPTY_LIST;
     }
 
-    private List<URI> getRawAsURIs(){
-        if(projectDependenciesAsURI != null){
+    private List<URI> getRawAsURIs() {
+        if (projectDependenciesAsURI != null) {
             return projectDependenciesAsURI;
         }
-        if(projectDependenciesAsURI == null && projectDependenciesRaw != null ){
-            projectDependenciesAsURI =  ClassLoaderProviderImpl.processScannedFilesAsURIs(projectDependenciesRaw);
-            return  projectDependenciesAsURI;
+        if (projectDependenciesAsURI == null && projectDependenciesRaw != null) {
+            projectDependenciesAsURI = ClassloaderUtils.processScannedFilesAsURIs(projectDependenciesRaw);
+            return projectDependenciesAsURI;
         }
         return Collections.EMPTY_LIST;
     }

@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.eclipse.jgit.api.Git;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
@@ -32,25 +31,17 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
 
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassLoaderProviderImpl;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.workbench.events.ResourceChange;
 
 @Service
@@ -69,8 +60,6 @@ public class BuildServiceImpl implements BuildService {
 
     private CompilerMapsHolder compilerMapsHolder;
 
-    private ClassLoaderProviderImpl provider ;
-
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
     }
@@ -87,7 +76,6 @@ public class BuildServiceImpl implements BuildService {
         //this.kieAfBuilder = new DefaultKieAFBuilder("", guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),compilerMapsHolder);
         this.guvnorM2Repository = guvnorM2Repository;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
-        provider = new ClassLoaderProviderImpl();
     }
 
     @Override
@@ -143,7 +131,7 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private void readAndSetResourcesFromTargetFolders(org.uberfire.java.nio.file.Path nioPath) {
-        Optional<List<String>> targetResources = provider.getStringFromTargets(nioPath);
+        Optional<List<String>> targetResources = ClassloaderUtils.getStringFromTargets(nioPath);
         if(targetResources.isPresent()) {
             classloadersResourcesHolder.replaceTargetDependencies(nioPath, targetResources.get());
         }

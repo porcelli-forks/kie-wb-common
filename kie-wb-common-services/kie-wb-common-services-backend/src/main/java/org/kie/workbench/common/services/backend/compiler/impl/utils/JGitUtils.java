@@ -15,8 +15,6 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
-import java.io.File;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
@@ -26,6 +24,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+
+import java.io.File;
 
 /***
  * Class used to provides JGit functionalities to the JGIT compiler decorators
@@ -66,7 +66,7 @@ public class JGitUtils {
             return Git.cloneRepository()
                     .setURI(fs.getGit().getRepository().getDirectory().toURI().toString())
                     .setDirectory(new File(TEMP + uuid,
-                                           fs.getGit().getRepository().getDirectory().getName().replaceFirst("\\.git", "")))
+                            fs.getGit().getRepository().getDirectory().getName().replaceFirst("\\.git", "")))
                     .setBare(false)
                     .setCloneAllBranches(true)
                     .call();

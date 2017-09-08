@@ -15,26 +15,25 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Maven output converter
- *
- * */
+ */
 public class MavenOutputConverter {
 
-    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput, String filter){
-        if(mavenOutput.size()>0) {
+    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput, String filter) {
+        if (mavenOutput.size() > 0) {
             List<ValidationMessage> validationMsgs = new ArrayList<>(mavenOutput.size());
-            for(String item: mavenOutput){
-                if(item.contains(filter)){
+            for (String item : mavenOutput) {
+                if (item.contains(filter)) {
                     ValidationMessage msg = new ValidationMessage();
                     msg.setText(item);
                     validationMsgs.add(msg);
@@ -45,10 +44,10 @@ public class MavenOutputConverter {
         return Collections.emptyList();
     }
 
-    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput){
-        if(mavenOutput.size()>0) {
+    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput) {
+        if (mavenOutput.size() > 0) {
             List<ValidationMessage> validationMsgs = new ArrayList<>(mavenOutput.size());
-            for(String item: mavenOutput){
+            for (String item : mavenOutput) {
                 ValidationMessage msg = new ValidationMessage();
                 msg.setText(item);
                 validationMsgs.add(msg);
@@ -58,10 +57,10 @@ public class MavenOutputConverter {
         return Collections.emptyList();
     }
 
-    public static List<BuildMessage> convertIntoBuildMessage(List<String> mavenOutput){
-        if(mavenOutput.size()>0) {
+    public static List<BuildMessage> convertIntoBuildMessage(List<String> mavenOutput) {
+        if (mavenOutput.size() > 0) {
             List<BuildMessage> buildMsgs = new ArrayList<>(mavenOutput.size());
-            for(String item: mavenOutput){
+            for (String item : mavenOutput) {
                 BuildMessage msg = new BuildMessage();
                 msg.setText(item);
                 buildMsgs.add(msg);
@@ -71,10 +70,10 @@ public class MavenOutputConverter {
         return Collections.emptyList();
     }
 
-    public static BuildResults convertIntoBuildResults(List<String> mavenOutput){
+    public static BuildResults convertIntoBuildResults(List<String> mavenOutput) {
         BuildResults buildRs = new BuildResults();
-        if(mavenOutput.size()>0) {
-            for(String item: mavenOutput){
+        if (mavenOutput.size() > 0) {
+            for (String item : mavenOutput) {
                 BuildMessage msg = new BuildMessage();
                 msg.setText(item);
                 buildRs.addBuildMessage(msg);
@@ -82,10 +81,11 @@ public class MavenOutputConverter {
         }
         return buildRs;
     }
-    public static IncrementalBuildResults convertIntoIncrementalBuildResults(List<String> mavenOutput){
+
+    public static IncrementalBuildResults convertIntoIncrementalBuildResults(List<String> mavenOutput) {
         IncrementalBuildResults incrmBuildRes = new IncrementalBuildResults();
-        if(mavenOutput.size()>0) {
-            for(String item: mavenOutput){
+        if (mavenOutput.size() > 0) {
+            for (String item : mavenOutput) {
                 BuildMessage msg = new BuildMessage();
                 msg.setText(item);
                 incrmBuildRes.addAddedMessage(msg);

@@ -15,10 +15,10 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import java.util.Optional;
-
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.uberfire.java.nio.file.Path;
+
+import java.util.Optional;
 
 /***
  * Holds informations shared with Kie compilers and the Compilation Request/Response
@@ -71,7 +71,9 @@ public class WorkspaceCompilationInfo {
         return Optional.ofNullable(enhancedMainPomFile);
     }
 
-    public Optional<CompilerMapsHolder> getCompilerMapsHolder(){ return Optional.ofNullable(compilerMapsHolder); }
+    public Optional<CompilerMapsHolder> getCompilerMapsHolder() {
+        return Optional.ofNullable(compilerMapsHolder);
+    }
 
     @Override
     public String toString() {

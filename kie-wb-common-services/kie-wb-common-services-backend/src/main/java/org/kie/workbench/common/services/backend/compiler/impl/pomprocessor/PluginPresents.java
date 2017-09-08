@@ -23,24 +23,28 @@ public interface PluginPresents {
 
     /***
      * Signals if the Default Maven compiler is explicitely declared
+     *
      * @return
      */
     Boolean isDefaultCompilerPresent();
 
     /***
      * Signals if the alternative incremental compiler (takari) is present
+     *
      * @return
      */
     Boolean isAlternativeCompilerPresent();
 
     /***
      * Signals ff the kie plugin is declared in the pom
+     *
      * @return
      */
     Boolean isKiePluginPresent();
 
     /***
      * Signals if needed overwrite the pom
+     *
      * @return
      */
     Boolean pomOverwriteRequired();

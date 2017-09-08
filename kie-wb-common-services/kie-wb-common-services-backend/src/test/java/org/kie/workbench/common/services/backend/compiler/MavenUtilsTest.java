@@ -16,10 +16,14 @@
 
 package org.kie.workbench.common.services.backend.compiler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
+import org.drools.core.util.IoUtils;
 import org.junit.Test;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
 import org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler.DefaultIncrementalCompilerEnabler;
@@ -45,5 +49,27 @@ public class MavenUtilsTest {
         assertTrue(artifact.getVersion().equals("6.5.0.Final"));
         assertTrue(artifact.getType().equals("jar"));
         assertTrue(artifact.toString().equals("org.kie:kie-api:jar:6.5.0.Final"));
+    }
+
+    @Test
+    public void testFilrecursive() throws Exception{
+
+        String path = "/tmp/maven/2f0b13f7-d69b-4b6e-a75d-dbf5f575bf4d/examples-.kie-wb-playground/curriculumcourse/";
+
+        List<String> items = IoUtils.recursiveListFile(new File(path), "", filterClasses());
+
+        //List<String> cleaned = items.stream().map(item -> item.substring(item.lastIndexOf("target/classes/") + 15 ));
+        String a = "target/classes/curriculumcourse/curriculumcourse/Curriculum.class";
+        int ax = a.lastIndexOf("target/classes/");
+        String aa = a.substring(ax+15);
+        String b = "ann/miultimodule/target/classes/curriculumcourse/curriculumcourse/Curriculum.class";
+        int bx = b.lastIndexOf("target/classes/");
+        String bb = b.substring(bx+15);
+        System.out.println(items.size());
+
+    }
+
+    public static Predicate<File> filterClasses() {
+        return f -> f.toString().endsWith(".class") && !FilenameUtils.getName(f.toString()).startsWith(".");
     }
 }

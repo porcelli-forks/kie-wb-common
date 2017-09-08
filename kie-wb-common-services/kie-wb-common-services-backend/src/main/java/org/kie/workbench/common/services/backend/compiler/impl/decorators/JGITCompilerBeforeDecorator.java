@@ -16,21 +16,21 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.decorators;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.jgit.api.Git;
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /***
  * Before decorator to update a git repo before the build
@@ -68,10 +68,10 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
             }
 
             _req = new DefaultCompilationRequest(req.getMavenRepo(),
-                                                new WorkspaceCompilationInfo(Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(path.getFileName().toString()).normalize().toUri()), compilerMapsHolder),
-                                                req.getOriginalArgs(),
-                                                req.getLogRequested(),
-                                                req.skipPrjDependenciesCreationList());
+                    new WorkspaceCompilationInfo(Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(path.getFileName().toString()).normalize().toUri()), compilerMapsHolder),
+                    req.getOriginalArgs(),
+                    req.getLogRequested(),
+                    req.skipPrjDependenciesCreationList());
         } else {
             _req = req;
         }

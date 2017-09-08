@@ -16,15 +16,15 @@
 
 package org.kie.workbench.common.services.backend.compiler.configuration;
 
+import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
-import org.slf4j.LoggerFactory;
-
 public class ConfigurationEnvironmentStrategy implements ConfigurationStrategy,
-                                                         Order {
+        Order {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ConfigurationEnvironmentStrategy.class);
 
@@ -40,12 +40,12 @@ public class ConfigurationEnvironmentStrategy implements ConfigurationStrategy,
             String value = env.get(key.name());
             if (value == null) {
                 logger.info("Key {} not present in the Environment, skip to the next ConfigurationStrategy. \n",
-                            key.name());
+                        key.name());
                 valid = Boolean.FALSE;
                 break;
             } else {
                 conf.put(key,
-                         value);
+                        value);
             }
         }
     }

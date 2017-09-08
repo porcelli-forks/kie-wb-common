@@ -15,9 +15,9 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import java.util.List;
-
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+
+import java.util.List;
 
 /**
  * Run maven with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
@@ -42,7 +42,7 @@ public class DefaultMavenCompiler extends BaseMavenCompiler<CompilationResponse>
     public CompilationResponse buildDefaultCompilationResponse(final Boolean value,
                                                                final List<String> output) {
         return new DefaultCompilationResponse(value,
-                                              output);
+                output);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DefaultMavenCompiler extends BaseMavenCompiler<CompilationResponse>
                                                                   String message,
                                                                   List<String> output) {
         return new DefaultCompilationResponse(value,
-                                              message,
-                                              output);
+                message,
+                output);
     }
 }
