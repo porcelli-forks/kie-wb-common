@@ -15,10 +15,10 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.kie;
 
+import java.util.List;
+
 import org.kie.workbench.common.services.backend.compiler.impl.BaseMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultKieCompilationResponse;
-
-import java.util.List;
 
 /**
  * Run maven on Kie projects with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
@@ -35,7 +35,7 @@ public class KieDefaultMavenCompiler extends BaseMavenCompiler<KieCompilationRes
     public KieCompilationResponse buildDefaultCompilationResponse(final Boolean value,
                                                                   final List<String> output) {
         return new DefaultKieCompilationResponse(value,
-                output);
+                                                 output);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class KieDefaultMavenCompiler extends BaseMavenCompiler<KieCompilationRes
                                                                      String message,
                                                                      List<String> output) {
         return new DefaultKieCompilationResponse(value,
-                message,
-                output);
+                                                 message,
+                                                 output);
     }
 }

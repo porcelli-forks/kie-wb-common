@@ -39,7 +39,7 @@ import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLI
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
@@ -96,8 +96,8 @@ public class ClassLoaderProviderTest {
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.get("src/test/projects/dummy_kie_multimodule_classloader/"),
                               pomList);
-        Optional<ClassLoader> clazzLoader = ClassloaderUtils.loadDependenciesClassloaderFromProject(pomList,
-                                                                                                          mavenRepo.toAbsolutePath().toString());
+        Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.loadDependenciesClassloaderFromProject(pomList,
+                                                                                                            mavenRepo.toAbsolutePath().toString());
         assertNotNull(clazzLoader);
         assertTrue(clazzLoader.isPresent());
         ClassLoader prjClassloader = clazzLoader.get();
@@ -146,8 +146,8 @@ public class ClassLoaderProviderTest {
         assertTrue(res.isSuccessful());
 
 
-        Optional<ClassLoader> clazzLoader = ClassloaderUtils.loadDependenciesClassloaderFromProject(uberfireTmp.toAbsolutePath().toString(),
-                                                                                                          mavenRepo.toAbsolutePath().toString());
+        Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.loadDependenciesClassloaderFromProject(uberfireTmp.toAbsolutePath().toString(),
+                                                                                                            mavenRepo.toAbsolutePath().toString());
         assertNotNull(clazzLoader);
         assertTrue(clazzLoader.isPresent());
         ClassLoader prjClassloader = clazzLoader.get();
@@ -198,8 +198,8 @@ public class ClassLoaderProviderTest {
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(uberfireTmp,
                               pomList);
-        Optional<ClassLoader> clazzLoader = ClassloaderUtils.getClassloaderFromProjectTargets(pomList,
-                                                                                                    Boolean.FALSE);
+        Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.getClassloaderFromProjectTargets(pomList,
+                                                                                                      Boolean.FALSE);
         assertNotNull(clazzLoader);
         assertTrue(clazzLoader.isPresent());
         ClassLoader prjClassloader = clazzLoader.get();
@@ -229,8 +229,8 @@ public class ClassLoaderProviderTest {
     @Test
     public void getClassloaderFromAllDependenciesTestSimple() {
         Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_simple");
-        Optional<ClassLoader> classloaderOptional = ClassloaderUtils.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
-                                                                                                             mavenRepo.toAbsolutePath().toString());
+        Optional<ClassLoader> classloaderOptional = CompilerClassloaderUtils.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
+                                                                                                               mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
         URLClassLoader urlsc = (URLClassLoader) classloader;
@@ -240,8 +240,8 @@ public class ClassLoaderProviderTest {
     @Test
     public void getClassloaderFromAllDependenciesTestComplex() {
         Path path = Paths.get(".").resolve("src/test/projects/dummy_deps_complex");
-        Optional<ClassLoader> classloaderOptional = ClassloaderUtils.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
-                                                                                                             mavenRepo.toAbsolutePath().toString());
+        Optional<ClassLoader> classloaderOptional = CompilerClassloaderUtils.getClassloaderFromAllDependencies(path.toAbsolutePath().toString(),
+                                                                                                               mavenRepo.toAbsolutePath().toString());
         assertTrue(classloaderOptional.isPresent());
         ClassLoader classloader = classloaderOptional.get();
         URLClassLoader urlsc = (URLClassLoader) classloader;
@@ -299,7 +299,7 @@ public class ClassLoaderProviderTest {
 
         Assert.assertNotNull(kieModuleMetaData);
 
-        Optional<List<String>> classloaderOptional = ClassloaderUtils.getStringFromTargets(tmpRoot);
+        Optional<List<String>> classloaderOptional = CompilerClassloaderUtils.getStringFromTargets(tmpRoot);
         assertTrue(classloaderOptional.isPresent());
         List<String> resources = classloaderOptional.get();
         Assert.assertTrue(resources.size() == 3);

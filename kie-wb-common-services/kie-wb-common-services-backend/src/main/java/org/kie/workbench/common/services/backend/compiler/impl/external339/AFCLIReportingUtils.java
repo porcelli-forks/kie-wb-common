@@ -16,16 +16,16 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.external339;
 
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.plexus.util.Os;
-import org.slf4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.plexus.util.Os;
+import org.slf4j.Logger;
 
 /**
  * Used to open the API of the maven embedder
@@ -50,20 +50,20 @@ public class AFCLIReportingUtils {
         version.append(createMavenVersionString(properties)).append(ls);
         version.append(reduce(
                 properties.getProperty("distributionShortName") + " home: " + System.getProperty("maven.home",
-                        "<unknown Maven "
-                                + "home>")))
+                                                                                                 "<unknown Maven "
+                                                                                                         + "home>")))
                 .append(
                         ls);
         version.append("Java version: ").append(
                 System.getProperty("java.version",
-                        "<unknown Java version>")).append(", vendor: ").append(
+                                   "<unknown Java version>")).append(", vendor: ").append(
                 System.getProperty("java.vendor",
-                        "<unknown vendor>")).append(ls);
+                                   "<unknown vendor>")).append(ls);
         version.append("Java home: ").append(System.getProperty("java.home",
-                "<unknown Java home>")).append(ls);
+                                                                "<unknown Java home>")).append(ls);
         version.append("Default locale: ").append(Locale.getDefault()).append(", platform encoding: ").append(
                 System.getProperty("file.encoding",
-                        "<unknown encoding>")).append(ls);
+                                   "<unknown encoding>")).append(ls);
         version.append("OS name: \"").append(Os.OS_NAME).append("\", version: \"").append(Os.OS_VERSION).append(
                 "\", arch: \"").append(Os.OS_ARCH).append("\", family: \"").append(Os.OS_FAMILY).append('\"');
         return version.toString();
@@ -71,7 +71,6 @@ public class AFCLIReportingUtils {
 
     /**
      * Create a human readable string containing the Maven version, buildnumber, and time of build
-     *
      * @param buildProperties The build properties
      * @return Readable build info
      */
@@ -121,7 +120,7 @@ public class AFCLIReportingUtils {
                                  boolean showStackTrace) {
         if (showStackTrace) {
             logger.error(message,
-                    e);
+                         e);
         } else {
             logger.error(message);
 
@@ -165,10 +164,10 @@ public class AFCLIReportingUtils {
         }
 
         return String.format(format,
-                d,
-                h,
-                m,
-                s,
-                ms);
+                             d,
+                             h,
+                             m,
+                             s,
+                             ms);
     }
 }

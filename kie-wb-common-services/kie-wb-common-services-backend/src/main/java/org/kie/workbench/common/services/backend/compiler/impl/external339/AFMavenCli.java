@@ -16,6 +16,30 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.external339;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
@@ -46,7 +70,12 @@ import org.apache.maven.eventspy.internal.EventSpyDispatcher;
 import org.apache.maven.exception.DefaultExceptionHandler;
 import org.apache.maven.exception.ExceptionHandler;
 import org.apache.maven.exception.ExceptionSummary;
-import org.apache.maven.execution.*;
+import org.apache.maven.execution.DefaultMavenExecutionRequest;
+import org.apache.maven.execution.ExecutionListener;
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.execution.MavenExecutionRequestPopulationException;
+import org.apache.maven.execution.MavenExecutionRequestPopulator;
+import org.apache.maven.execution.MavenExecutionResult;
 import org.apache.maven.extension.internal.CoreExports;
 import org.apache.maven.extension.internal.CoreExtensionEntry;
 import org.apache.maven.lifecycle.LifecycleExecutionException;
@@ -57,7 +86,11 @@ import org.apache.maven.properties.internal.SystemProperties;
 import org.apache.maven.toolchain.building.DefaultToolchainsBuildingRequest;
 import org.apache.maven.toolchain.building.ToolchainsBuilder;
 import org.apache.maven.toolchain.building.ToolchainsBuildingResult;
-import org.codehaus.plexus.*;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.DefaultContainerConfiguration;
+import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -72,12 +105,6 @@ import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.Map.Entry;
-
 /**
  * Modified from Maven to permit builds without installations and var envs.
  * original version https://maven.apache.org/ref/3.3.9/maven-embedder/xref/org/apache/maven/cli/MavenCli.html
@@ -88,7 +115,7 @@ public class AFMavenCli {
     public static final String MULTIMODULE_PROJECT_DIRECTORY = "maven.multiModuleProjectDirectory";
     public static final String userHome = System.getProperty("user.home");
     public static final Path userMavenConfigurationHome = Paths.get(userHome,
-            ".m2");
+                                                                    ".m2");
 
     private static final Logger logger = LoggerFactory.getLogger(AFMavenCli.class);
     private static final String EXT_CLASS_PATH = "maven.ext.class.path";
@@ -140,14 +167,14 @@ public class AFMavenCli {
             return file.getAbsoluteFile();
         } else {
             return new File(workingDirectory,
-                    file.getPath()).getAbsoluteFile();
+                            file.getPath()).getAbsoluteFile();
         }
     }
 
     static Path resolvePath(Path file,
                             String workingDirectory) {
         return file == null ? null : (file.isAbsolute() ? file : (file.getFileName().startsWith(File.separator) ? file.toAbsolutePath() : (Paths.get(workingDirectory,
-                file.getFileName().toString()))));
+                                                                                                                                                     file.getFileName().toString()))));
     }
 
     static void populateProperties(CommandLine commandLine,
@@ -168,7 +195,7 @@ public class AFMavenCli {
             if (defStrs != null) {
                 for (String defStr : defStrs) {
                     setCliProperty(defStr,
-                            userProperties);
+                                   userProperties);
                 }
             }
         }
@@ -184,11 +211,11 @@ public class AFMavenCli {
 
         String mavenVersion = buildProperties.getProperty(AFCLIReportingUtils.BUILD_VERSION_PROPERTY);
         systemProperties.setProperty("maven.version",
-                mavenVersion);
+                                     mavenVersion);
 
         String mavenBuildVersion = AFCLIReportingUtils.createMavenVersionString(buildProperties);
         systemProperties.setProperty("maven.build.version",
-                mavenBuildVersion);
+                                     mavenBuildVersion);
     }
 
     protected static void setCliProperty(String property,
@@ -206,15 +233,15 @@ public class AFMavenCli {
             value = "true";
         } else {
             name = property.substring(0,
-                    i).trim();
+                                      i).trim();
 
             value = property.substring(i + 1);
         }
 
         properties.setProperty(name,
-                value);
+                               value);
         System.setProperty(name,
-                value);
+                           value);
     }
 
     public int doMain(AFCliRequest cliRequest,
@@ -228,7 +255,7 @@ public class AFMavenCli {
             version(cliRequest);
             properties(cliRequest);
             localContainer = container(cliRequest,
-                    classWorld);
+                                       classWorld);
             commands(cliRequest);
             configure(cliRequest);
             toolchains(cliRequest);
@@ -244,16 +271,16 @@ public class AFMavenCli {
         } catch (BuildAbort e) {
             e.getStackTrace();
             AFCLIReportingUtils.showError(slf4jLogger,
-                    "ABORTED",
-                    e,
-                    cliRequest.isShowErrors());
+                                          "ABORTED",
+                                          e,
+                                          cliRequest.isShowErrors());
             return 2;
         } catch (Exception e) {
             e.getStackTrace();
             AFCLIReportingUtils.showError(slf4jLogger,
-                    "Error executing Maven.",
-                    e,
-                    cliRequest.isShowErrors());
+                                          "Error executing Maven.",
+                                          e,
+                                          cliRequest.isShowErrors());
 
             return 1;
         } finally {
@@ -275,8 +302,8 @@ public class AFMavenCli {
             String basedirProperty = System.getProperty(MULTIMODULE_PROJECT_DIRECTORY);
             if (basedirProperty == null) {
                 System.err.format("-D%s system propery is not set."
-                                + " Check $M2_HOME environment variable and mvn script match.",
-                        MULTIMODULE_PROJECT_DIRECTORY);
+                                          + " Check $M2_HOME environment variable and mvn script match.",
+                                  MULTIMODULE_PROJECT_DIRECTORY);
                 throw new ExitException(1);
             }
             Path basedir = basedirProperty != null ? Paths.get(basedirProperty) : Paths.get("");
@@ -299,11 +326,11 @@ public class AFMavenCli {
 
         try {
             Path configFile = Paths.get(cliRequest.getMultiModuleProjectDirectory(),
-                    ".mvn/maven.config");
+                                        ".mvn/maven.config");
 
             if (java.nio.file.Files.isRegularFile(configFile)) {
                 for (String arg : Files.toString(configFile.toFile(),
-                        Charsets.UTF_8).split("\\s+")) {
+                                                 Charsets.UTF_8).split("\\s+")) {
                     args.add(arg);
                 }
 
@@ -321,7 +348,7 @@ public class AFMavenCli {
 
         try {
             args.addAll(0,
-                    Arrays.asList(cliRequest.getArgs()));
+                        Arrays.asList(cliRequest.getArgs()));
             cliRequest.setCommandLine(cliManager.parse(args.toArray(new String[args.size()])));
         } catch (ParseException e) {
             System.err.println("Unable to parse command line options: " + e.getMessage());
@@ -366,7 +393,7 @@ public class AFMavenCli {
         if (cliRequest.getCommandLine().hasOption(CLIManager.LOG_FILE)) {
             File logFile = new File(cliRequest.getCommandLine().getOptionValue(CLIManager.LOG_FILE).trim());
             logFile = resolveFile(logFile,
-                    cliRequest.getWorkingDirectory());
+                                  cliRequest.getWorkingDirectory());
 
             try {
                 PrintStream ps = new PrintStream(new FileOutputStream(logFile));
@@ -403,8 +430,8 @@ public class AFMavenCli {
 
     protected void properties(AFCliRequest cliRequest) {
         populateProperties(cliRequest.getCommandLine(),
-                cliRequest.getSystemProperties(),
-                cliRequest.getUserProperties());
+                           cliRequest.getSystemProperties(),
+                           cliRequest.getUserProperties());
     }
 
     protected PlexusContainer container(AFCliRequest cliRequest,
@@ -432,13 +459,13 @@ public class AFMavenCli {
         CoreExtensionEntry coreEntry = CoreExtensionEntry.discoverFrom(coreRealm);
         List<CoreExtensionEntry> extensions =
                 loadCoreExtensions(cliRequest,
-                        coreRealm,
-                        coreEntry.getExportedArtifacts());
+                                   coreRealm,
+                                   coreEntry.getExportedArtifacts());
 
         ClassRealm containerRealm = setupContainerRealm(cliRequest.getClassWorld(),
-                coreRealm,
-                extClassPath,
-                extensions);
+                                                        coreRealm,
+                                                        extClassPath,
+                                                        extensions);
         ContainerConfiguration cc = new DefaultContainerConfiguration()
                 .setClassWorld(cliRequest.getClassWorld())
                 .setRealm(containerRealm)
@@ -453,22 +480,22 @@ public class AFMavenCli {
         }
 
         final CoreExports exports = new CoreExports(containerRealm,
-                exportedArtifacts,
-                exportedPackages);
+                                                    exportedArtifacts,
+                                                    exportedPackages);
 
         DefaultPlexusContainer container = new DefaultPlexusContainer(cc,
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
-                        bind(ILoggerFactory.class).toInstance(slf4jLoggerFactory);
-                        bind(CoreExports.class).toInstance(exports);
-                    }
-                });
+                                                                      new AbstractModule() {
+                                                                          @Override
+                                                                          protected void configure() {
+                                                                              bind(ILoggerFactory.class).toInstance(slf4jLoggerFactory);
+                                                                              bind(CoreExports.class).toInstance(exports);
+                                                                          }
+                                                                      });
 
         //This is used to share informations at runtime between Maven plugins and our compiler
         container.addComponent(cliRequest.getMap(),
-                HashMap.class,
-                "kieMap");
+                               HashMap.class,
+                               "kieMap");
 
         // NOTE: To avoid inconsistencies, we'll use the TCCL exclusively for lookups
         container.setLookupRealm(null);
@@ -487,15 +514,15 @@ public class AFMavenCli {
         DefaultEventSpyContext eventSpyContext = new DefaultEventSpyContext();
         Map<String, Object> data = eventSpyContext.getData();
         data.put("plexus",
-                container);
+                 container);
         data.put("workingDirectory",
-                cliRequest.getWorkingDirectory());
+                 cliRequest.getWorkingDirectory());
         data.put("systemProperties",
-                cliRequest.getSystemProperties());
+                 cliRequest.getSystemProperties());
         data.put("userProperties",
-                cliRequest.getUserProperties());
+                 cliRequest.getUserProperties());
         data.put("versionProperties",
-                AFCLIReportingUtils.getBuildProperties());
+                 AFCLIReportingUtils.getBuildProperties());
 
         eventSpyDispatcher.init(eventSpyContext);
 
@@ -512,7 +539,7 @@ public class AFMavenCli {
         toolchainsBuilder = container.lookup(ToolchainsBuilder.class);
 
         dispatcher = (DefaultSecDispatcher) container.lookup(SecDispatcher.class,
-                "maven");
+                                                             "maven");
         return container;
     }
 
@@ -524,7 +551,7 @@ public class AFMavenCli {
         }
 
         Path extensionsFile = Paths.get(cliRequest.getMultiModuleProjectDirectory().toString(),
-                EXTENSIONS_FILENAME);
+                                        EXTENSIONS_FILENAME);
         if (!java.nio.file.Files.isRegularFile(extensionsFile)) {
             return Collections.emptyList();
         }
@@ -543,12 +570,12 @@ public class AFMavenCli {
                     .setName("maven");
 
             DefaultPlexusContainer container = new DefaultPlexusContainer(cc,
-                    new AbstractModule() {
-                        @Override
-                        protected void configure() {
-                            bind(ILoggerFactory.class).toInstance(slf4jLoggerFactory);
-                        }
-                    });
+                                                                          new AbstractModule() {
+                                                                              @Override
+                                                                              protected void configure() {
+                                                                                  bind(ILoggerFactory.class).toInstance(slf4jLoggerFactory);
+                                                                              }
+                                                                          });
 
             try {
                 container.setLookupRealm(null);
@@ -568,15 +595,15 @@ public class AFMavenCli {
                 MavenExecutionRequest request = DefaultMavenExecutionRequest.copy(cliRequest.getRequest());
 
                 request = populateRequest(cliRequest,
-                        request);
+                                          request);
 
                 request = executionRequestPopulator.populateDefaults(request);
 
                 BootstrapCoreExtensionManager resolver = container.lookup(BootstrapCoreExtensionManager.class);
 
                 return resolver.loadCoreExtensions(request,
-                        providedArtifacts,
-                        extensions);
+                                                   providedArtifacts,
+                                                   extensions);
             } finally {
                 executionRequestPopulator = null;
                 container.dispose();
@@ -609,7 +636,7 @@ public class AFMavenCli {
             throws Exception {
         if (!extClassPath.isEmpty() || !extensions.isEmpty()) {
             ClassRealm extRealm = classWorld.newRealm("maven.ext",
-                    null);
+                                                      null);
 
             extRealm.setParentRealm(coreRealm);
 
@@ -626,12 +653,12 @@ public class AFMavenCli {
                 ClassRealm realm = entry.getClassRealm();
                 for (String exportedPackage : exportedPackages) {
                     extRealm.importFrom(realm,
-                            exportedPackage);
+                                        exportedPackage);
                 }
                 if (exportedPackages.isEmpty()) {
                     // sisu uses realm imports to establish component visibility
                     extRealm.importFrom(realm,
-                            realm.getId());
+                                        realm.getId());
                 }
             }
 
@@ -651,9 +678,9 @@ public class AFMavenCli {
 
         if (StringUtils.isNotEmpty(extClassPath)) {
             for (String jar : StringUtils.split(extClassPath,
-                    File.pathSeparator)) {
+                                                File.pathSeparator)) {
                 File file = resolveFile(new File(jar),
-                        cliRequest.getWorkingDirectory());
+                                        cliRequest.getWorkingDirectory());
 
                 slf4jLogger.debug("  Included " + file);
 
@@ -694,9 +721,9 @@ public class AFMavenCli {
                 ExceptionSummary summary = handler.handleException(exception);
 
                 logSummary(summary,
-                        references,
-                        "",
-                        cliRequest.isShowErrors());
+                           references,
+                           "",
+                           cliRequest.isShowErrors());
 
                 if (project == null && exception instanceof LifecycleExecutionException) {
                     project = ((LifecycleExecutionException) exception).getProject();
@@ -715,7 +742,7 @@ public class AFMavenCli {
             if (!references.isEmpty()) {
                 slf4jLogger.error("");
                 slf4jLogger.error("For more information about the errors and possible solutions"
-                        + ", please read the following articles:");
+                                          + ", please read the following articles:");
 
                 for (Entry<String, String> entry : references.entrySet()) {
                     slf4jLogger.error(entry.getValue() + " " + entry.getKey());
@@ -750,7 +777,7 @@ public class AFMavenCli {
             if (referenceKey == null) {
                 referenceKey = "[Help " + (references.size() + 1) + "]";
                 references.put(summary.getReference(),
-                        referenceKey);
+                               referenceKey);
             }
         }
 
@@ -772,7 +799,7 @@ public class AFMavenCli {
             if ((i == lines.length - 1)
                     && (showErrors || (summary.getException() instanceof InternalErrorException))) {
                 slf4jLogger.error(line,
-                        summary.getException());
+                                  summary.getException());
             } else {
                 slf4jLogger.error(line);
             }
@@ -782,9 +809,9 @@ public class AFMavenCli {
 
         for (ExceptionSummary child : summary.getChildren()) {
             logSummary(child,
-                    references,
-                    indent,
-                    showErrors);
+                       references,
+                       indent,
+                       showErrors);
         }
     }
 
@@ -810,13 +837,13 @@ public class AFMavenCli {
         } else if (userSuppliedConfigurationProcessorCount > 1) {
             StringBuffer sb = new StringBuffer(
                     String.format("%nThere can only be one user supplied ConfigurationProcessor, there are %s:%n%n",
-                            userSuppliedConfigurationProcessorCount));
+                                  userSuppliedConfigurationProcessorCount));
             for (Entry<String, AFConfigurationProcessor> entry : configurationProcessors.entrySet()) {
                 String hint = entry.getKey();
                 if (!hint.equals(AFSettingsXmlConfigurationProcessor.HINT)) {
                     AFConfigurationProcessor configurationProcessor = entry.getValue();
                     sb.append(String.format("%s%n",
-                            configurationProcessor.getClass().getName()));
+                                            configurationProcessor.getClass().getName()));
                 }
             }
             sb.append(String.format("%nn"));
@@ -833,14 +860,14 @@ public class AFMavenCli {
         if (cliRequest.getCommandLine().hasOption(CLIManager.ALTERNATE_USER_TOOLCHAINS)) {
             userToolchainsFile = Paths.get(cliRequest.getCommandLine().getOptionValue(CLIManager.ALTERNATE_USER_TOOLCHAINS));
             userToolchainsFile = resolvePath(userToolchainsFile,
-                    cliRequest.getWorkingDirectory());
+                                             cliRequest.getWorkingDirectory());
 
             if (!java.nio.file.Files.isRegularFile(userToolchainsFile)) {
                 throw new FileNotFoundException("The specified user toolchains file does not exist: " + userToolchainsFile);
             }
         } else {
             userToolchainsFile = Paths.get(userMavenConfigurationHome.toString(),
-                    "toolchains.xml");
+                                           "toolchains.xml");
         }
 
         Path globalToolchainsFile;
@@ -849,15 +876,15 @@ public class AFMavenCli {
             globalToolchainsFile =
                     Paths.get(cliRequest.getCommandLine().getOptionValue(CLIManager.ALTERNATE_GLOBAL_TOOLCHAINS));
             globalToolchainsFile = resolvePath(globalToolchainsFile,
-                    cliRequest.getWorkingDirectory());
+                                               cliRequest.getWorkingDirectory());
 
             if (!java.nio.file.Files.isRegularFile(globalToolchainsFile)) {
                 throw new FileNotFoundException("The specified global toolchains file does not exist: "
-                        + globalToolchainsFile);
+                                                        + globalToolchainsFile);
             }
         } else {
             globalToolchainsFile = Paths.get(userMavenConfigurationHome.toString(),
-                    "toolchains.xml");
+                                             "toolchains.xml");
         }
 
         cliRequest.getRequest().setGlobalToolchainsFile(globalToolchainsFile.toFile());
@@ -874,18 +901,18 @@ public class AFMavenCli {
         eventSpyDispatcher.onEvent(toolchainsRequest);
 
         slf4jLogger.debug("Reading global toolchains from "
-                + getLocation(toolchainsRequest.getGlobalToolchainsSource(),
-                globalToolchainsFile));
+                                  + getLocation(toolchainsRequest.getGlobalToolchainsSource(),
+                                                globalToolchainsFile));
         slf4jLogger.debug("Reading user toolchains from "
-                + getLocation(toolchainsRequest.getUserToolchainsSource(),
-                userToolchainsFile));
+                                  + getLocation(toolchainsRequest.getUserToolchainsSource(),
+                                                userToolchainsFile));
 
         ToolchainsBuildingResult toolchainsResult = toolchainsBuilder.build(toolchainsRequest);
 
         eventSpyDispatcher.onEvent(toolchainsRequest);
 
         executionRequestPopulator.populateFromToolchains(cliRequest.getRequest(),
-                toolchainsResult.getEffectiveToolchains());
+                                                         toolchainsResult.getEffectiveToolchains());
 
         if (!toolchainsResult.getProblems().isEmpty() && slf4jLogger.isWarnEnabled()) {
             slf4jLogger.warn("");
@@ -909,7 +936,7 @@ public class AFMavenCli {
 
     protected MavenExecutionRequest populateRequest(AFCliRequest cliRequest) {
         return populateRequest(cliRequest,
-                cliRequest.getRequest());
+                               cliRequest.getRequest());
     }
 
     // ----------------------------------------------------------------------
@@ -928,7 +955,7 @@ public class AFMavenCli {
         for (String deprecatedOption : deprecatedOptions) {
             if (commandLine.hasOption(deprecatedOption)) {
                 slf4jLogger.warn("Command line option -" + deprecatedOption
-                        + " is deprecated and will be removed in future Maven versions.");
+                                         + " is deprecated and will be removed in future Maven versions.");
             }
         }
 
@@ -989,7 +1016,7 @@ public class AFMavenCli {
         }
 
         File baseDirectory = new File(workingDirectory,
-                "").getAbsoluteFile();
+                                      "").getAbsoluteFile();
 
         // ----------------------------------------------------------------------
         // Profile Activation
@@ -1004,7 +1031,7 @@ public class AFMavenCli {
             if (profileOptionValues != null) {
                 for (String profileOptionValue : profileOptionValues) {
                     StringTokenizer profileTokens = new StringTokenizer(profileOptionValue,
-                            ",");
+                                                                        ",");
 
                     while (profileTokens.hasMoreTokens()) {
                         String profileAction = profileTokens.nextToken().trim();
@@ -1063,10 +1090,10 @@ public class AFMavenCli {
 
         if (alternatePomFile != null) {
             File pom = resolveFile(new File(alternatePomFile.trim()),
-                    workingDirectory);
+                                   workingDirectory);
             if (pom.isDirectory()) {
                 pom = new File(pom,
-                        "pom.xml");
+                               "pom.xml");
             }
 
             request.setPom(pom);
@@ -1095,7 +1122,7 @@ public class AFMavenCli {
             if (projectOptionValues != null) {
                 for (String projectOptionValue : projectOptionValues) {
                     StringTokenizer projectTokens = new StringTokenizer(projectOptionValue,
-                            ",");
+                                                                        ",");
 
                     while (projectTokens.hasMoreTokens()) {
                         String projectAction = projectTokens.nextToken().trim();
@@ -1178,7 +1205,7 @@ public class AFMavenCli {
     protected int calculateDegreeOfConcurrencyWithCoreMultiplier(String threadConfiguration) {
         int procs = Runtime.getRuntime().availableProcessors();
         return (int) (Float.valueOf(threadConfiguration.replace("C",
-                "")) * procs);
+                                                                "")) * procs);
     }
 
     protected TransferListener getConsoleTransferListener() {

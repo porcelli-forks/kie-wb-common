@@ -15,6 +15,20 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.decorators;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.drools.compiler.kie.builder.impl.FileKieModule;
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
@@ -22,17 +36,10 @@ import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultKieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 /***
  * After decorator that reads and store the Object created by the Kie takari plugin and placed in the CompilationResponse
@@ -53,7 +60,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
             if (req.getInfo().isKiePluginPresent()) {
                 return (T) handleKieMavenPlugin(req,
-                        res);
+                                                res);
             }
         }
         return res;
@@ -82,15 +89,17 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             //List<URL> urls = getUrls(req);
             if (req.getKieCliRequest().isLogRequested()) {
                 return new DefaultKieCompilationResponse(Boolean.TRUE,
-                        (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
-                        (KieModule) kieModuleTuple.getOptionalObject().get(),
-                        res.getMavenOutput().get(),
-                        resources, req.getInfo().getPrjPath());
+                                                         (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
+                                                         (KieModule) kieModuleTuple.getOptionalObject().get(),
+                                                         res.getMavenOutput().get(),
+                                                         resources,
+                                                         req.getInfo().getPrjPath());
             } else {
                 return new DefaultKieCompilationResponse(Boolean.TRUE,
-                        (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
-                        (KieModule) kieModuleTuple.getOptionalObject().get(),
-                        resources, req.getInfo().getPrjPath());
+                                                         (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
+                                                         (KieModule) kieModuleTuple.getOptionalObject().get(),
+                                                         resources,
+                                                         req.getInfo().getPrjPath());
             }
         } else {
             StringBuilder sb = new StringBuilder();
@@ -102,11 +111,11 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             }
             if (req.getKieCliRequest().isLogRequested()) {
                 return new DefaultKieCompilationResponse(Boolean.FALSE,
-                        sb.toString(),
-                        res.getMavenOutput().get());
+                                                         sb.toString(),
+                                                         res.getMavenOutput().get());
             } else {
                 return new DefaultKieCompilationResponse(Boolean.FALSE,
-                        sb.toString());
+                                                         sb.toString());
             }
         }
     }
@@ -114,7 +123,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
     private List<String> getString(CompilationRequest req) {
         List<String> items = Collections.emptyList();
         if (!req.skipPrjDependenciesCreationList()) {
-            Optional<List<String>> optionalDeps = ClassloaderUtils.getStringsFromAllDependencies(req.getInfo().getPrjPath());
+            Optional<List<String>> optionalDeps = CompilerClassloaderUtils.getStringsFromAllDependencies(req.getInfo().getPrjPath());
             if (optionalDeps.isPresent()) {
                 items = optionalDeps.get();
             }
@@ -125,7 +134,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
     private List<URI> getUris(CompilationRequest req) {
         List<URI> uris = Collections.emptyList();
         if (!req.skipPrjDependenciesCreationList()) {
-            Optional<List<URI>> optionalDeps = ClassloaderUtils.getURISFromAllDependencies(req.getInfo().getPrjPath().toAbsolutePath().toString());
+            Optional<List<URI>> optionalDeps = CompilerClassloaderUtils.getURISFromAllDependencies(req.getInfo().getPrjPath().toAbsolutePath().toString());
             if (optionalDeps.isPresent()) {
                 uris = optionalDeps.get();
             }
@@ -136,7 +145,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
     private List<URL> getUrls(CompilationRequest req) {
         List<URL> urls = Collections.emptyList();
         if (!req.skipPrjDependenciesCreationList()) {
-            Optional<List<URL>> optionalDeps = ClassloaderUtils.getURLSFromAllDependencies(req.getInfo().getPrjPath().toAbsolutePath().toString());
+            Optional<List<URL>> optionalDeps = CompilerClassloaderUtils.getURLSFromAllDependencies(req.getInfo().getPrjPath().toAbsolutePath().toString());
             if (optionalDeps.isPresent()) {
                 urls = optionalDeps.get();
             }

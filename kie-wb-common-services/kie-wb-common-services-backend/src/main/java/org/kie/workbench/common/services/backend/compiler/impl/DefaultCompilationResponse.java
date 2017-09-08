@@ -15,10 +15,10 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 
 /***
  * Default implementation of a basic (Non Kie) Compilation response,

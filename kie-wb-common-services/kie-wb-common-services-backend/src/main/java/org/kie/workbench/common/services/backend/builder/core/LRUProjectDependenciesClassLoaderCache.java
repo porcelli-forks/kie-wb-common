@@ -35,7 +35,7 @@ import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
@@ -97,7 +97,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         KieCompilationResponse res = builder.build();
         if(res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
             KieModule kModule =  res.getKieModule().get();
-            Optional<List<String>> optionalString = ClassloaderUtils.getStringFromTargets(res.getWorkingDir().get());
+            Optional<List<String>> optionalString = CompilerClassloaderUtils.getStringFromTargets(res.getWorkingDir().get());
             List<URI> urls = PathConverter.createURISFromString(optionalString.get());
 
             //KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule, res.getProjectDependenciesAsURI().get());
@@ -160,8 +160,8 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     protected static ClassLoader buildClassloaderFromTargetFolders(final KieProject project){
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
-        Optional<ClassLoader> clazzLoader = ClassloaderUtils.getClassloaderFromProjectTargets(pomList,
-                Boolean.FALSE);
+        Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.getClassloaderFromProjectTargets(pomList,
+                                                                                                      Boolean.FALSE);
         if(clazzLoader.isPresent()){
             return clazzLoader.get();
         }else{
@@ -173,7 +173,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     protected static ClassLoader buildClassloaderFromAllProjectDeps(final KieProject project){
         List<String> pomList = new ArrayList<>();
         MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
-        Optional<List<URL>> depsURLs = ClassloaderUtils.getURLSFromAllDependencies(project.getRootPath().toString());
+        Optional<List<URL>> depsURLs = CompilerClassloaderUtils.getURLSFromAllDependencies(project.getRootPath().toString());
         if(depsURLs.isPresent()){
             List<URL> urls = depsURLs.get();
             return new URLClassLoader(urls.toArray(new URL[urls.size()]));

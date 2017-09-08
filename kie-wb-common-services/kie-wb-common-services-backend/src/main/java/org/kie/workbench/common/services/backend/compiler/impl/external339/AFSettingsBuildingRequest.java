@@ -15,14 +15,14 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.external339;
 
-import org.apache.maven.settings.building.SettingsBuildingRequest;
-import org.apache.maven.settings.building.SettingsSource;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Properties;
+
+import org.apache.maven.settings.building.SettingsBuildingRequest;
+import org.apache.maven.settings.building.SettingsSource;
 
 public class AFSettingsBuildingRequest implements SettingsBuildingRequest {
 
@@ -105,7 +105,8 @@ public class AFSettingsBuildingRequest implements SettingsBuildingRequest {
 
             while (i$.hasNext()) {
                 String key = (String) i$.next();
-                this.systemProperties.put(key, System.getProperty(key));
+                this.systemProperties.put(key,
+                                          System.getProperty(key));
             }
         } else {
             this.systemProperties = null;

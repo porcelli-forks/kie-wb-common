@@ -25,7 +25,6 @@ public interface ConfigurationProvider {
 
     /***
      * Return a Map with Configurations keys for a specific implementation
-     *
      * @return
      */
     Map<ConfigurationKey, String> loadConfiguration();

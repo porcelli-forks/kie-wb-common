@@ -15,9 +15,9 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
-import org.uberfire.java.nio.file.Path;
-
 import java.util.List;
+
+import org.uberfire.java.nio.file.Path;
 
 /***
  * Contract to manage Resources URI in terms of pom dependencies (included transient)

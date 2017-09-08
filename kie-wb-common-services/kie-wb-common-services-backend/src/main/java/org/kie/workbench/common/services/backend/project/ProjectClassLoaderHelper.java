@@ -20,10 +20,9 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
@@ -31,13 +30,8 @@ import org.uberfire.java.nio.file.Path;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
-import java.util.Optional;
-
 
 /**
  *
@@ -48,43 +42,24 @@ public class ProjectClassLoaderHelper {
     @Inject
     private GuvnorM2Repository guvnorM2Repository;
 
-    @Inject
+    /*@Inject
     @Named("LRUProjectDependenciesClassLoaderCache")
-    private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;
-
-   /* @Inject
-    @Named("LRUProjectPOMDependenciesClassloaderCache")
-    private LRUProjectPOMDependenciesClassloaderCache pomDependenciesClassloaderCache;*/
+    private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;*/
 
     @Inject
     private CompilerMapsHolder compilerMapsHolder;
-
-   /* @Inject
-    private ClassloadersResourcesHolder resourcesHolder;*/
-
 
     public ClassLoader getProjectClassLoader(KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository);
         KieCompilationResponse res = builder.build();
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
-            Optional<List<String>> optionalString = ClassloaderUtils.getStringFromTargets(res.getWorkingDir().get());
-            List<String> droolsClassfiles = ClassloaderUtils.getCleanedPathClassesAsString(res.getWorkingDir().get().toString());
-
-            //List<URL> urls = PathConverter.createURLSFromString(optionalString.get());
-           // ClassLoader classloader = new URLClassLoader(urls.toArray(new URL[urls.size()]));
-
-            //ClassLoader dependenciesClassLoader = dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
             ClassLoader projectClassLoader;
             final KieModule module = res.getKieModule().get();
-
             if (module instanceof InternalKieModule) {
-                //will always be an internal kie module
-                //InternalKieModule internalModule = (InternalKieModule) module;
-                //projectClassLoader = new MapClassLoader(internalModule.getClassesMap(true), dependenciesClassLoader);
+                //The integration works with CompilerClassloaderUtils.getMapClasses
                 ClassLoader dependenciesClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
-               // projectClassLoader = new MapClassLoader(ClassloaderUtils.getClassesMap(true, droolsClassfiles,new File(res.getWorkingDir().toString())), dependenciesClassLoader);
-                projectClassLoader = new MapClassLoader(ClassloaderUtils.getMapClasses(res.getWorkingDir().get().toString()), dependenciesClassLoader);
+                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(res.getWorkingDir().get().toString()), dependenciesClassLoader);
             } else {
                 projectClassLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
             }

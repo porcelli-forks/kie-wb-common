@@ -15,15 +15,15 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
-import org.uberfire.java.nio.file.Files;
-import org.uberfire.java.nio.file.Path;
-import org.uberfire.java.nio.file.Paths;
-
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.uberfire.java.nio.file.Files;
+import org.uberfire.java.nio.file.Path;
+import org.uberfire.java.nio.file.Paths;
 
 public class LogUtils {
 
@@ -40,7 +40,7 @@ public class LogUtils {
         List<String> log = new ArrayList<>();
         if (Files.isReadable(logPath)) {
             for (String line : Files.readAllLines(logPath,
-                    Charset.defaultCharset())) {
+                                                  Charset.defaultCharset())) {
                 log.add(line);
             }
             return log;

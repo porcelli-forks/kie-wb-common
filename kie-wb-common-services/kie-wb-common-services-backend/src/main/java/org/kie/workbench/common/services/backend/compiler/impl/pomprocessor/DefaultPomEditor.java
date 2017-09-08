@@ -16,6 +16,17 @@
 
 package org.kie.workbench.common.services.backend.compiler.impl.pomprocessor;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -24,19 +35,17 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.configuration.*;
+import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
+import org.kie.workbench.common.services.backend.compiler.configuration.ConfigurationKey;
+import org.kie.workbench.common.services.backend.compiler.configuration.ConfigurationProvider;
+import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
+import org.kie.workbench.common.services.backend.compiler.configuration.MavenConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardOpenOption;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 /***
  * IS the main actor in the changes to the build tag in the poms
@@ -126,18 +135,18 @@ public class DefaultPomEditor implements PomEditor {
         }
 
         Boolean overwritePOM = updatePOMModel(build,
-                defaultCompilerPluginPresent,
-                alternativeCompilerPluginPresent,
-                kiePluginPresent,
-                kieTakariPresent,
-                defaultMavenCompilerPosition,
-                alternativeCompilerPosition,
-                kieMavenPluginPosition);
+                                              defaultCompilerPluginPresent,
+                                              alternativeCompilerPluginPresent,
+                                              kiePluginPresent,
+                                              kieTakariPresent,
+                                              defaultMavenCompilerPosition,
+                                              alternativeCompilerPosition,
+                                              kieMavenPluginPosition);
 
         return new DefaultPluginPresents(defaultCompilerPluginPresent,
-                alternativeCompilerPluginPresent,
-                kiePluginPresent,
-                overwritePOM);
+                                         alternativeCompilerPluginPresent,
+                                         kiePluginPresent,
+                                         overwritePOM);
     }
 
     private Boolean updatePOMModel(Build build,
@@ -174,9 +183,9 @@ public class DefaultPomEditor implements PomEditor {
                 Plugin defaultMavenCompiler = build.getPlugins().get(defaultMavenCompilerPosition);
                 Plugin alternativeCompiler = build.getPlugins().get(alternativeCompilerPosition);
                 build.getPlugins().set(defaultMavenCompilerPosition,
-                        alternativeCompiler);
+                                       alternativeCompiler);
                 build.getPlugins().set(alternativeCompilerPosition,
-                        defaultMavenCompiler);
+                                       defaultMavenCompiler);
                 overwritePOM = Boolean.TRUE;
             }
         }
@@ -192,7 +201,8 @@ public class DefaultPomEditor implements PomEditor {
                 kieTakariPlugin.setArtifactId(conf.get(ConfigurationKey.KIE_TAKARI_PLUGIN));
                 kieTakariPlugin.setVersion(kieMavenPlugin.getVersion());
                 kieTakariPlugin.setExtensions(Boolean.parseBoolean(kieMavenPlugin.getExtensions()));
-                plugins.set(kieMavenPluginPosition, kieTakariPlugin);
+                plugins.set(kieMavenPluginPosition,
+                            kieTakariPlugin);
                 build.setPlugins(plugins);
                 overwritePOM = Boolean.TRUE;
             }
@@ -246,7 +256,7 @@ public class DefaultPomEditor implements PomEditor {
     protected String[] addCreateClasspathMavenArgs(String[] args) {
         StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
         String[] newArgs = Arrays.copyOf(args,
-                args.length + 2);
+                                         args.length + 2);
         newArgs[args.length] = MavenConfig.DEPS_BUILD_CLASSPATH;
         newArgs[args.length + 1] = sb.toString();
         return newArgs;
@@ -257,10 +267,10 @@ public class DefaultPomEditor implements PomEditor {
         try {
             Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
             holder = new PomPlaceHolder(pom.toAbsolutePath().toString(),
-                    model.getArtifactId(),
-                    model.getGroupId(),
-                    model.getVersion(),
-                    model.getPackaging());
+                                        model.getArtifactId(),
+                                        model.getGroupId(),
+                                        model.getVersion(),
+                                        model.getPackaging());
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -274,16 +284,16 @@ public class DefaultPomEditor implements PomEditor {
             Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
             if (model == null) {
                 logger.error("Model null from pom file:",
-                        pom.toString());
+                             pom.toString());
                 return;
             }
 
             PomPlaceHolder pomPH = new PomPlaceHolder(pom.toAbsolutePath().toString(),
-                    model.getArtifactId(),
-                    model.getGroupId(),
-                    model.getVersion(),
-                    model.getPackaging(),
-                    Files.readAllBytes(pom));
+                                                      model.getArtifactId(),
+                                                      model.getGroupId(),
+                                                      model.getVersion(),
+                                                      model.getPackaging(),
+                                                      Files.readAllBytes(pom));
 
             if (!history.contains(pomPH)) {
 
@@ -297,11 +307,11 @@ public class DefaultPomEditor implements PomEditor {
                 if (plugs.pomOverwriteRequired()) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     writer.write(baos,
-                            model);
+                                 model);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Pom changed:{}",
-                                new String(baos.toByteArray(),
-                                        StandardCharsets.UTF_8));
+                                     new String(baos.toByteArray(),
+                                                StandardCharsets.UTF_8));
                     }
 
                     Path pomParent = Paths.get(URI.create(
@@ -312,8 +322,8 @@ public class DefaultPomEditor implements PomEditor {
                                     append(POM_NAME).toString()));
                     Files.delete(pomParent);
                     Files.write(pomParent,
-                            baos.toByteArray(),
-                            StandardOpenOption.CREATE_NEW);//enhanced pom
+                                baos.toByteArray(),
+                                StandardOpenOption.CREATE_NEW);//enhanced pom
                 }
                 history.add(pomPH);
             }

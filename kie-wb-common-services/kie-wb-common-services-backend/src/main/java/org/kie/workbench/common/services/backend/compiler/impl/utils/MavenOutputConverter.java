@@ -15,21 +15,22 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Maven output converter
  */
 public class MavenOutputConverter {
 
-    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput, String filter) {
+    public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput,
+                                                                       String filter) {
         if (mavenOutput.size() > 0) {
             List<ValidationMessage> validationMsgs = new ArrayList<>(mavenOutput.size());
             for (String item : mavenOutput) {
@@ -93,5 +94,4 @@ public class MavenOutputConverter {
         }
         return incrmBuildRes;
     }
-
 }

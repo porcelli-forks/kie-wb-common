@@ -15,12 +15,12 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.decorators;
 
+import java.util.List;
+
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.LogUtils;
-
-import java.util.List;
 
 /***
  * After decorator to read and store the maven output into a List<String> in the CompilationResponse
@@ -38,8 +38,8 @@ public class OutputLogAfterDecorator<T extends CompilationResponse, C extends AF
         T res = compiler.compileSync(req);
 
         return compiler.buildDefaultCompilationResponse(res.isSuccessful(),
-                LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
-                        req.getKieCliRequest().getRequestUUID()));
+                                                        LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
+                                                                           req.getKieCliRequest().getRequestUUID()));
     }
 
     @Override

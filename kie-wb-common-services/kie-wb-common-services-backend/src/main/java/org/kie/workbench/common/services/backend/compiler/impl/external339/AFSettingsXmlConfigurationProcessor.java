@@ -15,6 +15,14 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.external339;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import javax.inject.Named;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.maven.artifact.InvalidRepositoryException;
 import org.apache.maven.bridge.MavenRepositorySystem;
@@ -22,7 +30,12 @@ import org.apache.maven.building.Source;
 import org.apache.maven.cli.CLIManager;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequestPopulationException;
-import org.apache.maven.settings.*;
+import org.apache.maven.settings.Mirror;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Repository;
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.SettingsUtils;
 import org.apache.maven.settings.building.SettingsBuilder;
 import org.apache.maven.settings.building.SettingsBuildingResult;
 import org.apache.maven.settings.building.SettingsProblem;
@@ -30,14 +43,6 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
-
-import javax.inject.Named;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * Used to open the API of Maven embedder
@@ -53,14 +58,16 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
 
     public static final String USER_HOME = System.getProperty("user.home");
 
-    public static final Path USER_MAVEN_CONFIGURATION_HOME = Paths.get(USER_HOME, ".m2");
+    public static final Path USER_MAVEN_CONFIGURATION_HOME = Paths.get(USER_HOME,
+                                                                       ".m2");
 
-    public static final Path DEFAULT_USER_SETTINGS_FILE = Paths.get(USER_MAVEN_CONFIGURATION_HOME.toString(), "settings.xml");
+    public static final Path DEFAULT_USER_SETTINGS_FILE = Paths.get(USER_MAVEN_CONFIGURATION_HOME.toString(),
+                                                                    "settings.xml");
 
     public static final Path DEFAULT_GLOBAL_SETTINGS_FILE = Paths.get(System.getProperty("maven.home",
-            System.getProperty("user.dir",
-                    "")),
-            "conf/settings.xml");
+                                                                                         System.getProperty("user.dir",
+                                                                                                            "")),
+                                                                      "conf/settings.xml");
 
     @Requirement
     private Logger logger;
@@ -70,7 +77,6 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
 
     @Requirement
     private SettingsDecrypter settingsDecrypter;
-
 
     @Override
     public void process(AFCliRequest cliRequest)
@@ -84,11 +90,11 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
         if (commandLine.hasOption(CLIManager.ALTERNATE_USER_SETTINGS)) {
             userSettingsFile = Paths.get(commandLine.getOptionValue(CLIManager.ALTERNATE_USER_SETTINGS));
             userSettingsFile = resolvePath(userSettingsFile,
-                    workingDirectory);
+                                           workingDirectory);
 
             if (!Files.isRegularFile(userSettingsFile)) {
                 throw new FileNotFoundException("The specified user settings file does not exist: "
-                        + userSettingsFile);
+                                                        + userSettingsFile);
             }
         } else {
             userSettingsFile = DEFAULT_USER_SETTINGS_FILE;
@@ -99,11 +105,11 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
         if (commandLine.hasOption(CLIManager.ALTERNATE_GLOBAL_SETTINGS)) {
             globalSettingsFile = Paths.get(commandLine.getOptionValue(CLIManager.ALTERNATE_GLOBAL_SETTINGS));
             globalSettingsFile = resolvePath(globalSettingsFile,
-                    workingDirectory);
+                                             workingDirectory);
 
             if (!Files.isRegularFile(globalSettingsFile)) {
                 throw new FileNotFoundException("The specified global settings file does not exist: "
-                        + globalSettingsFile);
+                                                        + globalSettingsFile);
             }
         } else {
             globalSettingsFile = DEFAULT_GLOBAL_SETTINGS_FILE;
@@ -123,11 +129,11 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
         }
 
         logger.debug("Reading global settings from "
-                + getLocation(settingsRequest.getGlobalSettingsSource(),
-                settingsRequest.getGlobalSettingsPath()));
+                             + getLocation(settingsRequest.getGlobalSettingsSource(),
+                                           settingsRequest.getGlobalSettingsPath()));
         logger.debug("Reading user settings from "
-                + getLocation(settingsRequest.getUserSettingsSource(),
-                settingsRequest.getUserSettingsPath()));
+                             + getLocation(settingsRequest.getUserSettingsSource(),
+                                           settingsRequest.getUserSettingsPath()));
 
         SettingsBuildingResult settingsResult = settingsBuilder.build(settingsRequest);
 
@@ -136,7 +142,7 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
         }
 
         populateFromSettings(request,
-                settingsResult.getEffectiveSettings());
+                             settingsResult.getEffectiveSettings());
 
         if (!settingsResult.getProblems().isEmpty() && logger.isWarnEnabled()) {
             logger.warn("");
@@ -244,10 +250,9 @@ public class AFSettingsXmlConfigurationProcessor implements AFConfigurationProce
         return defaultLocation;
     }
 
-
     static Path resolvePath(Path file,
                             String workingDirectory) {
         return file == null ? null : (file.isAbsolute() ? file : (file.getFileName().startsWith(File.separator) ? file.toAbsolutePath() : (Paths.get(workingDirectory,
-                file.getFileName().toString()))));
+                                                                                                                                                     file.getFileName().toString()))));
     }
 }

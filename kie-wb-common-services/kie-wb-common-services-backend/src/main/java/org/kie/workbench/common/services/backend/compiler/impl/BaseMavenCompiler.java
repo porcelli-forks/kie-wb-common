@@ -15,6 +15,9 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
@@ -28,9 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Run maven with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
@@ -59,7 +59,6 @@ public abstract class BaseMavenCompiler<T extends CompilationResponse> implement
 
     /**
      * Check if the folder exists and if it's writable and readable
-     *
      * @param mavenRepo
      * @return
      */
@@ -74,15 +73,15 @@ public abstract class BaseMavenCompiler<T extends CompilationResponse> implement
     public T compileSync(CompilationRequest req) {
         if (logger.isDebugEnabled()) {
             logger.debug("KieCompilationRequest:{}",
-                    req);
+                         req);
         }
 
         if (!req.getInfo().getEnhancedMainPomFile().isPresent()) {
             ProcessedPoms processedPoms = enabler.process(req);
             if (!processedPoms.getResult()) {
                 return buildDefaultCompilationResponse(Boolean.FALSE,
-                        "Processing poms failed",
-                        Collections.emptyList());
+                                                       "Processing poms failed",
+                                                       Collections.emptyList());
             }
         }
         req.getKieCliRequest().getRequest().setLocalRepositoryPath(req.getMavenRepo());
@@ -95,9 +94,9 @@ public abstract class BaseMavenCompiler<T extends CompilationResponse> implement
 
         ClassLoader original = Thread.currentThread().getContextClassLoader();
         ClassWorld kieClassWorld = new ClassWorld("plexus.core",
-                getClass().getClassLoader());
+                                                  getClass().getClassLoader());
         int exitCode = cli.doMain(req.getKieCliRequest(),
-                kieClassWorld);
+                                  kieClassWorld);
         Thread.currentThread().setContextClassLoader(original);
         if (exitCode == 0) {
             return (T) buildDefaultCompilationResponse(Boolean.TRUE);

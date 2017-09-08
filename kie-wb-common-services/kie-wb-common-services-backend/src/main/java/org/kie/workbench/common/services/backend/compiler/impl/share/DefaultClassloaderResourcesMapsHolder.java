@@ -15,14 +15,14 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
-import org.uberfire.java.nio.file.Path;
-
-import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.enterprise.context.ApplicationScoped;
+
+import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResourcesHolder {
@@ -40,7 +40,6 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
         } else {
             return Collections.emptyList();
         }
-
     }
 
     @Override
@@ -50,7 +49,6 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
         } else {
             return Collections.emptyList();
         }
-
     }
 
     @Override

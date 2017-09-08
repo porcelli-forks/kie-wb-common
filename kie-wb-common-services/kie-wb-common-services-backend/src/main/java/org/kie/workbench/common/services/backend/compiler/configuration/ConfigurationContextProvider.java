@@ -15,7 +15,11 @@
  */
 package org.kie.workbench.common.services.backend.compiler.configuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * THis implementation first try to load configuration keys from environment variables then load properties with a files called IncrementalCompiler.properties then an hard coded configuration like the following example
@@ -42,10 +46,10 @@ public class ConfigurationContextProvider implements ConfigurationProvider {
 
     private void initializeWorkingConfig() {
         List<ConfigurationStrategy> confs = new ArrayList<ConfigurationStrategy>(Arrays.asList(new ConfigurationEnvironmentStrategy(),
-                new ConfigurationPropertiesStrategy(),
-                new ConfigurationStaticStrategy()));
+                                                                                               new ConfigurationPropertiesStrategy(),
+                                                                                               new ConfigurationStaticStrategy()));
         Collections.sort(confs,
-                (ConfigurationStrategy one, ConfigurationStrategy two) -> one.getOrder().compareTo(two.getOrder()));
+                         (ConfigurationStrategy one, ConfigurationStrategy two) -> one.getOrder().compareTo(two.getOrder()));
         for (ConfigurationStrategy item : confs) {
             if (item.isValid()) {
                 conf = item.loadConfiguration();

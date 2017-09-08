@@ -61,7 +61,6 @@ public class PomPlaceHolder {
 
     /**
      * If is false you have to check the correctness of the POM
-     *
      * @return
      */
     public Boolean isValid() {

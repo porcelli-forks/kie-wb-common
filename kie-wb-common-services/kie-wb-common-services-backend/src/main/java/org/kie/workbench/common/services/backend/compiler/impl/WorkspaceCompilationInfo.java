@@ -15,10 +15,10 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
+import java.util.Optional;
+
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.uberfire.java.nio.file.Path;
-
-import java.util.Optional;
 
 /***
  * Holds informations shared with Kie compilers and the Compilation Request/Response
@@ -34,7 +34,8 @@ public class WorkspaceCompilationInfo {
         this.prjPath = prjPath;
     }
 
-    public WorkspaceCompilationInfo(Path prjPath, CompilerMapsHolder compilerMapsHolder) {
+    public WorkspaceCompilationInfo(Path prjPath,
+                                    CompilerMapsHolder compilerMapsHolder) {
         this.prjPath = prjPath;
         this.compilerMapsHolder = compilerMapsHolder;
     }

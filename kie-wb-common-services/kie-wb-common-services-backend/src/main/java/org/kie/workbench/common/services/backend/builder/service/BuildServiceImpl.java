@@ -32,7 +32,7 @@ import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.ClassloaderUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
@@ -131,7 +131,7 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private void readAndSetResourcesFromTargetFolders(org.uberfire.java.nio.file.Path nioPath) {
-        Optional<List<String>> targetResources = ClassloaderUtils.getStringFromTargets(nioPath);
+        Optional<List<String>> targetResources = CompilerClassloaderUtils.getStringFromTargets(nioPath);
         if(targetResources.isPresent()) {
             classloadersResourcesHolder.replaceTargetDependencies(nioPath, targetResources.get());
         }

@@ -23,7 +23,6 @@ public interface Order {
 
     /**
      * Used by the implementor to assign and order of execution when multiple implementations are present
-     *
      * @return
      */
     Integer getOrder();
