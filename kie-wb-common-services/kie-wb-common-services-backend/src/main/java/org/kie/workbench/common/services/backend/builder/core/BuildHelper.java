@@ -36,7 +36,7 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;

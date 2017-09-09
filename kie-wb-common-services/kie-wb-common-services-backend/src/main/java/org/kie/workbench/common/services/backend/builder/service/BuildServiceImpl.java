@@ -100,7 +100,7 @@ public class BuildServiceImpl implements BuildService {
             kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository);
             /*kieAfBuilder =  compilerMapsHolder.getBuilder(nioPath);
             if(kieAfBuilder == null) {
-                kieAfBuilder = new DefaultKieAFBuilder(org.uberfire.java.nio.file.Paths.get("file://" + project.getRootPath().toURI().toString()), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), compilerMapsHolder);
+                kieAfBuilder = new DefaultKieAFBuilder(org.uberfire.java.impl.file.Paths.get("file://" + project.getRootPath().toURI().toString()), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), compilerMapsHolder);
             }*/
         }
         KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));

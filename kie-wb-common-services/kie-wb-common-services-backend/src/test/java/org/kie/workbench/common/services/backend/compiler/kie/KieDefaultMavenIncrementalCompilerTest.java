@@ -185,7 +185,7 @@ public class KieDefaultMavenIncrementalCompilerTest {
         Assert.assertTrue(res.isSuccessful());
 
         List<String> fileNames = new ArrayList<>();
-        //nio
+        //impl
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(temp + "/target/classes/dummy"))) {
             for (Path path : directoryStream) {
                 fileNames.add(path.toString());

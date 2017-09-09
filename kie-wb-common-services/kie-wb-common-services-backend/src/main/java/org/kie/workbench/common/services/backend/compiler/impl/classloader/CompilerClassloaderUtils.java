@@ -120,15 +120,13 @@ public class CompilerClassloaderUtils {
         List<String> keys = IoUtils.recursiveListFile(new File(path),
                                                       "",
                                                       filterClasses());
-        Map<String, byte[]> classes = new HashMap<String, byte[]>(keys.size() * 2);
+        Map<String, byte[]> classes = new HashMap<String, byte[]>(keys.size());
         for (String item : keys) {
             byte[] bytez = getBytes(path + "/" + item);
-            String fqn = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15);
-            String className = item.substring(item.lastIndexOf("/") + 1);
-            classes.put(fqn,
-                        bytez);
-            classes.put(className,
-                        bytez);
+            String fqn = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15); // 15 chars are for "target/classes"
+           // String className = item.substring(item.lastIndexOf("/") + 1);
+            classes.put(fqn, bytez);
+            //classes.put(className,bytez);
         }
         return classes;
     }

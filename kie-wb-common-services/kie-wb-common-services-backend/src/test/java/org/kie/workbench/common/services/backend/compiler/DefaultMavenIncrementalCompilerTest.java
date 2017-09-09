@@ -207,7 +207,7 @@ public class DefaultMavenIncrementalCompilerTest {
         Assert.assertTrue(res.isSuccessful());
 
         fileNames = new ArrayList<>();
-        //nio
+        //impl
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(temp + "/target/classes/dummy"))) {
             for (Path path : directoryStream) {
                 fileNames.add(path.toString());

@@ -30,7 +30,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.shared.enums.EnumDropdownService;
 import org.kie.workbench.common.services.shared.project.KieProject;

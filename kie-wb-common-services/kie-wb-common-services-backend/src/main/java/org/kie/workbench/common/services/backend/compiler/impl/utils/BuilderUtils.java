@@ -9,7 +9,7 @@ import org.eclipse.jgit.api.Git;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.af.nio.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;

@@ -16,35 +16,14 @@
 
 package org.kie.workbench.common.services.backend.builder.core;
 
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
-import org.kie.api.builder.KieModule;
-import org.kie.scanner.KieModuleMetaData;
-import org.kie.scanner.KieModuleMetaDataImpl;
-import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
-import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
+import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
@@ -56,22 +35,21 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
 
-    public LRUProjectDependenciesClassLoaderCache( ) {
+    public LRUProjectDependenciesClassLoaderCache() {
     }
 
     @Inject
-    public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository , CompilerMapsHolder compilerMapsHolder) {
+    public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository,
+                                                  CompilerMapsHolder compilerMapsHolder) {
         this.guvnorM2Repository = guvnorM2Repository;
         this.compilerMapsHolder = compilerMapsHolder;
     }
-
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
         ClassLoader classLoader = getEntry(project);
         if (classLoader == null) {
             classLoader = buildClassLoader(project);
-            setEntry(project,
-                     classLoader);
+            setEntry(project, classLoader);
         }
         return classLoader;
     }
@@ -83,52 +61,12 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     protected ClassLoader buildClassLoader(final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,compilerMapsHolder, guvnorM2Repository);
-        /*KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
-        if(builder == null) {
-            AFCompiler compiler = getCompiler();
-            builder = new DefaultKieAFBuilder(project.getRootPath().toURI(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME),
-                    new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.DEBUG},
-                    compiler, Boolean.FALSE, compilerMapsHolder);
-            compilerMapsHolder.addBuilder(nioPath, builder);
-        }*/
-        ClassLoader classLoader = getEntry(project);
-        if(classLoader != null) return classLoader;
-        KieCompilationResponse res = builder.build();
-        if(res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
-            KieModule kModule =  res.getKieModule().get();
-            Optional<List<String>> optionalString = CompilerClassloaderUtils.getStringFromTargets(res.getWorkingDir().get());
-            List<URI> urls = PathConverter.createURISFromString(optionalString.get());
-
-            //KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule, res.getProjectDependenciesAsURI().get());
-            KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) kModule, urls);
-            ClassLoader classloader = new URLClassLoader(res.getProjectDependenciesAsURI().get().toArray(new URL[res.getProjectDependenciesAsURI().get().size()]), kieModuleMetaData.getClassLoader().getParent());
-            //ClassLoader classloader = buildClassLoader(project, kieModuleMetaData);
-            if(res.getWorkingDir().isPresent()) {
-                //Optional<List<String>> optionalString = classLoaderProvider.getStringFromTargets(res.getWorkingDir().get());
-                if (optionalString.isPresent()) {
-                    //List<URL> urls = PathConverter.createURLSFromString(optionalString.get());
-                    URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), classloader);
-                    setEntry(project, urlClassLoader);
-                    return urlClassLoader;
-                }
-            }
-
-            setEntry(project, classloader);
-            return classloader;
-        } else {
-            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
-                                               + project.getKModuleXMLPath());
-        }
+        return KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
+                                                                 compilerMapsHolder,
+                                                                 guvnorM2Repository);
     }
 
-    protected AFCompiler getCompiler() {
-        // we create the compiler in this weird mode to use the gitMap used internally
-        AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
-        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
-                compilerMapsHolder);
-        return outerDecorator;
-    }
+
 
     /**
      * This method and the subsequent caching was added for performance reasons, since the dependencies calculation and
@@ -137,7 +75,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
      * ClassLoader part that has the project dependencies. And the project ClassLoader can be easily calculated using
      * this ClassLoader as parent. Since current project classes are quickly calculated on each incremental build, etc.
      */
-    public static ClassLoader buildClassLoader(final KieProject project,
+   /* public static ClassLoader buildClassLoader(final KieProject project,
                                                final KieModuleMetaData kieModuleMetaData) {
         //By construction the parent class loader for the KieModuleMetadata.getClassLoader() is an URLClass loader
         //that has the project dependencies. So this implementation relies on this. BUT can easily be changed to
@@ -153,32 +91,13 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
             throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
                                                + project.getKModuleXMLPath());
         }
-    }
-
-
-    /** This method create a classloader only from the target folders*/
-    protected static ClassLoader buildClassloaderFromTargetFolders(final KieProject project){
-        List<String> pomList = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
-        Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.getClassloaderFromProjectTargets(pomList,
-                                                                                                      Boolean.FALSE);
-        if(clazzLoader.isPresent()){
-            return clazzLoader.get();
-        }else{
-            return new URLClassLoader(new URL[0]);
-        }
-    }
-
-    /** This method creates a classloader only from the deps from poms (transitives included)*/
-    protected static ClassLoader buildClassloaderFromAllProjectDeps(final KieProject project){
-        List<String> pomList = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.convert(project.getRootPath()), pomList);
-        Optional<List<URL>> depsURLs = CompilerClassloaderUtils.getURLSFromAllDependencies(project.getRootPath().toString());
-        if(depsURLs.isPresent()){
-            List<URL> urls = depsURLs.get();
-            return new URLClassLoader(urls.toArray(new URL[urls.size()]));
-        }else{
-            return new URLClassLoader(new URL[0]);
-        }
-    }
+    }*/
+/*
+    protected AFCompiler getCompiler() {
+        // we create the compiler in this weird mode to use the gitMap used internally
+        AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
+        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
+                                                                    compilerMapsHolder);
+        return outerDecorator;
+    }*/
 }

@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 /**
  * Used to open the API of Maven embedder
  * original version: https://maven.apache.org/ref/3.3.9/maven-embedder/xref/org/apache/maven/cli/configuration/SettingsXmlConfigurationProcessor.html
- * Changed java.io.File to java.nio.file.Path when possible
+ * Changed java.io.File to java.impl.file.Path when possible
  * IMPORTANT: Preserve the structure for an easy update when the maven version will be updated
  */
 @Named
