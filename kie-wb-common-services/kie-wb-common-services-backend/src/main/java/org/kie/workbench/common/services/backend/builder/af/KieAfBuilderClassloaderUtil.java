@@ -17,6 +17,7 @@ package org.kie.workbench.common.services.backend.builder.af;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Optional;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
@@ -24,6 +25,7 @@ import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
@@ -36,7 +38,8 @@ public class KieAfBuilderClassloaderUtil {
      */
     public static ClassLoader getProjectClassloader(Path nioPath,
                                                     CompilerMapsHolder compilerMapsHolder,
-                                                    GuvnorM2Repository guvnorM2Repository) {
+                                                    GuvnorM2Repository guvnorM2Repository, ClassloadersResourcesHolder classloadersResourcesHolder) {
+
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository);
@@ -45,14 +48,24 @@ public class KieAfBuilderClassloaderUtil {
             ClassLoader projectClassLoader;
             final KieModule module = res.getKieModule().get();
             if (module instanceof InternalKieModule) {
-                ClassLoader dependenciesClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
+                Optional<ClassLoader> opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassloader(nioPath);
+                ClassLoader dependenciesClassLoader;
+                if (!opDependenciesClassLoader.isPresent()){
+                    dependenciesClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
+                }else {
+                    dependenciesClassLoader = opDependenciesClassLoader.get();
+                }
+                classloadersResourcesHolder.addDependenciesClassloader(nioPath, dependenciesClassLoader);
+
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
                 projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(res.getWorkingDir().get().toString()),
                                                         dependenciesClassLoader);
+                classloadersResourcesHolder.addTargetClassloader(nioPath, projectClassLoader);
             } else {
                 projectClassLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
+                classloadersResourcesHolder.addTargetClassloader(nioPath, projectClassLoader);
             }
             return projectClassLoader;
         }

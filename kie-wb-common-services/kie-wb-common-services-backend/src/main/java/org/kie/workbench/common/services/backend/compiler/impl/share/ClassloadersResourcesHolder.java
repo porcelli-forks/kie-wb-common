@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.uberfire.java.nio.file.Path;
 
@@ -24,6 +25,14 @@ import org.uberfire.java.nio.file.Path;
  * and .class and resources present in the target folders
  */
 public interface ClassloadersResourcesHolder {
+
+    void addTargetClassloader(Path project, ClassLoader classLoader);
+
+    void addDependenciesClassloader(Path project, ClassLoader classLoader);
+
+    Optional<ClassLoader> getTargetClassloader(Path project);
+
+    Optional<ClassLoader> getDependenciesClassloader(Path project);
 
     boolean containsPomDependencies(Path projectRootPath);
 

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
 
@@ -36,7 +37,7 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
     @Override
     public List<String> getPomDependencies(Path projectRootPath) {
         if (internalMap.get(projectRootPath) != null) {
-            return internalMap.get(projectRootPath).projectsDeps;
+            return internalMap.get(projectRootPath).getProjectDeps();
         } else {
             return Collections.emptyList();
         }
@@ -45,7 +46,7 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
     @Override
     public List<String> getTargetsProjectDependencies(Path projectRootPath) {
         if (internalMap.get(projectRootPath) != null) {
-            return internalMap.get(projectRootPath).targetDeps;
+            return internalMap.get(projectRootPath).getTargetDeps();
         } else {
             return Collections.emptyList();
         }
@@ -54,13 +55,17 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
     @Override
     public void replacePomDependencies(Path projectRootPath,
                                        List<String> uris) {
-        internalMap.get(projectRootPath).replaceProjectsDeps(uris);
+        if (internalMap.get(projectRootPath) != null) {
+            internalMap.get(projectRootPath).replaceProjectsDeps(uris);
+        }
     }
 
     @Override
     public void replaceTargetDependencies(Path projectRootPath,
                                           List<String> uris) {
-        internalMap.get(projectRootPath).replaceTargetDeps(uris);
+        if (internalMap.get(projectRootPath) != null) {
+            internalMap.get(projectRootPath).replaceTargetDeps(uris);
+        }
     }
 
     @Override
@@ -70,7 +75,7 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
 
     @Override
     public void clearClassloaderResourcesMap() {
-        internalMap.clear();
+            internalMap.clear();
     }
 
     @Override
@@ -81,19 +86,67 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
     @Override
     public void addPomDependencies(Path projectRootPath,
                                    List<String> uris) {
-        internalMap.get(projectRootPath).addProjectDeps(uris);
+        if (internalMap.get(projectRootPath) != null) {
+            internalMap.get(projectRootPath).addProjectDeps(uris);
+        }
     }
 
     @Override
     public void addTargetProjectDependencies(Path projectRootPath,
                                              List<String> uris) {
-        internalMap.get(projectRootPath).addTargetDeps(uris);
+        if (internalMap.get(projectRootPath) != null) {
+            internalMap.get(projectRootPath).addTargetDeps(uris);
+        }
+    }
+
+    @Override
+    public void addTargetClassloader(Path project, ClassLoader classLoader) {
+        if(internalMap.get(project) != null) {
+            internalMap.get(project).addTargetClassloader(classLoader);
+        }else {
+            Tuple tuple = new Tuple();
+            tuple.addTargetClassloader(classLoader);
+            internalMap.put(project, tuple);
+        }
+    }
+
+    @Override
+    public void addDependenciesClassloader(Path project, ClassLoader classLoader) {
+
+        if(internalMap.get(project) != null) {
+            internalMap.get(project).addDependenciesClassloader(classLoader);
+        }else {
+            Tuple tuple = new Tuple();
+            tuple.addDependenciesClassloader(classLoader);
+            internalMap.put(project, tuple);
+        }
+    }
+
+    @Override
+    public Optional<ClassLoader> getTargetClassloader(Path project) {
+
+        if(internalMap.get(project) != null) {
+            return internalMap.get(project).getTargetClassloader();
+        }else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<ClassLoader> getDependenciesClassloader(Path project) {
+        if(internalMap.get(project) != null) {
+        return internalMap.get(project).getDependenciesClassloader();
+    }else {
+        return Optional.empty();
+    }
     }
 
     class Tuple {
 
         private List<String> targetDeps;
         private List<String> projectsDeps;
+        private ClassLoader targetClassloader;
+        private ClassLoader dependenciesClassloader;
 
         public Tuple() {
             targetDeps = new ArrayList<>();
@@ -108,17 +161,17 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
             return Collections.unmodifiableList(projectsDeps);
         }
 
-        public void addTargetDep(String resource) {
-            targetDeps.add(resource);
-        }
+        public Optional<ClassLoader> getTargetClassloader(){ return  Optional.ofNullable(targetClassloader);}
+
+        public Optional<ClassLoader> getDependenciesClassloader(){ return  Optional.ofNullable(dependenciesClassloader);}
 
         public void addTargetDeps(List<String> resources) {
             targetDeps.addAll(resources);
         }
 
-        public void addProjectDep(String resource) {
-            projectsDeps.add(resource);
-        }
+        public void addTargetClassloader(ClassLoader targetClassloader) { this.targetClassloader = targetClassloader;}
+
+        public void addDependenciesClassloader(ClassLoader dependenciesClassloader) { this.dependenciesClassloader = dependenciesClassloader;}
 
         public void addProjectDeps(List<String> resources) {
             projectsDeps.addAll(resources);

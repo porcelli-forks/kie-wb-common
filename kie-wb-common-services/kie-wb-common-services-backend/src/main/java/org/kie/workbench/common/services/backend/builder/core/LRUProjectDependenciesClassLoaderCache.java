@@ -23,6 +23,7 @@ import javax.inject.Named;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
@@ -34,15 +35,18 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
 
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
+    private ClassloadersResourcesHolder classloadersResourcesHolder;
 
     public LRUProjectDependenciesClassLoaderCache() {
     }
 
     @Inject
     public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository,
-                                                  CompilerMapsHolder compilerMapsHolder) {
+                                                  CompilerMapsHolder compilerMapsHolder,
+                                                  ClassloadersResourcesHolder classloadersResourcesHolder) {
         this.guvnorM2Repository = guvnorM2Repository;
         this.compilerMapsHolder = compilerMapsHolder;
+        this.classloadersResourcesHolder = classloadersResourcesHolder;
     }
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
@@ -63,7 +67,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
         Path nioPath = Paths.convert(project.getRootPath());
         return KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
                                                                  compilerMapsHolder,
-                                                                 guvnorM2Repository);
+                                                                 guvnorM2Repository,classloadersResourcesHolder);
     }
 
 
