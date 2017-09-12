@@ -90,7 +90,9 @@ public class BuildServiceImpl implements BuildService {
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(getNioPath(project),
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository);
-        KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+
+       // KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        KieCompilationResponse res = kieAfBuilder.build();
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }
 
@@ -125,7 +127,9 @@ public class BuildServiceImpl implements BuildService {
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(getNioPath(project),
                                                                      compilerMapsHolder,
                                                                      guvnorM2Repository);
-        KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        KieCompilationResponse res = kieAfBuilder.build();
+        //KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+
         return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
     }
 
@@ -162,7 +166,7 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt( final Project project ) {
-        org.uberfire.java.nio.file.Path path = org.uberfire.java.nio.file.Paths.get(URI.create(project.toString()));
+        org.uberfire.java.nio.file.Path path = PathConverter.createPathFromVFS(project.getRootPath());
         return classloadersResourcesHolder.containsPomDependencies( path);
     }
 

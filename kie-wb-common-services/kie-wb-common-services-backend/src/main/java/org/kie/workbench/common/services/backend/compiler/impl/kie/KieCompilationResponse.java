@@ -51,8 +51,14 @@ public interface KieCompilationResponse extends CompilationResponse {
     Optional<KieModule> getKieModule();
 
     /**
-     * Provides the PAyh of the working dir
+     * Provides the Path of the working dir
      * @return
      */
     Optional<Path> getWorkingDir();
+
+    /**
+     * Provides the List of project dependencies from target folders as List of String
+     * @return
+     */
+    Optional<List<String>> getProjectDependenciesRaw();
 }

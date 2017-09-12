@@ -114,6 +114,11 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     }
 
     @Override
+    public Optional<List<String>> getProjectDependenciesRaw() {
+        return Optional.ofNullable(projectDependenciesRaw);
+    }
+
+    @Override
     public Optional<List<URI>> getProjectDependenciesAsURI() {
         return Optional.ofNullable(getRawAsURIs());
     }

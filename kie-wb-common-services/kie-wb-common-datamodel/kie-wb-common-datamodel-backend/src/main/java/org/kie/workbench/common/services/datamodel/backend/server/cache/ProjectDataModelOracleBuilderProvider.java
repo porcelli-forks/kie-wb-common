@@ -86,12 +86,17 @@ public class ProjectDataModelOracleBuilderProvider {
         if(res.isSuccessful() && res.getKieModule().isPresent()) {
             final KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                                   res.getProjectDependenciesAsURI().get());
-            final Set<String> javaResources = new HashSet<String>(resourcesHolder.getTargetsProjectDependencies(nioPath));
-            final TypeSourceResolver typeSourceResolver = new TypeSourceResolver( kieModuleMetaData, javaResources );
+            if(res.getProjectDependenciesRaw().isPresent()) {
+                final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
+                final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
+                                                                                     javaResources);
 
-            return new InnerBuilder(project,
-                                    kieModuleMetaData,
-                                    typeSourceResolver);
+                return new InnerBuilder(project,
+                                        kieModuleMetaData,
+                                        typeSourceResolver);
+            }else{
+                throw new RuntimeException("Failed to build correctly the project:"+ project.toString());
+            }
         }else{
             throw new RuntimeException("Failed to build correctly the project:"+ project.toString());
         }
