@@ -30,6 +30,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilatio
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
@@ -49,7 +50,7 @@ import java.util.UUID;
 
 @ApplicationScoped
 @Named("LRUProjectPOMDependenciesClassloaderCache")
-public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<KieProject, ClassLoader> {
+public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<Path, ClassLoader> {
 
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
@@ -65,7 +66,8 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<KieProje
 
 
     public synchronized ClassLoader assertPOMClassLoader(final KieProject project) {
-        ClassLoader classLoader = getEntry(project);
+        Path nioPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        ClassLoader classLoader = getEntry(nioPAth);
         if (classLoader == null) {
             classLoader = buildClassLoader(project);
             /*setEntry(project,
@@ -76,7 +78,8 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<KieProje
 
     public synchronized void setPOMClassLoader(final KieProject project,
                                                         ClassLoader classLoader) {
-        setEntry(project, classLoader);
+        Path nioFsPath = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        setEntry(nioFsPath, classLoader);
     }
 
     private KieAFBuilder getKieAFBuilder(Path nioPath) {
@@ -104,14 +107,15 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<KieProje
                     compiler, Boolean.FALSE, compilerMapsHolder);
             compilerMapsHolder.addBuilder(nioPath, builder);
         }
-        ClassLoader classLoader = getEntry(project);
+        Path nioFsPath = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        ClassLoader classLoader = getEntry(nioFsPath);
         if(classLoader != null) return classLoader;
         KieCompilationResponse res = builder.build();
-        if(res.isSuccessful() ) {//@TODO check if present
+        if(res.isSuccessful() && res.getProjectDependenciesAsURL().isPresent()) {
             List<URL> pomDeps = res.getProjectDependenciesAsURL().get();
             Optional<ClassLoader> urlClassloader = buildResult(pomDeps);
             if(urlClassloader.isPresent()){
-                setEntry(project, urlClassloader.get());
+                setEntry(nioFsPath, urlClassloader.get());
             }
             return urlClassloader.get();
         } else {

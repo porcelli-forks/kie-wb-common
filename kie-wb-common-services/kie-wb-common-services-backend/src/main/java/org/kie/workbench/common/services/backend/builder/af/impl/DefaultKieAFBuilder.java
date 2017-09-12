@@ -349,4 +349,24 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                                                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
+
+    public AFCompiler getCompiler() {
+        return compiler;
+    }
+
+    public WorkspaceCompilationInfo getInfo() {
+        return info;
+    }
+
+    public CompilationRequest getReq() {
+        return req;
+    }
+
+    public String getMavenRepo() {
+        return mavenRepo;
+    }
+
+    public CompilerMapsHolder getCompilerMapsHolder() {
+        return compilerMapsHolder;
+    }
 }

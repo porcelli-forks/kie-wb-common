@@ -29,6 +29,9 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAft
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.shared.project.KieProject;
+import org.uberfire.backend.server.util.Paths;
+import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class KieAFBuilderUtil {
@@ -61,5 +64,16 @@ public class KieAFBuilderUtil {
         AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
                                                                     compilerMapsHolder);
         return outerDecorator;
+    }
+
+    public static Path getFSPath(KieProject project,
+                                 CompilerMapsHolder compilerMapsHolder, GuvnorM2Repository guvnorM2Repository) {
+
+        Path nioPath = Paths.convert(project.getRootPath());
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
+                                                                compilerMapsHolder,
+                                                                guvnorM2Repository);
+        Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
+        return prjPath;
     }
 }

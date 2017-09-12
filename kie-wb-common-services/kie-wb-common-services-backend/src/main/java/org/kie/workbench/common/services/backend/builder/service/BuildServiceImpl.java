@@ -167,6 +167,7 @@ public class BuildServiceImpl implements BuildService {
     @Override
     public boolean isBuilt( final Project project ) {
         org.uberfire.java.nio.file.Path path = PathConverter.createPathFromVFS(project.getRootPath());
+        //classloadersResourcesHolder.getDependenciesClassloader(project.getRootPath());
         return classloadersResourcesHolder.containsPomDependencies( path);
     }
 

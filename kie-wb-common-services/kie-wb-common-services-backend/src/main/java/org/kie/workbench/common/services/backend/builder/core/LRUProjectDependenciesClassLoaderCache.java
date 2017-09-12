@@ -20,18 +20,20 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.tools.ant.taskdefs.Classloader;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 @Named("LRUProjectDependenciesClassLoaderCache")
-public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject, ClassLoader> {
+public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, ClassLoader> {
 
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
@@ -50,25 +52,49 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<KieProject,
     }
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
-        ClassLoader classLoader = getEntry(project);
+       // Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder);
+        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
             classLoader = buildClassLoader(project);
-            setEntry(project, classLoader);
+            setEntry(nioFsPAth, classLoader);
         }
         return classLoader;
     }
 
     public synchronized void setDependenciesClassLoader(final KieProject project,
                                                         ClassLoader classLoader) {
-        setEntry(project, classLoader);
+        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        setEntry(nioFsPAth, classLoader);
     }
 
     protected ClassLoader buildClassLoader(final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        return KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
+        ClassLoader classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
                                                                  compilerMapsHolder,
                                                                  guvnorM2Repository,classloadersResourcesHolder);
+        return classLoader;
     }
+
+    /*class ClassloaderTuple{
+
+        private ClassLoader classLoader;
+        private Path fsPath;
+
+        public ClassloaderTuple(ClassLoader classLoader,
+                                Path fsPath) {
+            this.classLoader = classLoader;
+            this.fsPath = fsPath;
+        }
+
+        public ClassLoader getClassLoader() {
+            return classLoader;
+        }
+
+        public Path getFsPath() {
+            return fsPath;
+        }
+    }*/
 
 
 
