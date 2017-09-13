@@ -15,11 +15,13 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.jgit.api.Git;
+import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
@@ -29,10 +31,14 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     private Map<JGitFileSystem, Git> gitMap;
     private Map<Path, KieAFBuilder> buildersMap;
+    private Map<Path, KieModuleMetaData> kieMetaDataMap;
+    private Map<Path, List<String>> depsRawMap;
 
     public DefaultCompilerMapsHolder() {
         gitMap = new ConcurrentHashMap<>();
         buildersMap = new ConcurrentHashMap<>();
+        kieMetaDataMap = new ConcurrentHashMap<>();
+        depsRawMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -85,5 +91,40 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     public void clearBuilderMap() {
         buildersMap.clear();
+    }
+
+
+    public KieModuleMetaData getMetadata(Path projectRootPath) {
+        return kieMetaDataMap.get(projectRootPath);
+    }
+
+    public void addKieMetaData(Path projectRootPath, KieModuleMetaData metadata) {
+        kieMetaDataMap.put(projectRootPath, metadata);
+
+    }
+
+    public boolean removeKieModuleMetaData(Path projectRootPath) {
+        return kieMetaDataMap.remove(projectRootPath) != null;
+    }
+
+    public void replaceKieMetaData(Path projectRootPath, KieModuleMetaData metadata) {
+        kieMetaDataMap.replace(projectRootPath, metadata);
+    }
+
+    public List<String> getDependenciesRaw(Path projectRootPath) {
+        return depsRawMap.get(projectRootPath);
+    }
+
+    public void addDependenciesRaw(Path projectRootPath, List<String> depsRaw) {
+        depsRawMap.put(projectRootPath, depsRaw);
+    }
+
+    public boolean removeDependenciesRaw(Path projectRootPath) {
+        return depsRawMap.remove(projectRootPath) != null;
+    }
+
+    public void replaceDependenciesRaw(Path projectRootPath, List<String> depsRaw) {
+        depsRawMap.replace(projectRootPath, depsRaw);
+
     }
 }

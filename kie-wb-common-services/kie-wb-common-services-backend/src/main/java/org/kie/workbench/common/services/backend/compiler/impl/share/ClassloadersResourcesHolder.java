@@ -22,7 +22,7 @@ import org.uberfire.java.nio.file.Path;
 
 /***
  * Contract to manage Resources URI in terms of pom dependencies (included transient)
- * and .class and resources present in the target folders
+ * and .class and resources present in the target folders and List of deps raw, instead of rebuild to read the same resources from a previous build
  */
 public interface ClassloadersResourcesHolder {
 

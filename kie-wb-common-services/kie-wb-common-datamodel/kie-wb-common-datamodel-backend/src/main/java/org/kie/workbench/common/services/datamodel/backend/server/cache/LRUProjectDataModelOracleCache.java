@@ -61,8 +61,14 @@ public class LRUProjectDataModelOracleCache
         }
     }
 
+
+
     //Check the ProjectOracle for the Project has been created, otherwise create one!
-    public synchronized ProjectDataModelOracle assertProjectDataModelOracle( final KieProject project ) {
+    public ProjectDataModelOracle assertProjectDataModelOracleBoh( final KieProject project, Boolean flag, Boolean trip ) {
+    //public synchronized ProjectDataModelOracle assertProjectDataModelOracleBoh( final KieProject project, Boolean flag, Boolean trip ) {
+        //@TODO remove
+        System.out.println(flag);
+        System.out.println(trip);
         ProjectDataModelOracle projectOracle = getEntry( project );
         if ( projectOracle == null ) {
             projectOracle = makeProjectOracle( project );
@@ -73,7 +79,6 @@ public class LRUProjectDataModelOracleCache
     }
 
     private ProjectDataModelOracle makeProjectOracle( final KieProject project ) {
-        //@TODO check with an additional test
         return builderProvider.newBuilder(project).build();
     }
 

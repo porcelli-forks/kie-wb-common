@@ -20,7 +20,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.tools.ant.taskdefs.Classloader;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
@@ -52,7 +51,6 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     }
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
-       // Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder);
         Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
         ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
@@ -75,27 +73,6 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
                                                                  guvnorM2Repository,classloadersResourcesHolder);
         return classLoader;
     }
-
-    /*class ClassloaderTuple{
-
-        private ClassLoader classLoader;
-        private Path fsPath;
-
-        public ClassloaderTuple(ClassLoader classLoader,
-                                Path fsPath) {
-            this.classLoader = classLoader;
-            this.fsPath = fsPath;
-        }
-
-        public ClassLoader getClassLoader() {
-            return classLoader;
-        }
-
-        public Path getFsPath() {
-            return fsPath;
-        }
-    }*/
-
 
 
     /**
@@ -122,12 +99,5 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
                                                + project.getKModuleXMLPath());
         }
     }*/
-/*
-    protected AFCompiler getCompiler() {
-        // we create the compiler in this weird mode to use the gitMap used internally
-        AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
-        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
-                                                                    compilerMapsHolder);
-        return outerDecorator;
-    }*/
+
 }

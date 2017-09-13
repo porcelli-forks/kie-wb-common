@@ -26,10 +26,10 @@ import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfo;
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -51,6 +51,7 @@ public class ProjectDataModelOracleBuilderProvider {
     private PackageNameWhiteListService packageNameWhiteListService;
     private BuilderUtils builderUtils;
     private ClassloadersResourcesHolder resourcesHolder;
+    private CompilerMapsHolder compilerMapsHolder;
 
     public ProjectDataModelOracleBuilderProvider() {
         //CDI proxy
@@ -58,22 +59,13 @@ public class ProjectDataModelOracleBuilderProvider {
 
     @Inject
     public ProjectDataModelOracleBuilderProvider(final PackageNameWhiteListService packageNameWhiteListService,
-                                                 final ProjectImportsService importsService, final ClassloadersResourcesHolder resourcesHolder, final BuilderUtils builderUtils) {
+                                                 final ProjectImportsService importsService, final ClassloadersResourcesHolder resourcesHolder,
+                                                 final BuilderUtils builderUtils, final CompilerMapsHolder compilerMapsHolder) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
         this.resourcesHolder = resourcesHolder;
         this.builderUtils = builderUtils;
-    }
-
-    public InnerBuilder newBuilder( final KieProject project,
-                                    final BuildInfo buildInfo ) {
-
-        final KieModuleMetaData kieModuleMetaData = buildInfo.getKieModuleMetaDataIgnoringErrors();
-        final TypeSourceResolver typeSourceResolver = buildInfo.getTypeSourceResolver(kieModuleMetaData);
-
-        return new InnerBuilder(project,
-                                kieModuleMetaData,
-                                typeSourceResolver);
+        this.compilerMapsHolder = compilerMapsHolder;
     }
 
     public InnerBuilder newBuilder( final KieProject project ) {
@@ -82,23 +74,36 @@ public class ProjectDataModelOracleBuilderProvider {
         if(!builder.isPresent()){
             throw new RuntimeException("Isn't possible create a Builder"+ project.toString());
         }
-        KieCompilationResponse res = builder.get().build();
-        if(res.isSuccessful() && res.getKieModule().isPresent()) {
-            final KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
-                                                                                  res.getProjectDependenciesAsURI().get());
-            if(res.getProjectDependenciesRaw().isPresent()) {
-                final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
-                final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
-                                                                                     javaResources);
+        KieModuleMetaData kieModuleMetaData =compilerMapsHolder.getMetadata(nioPath);
+        if(kieModuleMetaData != null){
+            final Set<String> javaResources = new HashSet<String>(compilerMapsHolder.getDependenciesRaw(nioPath));
+            final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
+                                                                                 javaResources);
 
-                return new InnerBuilder(project,
-                                        kieModuleMetaData,
-                                        typeSourceResolver);
-            }else{
-                throw new RuntimeException("Failed to build correctly the project:"+ project.toString());
+            return new InnerBuilder(project,
+                                    kieModuleMetaData,
+                                    typeSourceResolver);
+
+        }else {
+            KieCompilationResponse res = builder.get().build();
+            if (res.isSuccessful() && res.getKieModule().isPresent()) {
+                kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
+                                                                                      res.getProjectDependenciesAsURI().get());
+                compilerMapsHolder.addKieMetaData(nioPath, kieModuleMetaData);
+                if (res.getProjectDependenciesRaw().isPresent()) {
+                    final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
+                    final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
+                                                                                         javaResources);
+
+                    return new InnerBuilder(project,
+                                            kieModuleMetaData,
+                                            typeSourceResolver);
+                } else {
+                    throw new RuntimeException("Failed to build correctly the project:" + project.toString());
+                }
+            } else {
+                throw new RuntimeException("Failed to build correctly the project:" + project.toString());
             }
-        }else{
-            throw new RuntimeException("Failed to build correctly the project:"+ project.toString());
         }
     }
 

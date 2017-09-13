@@ -158,7 +158,7 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
                                                               final Package pkg) {
         final String packageName = pkg.getPackageName();
         final PackageDataModelOracleBuilder dmoBuilder = PackageDataModelOracleBuilder.newPackageOracleBuilder(packageName);
-        final ProjectDataModelOracle projectOracle = cacheProjects.assertProjectDataModelOracle(project);
+        final ProjectDataModelOracle projectOracle = cacheProjects.assertProjectDataModelOracleBoh(project, Boolean.TRUE, Boolean.FALSE);
         dmoBuilder.setProjectOracle(projectOracle);
 
         //Add Guvnor enumerations

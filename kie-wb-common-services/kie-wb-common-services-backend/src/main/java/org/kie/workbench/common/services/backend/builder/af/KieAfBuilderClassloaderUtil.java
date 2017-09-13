@@ -23,6 +23,7 @@ import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
@@ -54,6 +55,14 @@ public class KieAfBuilderClassloaderUtil {
                     dependenciesClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
                 }else {
                     dependenciesClassLoader = opDependenciesClassLoader.get();
+                }
+                if(res.getProjectDependenciesRaw().isPresent()) {
+                    compilerMapsHolder.addDependenciesRaw(nioPath, res.getProjectDependenciesRaw().get());
+                }
+                if(res.getProjectDependenciesAsURI().isPresent()) {
+                    KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
+                                                                                    res.getProjectDependenciesAsURI().get());
+                    compilerMapsHolder.addKieMetaData(nioPath, kieModuleMetaData);
                 }
                 classloadersResourcesHolder.addDependenciesClassloader(nioPath, dependenciesClassLoader);
 
