@@ -24,6 +24,8 @@ import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.DefaultCompilerMapsHolder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.common.services.shared.whitelist.PackageNameWhiteListService;
@@ -150,15 +152,16 @@ public class PackageNameWhiteListServiceImplTest {
     }
 
     private PackageNameWhiteListService makeService( final String content ) {
-        return new PackageNameWhiteListServiceImpl( mock( IOService.class ),
-                                                    mock( KieProjectService.class ),
-                                                    new PackageNameWhiteListLoader( packageNameSearchProvider,
-                                                                                    mock( IOService.class ) ) {
-                                                        @Override
-                                                        protected String loadContent( final Path packageNamesWhiteListPath ) {
-                                                            return content;
-                                                        }
-                                                    },
-                                                    saver );
+        return new PackageNameWhiteListServiceImpl(mock(IOService.class),
+                                                   mock(KieProjectService.class),
+                                                   new PackageNameWhiteListLoader(packageNameSearchProvider,
+                                                                                  mock(IOService.class)) {
+                                                       @Override
+                                                       protected String loadContent(final Path packageNamesWhiteListPath) {
+                                                           return content;
+                                                       }
+                                                   },
+                                                   saver,
+                                                   new DefaultCompilerMapsHolder());
     }
 }

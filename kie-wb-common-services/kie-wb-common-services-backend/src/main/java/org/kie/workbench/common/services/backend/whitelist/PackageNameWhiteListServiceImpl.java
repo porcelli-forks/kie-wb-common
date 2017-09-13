@@ -24,12 +24,15 @@ import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.common.services.shared.whitelist.PackageNameWhiteListService;
 import org.kie.workbench.common.services.shared.whitelist.WhiteList;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 
@@ -45,6 +48,7 @@ public class PackageNameWhiteListServiceImpl
     private KieProjectService projectService;
     private PackageNameWhiteListLoader loader;
     private PackageNameWhiteListSaver saver;
+    private CompilerMapsHolder compilerMapsHolder;
 
     public PackageNameWhiteListServiceImpl() {
     }
@@ -53,11 +57,13 @@ public class PackageNameWhiteListServiceImpl
     public PackageNameWhiteListServiceImpl( final @Named( "ioStrategy" ) IOService ioService,
                                             final KieProjectService projectService,
                                             final PackageNameWhiteListLoader loader,
-                                            final PackageNameWhiteListSaver saver ) {
+                                            final PackageNameWhiteListSaver saver,
+                                            final CompilerMapsHolder compilerMapsHolder) {
         this.ioService = ioService;
         this.projectService = projectService;
         this.loader = loader;
         this.saver = saver;
+        this.compilerMapsHolder = compilerMapsHolder;
     }
 
     @Override
@@ -82,8 +88,10 @@ public class PackageNameWhiteListServiceImpl
         if ( packageNames == null ) {
             return new WhiteList();
         } else if ( project instanceof KieProject ) {
-
-            final WhiteList whiteList = load( ( (KieProject) project ).getPackageNamesWhiteListPath() );
+            org.uberfire.java.nio.file.Path workingDir =((DefaultKieAFBuilder)compilerMapsHolder.getBuilder(Paths.convert(project.getRootPath()))).getInfo().getPrjPath();
+            org.uberfire.java.nio.file.Path pnwl = org.uberfire.java.nio.file.Paths.get("file://"+workingDir.toUri()+"/package-names-white-list" );
+            final WhiteList whiteList = load( Paths.convert(pnwl));
+            //final WhiteList whiteList = load( ( (KieProject) project ).getPackageNamesWhiteListPath() );
 
             if ( whiteList.isEmpty() ) {
                 return new WhiteList( packageNames );
