@@ -72,6 +72,7 @@ public class CompilerClassloaderUtils {
     protected static String DROOLS_EXT = ".drl";
     protected static String GDROOLS_EXT = ".gdrl";
     protected static String RDROOLS_EXT = ".rdrl";
+    protected static String SCENARIO_EXT = ".scenario";
     protected static String FILE_URI = "file://";
     protected static String MAVEN_TARGET = "target/classes/";
 
@@ -398,7 +399,8 @@ public class CompilerClassloaderUtils {
                           DROOLS_EXT,
                           GDROOLS_EXT,
                           RDROOLS_EXT,
-                          XML_EXT);
+                          XML_EXT,
+                          SCENARIO_EXT);
         if (!classPathFiles.isEmpty()) {
             return Optional.of(classPathFiles);
         }
@@ -426,7 +428,8 @@ public class CompilerClassloaderUtils {
                       JAVA_CLASS_EXT,
                       DROOLS_EXT,
                       GDROOLS_EXT,
-                      RDROOLS_EXT);
+                      RDROOLS_EXT,
+                      SCENARIO_EXT);
         if (!classPathFiles.isEmpty()) {
             List<String> deps = processScannedFilesAsString(classPathFiles);
             if (!deps.isEmpty()) {
