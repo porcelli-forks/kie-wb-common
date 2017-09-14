@@ -158,7 +158,7 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
                                                               final Package pkg) {
         final String packageName = pkg.getPackageName();
         final PackageDataModelOracleBuilder dmoBuilder = PackageDataModelOracleBuilder.newPackageOracleBuilder(packageName);
-        final ProjectDataModelOracle projectOracle = cacheProjects.assertProjectDataModelOracleBoh(project, Boolean.TRUE, Boolean.FALSE);
+        final ProjectDataModelOracle projectOracle = cacheProjects.assertProjectDataModelOracle(project);
         dmoBuilder.setProjectOracle(projectOracle);
 
         //Add Guvnor enumerations
@@ -187,21 +187,22 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
     private void loadEnumsForPackage(final PackageDataModelOracleBuilder dmoBuilder,
                                      final KieProject project,
                                      final Package pkg) {
-        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), compilerMapsHolder);
+        KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(),
+                                                       guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME),
+                                                       compilerMapsHolder);
         KieCompilationResponse res = builder.build();
-        if(res.isSuccessful() && res.getKieModule().isPresent()){
+        if (res.isSuccessful() && res.getKieModule().isPresent()) {
 
-        //final KieModule module = buildInfoService.getBuildInfo( project ).getKieModuleIgnoringErrors();
-        final KieModule module = res.getKieModule().get();
-        final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
-        final org.uberfire.java.nio.file.Path nioPackagePath = Paths.convert(pkg.getPackageMainResourcesPath());
-        final Collection<org.uberfire.java.nio.file.Path> enumFiles = fileDiscoveryService.discoverFiles(nioPackagePath,
-                                                                                                         FILTER_ENUMERATIONS);
-        for (final org.uberfire.java.nio.file.Path path : enumFiles) {
-            final String enumDefinition = ioService.readAllString(path);
-            dmoBuilder.addEnum(enumDefinition,
-                               classLoader);
-        }
+            final KieModule module = res.getKieModule().get();
+            final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
+            final org.uberfire.java.nio.file.Path nioPackagePath = Paths.convert(pkg.getPackageMainResourcesPath());
+            final Collection<org.uberfire.java.nio.file.Path> enumFiles = fileDiscoveryService.discoverFiles(nioPackagePath,
+                                                                                                             FILTER_ENUMERATIONS);
+            for (final org.uberfire.java.nio.file.Path path : enumFiles) {
+                final String enumDefinition = ioService.readAllString(path);
+                dmoBuilder.addEnum(enumDefinition,
+                                   classLoader);
+            }
         }
     }
 

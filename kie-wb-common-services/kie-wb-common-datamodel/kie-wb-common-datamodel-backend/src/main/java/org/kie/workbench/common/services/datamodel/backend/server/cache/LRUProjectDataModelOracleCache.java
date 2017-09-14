@@ -64,11 +64,9 @@ public class LRUProjectDataModelOracleCache
 
 
     //Check the ProjectOracle for the Project has been created, otherwise create one!
-    public ProjectDataModelOracle assertProjectDataModelOracleBoh( final KieProject project, Boolean flag, Boolean trip ) {
+    public ProjectDataModelOracle assertProjectDataModelOracle( final KieProject project) {
     //public synchronized ProjectDataModelOracle assertProjectDataModelOracleBoh( final KieProject project, Boolean flag, Boolean trip ) {
         //@TODO remove
-        System.out.println(flag);
-        System.out.println(trip);
         ProjectDataModelOracle projectOracle = getEntry( project );
         if ( projectOracle == null ) {
             projectOracle = makeProjectOracle( project );

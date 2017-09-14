@@ -49,6 +49,8 @@ public class PackageNameWhiteListServiceImpl
     private PackageNameWhiteListLoader loader;
     private PackageNameWhiteListSaver saver;
     private CompilerMapsHolder compilerMapsHolder;
+    private String FILE_URI = "file://";
+    private String PACKAGE_NAME_WHITE_LIST = "package-names-white-list";
 
     public PackageNameWhiteListServiceImpl() {
     }
@@ -89,9 +91,8 @@ public class PackageNameWhiteListServiceImpl
             return new WhiteList();
         } else if ( project instanceof KieProject ) {
             org.uberfire.java.nio.file.Path workingDir =((DefaultKieAFBuilder)compilerMapsHolder.getBuilder(Paths.convert(project.getRootPath()))).getInfo().getPrjPath();
-            org.uberfire.java.nio.file.Path pnwl = org.uberfire.java.nio.file.Paths.get("file://"+workingDir.toUri()+"/package-names-white-list" );
+            org.uberfire.java.nio.file.Path pnwl = org.uberfire.java.nio.file.Paths.get(FILE_URI + workingDir.toUri()+"/"+PACKAGE_NAME_WHITE_LIST );
             final WhiteList whiteList = load( Paths.convert(pnwl));
-            //final WhiteList whiteList = load( ( (KieProject) project ).getPackageNamesWhiteListPath() );
 
             if ( whiteList.isEmpty() ) {
                 return new WhiteList( packageNames );

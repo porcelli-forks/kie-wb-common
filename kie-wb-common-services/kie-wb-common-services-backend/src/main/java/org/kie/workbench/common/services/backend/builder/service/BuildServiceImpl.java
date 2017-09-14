@@ -16,9 +16,7 @@
 
 package org.kie.workbench.common.services.backend.builder.service;
 
-import java.net.URI;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -32,7 +30,6 @@ import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
@@ -77,7 +74,7 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildAndDeployInternal(final Project project){
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(getNioPath(project),
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository);
         KieCompilationResponse res = kieAfBuilder.buildAndInstall(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
@@ -85,18 +82,16 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildInternal(final Project project){
-        //@TOOD qui quando chiama il compile
-
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(getNioPath(project),
+            //@TODO build senza creazione classloader o con classloader ?
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository);
 
-       // KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
         KieCompilationResponse res = kieAfBuilder.build();
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }
 
-    private org.uberfire.java.nio.file.Path getNioPath(Project project) {
+    /*private org.uberfire.java.nio.file.Path getNioPath(Project project) {
         org.uberfire.java.nio.file.Path nioPath;
         if(!project.getRootPath().toString().startsWith("file://")){
             nioPath = Paths.convert(project.getRootPath());
@@ -104,41 +99,16 @@ public class BuildServiceImpl implements BuildService {
             nioPath = PathConverter.createPathFromVFS(project.getRootPath());
         }
         return nioPath;
-    }
+    }*/
 
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
         //@TODO check if is correct this conversion
-       /* org.uberfire.java.nio.file.Path nioPath = Paths.convert(project.getRootPath());
-        KieCompilationResponse res;
-
-        if(classloadersResourcesHolder.containsPomDependencies(nioPath)){ //the pom deps are present we refresh the target deps
-            res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
-            readAndSetResourcesFromTargetFolders(nioPath);
-        }else{
-            res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME), Boolean.FALSE);
-            if(res.getProjectDependenciesAsURI().isPresent()){
-                List<String> urisTOStrings = res.getProjectDependenciesAsURI().get().stream()
-                        .map(URI::toString)
-                        .collect(Collectors.toList());
-                classloadersResourcesHolder.addPomDependencies(nioPath, urisTOStrings);
-            }
-            readAndSetResourcesFromTargetFolders(nioPath);
-        }*/
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(getNioPath(project),
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
                                                                      compilerMapsHolder,
                                                                      guvnorM2Repository);
         KieCompilationResponse res = kieAfBuilder.build();
-        //KieCompilationResponse res = kieAfBuilder.build(project.getRootPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
-
         return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
     }
-
-   /* private void readAndSetResourcesFromTargetFolders(org.uberfire.java.nio.file.Path nioPath) {
-        Optional<List<String>> targetResources = CompilerClassloaderUtils.getStringFromTargets(nioPath);
-        if(targetResources.isPresent()) {
-            classloadersResourcesHolder.replaceTargetDependencies(nioPath, targetResources.get());
-        }
-    }*/
 
     @Override
     public BuildResults buildAndDeploy( final Project project ) {
@@ -166,11 +136,8 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt( final Project project ) {
-       //org.uberfire.java.nio.file.Path path = PathConverter.createPathFromVFS(project.getRootPath());
         org.uberfire.java.nio.file.Path path = Paths.convert(project.getRootPath());
-        //classloadersResourcesHolder.getDependenciesClassloader(project.getRootPath());
         return compilerMapsHolder.getBuilder(path) != null;
-        //return classloadersResourcesHolder.containsPomDependencies( path);
     }
 
     @Override

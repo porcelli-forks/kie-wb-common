@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.guvnor.common.services.project.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Path;
@@ -32,6 +33,16 @@ public class PathConverter {
     protected static final Logger logger = LoggerFactory.getLogger(PathConverter.class);
 
     public final static String FILE_URI = "file://";
+
+    public static org.uberfire.java.nio.file.Path getNioPath(org.guvnor.common.services.project.model.Project project) {
+        org.uberfire.java.nio.file.Path nioPath;
+        if(!project.getRootPath().toString().startsWith("file://")){
+            nioPath = org.uberfire.backend.server.util.Paths.convert(project.getRootPath());
+        }else{
+            nioPath = PathConverter.createPathFromVFS(project.getRootPath());
+        }
+        return nioPath;
+    }
 
     public static Path createPathFromString(String path) {
         if (path.startsWith(FILE_URI)) {

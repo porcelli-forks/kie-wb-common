@@ -89,7 +89,7 @@ public class DataModelServiceImpl
             }
 
             //Retrieve (or build) oracle
-            final ProjectDataModelOracle oracle = cacheProjects.assertProjectDataModelOracleBoh( project, Boolean.TRUE, Boolean.FALSE);
+            final ProjectDataModelOracle oracle = cacheProjects.assertProjectDataModelOracle( project);
             return oracle;
 
         } catch ( Exception e ) {
