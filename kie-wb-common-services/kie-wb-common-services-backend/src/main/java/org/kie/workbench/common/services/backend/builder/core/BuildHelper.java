@@ -175,7 +175,7 @@ public class BuildHelper {
             return incrementalBuildResults;
         }
     }
-
+    
     private String getIdentifier( ) {
         if ( identity.isUnsatisfied( ) ) {
             return "system";

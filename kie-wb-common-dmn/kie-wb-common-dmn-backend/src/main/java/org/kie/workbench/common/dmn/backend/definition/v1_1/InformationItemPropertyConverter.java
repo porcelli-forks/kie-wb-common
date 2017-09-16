@@ -25,8 +25,11 @@ import org.kie.workbench.common.dmn.api.property.dmn.QName;
 public class InformationItemPropertyConverter {
 
     public static InformationItem wbFromDMN(final org.kie.dmn.model.v1_1.InformationItem dmn) {
+        if (dmn == null) {
+            return null;
+        }
         Id id = new Id(dmn.getId());
-        Description description = new Description(dmn.getDescription());
+        Description description = DescriptionPropertyConverter.wbFromDMN(dmn.getDescription());
         Name name = new Name(dmn.getName());
         QName typeRef = QNamePropertyConverter.wbFromDMN(dmn.getTypeRef());
         InformationItem result = new InformationItem(id,
@@ -37,9 +40,12 @@ public class InformationItemPropertyConverter {
     }
 
     public static org.kie.dmn.model.v1_1.InformationItem dmnFromWB(final InformationItem wb) {
+        if (wb == null) {
+            return null;
+        }
         org.kie.dmn.model.v1_1.InformationItem result = new org.kie.dmn.model.v1_1.InformationItem();
         result.setId(wb.getId().getValue());
-        result.setDescription(wb.getDescription().getValue());
+        result.setDescription(DescriptionPropertyConverter.dmnFromWB(wb.getDescription()));
         result.setName(wb.getName().getValue());
         QNamePropertyConverter.setDMNfromWB(wb.getTypeRef(),
                                             result::setTypeRef);
