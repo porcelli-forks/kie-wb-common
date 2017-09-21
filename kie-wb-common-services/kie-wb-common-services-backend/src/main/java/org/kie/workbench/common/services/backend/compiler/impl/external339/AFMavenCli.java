@@ -99,6 +99,7 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.transfer.TransferListener;
+import org.kie.workbench.common.services.backend.compiler.impl.output.KieSlf4jStdoutLogger;
 import org.kie.workbench.common.services.backend.compiler.impl.output.LogbackUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.output.MavenCompilerPrintStream;
 import org.slf4j.ILoggerFactory;
@@ -320,7 +321,6 @@ public class AFMavenCli {
         // Parsing errors can happen during the processing of the arguments and we prefer not having to check if
         // the logger is null and construct this so we can use an SLF4J logger everywhere.
         //
-
         slf4jLogger = new Slf4jStdoutLogger();
 
         CLIManager cliManager = new CLIManager();
@@ -403,25 +403,27 @@ public class AFMavenCli {
                 //PrintStream ps = new PrintStream(new FileOutputStream(FileDescriptor.out));
                 //PrintStream ps = new PrintStream(new FileOutputStream(logFile), true);
 
-                /*FileOutputStream fout = new FileOutputStream(logFile);
+                FileOutputStream fout = new FileOutputStream(logFile);
                 MavenCompilerPrintStream ps = new MavenCompilerPrintStream(fout, System.out);
-                MavenCompilerPrintStream pserr = new MavenCompilerPrintStream(fout, System.err);
+               // MavenCompilerPrintStream pserr = new MavenCompilerPrintStream(fout, System.err);
                 System.setOut(ps);
-                System.setErr(pserr);*/
-                PrintStream ps = new PrintStream(new FileOutputStream(logFile));
+                //System.setErr(pserr);
+                //PrintStream ps = new PrintStream(new FileOutputStream(logFile));
                 System.setOut(ps);
-                System.setErr(ps);
+                //System.setErr(ps);
                 //slf4jLogger = LogbackUtil.getLogger(logFile.getAbsolutePath(), cliRequest.getCommandLine().getOptionValue(CLIManager.LOG_FILE).trim());
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             }
+            slf4jConfiguration.activate();
+
+            plexusLoggerManager = new Slf4jLoggerManager();
+            slf4jLogger = slf4jLoggerFactory.getLogger(this.getClass().getName());
+            MDC.put("compileid", logFile.getAbsolutePath());
         }
 
-        slf4jConfiguration.activate();
 
-        plexusLoggerManager = new Slf4jLoggerManager();
-        slf4jLogger = slf4jLoggerFactory.getLogger(this.getClass().getName());
-        MDC.put("compileid", cliRequest.getRequestUUID());
+        //MDC.put("compileid", logFile.getAbsolutePath());
     }
 
     protected void version(AFCliRequest cliRequest) {
