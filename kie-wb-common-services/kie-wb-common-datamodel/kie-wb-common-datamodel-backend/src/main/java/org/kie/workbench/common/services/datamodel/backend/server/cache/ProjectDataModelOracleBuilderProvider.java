@@ -26,9 +26,11 @@ import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
@@ -50,7 +52,7 @@ public class ProjectDataModelOracleBuilderProvider {
     private ProjectImportsService importsService;
     private PackageNameWhiteListService packageNameWhiteListService;
     private BuilderUtils builderUtils;
-    private ClassloadersResourcesHolder resourcesHolder;
+    private ClassLoadersResourcesHolder resourcesHolder;
     private CompilerMapsHolder compilerMapsHolder;
 
     public ProjectDataModelOracleBuilderProvider() {
@@ -59,7 +61,7 @@ public class ProjectDataModelOracleBuilderProvider {
 
     @Inject
     public ProjectDataModelOracleBuilderProvider(final PackageNameWhiteListService packageNameWhiteListService,
-                                                 final ProjectImportsService importsService, final ClassloadersResourcesHolder resourcesHolder,
+                                                 final ProjectImportsService importsService, final ClassLoadersResourcesHolder resourcesHolder,
                                                  final BuilderUtils builderUtils, final CompilerMapsHolder compilerMapsHolder) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
@@ -82,10 +84,10 @@ public class ProjectDataModelOracleBuilderProvider {
 
             return new InnerBuilder(project,
                                     kieModuleMetaData,
-                                    typeSourceResolver);
+                                    typeSourceResolver, resourcesHolder);
 
         }else {
-            KieCompilationResponse res = builder.get().build();
+            KieCompilationResponse res = builder.get().build(Boolean.TRUE, Boolean.FALSE);
             if (res.isSuccessful() && res.getKieModule().isPresent()) {
                 kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                                       res.getProjectDependenciesAsURI().get());
@@ -97,7 +99,7 @@ public class ProjectDataModelOracleBuilderProvider {
 
                     return new InnerBuilder(project,
                                             kieModuleMetaData,
-                                            typeSourceResolver);
+                                            typeSourceResolver, resourcesHolder);
                 } else {
                     throw new RuntimeException("Failed to build correctly the project:" + project.toString());
                 }
@@ -114,13 +116,16 @@ public class ProjectDataModelOracleBuilderProvider {
         private final KieProject project;
         private final KieModuleMetaData kieModuleMetaData;
         private final TypeSourceResolver typeSourceResolver;
+        private final ClassLoadersResourcesHolder classloadersResourcesHolder;
 
         private InnerBuilder(final KieProject project,
                              final KieModuleMetaData kieModuleMetaData,
-                             final TypeSourceResolver typeSourceResolver) {
+                             final TypeSourceResolver typeSourceResolver,
+                             final ClassLoadersResourcesHolder classloadersResourcesHolder) {
             this.project = project;
             this.kieModuleMetaData = kieModuleMetaData;
             this.typeSourceResolver = typeSourceResolver;
+            this.classloadersResourcesHolder = classloadersResourcesHolder;
         }
 
         public ProjectDataModelOracle build() {
@@ -144,7 +149,8 @@ public class ProjectDataModelOracleBuilderProvider {
         }
 
         private void addFromKieModuleMetadata() {
-            for (final String packageName : getFilteredPackageNames()) {
+            WhiteList whiteList = getFilteredPackageNames();
+            for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
                 addClasses(packageName,
                            kieModuleMetaData.getClasses(packageName));
@@ -155,8 +161,12 @@ public class ProjectDataModelOracleBuilderProvider {
          * @return A "white list" of package names that are available for authoring
          */
         private WhiteList getFilteredPackageNames() {
-            return packageNameWhiteListService.filterPackageNames(project,
-                                                                  kieModuleMetaData.getPackages());
+            DefaultKieAFBuilder builder = (DefaultKieAFBuilder) compilerMapsHolder.getBuilder(Paths.convert(project.getRootPath()));
+            Collection<String> pkgs = kieModuleMetaData.getPackages();
+            //@TODO change /global with guvnor repo
+            List<String> filtered = CompilerClassloaderUtils.filterPathClasses(classloadersResourcesHolder.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");
+            pkgs.addAll(filtered);
+            return packageNameWhiteListService.filterPackageNames(project, pkgs);
         }
 
         private void addClasses(final String packageName,

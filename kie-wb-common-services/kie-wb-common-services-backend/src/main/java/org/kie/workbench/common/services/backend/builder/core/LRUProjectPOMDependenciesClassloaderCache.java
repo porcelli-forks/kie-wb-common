@@ -110,7 +110,7 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<Path, Cl
         Path nioFsPath = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
         ClassLoader classLoader = getEntry(nioFsPath);
         if(classLoader != null) return classLoader;
-        KieCompilationResponse res = builder.build();
+        KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
         if(res.isSuccessful() && res.getProjectDependenciesAsURL().isPresent()) {
             List<URL> pomDeps = res.getProjectDependenciesAsURL().get();
             Optional<ClassLoader> urlClassloader = buildResult(pomDeps);

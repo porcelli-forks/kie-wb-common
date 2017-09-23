@@ -15,6 +15,7 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.decorators;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
@@ -36,10 +37,13 @@ public class OutputLogAfterDecorator<T extends CompilationResponse, C extends AF
     @Override
     public T compileSync(CompilationRequest req) {
         T res = compiler.compileSync(req);
-
-        return compiler.buildDefaultCompilationResponse(res.isSuccessful(),
-                                                        LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
-                                                                           req.getKieCliRequest().getRequestUUID()));
+        if(req.getLogRequested()) {
+            return compiler.buildDefaultCompilationResponse(res.isSuccessful(),
+                                                            LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
+                                                                               req.getKieCliRequest().getRequestUUID()));
+        }else{
+            return compiler.buildDefaultCompilationResponse(res.isSuccessful(), Collections.emptyList());
+        }
     }
 
     @Override

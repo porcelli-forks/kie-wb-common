@@ -31,7 +31,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassloadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
@@ -49,7 +49,7 @@ public class BuildServiceImpl implements BuildService {
 
     private GuvnorM2Repository guvnorM2Repository;
 
-    private ClassloadersResourcesHolder classloadersResourcesHolder;
+    private ClassLoadersResourcesHolder classloadersResourcesHolder;
 
     private CompilerMapsHolder compilerMapsHolder;
 
@@ -61,7 +61,7 @@ public class BuildServiceImpl implements BuildService {
     public BuildServiceImpl(final KieProjectService projectService,
                             final GuvnorM2Repository guvnorM2Repository,
                             final CompilerMapsHolder compilerMapsHolder,
-                            final ClassloadersResourcesHolder classloadersResourcesHolder) {
+                            final ClassLoadersResourcesHolder classloadersResourcesHolder) {
         this.projectService = projectService;
         this.compilerMapsHolder = compilerMapsHolder;
         this.guvnorM2Repository = guvnorM2Repository;
@@ -87,7 +87,7 @@ public class BuildServiceImpl implements BuildService {
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository);
 
-        KieCompilationResponse res = kieAfBuilder.build();
+        KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }
 
@@ -106,7 +106,7 @@ public class BuildServiceImpl implements BuildService {
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
                                                                      compilerMapsHolder,
                                                                      guvnorM2Repository);
-        KieCompilationResponse res = kieAfBuilder.build();
+        KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
         return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
     }
 

@@ -67,7 +67,7 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
             return null;
         }
         KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), project.getRepositoriesPath().toURI().toString(), compilerMapsHolder);
-        Optional<KieModule> optionalModule = builder.build().getKieModule();
+        Optional<KieModule> optionalModule = builder.build(Boolean.FALSE, Boolean.TRUE).getKieModule();
         if ( !optionalModule.isPresent()  ) {
             logger.error( "A KieModule could not be resolved for path '" + resource.toURI() + "'. No enums will be returned." );
             return null;

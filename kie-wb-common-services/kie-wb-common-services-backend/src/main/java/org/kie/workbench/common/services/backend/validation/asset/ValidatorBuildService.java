@@ -166,7 +166,7 @@ public class ValidatorBuildService {
         if (git == null) {
             //one build discarded to create the git in compiler map
             final KieAFBuilder builder = getBuilder(kieProject);
-            CompilationResponse res = builder.build();
+            CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
             git = compilerMapsHolder.getGit(fs);
             if (git == null) {
                 logger.error("Git not constructed in the JGitDecorator");
@@ -211,7 +211,7 @@ public class ValidatorBuildService {
 
         Files.copy(inputStream, tempResourcePath, StandardCopyOption.REPLACE_EXISTING);
         final KieAFBuilder builder = getBuilder(project);
-        final CompilationResponse res = builder.build();
+        final CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
         return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
     }
 

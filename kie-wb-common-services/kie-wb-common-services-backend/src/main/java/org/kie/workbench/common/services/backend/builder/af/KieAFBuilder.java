@@ -31,6 +31,12 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse build();
 
+
+    /**
+     * Run a mvn compile and create the output and the prj dependencies in the response
+     */
+    KieCompilationResponse build(Boolean logRequested, Boolean skipPrjDependenciesCreationList);
+
     /**
      * Run a mvn package on the prj and maven repo configured in the constructor, maven output provided in the
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder and maven repo
@@ -94,6 +100,8 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse build(String projectPath,
                                  String mavenRepo, Boolean skipPrjDependenciesCreationList);
+
+
 
     /**
      * Run a mvn compile package on the projectPath, maven output provided in the CompilationResponse
@@ -163,4 +171,7 @@ public interface KieAFBuilder {
                                             String mavenRepo,
                                             String[] args,
                                             KieDecorator decorator, Boolean skipPrjDependenciesCreationList);
+
+
+
 }

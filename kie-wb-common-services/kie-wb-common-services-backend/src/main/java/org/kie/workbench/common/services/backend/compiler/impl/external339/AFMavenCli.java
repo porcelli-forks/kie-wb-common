@@ -99,9 +99,6 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.transfer.TransferListener;
-import org.kie.workbench.common.services.backend.compiler.impl.output.KieSlf4jStdoutLogger;
-import org.kie.workbench.common.services.backend.compiler.impl.output.LogbackUtil;
-import org.kie.workbench.common.services.backend.compiler.impl.output.MavenCompilerPrintStream;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,6 +249,8 @@ public class AFMavenCli {
                       ClassWorld classWorld) {
 
         PlexusContainer localContainer = null;
+        PrintStream originalOut = System.out;
+        PrintStream originalErr = System.err;
         try {
             initialize(cliRequest);
             cli(cliRequest);
@@ -288,6 +287,8 @@ public class AFMavenCli {
 
             return 1;
         } finally {
+            System.setOut(originalOut);
+            System.setErr(originalErr);
             if (localContainer != null) {
                 localContainer.dispose();
                 localContainer = null;
@@ -384,7 +385,6 @@ public class AFMavenCli {
 
         slf4jLoggerFactory = LoggerFactory.getILoggerFactory();
         Slf4jConfiguration slf4jConfiguration = Slf4jConfigurationFactory.getConfiguration(slf4jLoggerFactory);
-
         if (cliRequest.isDebug()) {
             cliRequest.getRequest().setLoggingLevel(MavenExecutionRequest.LOGGING_LEVEL_DEBUG);
             slf4jConfiguration.setRootLoggerLevel(Slf4jConfiguration.Level.DEBUG);
@@ -403,15 +403,20 @@ public class AFMavenCli {
                 //PrintStream ps = new PrintStream(new FileOutputStream(FileDescriptor.out));
                 //PrintStream ps = new PrintStream(new FileOutputStream(logFile), true);
 
-                FileOutputStream fout = new FileOutputStream(logFile);
+               /* FileOutputStream fout = new FileOutputStream(logFile);
                 MavenCompilerPrintStream ps = new MavenCompilerPrintStream(fout, System.out);
-               // MavenCompilerPrintStream pserr = new MavenCompilerPrintStream(fout, System.err);
                 System.setOut(ps);
+                System.setOut(ps);*/
+                // MavenCompilerPrintStream pserr = new MavenCompilerPrintStream(fout, System.err);
+
                 //System.setErr(pserr);
                 //PrintStream ps = new PrintStream(new FileOutputStream(logFile));
-                System.setOut(ps);
+
                 //System.setErr(ps);
-                //slf4jLogger = LogbackUtil.getLogger(logFile.getAbsolutePath(), cliRequest.getCommandLine().getOptionValue(CLIManager.LOG_FILE).trim());
+
+                PrintStream ps = new PrintStream(new FileOutputStream(logFile));
+                System.setOut(ps);
+                System.setErr(ps);
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             }
@@ -419,11 +424,9 @@ public class AFMavenCli {
 
             plexusLoggerManager = new Slf4jLoggerManager();
             slf4jLogger = slf4jLoggerFactory.getLogger(this.getClass().getName());
-            MDC.put("compileid", logFile.getAbsolutePath());
+            MDC.put("compileid",
+                    logFile.getAbsolutePath());
         }
-
-
-        //MDC.put("compileid", logFile.getAbsolutePath());
     }
 
     protected void version(AFCliRequest cliRequest) {

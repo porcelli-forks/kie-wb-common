@@ -102,7 +102,7 @@ public class CompilerClassloaderUtils {
         }
         return Optional.empty();
     }
-
+/*
     public static List<String> getCleanedPathClassesAsString(String path) {
         List<String> keys = IoUtils.recursiveListFile(new File(path),
                                                       "",
@@ -112,7 +112,7 @@ public class CompilerClassloaderUtils {
             out.add(item.substring(item.lastIndexOf(MAVEN_TARGET) + 15));
         }
         return out;
-    }
+    }*/
 
     /**
      * Used by the indexer
@@ -125,18 +125,17 @@ public class CompilerClassloaderUtils {
         for (String item : keys) {
             byte[] bytez = getBytes(path + "/" + item);
             String fqn = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15); // 15 chars are for "target/classes"
-           // String className = item.substring(item.lastIndexOf("/") + 1);
-            classes.put(fqn, bytez);
-            //classes.put(className,bytez);
+            classes.put(fqn,
+                        bytez);
         }
         return classes;
     }
-
+/*
     public static List<String> getPathClassesAsString(String path) {
         return IoUtils.recursiveListFile(new File(path),
                                          "",
                                          filterClasses());
-    }
+    }*/
 
     public static Predicate<File> filterClasses() {
         return f -> f.toString().endsWith(JAVA_CLASS_EXT) && !FilenameUtils.getName(f.toString()).startsWith(DOT_FILE);
@@ -438,19 +437,7 @@ public class CompilerClassloaderUtils {
         }
         return Optional.empty();
     }
-
-    public Optional<List<String>> getStringsFromAllDependencies(String prjPath) {
-        List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT);
-        if (!classPathFiles.isEmpty()) {
-            return Optional.ofNullable(classPathFiles);
-        }
-        return Optional.empty();
-    }
-
+/*
     public static Optional<List<URI>> getURISFromAllDependencies(String prjPath) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
@@ -479,7 +466,7 @@ public class CompilerClassloaderUtils {
             }
         }
         return Optional.empty();
-    }
+    }*/
 
     public static List<URI> processScannedFilesAsURIs(List<String> classPathFiles) {
         List<URI> deps = new ArrayList<>();
@@ -574,7 +561,7 @@ public class CompilerClassloaderUtils {
         }
         return urls;
     }
-
+/*
     public static Map<String, byte[]> getClassesMap(boolean includeTypeDeclarations,
                                                     List<String> fileNames,
                                                     File folder) {
@@ -597,7 +584,7 @@ public class CompilerClassloaderUtils {
         Map<String, TypeMetaInfo> info = getTypesMetaInfo();
         TypeMetaInfo typeInfo = info == null ? null : info.get(convertResourceToClassName(fileName));
         return typeInfo != null && typeInfo.isDeclaredType();
-    }
+    }*/
 
     public static Map<String, TypeMetaInfo> getTypesMetaInfo() {
         Map<String, TypeMetaInfo> typesMetaInfo = null;
@@ -619,4 +606,36 @@ public class CompilerClassloaderUtils {
             throw new RuntimeException("Unable to get bytes for: " + new File(pResourceName) + " " + e.getMessage());
         }
     }
+
+    public static List<String> filterPathClasses(List<String> paths,
+                                                 String mavenRpo) {
+        int mavenRepoLenght = mavenRpo.length();
+        List<String> filtered = new ArrayList<>(paths.size());
+        for (String item : paths) {
+            if (item.endsWith(JAVA_CLASS_EXT)) {
+                String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15,
+                                            item.lastIndexOf("/")).replace("/",
+                                                                           ".");
+                filtered.add(one);
+            } else if (item.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
+                String one = item.substring(item.lastIndexOf(mavenRpo) + mavenRepoLenght,
+                                            item.lastIndexOf("/")).replace("/",
+                                                                           ".");
+                filtered.add(one);
+            }
+        }
+        return filtered;
+    }
+/*
+    public Optional<List<String>> getStringsFromAllDependencies(String prjPath) {
+        List<String> classPathFiles = new ArrayList<>();
+        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
+                      classPathFiles,
+                      MavenConfig.CLASSPATH_EXT,
+                      JAVA_ARCHIVE_RESOURCE_EXT);
+        if (!classPathFiles.isEmpty()) {
+            return Optional.ofNullable(classPathFiles);
+        }
+        return Optional.empty();
+    }*/
 }

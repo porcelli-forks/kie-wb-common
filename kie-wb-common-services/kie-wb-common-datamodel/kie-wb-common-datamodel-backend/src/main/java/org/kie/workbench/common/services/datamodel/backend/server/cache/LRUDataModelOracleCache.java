@@ -190,7 +190,7 @@ public class LRUDataModelOracleCache extends LRUCache<Package, PackageDataModelO
         KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(),
                                                        guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME),
                                                        compilerMapsHolder);
-        KieCompilationResponse res = builder.build();
+        KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
         if (res.isSuccessful() && res.getKieModule().isPresent()) {
 
             final KieModule module = res.getKieModule().get();

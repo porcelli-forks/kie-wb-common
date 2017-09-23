@@ -23,8 +23,6 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.net.URI;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -84,21 +82,19 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
         KieTuple kieModuleTuple = readKieModule(req);
         if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
 
-            List<String> resources = getString(req);
-            //List<URI> uris = getUris(req);
-            //List<URL> urls = getUrls(req);
+            List<String> allDeps = getAllDepsAsString(req);
             if (req.getKieCliRequest().isLogRequested()) {
                 return new DefaultKieCompilationResponse(Boolean.TRUE,
                                                          (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                          (KieModule) kieModuleTuple.getOptionalObject().get(),
                                                          res.getMavenOutput().get(),
-                                                         resources,
+                                                         allDeps,
                                                          req.getInfo().getPrjPath());
             } else {
                 return new DefaultKieCompilationResponse(Boolean.TRUE,
                                                          (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                          (KieModule) kieModuleTuple.getOptionalObject().get(),
-                                                         resources,
+                                                         allDeps,
                                                          req.getInfo().getPrjPath());
             }
         } else {
@@ -120,37 +116,19 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
         }
     }
 
-    private List<String> getString(CompilationRequest req) {
+    private List<String> getAllDepsAsString(CompilationRequest req) {
         List<String> items = Collections.emptyList();
+        Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(req.getInfo().getPrjPath());
         if (!req.skipPrjDependenciesCreationList()) {
             Optional<List<String>> optionalDeps = CompilerClassloaderUtils.getStringsFromAllDependencies(req.getInfo().getPrjPath());
             if (optionalDeps.isPresent()) {
                 items = optionalDeps.get();
             }
         }
+        if (artifactsFromTargets.isPresent()) {
+            items.addAll(artifactsFromTargets.get());
+        }
         return items;
-    }
-
-    private List<URI> getUris(CompilationRequest req) {
-        List<URI> uris = Collections.emptyList();
-        if (!req.skipPrjDependenciesCreationList()) {
-            Optional<List<URI>> optionalDeps = CompilerClassloaderUtils.getURISFromAllDependencies(req.getInfo().getPrjPath().toAbsolutePath().toString());
-            if (optionalDeps.isPresent()) {
-                uris = optionalDeps.get();
-            }
-        }
-        return uris;
-    }
-
-    private List<URL> getUrls(CompilationRequest req) {
-        List<URL> urls = Collections.emptyList();
-        if (!req.skipPrjDependenciesCreationList()) {
-            Optional<List<URL>> optionalDeps = CompilerClassloaderUtils.getURLSFromAllDependencies(req.getInfo().getPrjPath().toAbsolutePath().toString());
-            if (optionalDeps.isPresent()) {
-                urls = optionalDeps.get();
-            }
-        }
-        return urls;
     }
 
     private KieTuple readKieModuleMetaInfo(CompilationRequest req) {

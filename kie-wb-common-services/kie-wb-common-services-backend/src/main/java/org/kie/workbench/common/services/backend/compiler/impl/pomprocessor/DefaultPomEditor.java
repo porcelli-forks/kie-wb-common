@@ -53,11 +53,11 @@ import org.uberfire.java.nio.file.StandardOpenOption;
 public class DefaultPomEditor implements PomEditor {
 
     public final String POM = "pom";
-    protected String FILE_URI = "file://";
     public final String TRUE = "true";
     public final String POM_NAME = "pom.xml";
     public final String KJAR_EXT = "kjar";
     protected final Logger logger = LoggerFactory.getLogger(DefaultPomEditor.class);
+    protected String FILE_URI = "file://";
     protected Compilers compiler;
     protected Map<ConfigurationKey, String> conf;
     protected MavenXpp3Reader reader;

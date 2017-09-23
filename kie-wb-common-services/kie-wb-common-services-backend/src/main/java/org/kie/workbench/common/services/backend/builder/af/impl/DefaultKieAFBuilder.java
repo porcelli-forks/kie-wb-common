@@ -179,6 +179,16 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     }
 
     @Override
+    public KieCompilationResponse build(Boolean logRequested, Boolean skipPrjDependenciesCreationList) {
+        req.getKieCliRequest().getMap().clear();
+        req = new DefaultCompilationRequest(mavenRepo,
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            logRequested, skipPrjDependenciesCreationList);
+        return (KieCompilationResponse) compiler.compileSync(req);
+    }
+
+    @Override
     public KieCompilationResponse buildAndPackage() {
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,

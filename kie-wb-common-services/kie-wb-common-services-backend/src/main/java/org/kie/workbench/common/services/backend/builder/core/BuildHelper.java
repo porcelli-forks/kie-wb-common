@@ -87,7 +87,7 @@ public class BuildHelper {
         try {
             //@TODO AFBuilder from the CompilerMapsHolder
             KieAFBuilder builder = new DefaultKieAFBuilder(project.getRootPath().toURI().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.LOCAL_M2_REPO_NAME), compilerMapsHolder);
-            KieCompilationResponse res = builder.build();
+            KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
             if(res.isSuccessful()) {
                 final BuildResults results = MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
                 BuildMessage infoMsg = new BuildMessage();

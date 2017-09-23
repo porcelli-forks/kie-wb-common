@@ -58,19 +58,23 @@ public interface CompilerMapsHolder {
 
     KieModuleMetaData getMetadata(Path projectRootPath);
 
-    void addKieMetaData(Path projectRootPath, KieModuleMetaData metadata);
+    void addKieMetaData(Path projectRootPath,
+                        KieModuleMetaData metadata);
 
     boolean removeKieModuleMetaData(Path projectRootPath);
 
-    void replaceKieMetaData(Path projectRootPath, KieModuleMetaData metadata);
+    void replaceKieMetaData(Path projectRootPath,
+                            KieModuleMetaData metadata);
 
     // Dependencies Raw
 
     List<String> getDependenciesRaw(Path projectRootPath);
 
-    void addDependenciesRaw(Path projectRootPath, List<String> depsRaw);
+    void addDependenciesRaw(Path projectRootPath,
+                            List<String> depsRaw);
 
     boolean removeDependenciesRaw(Path projectRootPath);
 
-    void replaceDependenciesRaw(Path projectRootPath,List<String> depsRaw);
+    void replaceDependenciesRaw(Path projectRootPath,
+                                List<String> depsRaw);
 }

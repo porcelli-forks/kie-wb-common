@@ -67,7 +67,8 @@ public class KieAFBuilderUtil {
     }
 
     public static Path getFSPath(KieProject project,
-                                 CompilerMapsHolder compilerMapsHolder, GuvnorM2Repository guvnorM2Repository) {
+                                 CompilerMapsHolder compilerMapsHolder,
+                                 GuvnorM2Repository guvnorM2Repository) {
 
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,

@@ -40,17 +40,17 @@ public class AFSettingsBuildingRequest implements SettingsBuildingRequest {
         return this.globalSettingsFile.toFile();
     }
 
+    public AFSettingsBuildingRequest setGlobalSettingsFile(File globalSettingsFile) {
+        this.globalSettingsFile = Paths.get(globalSettingsFile.toURI());
+        return this;
+    }
+
     public Path getGlobalSettingsPath() {
         return this.globalSettingsFile;
     }
 
     public AFSettingsBuildingRequest setGlobalSettingsPath(Path globalSettingsFile) {
         this.globalSettingsFile = globalSettingsFile;
-        return this;
-    }
-
-    public AFSettingsBuildingRequest setGlobalSettingsFile(File globalSettingsFile) {
-        this.globalSettingsFile = Paths.get(globalSettingsFile.toURI());
         return this;
     }
 
@@ -67,17 +67,17 @@ public class AFSettingsBuildingRequest implements SettingsBuildingRequest {
         return this.userSettingsFile.toFile();
     }
 
+    public AFSettingsBuildingRequest setUserSettingsFile(File userSettingsFile) {
+        this.userSettingsFile = Paths.get(userSettingsFile.toURI());
+        return this;
+    }
+
     public Path getUserSettingsPath() {
         return this.userSettingsFile;
     }
 
     public AFSettingsBuildingRequest setUserSettingsPath(Path userSettingsFile) {
         this.userSettingsFile = userSettingsFile;
-        return this;
-    }
-
-    public AFSettingsBuildingRequest setUserSettingsFile(File userSettingsFile) {
-        this.userSettingsFile = Paths.get(userSettingsFile.toURI());
         return this;
     }
 

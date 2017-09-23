@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-
 public class MavenCompilerPrintStream extends PrintStream {
+
     private final PrintStream second;
 
-    public MavenCompilerPrintStream(OutputStream main, PrintStream second) {
+    public MavenCompilerPrintStream(OutputStream main,
+                                    PrintStream second) {
         super(main);
         this.second = second;
     }
@@ -31,9 +32,15 @@ public class MavenCompilerPrintStream extends PrintStream {
     }
 
     @Override
-    public void write(byte[] buf, int off, int len) {
-        super.write(buf, off, len);
-        second.write(buf, off, len);
+    public void write(byte[] buf,
+                      int off,
+                      int len) {
+        super.write(buf,
+                    off,
+                    len);
+        second.write(buf,
+                     off,
+                     len);
     }
 
     @Override
@@ -47,5 +54,4 @@ public class MavenCompilerPrintStream extends PrintStream {
         super.write(b);
         second.write(b);
     }
-
 }

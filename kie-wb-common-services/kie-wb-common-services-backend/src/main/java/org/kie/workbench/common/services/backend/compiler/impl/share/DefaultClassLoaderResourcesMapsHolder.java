@@ -26,11 +26,11 @@ import javax.enterprise.context.ApplicationScoped;
 import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
-public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResourcesHolder {
+public class DefaultClassLoaderResourcesMapsHolder implements ClassLoadersResourcesHolder {
 
     private Map<Path, Tuple> internalMap;
 
-    public DefaultClassloaderResourcesMapsHolder() {
+    public DefaultClassLoaderResourcesMapsHolder() {
         internalMap = new ConcurrentHashMap<>();
     }
 
@@ -75,7 +75,7 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
 
     @Override
     public void clearClassloaderResourcesMap() {
-            internalMap.clear();
+        internalMap.clear();
     }
 
     @Override
@@ -88,6 +88,11 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
                                    List<String> uris) {
         if (internalMap.get(projectRootPath) != null) {
             internalMap.get(projectRootPath).addProjectDeps(uris);
+        } else {
+            Tuple tuple = new Tuple();
+            tuple.addProjectDeps(uris);
+            internalMap.put(projectRootPath,
+                            tuple);
         }
     }
 
@@ -96,49 +101,58 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
                                              List<String> uris) {
         if (internalMap.get(projectRootPath) != null) {
             internalMap.get(projectRootPath).addTargetDeps(uris);
+        } else {
+            Tuple tuple = new Tuple();
+            tuple.addTargetDeps(uris);
+            internalMap.put(projectRootPath,
+                            tuple);
         }
     }
 
     @Override
-    public void addTargetClassloader(Path project, ClassLoader classLoader) {
-        if(internalMap.get(project) != null) {
+    public void addTargetClassLoader(Path project,
+                                     ClassLoader classLoader) {
+        if (internalMap.get(project) != null) {
             internalMap.get(project).addTargetClassloader(classLoader);
-        }else {
+        } else {
             Tuple tuple = new Tuple();
             tuple.addTargetClassloader(classLoader);
-            internalMap.put(project, tuple);
+            internalMap.put(project,
+                            tuple);
         }
     }
 
     @Override
-    public void addDependenciesClassloader(Path project, ClassLoader classLoader) {
+    public void addDependenciesClassLoader(Path project,
+                                           ClassLoader classLoader) {
 
-        if(internalMap.get(project) != null) {
+        if (internalMap.get(project) != null) {
             internalMap.get(project).addDependenciesClassloader(classLoader);
-        }else {
+        } else {
             Tuple tuple = new Tuple();
             tuple.addDependenciesClassloader(classLoader);
-            internalMap.put(project, tuple);
+            internalMap.put(project,
+                            tuple);
         }
     }
 
     @Override
-    public Optional<ClassLoader> getTargetClassloader(Path project) {
+    public Optional<ClassLoader> getTargetClassLoader(Path project) {
 
-        if(internalMap.get(project) != null) {
+        if (internalMap.get(project) != null) {
             return internalMap.get(project).getTargetClassloader();
-        }else {
+        } else {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<ClassLoader> getDependenciesClassloader(Path project) {
-        if(internalMap.get(project) != null) {
-        return internalMap.get(project).getDependenciesClassloader();
-    }else {
-        return Optional.empty();
-    }
+    public Optional<ClassLoader> getDependenciesClassLoader(Path project) {
+        if (internalMap.get(project) != null) {
+            return internalMap.get(project).getDependenciesClassloader();
+        } else {
+            return Optional.empty();
+        }
     }
 
     class Tuple {
@@ -161,17 +175,25 @@ public class DefaultClassloaderResourcesMapsHolder implements ClassloadersResour
             return Collections.unmodifiableList(projectsDeps);
         }
 
-        public Optional<ClassLoader> getTargetClassloader(){ return  Optional.ofNullable(targetClassloader);}
+        public Optional<ClassLoader> getTargetClassloader() {
+            return Optional.ofNullable(targetClassloader);
+        }
 
-        public Optional<ClassLoader> getDependenciesClassloader(){ return  Optional.ofNullable(dependenciesClassloader);}
+        public Optional<ClassLoader> getDependenciesClassloader() {
+            return Optional.ofNullable(dependenciesClassloader);
+        }
 
         public void addTargetDeps(List<String> resources) {
             targetDeps.addAll(resources);
         }
 
-        public void addTargetClassloader(ClassLoader targetClassloader) { this.targetClassloader = targetClassloader;}
+        public void addTargetClassloader(ClassLoader targetClassloader) {
+            this.targetClassloader = targetClassloader;
+        }
 
-        public void addDependenciesClassloader(ClassLoader dependenciesClassloader) { this.dependenciesClassloader = dependenciesClassloader;}
+        public void addDependenciesClassloader(ClassLoader dependenciesClassloader) {
+            this.dependenciesClassloader = dependenciesClassloader;
+        }
 
         public void addProjectDeps(List<String> resources) {
             projectsDeps.addAll(resources);

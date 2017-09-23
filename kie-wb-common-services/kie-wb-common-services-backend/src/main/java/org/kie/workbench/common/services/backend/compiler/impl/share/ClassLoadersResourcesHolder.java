@@ -22,17 +22,19 @@ import org.uberfire.java.nio.file.Path;
 
 /***
  * Contract to manage Resources URI in terms of pom dependencies (included transient)
- * and .class and resources present in the target folders and List of deps raw, instead of rebuild to read the same resources from a previous build
+ * and .class and resources (.drl and similar) present in the target folders and List of deps raw, instead of rebuild to read the same resources from a previous build
  */
-public interface ClassloadersResourcesHolder {
+public interface ClassLoadersResourcesHolder {
 
-    void addTargetClassloader(Path project, ClassLoader classLoader);
+    void addTargetClassLoader(Path project,
+                              ClassLoader classLoader);
 
-    void addDependenciesClassloader(Path project, ClassLoader classLoader);
+    void addDependenciesClassLoader(Path project,
+                                    ClassLoader classLoader);
 
-    Optional<ClassLoader> getTargetClassloader(Path project);
+    Optional<ClassLoader> getTargetClassLoader(Path project);
 
-    Optional<ClassLoader> getDependenciesClassloader(Path project);
+    Optional<ClassLoader> getDependenciesClassLoader(Path project);
 
     boolean containsPomDependencies(Path projectRootPath);
 

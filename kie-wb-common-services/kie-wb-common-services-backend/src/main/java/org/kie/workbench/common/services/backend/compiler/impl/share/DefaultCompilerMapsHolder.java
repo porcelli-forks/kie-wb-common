@@ -93,38 +93,43 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
         buildersMap.clear();
     }
 
-
     public KieModuleMetaData getMetadata(Path projectRootPath) {
         return kieMetaDataMap.get(projectRootPath);
     }
 
-    public void addKieMetaData(Path projectRootPath, KieModuleMetaData metadata) {
-        kieMetaDataMap.put(projectRootPath, metadata);
-
+    public void addKieMetaData(Path projectRootPath,
+                               KieModuleMetaData metadata) {
+        kieMetaDataMap.put(projectRootPath,
+                           metadata);
     }
 
     public boolean removeKieModuleMetaData(Path projectRootPath) {
         return kieMetaDataMap.remove(projectRootPath) != null;
     }
 
-    public void replaceKieMetaData(Path projectRootPath, KieModuleMetaData metadata) {
-        kieMetaDataMap.replace(projectRootPath, metadata);
+    public void replaceKieMetaData(Path projectRootPath,
+                                   KieModuleMetaData metadata) {
+        kieMetaDataMap.replace(projectRootPath,
+                               metadata);
     }
 
     public List<String> getDependenciesRaw(Path projectRootPath) {
         return depsRawMap.get(projectRootPath);
     }
 
-    public void addDependenciesRaw(Path projectRootPath, List<String> depsRaw) {
-        depsRawMap.put(projectRootPath, depsRaw);
+    public void addDependenciesRaw(Path projectRootPath,
+                                   List<String> depsRaw) {
+        depsRawMap.put(projectRootPath,
+                       depsRaw);
     }
 
     public boolean removeDependenciesRaw(Path projectRootPath) {
         return depsRawMap.remove(projectRootPath) != null;
     }
 
-    public void replaceDependenciesRaw(Path projectRootPath, List<String> depsRaw) {
-        depsRawMap.replace(projectRootPath, depsRaw);
-
+    public void replaceDependenciesRaw(Path projectRootPath,
+                                       List<String> depsRaw) {
+        depsRawMap.replace(projectRootPath,
+                           depsRaw);
     }
 }

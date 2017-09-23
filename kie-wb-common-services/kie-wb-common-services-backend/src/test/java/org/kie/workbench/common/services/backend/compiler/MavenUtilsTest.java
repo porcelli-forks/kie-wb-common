@@ -16,18 +16,15 @@
 
 package org.kie.workbench.common.services.backend.compiler;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-
-import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
-import org.drools.core.util.IoUtils;
+
 import org.junit.Test;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
 import org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler.DefaultIncrementalCompilerEnabler;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
+import org.kie.workbench.common.services.backend.file.AntPathMatcher;
 import org.uberfire.java.nio.file.Paths;
 
 import static org.junit.Assert.*;
@@ -49,6 +46,12 @@ public class MavenUtilsTest {
         assertTrue(artifact.getVersion().equals("6.5.0.Final"));
         assertTrue(artifact.getType().equals("jar"));
         assertTrue(artifact.toString().equals("org.kie:kie-api:jar:6.5.0.Final"));
+    }
+
+    @Test
+    public void test(){
+        AntPathMatcher matcher = new AntPathMatcher();
+       assertTrue(matcher.match("curriculum.course", "curriculum.course.Pippo"));
     }
 
 }
