@@ -80,23 +80,17 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
         KieTuple kieModuleMetaInfoTuple = readKieModuleMetaInfo(req);
         KieTuple kieModuleTuple = readKieModule(req);
-        if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
+        List<String> mavenOutput = getMavenOutput(req, res);
 
-            List<String> allDeps = getAllDepsAsString(req);
-            if (req.getKieCliRequest().isLogRequested()) {
-                return new DefaultKieCompilationResponse(Boolean.TRUE,
+        if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
+            List<String> allDepsAsString = readAllDepsAsString(req);
+            return new DefaultKieCompilationResponse(Boolean.TRUE,
                                                          (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                          (KieModule) kieModuleTuple.getOptionalObject().get(),
-                                                         res.getMavenOutput().get(),
-                                                         allDeps,
+                                                         mavenOutput,
+                                                         allDepsAsString,
                                                          req.getInfo().getPrjPath());
-            } else {
-                return new DefaultKieCompilationResponse(Boolean.TRUE,
-                                                         (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
-                                                         (KieModule) kieModuleTuple.getOptionalObject().get(),
-                                                         allDeps,
-                                                         req.getInfo().getPrjPath());
-            }
+
         } else {
             StringBuilder sb = new StringBuilder();
             if (kieModuleMetaInfoTuple.getErrorMsg().isPresent()) {
@@ -105,15 +99,26 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             if (kieModuleTuple.getErrorMsg().isPresent()) {
                 sb.append(" Error in the kieModule:").append(kieModuleTuple.getErrorMsg().get());
             }
-            if (req.getKieCliRequest().isLogRequested()) {
-                return new DefaultKieCompilationResponse(Boolean.FALSE,
-                                                         sb.toString(),
-                                                         res.getMavenOutput().get());
-            } else {
-                return new DefaultKieCompilationResponse(Boolean.FALSE,
-                                                         sb.toString());
-            }
+            return new DefaultKieCompilationResponse(Boolean.FALSE,  sb.toString(), mavenOutput);
         }
+    }
+
+    private List<String> readAllDepsAsString(CompilationRequest req) {
+        List<String> allDeps = Collections.EMPTY_LIST;
+        if(!req.skipPrjDependenciesCreationList()){
+            allDeps = getAllDepsAsString(req);
+        }
+        return allDeps;
+    }
+
+    private List<String> getMavenOutput(CompilationRequest req,
+                                        CompilationResponse res) {
+        List<String> mavenOutput = Collections.EMPTY_LIST;
+
+        if (req.getKieCliRequest().isLogRequested() && res.getMavenOutput().isPresent()) {
+            mavenOutput = res.getMavenOutput().get();
+        }
+        return mavenOutput;
     }
 
     private List<String> getAllDepsAsString(CompilationRequest req) {

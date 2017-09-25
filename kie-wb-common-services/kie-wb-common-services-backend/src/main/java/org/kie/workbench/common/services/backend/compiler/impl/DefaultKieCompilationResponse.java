@@ -113,6 +113,20 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         this.workingDir = workingDir;
     }
 
+
+    public DefaultKieCompilationResponse(Boolean successful,
+                                         KieModuleMetaInfo kieModuleMetaInfo,
+                                         KieModule kieModule,
+                                         Path workingDir) {
+
+        defaultResponse = new DefaultCompilationResponse(successful);
+        this.kieModuleMetaInfo = kieModuleMetaInfo;
+        this.kieModule = kieModule;
+        this.workingDir = workingDir;
+    }
+
+
+
     @Override
     public Optional<List<String>> getProjectDependenciesRaw() {
         return Optional.ofNullable(projectDependenciesRaw);
