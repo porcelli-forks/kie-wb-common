@@ -21,9 +21,10 @@ import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.editor.client.editor.properties.binding.DataBinderEditorTest;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.mvp.Command;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamicDataBinderEditorTest extends DataBinderEditorTest<DynamicDataBinderEditor> {
@@ -44,15 +45,18 @@ public class DynamicDataBinderEditorTest extends DataBinderEditorTest<DynamicDat
         verify(view).init(editor);
 
         editor.init(fieldDefinition,
-                    helper,
-                    mock(Command.class));
+                    bindingsSupplier,
+                    bindingChangeConsumer);
 
         verify(view).clear();
+
+        verify(bindingsSupplier,
+               never()).get();
 
         verify(view).setFieldBinding(FIELD_BINDING);
 
         editor.onBindingChange();
-        verify(editor.onChangeCallback).execute();
+        verify(bindingChangeConsumer).accept(any());
 
         editor.getElement();
         verify(view).getElement();

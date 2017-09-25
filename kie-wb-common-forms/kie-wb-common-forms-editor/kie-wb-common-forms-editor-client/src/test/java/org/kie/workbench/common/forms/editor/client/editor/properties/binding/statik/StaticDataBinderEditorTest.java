@@ -21,17 +21,19 @@ import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.editor.client.editor.properties.binding.DataBinderEditorTest;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.mvp.Command;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StaticDataBinderEditorTest extends DataBinderEditorTest<StaticDataBinderEditor> {
 
     @Mock
-    protected StaticDataBinderEditorView view;
+    private StaticDataBinderEditorView view;
 
     @Override
     public void initTest() {
@@ -49,10 +51,12 @@ public class StaticDataBinderEditorTest extends DataBinderEditorTest<StaticDataB
         verify(view).init(editor);
 
         editor.init(fieldDefinition,
-                    helper,
-                    mock(Command.class));
+                    bindingsSupplier,
+                    bindingChangeConsumer);
 
         verify(view).clear();
+
+        verify(bindingsSupplier).get();
 
         verify(view,
                times(fields.size() + 1)).addModelField(anyString(),
@@ -64,7 +68,7 @@ public class StaticDataBinderEditorTest extends DataBinderEditorTest<StaticDataB
         });
 
         editor.onBindingChange();
-        verify(editor.onChangeCallback).execute();
+        verify(bindingChangeConsumer).accept(any());
 
         editor.getElement();
         verify(view).getElement();

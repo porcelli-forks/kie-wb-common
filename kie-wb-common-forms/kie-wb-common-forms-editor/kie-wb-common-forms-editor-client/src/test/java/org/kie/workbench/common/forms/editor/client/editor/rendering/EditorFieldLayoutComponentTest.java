@@ -49,9 +49,19 @@ import org.uberfire.ext.layout.editor.client.api.RenderingContext;
 import org.uberfire.ext.layout.editor.client.infra.LayoutDragComponentHelper;
 import org.uberfire.mocks.EventSourceMock;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class EditorFieldLayoutComponentTest {
@@ -422,89 +432,5 @@ public class EditorFieldLayoutComponentTest {
 
         assertFalse(editorFieldLayoutComponent.showProperties);
         verify(ctx).configurationCancelled();
-    }
-
-    @Test
-    public void testIsBindingChangeBothSame() {
-        testIsBindingChange(BINDING_FIRSTNAME,
-                            BINDING_FIRSTNAME,
-                            true);
-    }
-
-    @Test
-    public void testIsBindingChangeBothNull() {
-        testIsBindingChange(null,
-                            null,
-                            false);
-    }
-
-    @Test
-    public void testIsBindingChangeBothEmpty() {
-        testIsBindingChange("",
-                            "",
-                            false);
-    }
-
-    @Test
-    public void testIsBindingChangeNullEmpty() {
-        testIsBindingChange(null,
-                            "",
-                            false);
-    }
-
-    @Test
-    public void testIsBindingChangeEmptyNull() {
-        testIsBindingChange("",
-                            null,
-                            false);
-    }
-
-    @Test
-    public void testIsBindingChangeEmptyPopulated() {
-        testIsBindingChange("",
-                            BINDING_FIRSTNAME,
-                            true);
-    }
-
-    @Test
-    public void testIsBindingChangeNullPopulated() {
-        testIsBindingChange(null,
-                            BINDING_FIRSTNAME,
-                            true);
-    }
-
-    @Test
-    public void testIsBindingChangePopulatedEmpty() {
-        testIsBindingChange(BINDING_FIRSTNAME,
-                            "",
-                            true);
-    }
-
-    @Test
-    public void testIsBindingChangePopulatedNull() {
-        testIsBindingChange(BINDING_FIRSTNAME,
-                            null,
-                            true);
-    }
-
-    @Test
-    public void testIsBindingChangeBothPopulated() {
-        testIsBindingChange(BINDING_FIRSTNAME,
-                            BINDING_LASTNAME,
-                            true);
-    }
-
-    protected void testIsBindingChange(String oldFieldBinding,
-                                       String newFieldBinding,
-                                       boolean expectedChange) {
-        FieldDefinition oldField = new TextBoxFieldDefinition();
-        oldField.setBinding(oldFieldBinding);
-        FieldDefinition newField = new TextBoxFieldDefinition();
-        newField.setBinding(newFieldBinding);
-
-        boolean isChange = editorFieldLayoutComponent.isBindingChange(oldField,
-                                                                      newField);
-        assertEquals(expectedChange,
-                     isChange);
     }
 }

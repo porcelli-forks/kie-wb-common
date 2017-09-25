@@ -20,12 +20,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jbpm.document.Document;
 import org.jbpm.document.service.impl.DocumentImpl;
+import org.jbpm.document.service.impl.util.DocumentDownloadLinkGenerator;
 import org.kie.workbench.common.forms.dynamic.backend.server.document.UploadedDocumentManager;
 import org.kie.workbench.common.forms.dynamic.model.document.DocumentData;
 import org.kie.workbench.common.forms.dynamic.model.document.DocumentStatus;
@@ -37,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 @Dependent
 public class DocumentFieldValueProcessor implements FieldValueProcessor<DocumentFieldDefinition, Document, DocumentData> {
+
+    public static final String SERVER_TEMPLATE_ID = "serverTemplateId";
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentFieldValueProcessor.class);
 
@@ -61,9 +66,21 @@ public class DocumentFieldValueProcessor implements FieldValueProcessor<Document
             return null;
         }
 
-        DocumentData data = new DocumentData(document.getName(),
+        String templateId = (String) context.getAttributes().get(SERVER_TEMPLATE_ID);
+
+        String link;
+
+        if(!StringUtils.isEmpty(templateId) & !StringUtils.isEmpty(document.getIdentifier())) {
+            link = DocumentDownloadLinkGenerator.generateDownloadLink(templateId, document.getIdentifier());
+        } else {
+            link = document.getLink();
+        }
+
+        DocumentData data = new DocumentData(document.getIdentifier(),
+                                             document.getName(),
                                              document.getSize(),
-                                             document.getLink());
+                                             link);
+
         data.setStatus(DocumentStatus.STORED);
         return data;
     }
@@ -87,7 +104,6 @@ public class DocumentFieldValueProcessor implements FieldValueProcessor<Document
         if (content != null) {
 
             try {
-                String id = UUID.randomUUID().toString();
                 Document doc = new DocumentImpl(documentData.getFileName(),
                                                 content.length(),
                                                 new Date(content.lastModified()));
