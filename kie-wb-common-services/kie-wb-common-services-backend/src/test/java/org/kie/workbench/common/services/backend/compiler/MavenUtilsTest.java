@@ -48,10 +48,4 @@ public class MavenUtilsTest {
         assertTrue(artifact.toString().equals("org.kie:kie-api:jar:6.5.0.Final"));
     }
 
-    @Test
-    public void test(){
-        AntPathMatcher matcher = new AntPathMatcher();
-       assertTrue(matcher.match("curriculum.course", "curriculum.course.Pippo"));
-    }
-
 }

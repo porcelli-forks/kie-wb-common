@@ -55,7 +55,10 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
         ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
             classLoader = buildClassLoader(project);
-            setEntry(nioFsPAth, classLoader);
+            if(classLoader != null) {
+                setEntry(nioFsPAth,
+                         classLoader);
+            }
         }
         return classLoader;
     }
