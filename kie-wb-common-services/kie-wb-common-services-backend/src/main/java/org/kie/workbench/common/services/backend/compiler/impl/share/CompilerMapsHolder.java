@@ -77,4 +77,6 @@ public interface CompilerMapsHolder {
 
     void replaceDependenciesRaw(Path projectRootPath,
                                 List<String> depsRaw);
+
+    Path getProjectRoot(org.uberfire.backend.vfs.Path path);
 }

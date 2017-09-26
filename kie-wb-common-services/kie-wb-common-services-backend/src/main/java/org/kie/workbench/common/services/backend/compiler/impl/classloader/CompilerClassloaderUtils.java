@@ -37,9 +37,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
-import org.drools.compiler.kproject.models.KieModuleModelImpl;
-import org.drools.core.rule.KieModuleMetaInfo;
-import org.drools.core.rule.TypeMetaInfo;
 import org.drools.core.util.IoUtils;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
@@ -58,8 +55,6 @@ import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
-
-import static org.drools.core.util.ClassUtils.convertResourceToClassName;
 
 public class CompilerClassloaderUtils {
 
@@ -102,40 +97,24 @@ public class CompilerClassloaderUtils {
         }
         return Optional.empty();
     }
-/*
-    public static List<String> getCleanedPathClassesAsString(String path) {
-        List<String> keys = IoUtils.recursiveListFile(new File(path),
-                                                      "",
-                                                      filterClasses());
-        List<String> out = new ArrayList<>(keys.size());
-        for (String item : keys) {
-            out.add(item.substring(item.lastIndexOf(MAVEN_TARGET) + 15));
-        }
-        return out;
-    }*/
 
     /**
      * Used by the indexer
      **/
     public static Map<String, byte[]> getMapClasses(String path) {
-        List<String> keys = IoUtils.recursiveListFile(new File(path),
-                                                      "",
-                                                      filterClasses());
+
+        List<String> keys = IoUtils.recursiveListFile(new File(path), "", filterClasses());
+
         Map<String, byte[]> classes = new HashMap<String, byte[]>(keys.size());
+
         for (String item : keys) {
             byte[] bytez = getBytes(path + "/" + item);
             String fqn = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15); // 15 chars are for "target/classes"
-            classes.put(fqn,
-                        bytez);
+            classes.put(fqn, bytez);
         }
         return classes;
     }
-/*
-    public static List<String> getPathClassesAsString(String path) {
-        return IoUtils.recursiveListFile(new File(path),
-                                         "",
-                                         filterClasses());
-    }*/
+
 
     public static Predicate<File> filterClasses() {
         return f -> f.toString().endsWith(JAVA_CLASS_EXT) && !FilenameUtils.getName(f.toString()).startsWith(DOT_FILE);
@@ -342,13 +321,11 @@ public class CompilerClassloaderUtils {
         List<URL> urls = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
-                StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                StringTokenizer token = new StringTokenizer(sCurrentLine, ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     urls.add(new URL(sb.toString()));
@@ -369,13 +346,11 @@ public class CompilerClassloaderUtils {
         List<String> items = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
-            String sCurrentLine;
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
 
+            String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
-                StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                StringTokenizer token = new StringTokenizer(sCurrentLine, ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     items.add(sb.toString());
@@ -437,36 +412,7 @@ public class CompilerClassloaderUtils {
         }
         return Optional.empty();
     }
-/*
-    public static Optional<List<URI>> getURISFromAllDependencies(String prjPath) {
-        List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT);
-        if (!classPathFiles.isEmpty()) {
-            List<URI> deps = processScannedFilesAsURIs(classPathFiles);
-            if (!deps.isEmpty()) {
-                return Optional.of(deps);
-            }
-        }
-        return Optional.empty();
-    }
 
-    public static Optional<List<URL>> getURLSFromAllDependencies(String prjPath) {
-        List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT);
-        if (!classPathFiles.isEmpty()) {
-            List<URL> deps = processScannedFilesAsURLs(classPathFiles);
-            if (!deps.isEmpty()) {
-                return Optional.of(deps);
-            }
-        }
-        return Optional.empty();
-    }*/
 
     public static List<URI> processScannedFilesAsURIs(List<String> classPathFiles) {
         List<URI> deps = new ArrayList<>();
@@ -561,42 +507,7 @@ public class CompilerClassloaderUtils {
         }
         return urls;
     }
-/*
-    public static Map<String, byte[]> getClassesMap(boolean includeTypeDeclarations,
-                                                    List<String> fileNames,
-                                                    File folder) {
-        Map<String, byte[]> classes = new HashMap<String, byte[]>();
-        for (String fileName : fileNames) {
-            if (FilenameUtils.getName(fileName).startsWith(".")) {
-                continue;
-            }
-            if (fileName.endsWith(JAVA_CLASS_EXT)) {
-                if (includeTypeDeclarations || !isTypeDeclaration(fileName)) {
-                    classes.put(fileName,
-                                getBytes(fileName));
-                }
-            }
-        }
-        return classes;
-    }
 
-    public static boolean isTypeDeclaration(String fileName) {
-        Map<String, TypeMetaInfo> info = getTypesMetaInfo();
-        TypeMetaInfo typeInfo = info == null ? null : info.get(convertResourceToClassName(fileName));
-        return typeInfo != null && typeInfo.isDeclaredType();
-    }*/
-
-    public static Map<String, TypeMetaInfo> getTypesMetaInfo() {
-        Map<String, TypeMetaInfo> typesMetaInfo = null;
-        if (typesMetaInfo == null) {
-            byte[] bytes = getBytes(KieModuleModelImpl.KMODULE_INFO_JAR_PATH);
-            if (bytes != null) {
-                typesMetaInfo = KieModuleMetaInfo.unmarshallMetaInfos(new String(bytes,
-                                                                                 IoUtils.UTF8_CHARSET)).getTypeMetaInfos();
-            }
-        }
-        return typesMetaInfo;
-    }
 
     public static byte[] getBytes(String pResourceName) {
         try {
@@ -614,28 +525,38 @@ public class CompilerClassloaderUtils {
         for (String item : paths) {
             if (item.endsWith(JAVA_CLASS_EXT)) {
                 String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15,
-                                            item.lastIndexOf("/")).replace("/",
-                                                                           ".");
+                                            item.lastIndexOf("/")).replace("/", ".");
                 filtered.add(one);
             } else if (item.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
                 String one = item.substring(item.lastIndexOf(mavenRpo) + mavenRepoLenght,
-                                            item.lastIndexOf("/")).replace("/",
-                                                                           ".");
+                                            item.lastIndexOf("/")).replace("/", ".");
                 filtered.add(one);
             }
         }
         return filtered;
     }
-/*
-    public Optional<List<String>> getStringsFromAllDependencies(String prjPath) {
-        List<String> classPathFiles = new ArrayList<>();
-        searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT);
-        if (!classPathFiles.isEmpty()) {
-            return Optional.ofNullable(classPathFiles);
+
+    public static List<String> filterClassesByPackage(List<String> items, String packageName) {
+
+        List<String> filtered = new ArrayList<>(items.size());
+        for (String item : items) {
+            if (item.endsWith(JAVA_CLASS_EXT)) {
+                String one = item.replace("/", ".").substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(JAVA_CLASS_EXT));
+                if(one.contains(packageName)){
+                    filtered.add(one);
+                }
+            }
         }
-        return Optional.empty();
-    }*/
+        return filtered;
+    }
+
+    public static Class<?> getClass(String pkgName, String className, ClassLoader classloader) {
+        //impl borrowed from KieModuleMetaDataImpl
+        try {
+            return Class.forName(pkgName != null && pkgName.trim().length() != 0 ? pkgName + "." + className:className, false, classloader);
+        } catch (ClassNotFoundException var4) {
+            return null;
+        }
+    }
+
 }

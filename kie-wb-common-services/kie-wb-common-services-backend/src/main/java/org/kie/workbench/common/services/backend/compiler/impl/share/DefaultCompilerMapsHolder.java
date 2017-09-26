@@ -23,6 +23,8 @@ import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.jgit.api.Git;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
@@ -131,5 +133,17 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
                                        List<String> depsRaw) {
         depsRawMap.replace(projectRootPath,
                            depsRaw);
+    }
+
+    @Override
+    public Path getProjectRoot(org.uberfire.backend.vfs.Path path) {
+        Path nioPath = Paths.convert(path);
+        KieAFBuilder builder = getBuilder(nioPath);
+        if(builder != null){
+            Path prjRoot = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
+            return prjRoot;
+        }else {
+            return nioPath;
+        }
     }
 }

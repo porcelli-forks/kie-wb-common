@@ -48,41 +48,43 @@ public class KieAfBuilderClassloaderUtil {
                                                                 guvnorM2Repository);
         KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
+
+            /* absolute path on the fs */
             Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
+
+            /* we collects all the thing produced in the target/classes folders */
             Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(workingDir);
+
             if(artifactsFromTargets.isPresent()) {
-                classloadersResourcesHolder.addTargetProjectDependencies(workingDir,
-                                                                         artifactsFromTargets.get());
+                classloadersResourcesHolder.addTargetProjectDependencies(workingDir, artifactsFromTargets.get());
             }else{
                 Optional<List<String>> targetClassesOptional = CompilerClassloaderUtils.getStringsFromTargets(workingDir);
                 if(targetClassesOptional.isPresent()){
-                    classloadersResourcesHolder.addTargetProjectDependencies(workingDir,
-                                                                         targetClassesOptional.get());
+                    classloadersResourcesHolder.addTargetProjectDependencies(workingDir, targetClassesOptional.get());// check this add
                 }
             }
             ClassLoader projectClassLoader;
             final KieModule module = res.getKieModule().get();
             if (module instanceof InternalKieModule) {
-                Optional<ClassLoader> opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassLoader(nioPath);
+
+                //Optional<ClassLoader> targetDependenciesClassloader = classloadersResourcesHolder.getTargetClassLoader(nioPath);
 
                 ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(nioPath,
                                                                                                compilerMapsHolder,
                                                                                                classloadersResourcesHolder,
-                                                                                               res,
-                                                                                               opDependenciesClassLoader);
+                                                                                               res);
 
-                Optional<ClassLoader> targetDependenciesClassloader = classloadersResourcesHolder.getTargetClassLoader(nioPath);
+/*
                 ClassLoader targetClassLoader = addToHolderAndGetTargetClassloader(nioPath,
                                                                                          compilerMapsHolder,
                                                                                          classloadersResourcesHolder,
                                                                                          res,
-                                                                                         targetDependenciesClassloader);
+                                                                                         targetDependenciesClassloader);*/
 
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
-                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(res.getWorkingDir().get().toString()),
-                                                        dependenciesClassLoader);
+                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(res.getWorkingDir().get().toString()), dependenciesClassLoader);
                 classloadersResourcesHolder.addTargetClassLoader(nioPath, projectClassLoader);
             } else {
                 projectClassLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
@@ -96,8 +98,10 @@ public class KieAfBuilderClassloaderUtil {
     private static ClassLoader addToHolderAndGetDependenciesClassloader(Path nioPath,
                                                                         CompilerMapsHolder compilerMapsHolder,
                                                                         ClassLoadersResourcesHolder classloadersResourcesHolder,
-                                                                        KieCompilationResponse res,
-                                                                        Optional<ClassLoader> opDependenciesClassLoader) {
+                                                                        KieCompilationResponse res) {
+
+        Optional<ClassLoader> opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassLoader(nioPath);
+
         ClassLoader dependenciesClassLoader;
         if (!opDependenciesClassLoader.isPresent()){
             dependenciesClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
@@ -115,7 +119,7 @@ public class KieAfBuilderClassloaderUtil {
         classloadersResourcesHolder.addDependenciesClassLoader(nioPath, dependenciesClassLoader);
         return dependenciesClassLoader;
     }
-
+/*
     private static ClassLoader addToHolderAndGetTargetClassloader(Path nioPath,
                                                                         CompilerMapsHolder compilerMapsHolder,
                                                                         ClassLoadersResourcesHolder classloadersResourcesHolder,
@@ -137,5 +141,5 @@ public class KieAfBuilderClassloaderUtil {
         }
         classloadersResourcesHolder.addTargetClassLoader(nioPath, targetClassLoader);
         return targetClassLoader;
-    }
+    }*/
 }

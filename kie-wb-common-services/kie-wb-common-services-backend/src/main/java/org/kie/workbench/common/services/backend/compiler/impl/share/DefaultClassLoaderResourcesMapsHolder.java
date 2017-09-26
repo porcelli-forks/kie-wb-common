@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
@@ -47,6 +49,16 @@ public class DefaultClassLoaderResourcesMapsHolder implements ClassLoadersResour
     public List<String> getTargetsProjectDependencies(Path projectRootPath) {
         if (internalMap.get(projectRootPath) != null) {
             return internalMap.get(projectRootPath).getTargetDeps();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<String> getTargetsProjectDependenciesFiltered(Path projectRootPath, String packageName) {
+        if (internalMap.get(projectRootPath) != null) {
+            List<String> allTargetDeps = internalMap.get(projectRootPath).getTargetDeps();
+            return CompilerClassloaderUtils.filterClassesByPackage(allTargetDeps, packageName);
         } else {
             return Collections.emptyList();
         }

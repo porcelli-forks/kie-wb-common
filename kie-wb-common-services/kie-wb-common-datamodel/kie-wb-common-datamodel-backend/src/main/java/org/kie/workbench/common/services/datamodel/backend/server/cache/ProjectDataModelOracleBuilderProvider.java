@@ -149,11 +149,14 @@ public class ProjectDataModelOracleBuilderProvider {
         }
 
         private void addFromKieModuleMetadata() {
+            Path prjRoot =  compilerMapsHolder.getProjectRoot(project.getRootPath());// file://<absoultepath>
+            Path nioPath = Paths.convert(project.getRootPath());// /nameprj
             WhiteList whiteList = getFilteredPackageNames();
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
-                addClasses(packageName,
-                           kieModuleMetaData.getClasses(packageName));
+                addClasses(packageName, kieModuleMetaData.getClasses(packageName), prjRoot);
+                //@TODO check why we have two entry wuith prj and fs
+                addClasses(packageName, classloadersResourcesHolder.getTargetsProjectDependenciesFiltered(nioPath, packageName), prjRoot);//@TODO check this path
             }
         }
 
@@ -169,17 +172,15 @@ public class ProjectDataModelOracleBuilderProvider {
             return packageNameWhiteListService.filterPackageNames(project, pkgs);
         }
 
-        private void addClasses(final String packageName,
-                                final Collection<String> classes) {
+        private void addClasses(final String packageName, final Collection<String> classes, Path projectPath) {
             for (final String className : classes) {
-                addClass(packageName,
-                         className);
+                addClass(packageName, className, projectPath);
             }
         }
 
         private void addClass(final Import item) {
             try {
-                Class clazz = this.getClass().getClassLoader().loadClass(item.getType());
+                Class clazz = this.getClass().getClassLoader().loadClass(item.getType());//@ŢODO is it correct again the use of this classloader instead of the prj classloader ?
                 pdBuilder.addClass(clazz,
                                    false,
                                    TypeSource.JAVA_DEPENDENCY);
@@ -191,14 +192,19 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
-        private void addClass(final String packageName,
-                              final String className) {
+        private void addClass(final String packageName, final String className, Path project) {
             try {
-                final Class clazz = kieModuleMetaData.getClass(packageName,
-                                                               className);
-                pdBuilder.addClass(clazz,
-                                   kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(),
-                                   typeSourceResolver.getTypeSource(clazz));
+                //final Class clazz = kieModuleMetaData.getClass(packageName, className);
+                Optional<ClassLoader> prjClassloaderOpt = classloadersResourcesHolder.getTargetClassLoader(project);
+                if(prjClassloaderOpt.isPresent()) {
+                    final Class clazz = CompilerClassloaderUtils.getClass(packageName,
+                                                                          className,
+                                                                          prjClassloaderOpt.get());
+                    //final Class clazz = resourcesHolder.kieModuleMetaData.getClass(packageName, className);
+                    pdBuilder.addClass(clazz,
+                                       kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(),
+                                       typeSourceResolver.getTypeSource(clazz));
+                }
             } catch (Throwable e) {
                 //Class resolution would have happened in Builder and reported as warnings so log error here at debug level to avoid flooding logs
                 log.debug(e.getMessage());

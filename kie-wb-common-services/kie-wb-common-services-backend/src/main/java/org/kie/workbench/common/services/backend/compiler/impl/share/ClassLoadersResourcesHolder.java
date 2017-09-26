@@ -59,6 +59,8 @@ public interface ClassLoadersResourcesHolder {
 
     List<String> getTargetsProjectDependencies(Path projectRootPath);
 
+    List<String> getTargetsProjectDependenciesFiltered(Path projectRootPath, String packageName);
+
     void replaceTargetDependencies(Path projectRootPath,
                                    List<String> uris);
 }
