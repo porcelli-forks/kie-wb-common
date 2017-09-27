@@ -74,41 +74,51 @@ public class ProjectDataModelOracleBuilderProvider {
     public InnerBuilder newBuilder( final KieProject project ) {
         Path nioPath = Paths.convert(project.getRootPath());
         Optional<KieAFBuilder> builder =  builderUtils.getBuilder(nioPath);
+
         if(!builder.isPresent()){
             throw new RuntimeException("Isn't possible create a Builder"+ project.toString());
         }
-        KieModuleMetaData kieModuleMetaData =compilerMapsHolder.getMetadata(nioPath);
+        
+        Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+        KieModuleMetaData kieModuleMetaData =compilerMapsHolder.getMetadata(workingDir);
+
         if(kieModuleMetaData != null){
-            final Set<String> javaResources = new HashSet<String>(compilerMapsHolder.getDependenciesRaw(nioPath));
-            final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
-                                                                                 javaResources);
-
-            return new InnerBuilder(project,
-                                    kieModuleMetaData,
-                                    typeSourceResolver, resourcesHolder);
-
+            return getInnerBuilderWithAlreadyPresentData(project, kieModuleMetaData);
         }else {
-            KieCompilationResponse res = builder.get().build(Boolean.TRUE, Boolean.FALSE);
-            if (res.isSuccessful() && res.getKieModule().isPresent()) {
-                kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
-                                                                                      res.getProjectDependenciesAsURI().get());
-                compilerMapsHolder.addKieMetaData(nioPath, kieModuleMetaData);
-                if (res.getProjectDependenciesRaw().isPresent()) {
-                    final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
-                    final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
-                                                                                         javaResources);
+            return runNewBuild(project, builder);
+        }
+    }
 
-                    return new InnerBuilder(project,
-                                            kieModuleMetaData,
-                                            typeSourceResolver, resourcesHolder);
-                } else {
-                    throw new RuntimeException("Failed to build correctly the project:" + project.toString());
-                }
+
+    private InnerBuilder getInnerBuilderWithAlreadyPresentData(KieProject project,KieModuleMetaData kieModuleMetaData) {
+        Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+        final Set<String> javaResources = new HashSet<String>(compilerMapsHolder.getDependenciesRaw(workingDir));
+        final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData, javaResources);
+        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, resourcesHolder);
+    }
+
+    private InnerBuilder runNewBuild(KieProject project, Optional<KieAFBuilder> builder) {
+        KieModuleMetaData kieModuleMetaData;
+        KieCompilationResponse res = builder.get().build(Boolean.TRUE, Boolean.FALSE);
+        if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
+            kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
+                                                          res.getProjectDependenciesAsURI().get());
+            compilerMapsHolder.addKieMetaData(res.getWorkingDir().get(), kieModuleMetaData);
+            if (res.getProjectDependenciesRaw().isPresent()) {
+                final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
+                final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
+                                                                                     javaResources);
+
+                return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, resourcesHolder);
             } else {
                 throw new RuntimeException("Failed to build correctly the project:" + project.toString());
             }
+        } else {
+            throw new RuntimeException("Failed to build correctly the project:" + project.toString());
         }
     }
+
+
 
     class InnerBuilder {
 

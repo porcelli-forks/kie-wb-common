@@ -23,8 +23,14 @@ import javax.inject.Named;
 import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.commons.validation.PortablePreconditions;
 
@@ -33,20 +39,25 @@ import org.uberfire.commons.validation.PortablePreconditions;
  */
 @ApplicationScoped
 @Named("ProjectDataModelOracleCache")
-public class LRUProjectDataModelOracleCache
-        extends LRUCache<KieProject, ProjectDataModelOracle> {
+public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.nio.file.Path, ProjectDataModelOracle> {
 
     private ProjectDataModelOracleBuilderProvider builderProvider;
     private KieProjectService projectService;
+    private CompilerMapsHolder compilerMapsHolder;
+    private GuvnorM2Repository guvnorM2Repository;
 
     public LRUProjectDataModelOracleCache() {
     }
 
     @Inject
     public LRUProjectDataModelOracleCache( final ProjectDataModelOracleBuilderProvider builderProvider,
-                                           final KieProjectService projectService) {
+                                           final KieProjectService projectService,
+                                           final CompilerMapsHolder compilerMapsHolder,
+                                           final GuvnorM2Repository guvnorM2Repository) {
         this.builderProvider = builderProvider;
         this.projectService = projectService;
+        this.compilerMapsHolder = compilerMapsHolder;
+        this.guvnorM2Repository = guvnorM2Repository;
     }
 
     public synchronized void invalidateProjectCache( @Observes final InvalidateDMOProjectCacheEvent event ) {
@@ -54,10 +65,10 @@ public class LRUProjectDataModelOracleCache
                                             event );
         final Path resourcePath = event.getResourcePath();
         final KieProject project = projectService.resolveProject( resourcePath );
-
+        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
         //If resource was not within a Project there's nothing to invalidate
         if ( project != null ) {
-            invalidateCache( project );
+            invalidateCache( workingDir );
         }
     }
 
@@ -65,12 +76,26 @@ public class LRUProjectDataModelOracleCache
 
     //Check the ProjectOracle for the Project has been created, otherwise create one!
     public synchronized ProjectDataModelOracle assertProjectDataModelOracle( final KieProject project) {
-        ProjectDataModelOracle projectOracle = getEntry( project );
-        if ( projectOracle == null ) {
-            projectOracle = makeProjectOracle( project );
-            setEntry( project,
-                      projectOracle );
+        ProjectDataModelOracle  projectOracle;
+        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+        if(workingDir == null){
+            projectOracle = buildAndSetEntry(project);
+        }else{
+            projectOracle = getEntry( workingDir );
+            if ( projectOracle == null ) {
+                projectOracle = buildAndSetEntry(project);
+            }
         }
+        return projectOracle;
+
+    }
+
+    private ProjectDataModelOracle buildAndSetEntry(KieProject project) {
+        ProjectDataModelOracle projectOracle;
+        org.uberfire.java.nio.file.Path workingDir;
+        projectOracle = makeProjectOracle(project );
+        workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+        setEntry( workingDir, projectOracle );
         return projectOracle;
     }
 

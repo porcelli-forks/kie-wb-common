@@ -91,15 +91,6 @@ public class BuildServiceImpl implements BuildService {
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }
 
-    /*private org.uberfire.java.nio.file.Path getNioPath(Project project) {
-        org.uberfire.java.nio.file.Path nioPath;
-        if(!project.getRootPath().toString().startsWith("file://")){
-            nioPath = Paths.convert(project.getRootPath());
-        }else{
-            nioPath = PathConverter.createPathFromVFS(project.getRootPath());
-        }
-        return nioPath;
-    }*/
 
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
         //@TODO check if is correct this conversion

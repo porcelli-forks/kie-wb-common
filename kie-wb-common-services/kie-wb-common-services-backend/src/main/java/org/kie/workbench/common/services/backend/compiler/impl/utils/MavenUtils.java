@@ -35,8 +35,6 @@ import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
-//import org.uberfire.backend.vfs.Path;
-
 public class MavenUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(MavenUtils.class);
