@@ -18,6 +18,7 @@ package org.kie.workbench.common.services.backend.compiler.impl.share;
 import java.util.List;
 import java.util.Optional;
 
+import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.uberfire.java.nio.file.Path;
 
 /***
@@ -26,15 +27,18 @@ import org.uberfire.java.nio.file.Path;
  */
 public interface ClassLoadersResourcesHolder {
 
-    void addTargetClassLoader(Path project,
-                              ClassLoader classLoader);
+    void addTargetClassLoader(Path projectRootPath,
+                              MapClassLoader classLoader);
 
-    void addDependenciesClassLoader(Path project,
-                                    ClassLoader classLoader);
+    void addDependenciesClassLoader(Path projectRootPath, ClassLoader classLoader);
 
-    Optional<ClassLoader> getTargetClassLoader(Path project);
+    void removeTargetClassloader(Path projectRootPath);
 
-    Optional<ClassLoader> getDependenciesClassLoader(Path project);
+    Optional<MapClassLoader> getTargetClassLoader(Path projectRootPath);
+
+    Optional<ClassLoader> getDependenciesClassLoader(Path projectRootPath);
+
+    void removeDependenciesClassloader(Path projectRootPath);
 
     boolean containsPomDependencies(Path projectRootPath);
 
@@ -42,15 +46,6 @@ public interface ClassLoadersResourcesHolder {
 
     Boolean removeProjectDeps(Path projectRootPath);
 
-    //POM deps
-
-    void addPomDependencies(Path projectRootPath,
-                            List<String> uri);
-
-    List<String> getPomDependencies(Path projectRootPath);
-
-    void replacePomDependencies(Path projectRootPath,
-                                List<String> uris);
 
     //Target deps
 
@@ -61,6 +56,5 @@ public interface ClassLoadersResourcesHolder {
 
     List<String> getTargetsProjectDependenciesFiltered(Path projectRootPath, String packageName);
 
-    void replaceTargetDependencies(Path projectRootPath,
-                                   List<String> uris);
+    void replaceTargetDependencies(Path projectRootPath, List<String> uris);
 }

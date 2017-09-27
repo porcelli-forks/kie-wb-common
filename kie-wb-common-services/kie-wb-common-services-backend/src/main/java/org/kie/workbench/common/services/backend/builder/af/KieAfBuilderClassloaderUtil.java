@@ -39,7 +39,7 @@ public class KieAfBuilderClassloaderUtil {
     /**
      * Thi smethod return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
-    public static ClassLoader getProjectClassloader(Path nioPath,
+    public static Optional<MapClassLoader> getProjectClassloader(Path nioPath,
                                                     CompilerMapsHolder compilerMapsHolder,
                                                     GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder) {
 
@@ -50,8 +50,7 @@ public class KieAfBuilderClassloaderUtil {
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 
             /* absolute path on the fs */
-            Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
-
+            Path workingDir = res.getWorkingDir().get();
             /* we collects all the thing produced in the target/classes folders */
             Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(workingDir);
 
@@ -63,44 +62,35 @@ public class KieAfBuilderClassloaderUtil {
                     classloadersResourcesHolder.addTargetProjectDependencies(workingDir, targetClassesOptional.get());// check this add
                 }
             }
-            ClassLoader projectClassLoader;
+            MapClassLoader projectClassLoader = null;
             final KieModule module = res.getKieModule().get();
             if (module instanceof InternalKieModule) {
 
-                //Optional<ClassLoader> targetDependenciesClassloader = classloadersResourcesHolder.getTargetClassLoader(nioPath);
-
-                ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(nioPath,
+                ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(workingDir,
                                                                                                compilerMapsHolder,
                                                                                                classloadersResourcesHolder,
                                                                                                res);
 
-/*
-                ClassLoader targetClassLoader = addToHolderAndGetTargetClassloader(nioPath,
-                                                                                         compilerMapsHolder,
-                                                                                         classloadersResourcesHolder,
-                                                                                         res,
-                                                                                         targetDependenciesClassloader);*/
-
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
-                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(res.getWorkingDir().get().toString()), dependenciesClassLoader);
-                classloadersResourcesHolder.addTargetClassLoader(nioPath, projectClassLoader);
-            } else {
-                projectClassLoader = KieModuleMetaData.Factory.newKieModuleMetaData(module).getClassLoader();
-                //classloadersResourcesHolder.addTargetClassLoader(nioPath, projectClassLoader);
+                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString()), dependenciesClassLoader);
+                classloadersResourcesHolder.addTargetClassLoader(workingDir, projectClassLoader);
             }
-            return projectClassLoader;
+            return Optional.ofNullable(projectClassLoader);
         }
-        return null;
+        return Optional.empty();
     }
 
-    private static ClassLoader addToHolderAndGetDependenciesClassloader(Path nioPath,
+    private static ClassLoader addToHolderAndGetDependenciesClassloader(Path workingDir,
                                                                         CompilerMapsHolder compilerMapsHolder,
                                                                         ClassLoadersResourcesHolder classloadersResourcesHolder,
                                                                         KieCompilationResponse res) {
 
-        Optional<ClassLoader> opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassLoader(nioPath);
+        Optional<ClassLoader> opDependenciesClassLoader = Optional.empty();
+        if(res.getWorkingDir().isPresent()){
+            opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassLoader(workingDir);
+        }
 
         ClassLoader dependenciesClassLoader;
         if (!opDependenciesClassLoader.isPresent()){
@@ -108,38 +98,17 @@ public class KieAfBuilderClassloaderUtil {
         }else {
             dependenciesClassLoader = opDependenciesClassLoader.get();
         }
+        classloadersResourcesHolder.addDependenciesClassLoader(workingDir, dependenciesClassLoader);
+
         if(res.getProjectDependenciesRaw().isPresent()) {
-            compilerMapsHolder.addDependenciesRaw(nioPath, res.getProjectDependenciesRaw().get());
+            compilerMapsHolder.addDependenciesRaw(workingDir, res.getProjectDependenciesRaw().get());
         }
         if(res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                             res.getProjectDependenciesAsURI().get());
-            compilerMapsHolder.addKieMetaData(nioPath, kieModuleMetaData);
+            compilerMapsHolder.addKieMetaData(workingDir, kieModuleMetaData);
         }
-        classloadersResourcesHolder.addDependenciesClassLoader(nioPath, dependenciesClassLoader);
         return dependenciesClassLoader;
     }
-/*
-    private static ClassLoader addToHolderAndGetTargetClassloader(Path nioPath,
-                                                                        CompilerMapsHolder compilerMapsHolder,
-                                                                        ClassLoadersResourcesHolder classloadersResourcesHolder,
-                                                                        KieCompilationResponse res,
-                                                                        Optional<ClassLoader> opTargetClassLoader) {
-        ClassLoader targetClassLoader;
-        if (!opTargetClassLoader.isPresent()){
-            targetClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
-        }else {
-            targetClassLoader = opTargetClassLoader.get();
-        }
-        if(res.getProjectDependenciesRaw().isPresent()) {
-            compilerMapsHolder.addDependenciesRaw(nioPath, res.getProjectDependenciesRaw().get());
-        }
-        if(res.getProjectDependenciesAsURI().isPresent()) {
-            KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
-                                                                            res.getProjectDependenciesAsURI().get());
-            compilerMapsHolder.addKieMetaData(nioPath, kieModuleMetaData);
-        }
-        classloadersResourcesHolder.addTargetClassLoader(nioPath, targetClassLoader);
-        return targetClassLoader;
-    }*/
+
 }

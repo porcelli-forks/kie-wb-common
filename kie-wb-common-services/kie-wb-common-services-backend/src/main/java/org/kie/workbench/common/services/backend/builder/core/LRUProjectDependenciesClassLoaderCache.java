@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.services.backend.builder.core;
 
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,6 +27,7 @@ import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloa
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
+import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
@@ -54,10 +56,9 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
         Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
         ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
-            classLoader = buildClassLoader(project);
-            if(classLoader != null) {
-                setEntry(nioFsPAth,
-                         classLoader);
+            Optional<MapClassLoader> opClassloader = buildClassLoader(project);
+            if(opClassloader.isPresent()) {
+                setEntry(nioFsPAth, opClassloader.get());
             }
         }
         return classLoader;
@@ -69,38 +70,13 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
         setEntry(nioFsPAth, classLoader);
     }
 
-    protected ClassLoader buildClassLoader(final KieProject project) {
+    protected Optional<MapClassLoader> buildClassLoader(final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        ClassLoader classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
-                                                                 compilerMapsHolder,
-                                                                 guvnorM2Repository,classloadersResourcesHolder);
-        return classLoader;
+        Optional<MapClassLoader> classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
+                                                                                                            compilerMapsHolder,
+                                                                                                            guvnorM2Repository, classloadersResourcesHolder);
+
+        return  classLoader;
     }
-
-
-    /**
-     * This method and the subsequent caching was added for performance reasons, since the dependencies calculation and
-     * project class loader calculation tends to be time consuming when we manage project with transitives dependencies.
-     * Since the project ClassLoader may change with ever incremental build it's better to store in the cache the
-     * ClassLoader part that has the project dependencies. And the project ClassLoader can be easily calculated using
-     * this ClassLoader as parent. Since current project classes are quickly calculated on each incremental build, etc.
-     */
-   /* public static ClassLoader buildClassLoader(final KieProject project,
-                                               final KieModuleMetaData kieModuleMetaData) {
-        //By construction the parent class loader for the KieModuleMetadata.getClassLoader() is an URLClass loader
-        //that has the project dependencies. So this implementation relies on this. BUT can easily be changed to
-        //calculate this URL class loader given that we have the pom.xml and we can use maven libraries classes
-        //to calculate project maven dependencies. This is basically what the KieModuleMetaData already does. The
-        //optimization was added to avoid the maven transitive calculation on complex projects.
-        final ClassLoader classLoader = kieModuleMetaData.getClassLoader().getParent();
-        if (classLoader instanceof URLClassLoader) {
-            return classLoader;
-        } else {
-            //this case should never happen. But if ProjectClassLoader calculation for KieModuleMetadata changes at
-            //the error will be notified for implementation review.
-            throw new RuntimeException("It was not possible to calculate project dependencies class loader for project: "
-                                               + project.getKModuleXMLPath());
-        }
-    }*/
 
 }

@@ -28,9 +28,11 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -49,6 +51,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFact
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.DotFileFilter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
+import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.DirectoryStream;
@@ -518,10 +521,10 @@ public class CompilerClassloaderUtils {
         }
     }
 
-    public static List<String> filterPathClasses(List<String> paths,
-                                                 String mavenRpo) {
+    public static Set<String> filterPathClasses(List<String> paths,
+                                                String mavenRpo) {
         int mavenRepoLenght = mavenRpo.length();
-        List<String> filtered = new ArrayList<>(paths.size());
+        Set<String> filtered = new HashSet<>(paths.size());
         for (String item : paths) {
             if (item.endsWith(JAVA_CLASS_EXT)) {
                 String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15,
@@ -550,10 +553,16 @@ public class CompilerClassloaderUtils {
         return filtered;
     }
 
-    public static Class<?> getClass(String pkgName, String className, ClassLoader classloader) {
-        //impl borrowed from KieModuleMetaDataImpl
+    public static Class<?> getClass(String pkgName, String className, MapClassLoader classloader) {
         try {
-            return Class.forName(pkgName != null && pkgName.trim().length() != 0 ? pkgName + "." + className:className, false, classloader);
+            String input ;
+            if(pkgName != null && pkgName.trim().length() != 0){
+                input = className;
+            }else{
+                return null;
+            }
+            Class<?> clazz = classloader.loadClass(input);
+            return clazz;
         } catch (ClassNotFoundException var4) {
             return null;
         }

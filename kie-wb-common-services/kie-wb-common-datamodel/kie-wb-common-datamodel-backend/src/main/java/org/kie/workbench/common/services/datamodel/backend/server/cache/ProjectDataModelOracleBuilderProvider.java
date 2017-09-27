@@ -33,6 +33,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilatio
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
+import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.ProjectImportsService;
@@ -149,14 +150,12 @@ public class ProjectDataModelOracleBuilderProvider {
         }
 
         private void addFromKieModuleMetadata() {
-            Path prjRoot =  compilerMapsHolder.getProjectRoot(project.getRootPath());// file://<absoultepath>
-            Path nioPath = Paths.convert(project.getRootPath());// /nameprj
+            Path prjRoot =  compilerMapsHolder.getProjectRoot(project.getRootPath());
             WhiteList whiteList = getFilteredPackageNames();
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
                 addClasses(packageName, kieModuleMetaData.getClasses(packageName), prjRoot);
-                //@TODO check why we have two entry wuith prj and fs
-                addClasses(packageName, classloadersResourcesHolder.getTargetsProjectDependenciesFiltered(nioPath, packageName), prjRoot);//@TODO check this path
+                addClasses(packageName, classloadersResourcesHolder.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot);
             }
         }
 
@@ -167,7 +166,7 @@ public class ProjectDataModelOracleBuilderProvider {
             DefaultKieAFBuilder builder = (DefaultKieAFBuilder) compilerMapsHolder.getBuilder(Paths.convert(project.getRootPath()));
             Collection<String> pkgs = kieModuleMetaData.getPackages();
             //@TODO change /global with guvnor repo
-            List<String> filtered = CompilerClassloaderUtils.filterPathClasses(classloadersResourcesHolder.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");
+            Set<String> filtered = CompilerClassloaderUtils.filterPathClasses(classloadersResourcesHolder.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");
             pkgs.addAll(filtered);
             return packageNameWhiteListService.filterPackageNames(project, pkgs);
         }
@@ -194,16 +193,18 @@ public class ProjectDataModelOracleBuilderProvider {
 
         private void addClass(final String packageName, final String className, Path project) {
             try {
-                //final Class clazz = kieModuleMetaData.getClass(packageName, className);
-                Optional<ClassLoader> prjClassloaderOpt = classloadersResourcesHolder.getTargetClassLoader(project);
+                Optional<MapClassLoader> prjClassloaderOpt = classloadersResourcesHolder.getTargetClassLoader(project);
                 if(prjClassloaderOpt.isPresent()) {
+
                     final Class clazz = CompilerClassloaderUtils.getClass(packageName,
                                                                           className,
-                                                                          prjClassloaderOpt.get());
-                    //final Class clazz = resourcesHolder.kieModuleMetaData.getClass(packageName, className);
-                    pdBuilder.addClass(clazz,
-                                       kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(),
-                                       typeSourceResolver.getTypeSource(clazz));
+                                                                          (MapClassLoader) prjClassloaderOpt.get());
+
+                    if(clazz != null) {
+                        pdBuilder.addClass(clazz,
+                                           kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(),
+                                           typeSourceResolver.getTypeSource(clazz));
+                    }
                 }
             } catch (Throwable e) {
                 //Class resolution would have happened in Builder and reported as warnings so log error here at debug level to avoid flooding logs
