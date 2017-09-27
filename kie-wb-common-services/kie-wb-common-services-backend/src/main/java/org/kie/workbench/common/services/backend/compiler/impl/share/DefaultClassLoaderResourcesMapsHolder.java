@@ -181,11 +181,11 @@ public class DefaultClassLoaderResourcesMapsHolder implements ClassLoadersResour
             this.targetClassloader = targetClassloader;
         }
 
-        public void removeTargetClassloader(Path project){
+        public void removeTargetClassloader(Path project) {
             this.targetClassloader = null;
         }
 
-        public void removeDependenciesClassloader(Path project){
+        public void removeDependenciesClassloader(Path project) {
             this.dependenciesClassloader = null;
         }
 

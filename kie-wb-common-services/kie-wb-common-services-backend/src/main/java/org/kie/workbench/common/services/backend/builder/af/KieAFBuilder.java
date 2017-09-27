@@ -102,7 +102,6 @@ public interface KieAFBuilder {
                                  String mavenRepo, Boolean skipPrjDependenciesCreationList);
 
 
-
     /**
      * Run a mvn compile package on the projectPath, maven output provided in the CompilationResponse
      * a new CompilationRequest will be created at every invocation, useful if the project folder and maven repo changes
@@ -171,7 +170,6 @@ public interface KieAFBuilder {
                                             String mavenRepo,
                                             String[] args,
                                             KieDecorator decorator, Boolean skipPrjDependenciesCreationList);
-
 
 
 }

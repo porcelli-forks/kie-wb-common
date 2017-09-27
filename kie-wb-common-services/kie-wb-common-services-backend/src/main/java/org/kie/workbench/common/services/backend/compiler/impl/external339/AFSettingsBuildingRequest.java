@@ -106,7 +106,7 @@ public class AFSettingsBuildingRequest implements SettingsBuildingRequest {
             while (i$.hasNext()) {
                 String key = (String) i$.next();
                 this.systemProperties.put(key,
-                                          System.getProperty(key));
+                        System.getProperty(key));
             }
         } else {
             this.systemProperties = null;

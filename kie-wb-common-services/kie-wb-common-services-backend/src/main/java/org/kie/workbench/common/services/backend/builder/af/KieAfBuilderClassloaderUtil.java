@@ -40,12 +40,12 @@ public class KieAfBuilderClassloaderUtil {
      * Thi smethod return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
     public static Optional<MapClassLoader> getProjectClassloader(Path nioPath,
-                                                    CompilerMapsHolder compilerMapsHolder,
-                                                    GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder) {
+                                                                 CompilerMapsHolder compilerMapsHolder,
+                                                                 GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder) {
 
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
-                                                                compilerMapsHolder,
-                                                                guvnorM2Repository);
+                compilerMapsHolder,
+                guvnorM2Repository);
         KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 
@@ -54,11 +54,11 @@ public class KieAfBuilderClassloaderUtil {
             /* we collects all the thing produced in the target/classes folders */
             Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(workingDir);
 
-            if(artifactsFromTargets.isPresent()) {
+            if (artifactsFromTargets.isPresent()) {
                 classloadersResourcesHolder.addTargetProjectDependencies(workingDir, artifactsFromTargets.get());
-            }else{
+            } else {
                 Optional<List<String>> targetClassesOptional = CompilerClassloaderUtils.getStringsFromTargets(workingDir);
-                if(targetClassesOptional.isPresent()){
+                if (targetClassesOptional.isPresent()) {
                     classloadersResourcesHolder.addTargetProjectDependencies(workingDir, targetClassesOptional.get());// check this add
                 }
             }
@@ -67,9 +67,9 @@ public class KieAfBuilderClassloaderUtil {
             if (module instanceof InternalKieModule) {
 
                 ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(workingDir,
-                                                                                               compilerMapsHolder,
-                                                                                               classloadersResourcesHolder,
-                                                                                               res);
+                        compilerMapsHolder,
+                        classloadersResourcesHolder,
+                        res);
 
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
@@ -88,24 +88,24 @@ public class KieAfBuilderClassloaderUtil {
                                                                         KieCompilationResponse res) {
 
         Optional<ClassLoader> opDependenciesClassLoader = Optional.empty();
-        if(res.getWorkingDir().isPresent()){
+        if (res.getWorkingDir().isPresent()) {
             opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassLoader(workingDir);
         }
 
         ClassLoader dependenciesClassLoader;
-        if (!opDependenciesClassLoader.isPresent()){
+        if (!opDependenciesClassLoader.isPresent()) {
             dependenciesClassLoader = new URLClassLoader(res.getProjectDependenciesAsURL().get().toArray(new URL[res.getProjectDependenciesAsURL().get().size()]));
-        }else {
+        } else {
             dependenciesClassLoader = opDependenciesClassLoader.get();
         }
         classloadersResourcesHolder.addDependenciesClassLoader(workingDir, dependenciesClassLoader);
 
-        if(res.getProjectDependenciesRaw().isPresent()) {
+        if (res.getProjectDependenciesRaw().isPresent()) {
             compilerMapsHolder.addDependenciesRaw(workingDir, res.getProjectDependenciesRaw().get());
         }
-        if(res.getProjectDependenciesAsURI().isPresent()) {
+        if (res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
-                                                                            res.getProjectDependenciesAsURI().get());
+                    res.getProjectDependenciesAsURI().get());
             compilerMapsHolder.addKieMetaData(workingDir, kieModuleMetaData);
         }
         return dependenciesClassLoader;

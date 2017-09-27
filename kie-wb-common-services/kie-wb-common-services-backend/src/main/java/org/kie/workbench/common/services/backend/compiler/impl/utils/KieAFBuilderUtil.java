@@ -43,16 +43,16 @@ public class KieAFBuilderUtil {
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(),
-                                               UUID.randomUUID().toString());
+                        UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(),
-                                          repo);
+                        repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
                 builder = new DefaultKieAFBuilder(prj,
-                                                  MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                                                  getCompiler(compilerMapsHolder),
-                                                  compilerMapsHolder);
+                        MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
+                        getCompiler(compilerMapsHolder),
+                        compilerMapsHolder);
                 compilerMapsHolder.addBuilder(nioPath,
-                                              builder);
+                        builder);
             }
         }
         return builder;
@@ -62,7 +62,7 @@ public class KieAFBuilderUtil {
         // we create the compiler in this weird mode to use the gitMap used internally
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
         AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
-                                                                    compilerMapsHolder);
+                compilerMapsHolder);
         return outerDecorator;
     }
 
@@ -72,8 +72,8 @@ public class KieAFBuilderUtil {
 
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
-                                                                compilerMapsHolder,
-                                                                guvnorM2Repository);
+                compilerMapsHolder,
+                guvnorM2Repository);
         Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         return prjPath;
     }

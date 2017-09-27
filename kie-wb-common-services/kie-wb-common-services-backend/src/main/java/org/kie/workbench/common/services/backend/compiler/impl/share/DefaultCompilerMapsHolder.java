@@ -54,7 +54,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public boolean addGit(JGitFileSystem key,
                           Git git) {
         return gitMap.put(key,
-                          git) != null;
+                git) != null;
     }
 
     public Git removeGit(JGitFileSystem key) {
@@ -80,7 +80,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public boolean addBuilder(final Path projectRootPath,
                               final KieAFBuilder builder) {
         return buildersMap.put(projectRootPath,
-                               builder) != null;
+                builder) != null;
     }
 
     public KieAFBuilder removeBuilder(Path projectRootPath) {
@@ -102,7 +102,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public void addKieMetaData(Path projectRootPath,
                                KieModuleMetaData metadata) {
         kieMetaDataMap.put(projectRootPath,
-                           metadata);
+                metadata);
     }
 
     public boolean removeKieModuleMetaData(Path projectRootPath) {
@@ -112,7 +112,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public void replaceKieMetaData(Path projectRootPath,
                                    KieModuleMetaData metadata) {
         kieMetaDataMap.replace(projectRootPath,
-                               metadata);
+                metadata);
     }
 
     public List<String> getDependenciesRaw(Path projectRootPath) {
@@ -122,7 +122,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public void addDependenciesRaw(Path projectRootPath,
                                    List<String> depsRaw) {
         depsRawMap.put(projectRootPath,
-                       depsRaw);
+                depsRaw);
     }
 
     public boolean removeDependenciesRaw(Path projectRootPath) {
@@ -132,17 +132,17 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     public void replaceDependenciesRaw(Path projectRootPath,
                                        List<String> depsRaw) {
         depsRawMap.replace(projectRootPath,
-                           depsRaw);
+                depsRaw);
     }
 
     @Override
     public Path getProjectRoot(org.uberfire.backend.vfs.Path path) {
         Path nioPath = Paths.convert(path);
         KieAFBuilder builder = getBuilder(nioPath);
-        if(builder != null){
-            Path prjRoot = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
+        if (builder != null) {
+            Path prjRoot = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
             return prjRoot;
-        }else {
+        } else {
             return nioPath;
         }
     }

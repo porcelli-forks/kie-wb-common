@@ -27,12 +27,12 @@ public class BuilderUtils {
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(),
-                                               UUID.randomUUID().toString());
+                        UUID.randomUUID().toString());
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(),
-                                          repo);
+                        repo);
                 builder = new DefaultKieAFBuilder(nioPath,
-                                                  MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                                                  compilerMapsHolder);
+                        MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
+                        compilerMapsHolder);
             }
         }
         return Optional.ofNullable(builder);

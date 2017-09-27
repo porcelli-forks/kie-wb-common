@@ -135,18 +135,18 @@ public class DefaultPomEditor implements PomEditor {
         }
 
         Boolean overwritePOM = updatePOMModel(build,
-                                              defaultCompilerPluginPresent,
-                                              alternativeCompilerPluginPresent,
-                                              kiePluginPresent,
-                                              kieTakariPresent,
-                                              defaultMavenCompilerPosition,
-                                              alternativeCompilerPosition,
-                                              kieMavenPluginPosition);
+                defaultCompilerPluginPresent,
+                alternativeCompilerPluginPresent,
+                kiePluginPresent,
+                kieTakariPresent,
+                defaultMavenCompilerPosition,
+                alternativeCompilerPosition,
+                kieMavenPluginPosition);
 
         return new DefaultPluginPresents(defaultCompilerPluginPresent,
-                                         alternativeCompilerPluginPresent,
-                                         kiePluginPresent,
-                                         overwritePOM);
+                alternativeCompilerPluginPresent,
+                kiePluginPresent,
+                overwritePOM);
     }
 
     private Boolean updatePOMModel(Build build,
@@ -183,9 +183,9 @@ public class DefaultPomEditor implements PomEditor {
                 Plugin defaultMavenCompiler = build.getPlugins().get(defaultMavenCompilerPosition);
                 Plugin alternativeCompiler = build.getPlugins().get(alternativeCompilerPosition);
                 build.getPlugins().set(defaultMavenCompilerPosition,
-                                       alternativeCompiler);
+                        alternativeCompiler);
                 build.getPlugins().set(alternativeCompilerPosition,
-                                       defaultMavenCompiler);
+                        defaultMavenCompiler);
                 overwritePOM = Boolean.TRUE;
             }
         }
@@ -202,7 +202,7 @@ public class DefaultPomEditor implements PomEditor {
                 kieTakariPlugin.setVersion(kieMavenPlugin.getVersion());
                 kieTakariPlugin.setExtensions(Boolean.parseBoolean(kieMavenPlugin.getExtensions()));
                 plugins.set(kieMavenPluginPosition,
-                            kieTakariPlugin);
+                        kieTakariPlugin);
                 build.setPlugins(plugins);
                 overwritePOM = Boolean.TRUE;
             }
@@ -256,7 +256,7 @@ public class DefaultPomEditor implements PomEditor {
     protected String[] addCreateClasspathMavenArgs(String[] args) {
         StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
         String[] newArgs = Arrays.copyOf(args,
-                                         args.length + 2);
+                args.length + 2);
         newArgs[args.length] = MavenConfig.DEPS_BUILD_CLASSPATH;
         newArgs[args.length + 1] = sb.toString();
         return newArgs;
@@ -267,10 +267,10 @@ public class DefaultPomEditor implements PomEditor {
         try {
             Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
             holder = new PomPlaceHolder(pom.toAbsolutePath().toString(),
-                                        model.getArtifactId(),
-                                        model.getGroupId(),
-                                        model.getVersion(),
-                                        model.getPackaging());
+                    model.getArtifactId(),
+                    model.getGroupId(),
+                    model.getVersion(),
+                    model.getPackaging());
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -284,16 +284,16 @@ public class DefaultPomEditor implements PomEditor {
             Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
             if (model == null) {
                 logger.error("Model null from pom file:",
-                             pom.toString());
+                        pom.toString());
                 return;
             }
 
             PomPlaceHolder pomPH = new PomPlaceHolder(pom.toAbsolutePath().toString(),
-                                                      model.getArtifactId(),
-                                                      model.getGroupId(),
-                                                      model.getVersion(),
-                                                      model.getPackaging(),
-                                                      Files.readAllBytes(pom));
+                    model.getArtifactId(),
+                    model.getGroupId(),
+                    model.getVersion(),
+                    model.getPackaging(),
+                    Files.readAllBytes(pom));
 
             if (!history.contains(pomPH)) {
 
@@ -307,11 +307,11 @@ public class DefaultPomEditor implements PomEditor {
                 if (plugs.pomOverwriteRequired()) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     writer.write(baos,
-                                 model);
+                            model);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Pom changed:{}",
-                                     new String(baos.toByteArray(),
-                                                StandardCharsets.UTF_8));
+                                new String(baos.toByteArray(),
+                                        StandardCharsets.UTF_8));
                     }
 
                     Path pomParent = Paths.get(URI.create(
@@ -322,8 +322,8 @@ public class DefaultPomEditor implements PomEditor {
                                     append(POM_NAME).toString()));
                     Files.delete(pomParent);
                     Files.write(pomParent,
-                                baos.toByteArray(),
-                                StandardOpenOption.CREATE_NEW);//enhanced pom
+                            baos.toByteArray(),
+                            StandardOpenOption.CREATE_NEW);//enhanced pom
                 }
                 history.add(pomPH);
             }

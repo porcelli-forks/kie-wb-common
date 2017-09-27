@@ -78,7 +78,7 @@ public class ProjectDataModelOracleBuilderProvider {
         if(!builder.isPresent()){
             throw new RuntimeException("Isn't possible create a Builder"+ project.toString());
         }
-        
+
         Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
         KieModuleMetaData kieModuleMetaData =compilerMapsHolder.getMetadata(workingDir);
 

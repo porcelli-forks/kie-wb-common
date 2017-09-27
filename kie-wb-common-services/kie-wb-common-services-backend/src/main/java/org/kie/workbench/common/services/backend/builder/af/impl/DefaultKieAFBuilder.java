@@ -46,7 +46,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(projectRepo,compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(projectRepo, compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -54,13 +54,13 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     }
 
     public DefaultKieAFBuilder(Path projectRepo,
-                               String mavenRepo, AFCompiler compiler , CompilerMapsHolder compilerMapsHolder) {
+                               String mavenRepo, AFCompiler compiler, CompilerMapsHolder compilerMapsHolder) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(projectRepo,compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(projectRepo, compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -74,56 +74,56 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.COMPILE},
-                                            Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, Boolean.FALSE);
     }
 
     public DefaultKieAFBuilder(String projectRepo,
-                               String mavenRepo,Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               String mavenRepo, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.COMPILE},
-                                            Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
     }
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               String[] args,CompilerMapsHolder compilerMapsHolder) {
+                               String[] args, CompilerMapsHolder compilerMapsHolder) {
         /**In the  construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            args,
-                                            Boolean.TRUE, Boolean.FALSE);
+                info,
+                args,
+                Boolean.TRUE, Boolean.FALSE);
     }
 
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               String[] args,Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               String[] args, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
         /**In the  construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            args,
-                                            Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                args,
+                Boolean.TRUE, skipPrjDependenciesCreationList);
     }
 
     public DefaultKieAFBuilder(String projectRepo,
@@ -134,38 +134,38 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         this.mavenRepo = mavenRepo;
         this.compiler = compiler;
         this.compilerMapsHolder = compilerMapsHolder;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.COMPILE},
-                                            Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, Boolean.FALSE);
     }
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               AFCompiler compiler,Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               AFCompiler compiler, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.COMPILE},
-                                            Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
     }
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
                                String[] mavenArgs,
-                               AFCompiler compiler,Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               AFCompiler compiler, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI+projectRepo)),compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 mavenArgs,
@@ -182,129 +182,129 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse build(Boolean logRequested, Boolean skipPrjDependenciesCreationList) {
         req.getKieCliRequest().getMap().clear();
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.COMPILE},
-                                            logRequested, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                logRequested, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndPackage() {
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.PACKAGE},
-                                            Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.PACKAGE},
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndPackage(Boolean skipPrjDependenciesCreationList) {
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.PACKAGE},
-                                            Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.PACKAGE},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndInstall() {
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.INSTALL},
-                                            Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.INSTALL},
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndInstall(Boolean skipPrjDependenciesCreationList) {
         req = new DefaultCompilationRequest(mavenRepo,
-                                            info,
-                                            new String[]{MavenCLIArgs.INSTALL},
-                                            Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.INSTALL},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse build(String mavenRepo) {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.COMPILE},
-                                                               Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
-    public KieCompilationResponse build(String mavenRepo,Boolean skipPrjDependenciesCreationList) {
+    public KieCompilationResponse build(String mavenRepo, Boolean skipPrjDependenciesCreationList) {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.COMPILE},
-                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse build(String projectPath,
                                         String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.COMPILE},
-                                                               Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse build(String projectPath,
-                                        String mavenRepo,Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+                                        String mavenRepo, Boolean skipPrjDependenciesCreationList) {
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.COMPILE},
-                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.COMPILE},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndPackage(String projectPath,
                                                   String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.PACKAGE},
-                                                               Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.PACKAGE},
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndPackage(String projectPath,
-                                                  String mavenRepo,Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+                                                  String mavenRepo, Boolean skipPrjDependenciesCreationList) {
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.PACKAGE},
-                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.PACKAGE},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndInstall(String projectPath,
                                                   String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.INSTALL},
-                                                               Boolean.TRUE, Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.INSTALL},
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildAndInstall(String projectPath,
-                                                  String mavenRepo,Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+                                                  String mavenRepo, Boolean skipPrjDependenciesCreationList) {
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.INSTALL},
-                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                new String[]{MavenCLIArgs.INSTALL},
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
@@ -312,23 +312,23 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
                                                    String[] args) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               args,
-                                                               Boolean.TRUE, Boolean.FALSE);
+                info,
+                args,
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
     @Override
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
-                                                   String[] args,Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+                                                   String[] args, Boolean skipPrjDependenciesCreationList) {
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               args,
-                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                args,
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
@@ -338,11 +338,11 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                                    String[] args,
                                                    KieDecorator decorator) {
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(decorator);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath),compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               args,
-                                                               Boolean.TRUE, Boolean.FALSE);
+                info,
+                args,
+                Boolean.TRUE, Boolean.FALSE);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 
@@ -350,13 +350,13 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
                                                    String[] args,
-                                                   KieDecorator decorator,Boolean skipPrjDependenciesCreationList) {
+                                                   KieDecorator decorator, Boolean skipPrjDependenciesCreationList) {
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(decorator);
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                                                               info,
-                                                               args,
-                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
+                info,
+                args,
+                Boolean.TRUE, skipPrjDependenciesCreationList);
         return (KieCompilationResponse) compiler.compileSync(req);
     }
 

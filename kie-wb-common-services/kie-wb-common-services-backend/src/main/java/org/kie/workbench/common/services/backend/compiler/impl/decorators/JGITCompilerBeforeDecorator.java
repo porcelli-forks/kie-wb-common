@@ -64,18 +64,18 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
         if (path.getFileSystem() instanceof JGitFileSystem) {
             final JGitFileSystem fs = (JGitFileSystem) path.getFileSystem();
             Git repo = holder ? useHolder(fs,
-                                          req) : useInternalMap(fs,
-                                                                req);
+                    req) : useInternalMap(fs,
+                    req);
             if (!req.skipAutoSourceUpdate()) {
                 JGitUtils.applyBefore(repo);
             }
 
             _req = new DefaultCompilationRequest(req.getMavenRepo(),
-                                                 new WorkspaceCompilationInfo(Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(path.getFileName().toString()).normalize().toUri()),
-                                                                              compilerMapsHolder),
-                                                 req.getOriginalArgs(),
-                                                 req.getLogRequested(),
-                                                 req.skipPrjDependenciesCreationList());
+                    new WorkspaceCompilationInfo(Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(path.getFileName().toString()).normalize().toUri()),
+                            compilerMapsHolder),
+                    req.getOriginalArgs(),
+                    req.getLogRequested(),
+                    req.skipPrjDependenciesCreationList());
         } else {
             _req = req;
         }
@@ -88,9 +88,9 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
         Git repo;
         if (!gitMap.containsKey(fs)) {
             repo = JGitUtils.tempClone(fs,
-                                       req.getRequestUUID());
+                    req.getRequestUUID());
             gitMap.put(fs,
-                       repo);
+                    repo);
         }
         repo = gitMap.get(fs);
         return repo;
@@ -101,9 +101,9 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
         Git repo;
         if (!compilerMapsHolder.containsGit(fs)) {
             repo = JGitUtils.tempClone(fs,
-                                       req.getRequestUUID());
+                    req.getRequestUUID());
             compilerMapsHolder.addGit(fs,
-                                      repo);
+                    repo);
         }
         repo = compilerMapsHolder.getGit(fs);
         return repo;

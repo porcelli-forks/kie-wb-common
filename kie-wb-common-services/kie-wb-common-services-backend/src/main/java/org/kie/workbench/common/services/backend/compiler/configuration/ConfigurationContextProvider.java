@@ -46,10 +46,10 @@ public class ConfigurationContextProvider implements ConfigurationProvider {
 
     private void initializeWorkingConfig() {
         List<ConfigurationStrategy> confs = new ArrayList<ConfigurationStrategy>(Arrays.asList(new ConfigurationEnvironmentStrategy(),
-                                                                                               new ConfigurationPropertiesStrategy(),
-                                                                                               new ConfigurationStaticStrategy()));
+                new ConfigurationPropertiesStrategy(),
+                new ConfigurationStaticStrategy()));
         Collections.sort(confs,
-                         (ConfigurationStrategy one, ConfigurationStrategy two) -> one.getOrder().compareTo(two.getOrder()));
+                (ConfigurationStrategy one, ConfigurationStrategy two) -> one.getOrder().compareTo(two.getOrder()));
         for (ConfigurationStrategy item : confs) {
             if (item.isValid()) {
                 conf = item.loadConfiguration();

@@ -58,7 +58,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
             if (req.getInfo().isKiePluginPresent()) {
                 return (T) handleKieMavenPlugin(req,
-                                                res);
+                        res);
             }
         }
         return res;
@@ -85,11 +85,11 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
         if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
             List<String> allDepsAsString = readAllDepsAsString(req);
             return new DefaultKieCompilationResponse(Boolean.TRUE,
-                                                         (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
-                                                         (KieModule) kieModuleTuple.getOptionalObject().get(),
-                                                         mavenOutput,
-                                                         allDepsAsString,
-                                                         req.getInfo().getPrjPath());
+                    (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
+                    (KieModule) kieModuleTuple.getOptionalObject().get(),
+                    mavenOutput,
+                    allDepsAsString,
+                    req.getInfo().getPrjPath());
 
         } else {
             StringBuilder sb = new StringBuilder();
@@ -99,13 +99,13 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             if (kieModuleTuple.getErrorMsg().isPresent()) {
                 sb.append(" Error in the kieModule:").append(kieModuleTuple.getErrorMsg().get());
             }
-            return new DefaultKieCompilationResponse(Boolean.FALSE,  sb.toString(), mavenOutput);
+            return new DefaultKieCompilationResponse(Boolean.FALSE, sb.toString(), mavenOutput);
         }
     }
 
     private List<String> readAllDepsAsString(CompilationRequest req) {
         List<String> allDeps = Collections.EMPTY_LIST;
-        if(!req.skipPrjDependenciesCreationList()){
+        if (!req.skipPrjDependenciesCreationList()) {
             allDeps = getAllDepsAsString(req);
         }
         return allDeps;

@@ -44,18 +44,18 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
 
     public DefaultKieCompilationResponse(Boolean successful) {
         this(successful,
-             null,
-             null,
-             null,
-             null);
+                null,
+                null,
+                null,
+                null);
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
                                          List<String> mavenOutput,
                                          Path workingDir) {
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         null,
-                                                         mavenOutput);
+                null,
+                mavenOutput);
         this.kieModuleMetaInfo = null;
         this.workingDir = workingDir;
     }
@@ -63,8 +63,8 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     public DefaultKieCompilationResponse(Boolean successful,
                                          List<String> mavenOutput) {
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         null,
-                                                         mavenOutput);
+                null,
+                mavenOutput);
         this.kieModuleMetaInfo = null;
     }
 
@@ -72,8 +72,8 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          String errorMessage) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         errorMessage,
-                                                         Collections.emptyList());
+                errorMessage,
+                Collections.emptyList());
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -81,8 +81,8 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          List<String> mavenOutput) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         errorMessage,
-                                                         mavenOutput);
+                errorMessage,
+                mavenOutput);
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -93,7 +93,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          Path workingDir) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         mavenOutput);
+                mavenOutput);
         this.kieModuleMetaInfo = kieModuleMetaInfo;
         this.kieModule = kieModule;
         this.projectDependenciesRaw = projectDependenciesRaw;
@@ -124,7 +124,6 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         this.kieModule = kieModule;
         this.workingDir = workingDir;
     }
-
 
 
     @Override

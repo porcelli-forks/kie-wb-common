@@ -26,7 +26,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.utils.Valid;
  * load the configuration and check if it's valid
  */
 public interface ConfigurationStrategy extends Valid,
-                                               Order {
+        Order {
 
     Map<ConfigurationKey, String> loadConfiguration();
 }

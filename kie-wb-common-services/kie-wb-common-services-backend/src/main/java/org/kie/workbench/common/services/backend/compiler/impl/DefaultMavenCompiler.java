@@ -42,7 +42,7 @@ public class DefaultMavenCompiler extends BaseMavenCompiler<CompilationResponse>
     public CompilationResponse buildDefaultCompilationResponse(final Boolean value,
                                                                final List<String> output) {
         return new DefaultCompilationResponse(value,
-                                              output);
+                output);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DefaultMavenCompiler extends BaseMavenCompiler<CompilationResponse>
                                                                   String message,
                                                                   List<String> output) {
         return new DefaultCompilationResponse(value,
-                                              message,
-                                              output);
+                message,
+                output);
     }
 }

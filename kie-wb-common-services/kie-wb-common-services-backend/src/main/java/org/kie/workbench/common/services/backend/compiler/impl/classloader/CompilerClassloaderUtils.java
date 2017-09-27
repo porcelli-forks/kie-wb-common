@@ -83,10 +83,10 @@ public class CompilerClassloaderUtils {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + prjPath)));
         StringBuilder sb = new StringBuilder(MavenConfig.MAVEN_DEP_PLUGING_OUTPUT_FILE).append(MavenConfig.CLASSPATH_FILENAME).append(MavenConfig.CLASSPATH_EXT);
         CompilationRequest req = new DefaultCompilationRequest(localRepo,
-                                                               info,
-                                                               new String[]{MavenCLIArgs.DEBUG, MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
-                                                               Boolean.TRUE,
-                                                               Boolean.FALSE);
+                info,
+                new String[]{MavenCLIArgs.DEBUG, MavenConfig.DEPS_BUILD_CLASSPATH, sb.toString()},
+                Boolean.TRUE,
+                Boolean.FALSE);
         CompilationResponse res = compiler.compileSync(req);
         if (res.isSuccessful()) {
             /** Maven dependency plugin is not able to append the modules classpath using an absolute path in -Dmdep.outputFile,
@@ -130,8 +130,8 @@ public class CompilerClassloaderUtils {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
                     searchCPFiles(p,
-                                  classPathFiles,
-                                  extensions);
+                            classPathFiles,
+                            extensions);
                 } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith)) {
                     classPathFiles.add(p.toAbsolutePath().toString());
                 }
@@ -146,8 +146,8 @@ public class CompilerClassloaderUtils {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
                     searchTargetFiles(p,
-                                      classPathFiles,
-                                      extensions);
+                            classPathFiles,
+                            extensions);
                 } else if (Stream.of(extensions).anyMatch(p.toString()::endsWith) && p.toString().contains(MAVEN_TARGET)) {
                     if (FilenameUtils.getName(p.getFileName().toString()).startsWith(DOT_FILE)) {
                         continue;
@@ -162,16 +162,16 @@ public class CompilerClassloaderUtils {
                                                                                String localRepo) {
         List<String> poms = new ArrayList<>();
         MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI + prjPath)),
-                              poms);
+                poms);
         List<URL> urls = getDependenciesURL(poms,
-                                            localRepo);
+                localRepo);
         return buildResult(urls);
     }
 
     public static Optional<ClassLoader> loadDependenciesClassloaderFromProject(List<String> poms,
                                                                                String localRepo) {
         List<URL> urls = getDependenciesURL(poms,
-                                            localRepo);
+                localRepo);
         return buildResult(urls);
     }
 
@@ -201,7 +201,7 @@ public class CompilerClassloaderUtils {
         List<URL> urls = Collections.emptyList();
         try {
             urls = buildUrlsFromArtifacts(localRepo,
-                                          artifacts);
+                    artifacts);
         } catch (MalformedURLException ex) {
             logger.error(ex.getMessage());
         }
@@ -239,7 +239,7 @@ public class CompilerClassloaderUtils {
 
     public static Optional<ClassLoader> createClassloaderFromCpFiles(String prjPath) {
         List<URL> deps = readAllCpFilesAsUrls(prjPath,
-                                              MavenConfig.CLASSPATH_EXT);
+                MavenConfig.CLASSPATH_EXT);
         if (deps.isEmpty()) {
             return Optional.empty();
         } else {
@@ -252,8 +252,8 @@ public class CompilerClassloaderUtils {
                                                  String extension) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(Paths.get(URI.create(FILE_URI + prjPath)),
-                      classPathFiles,
-                      extension);
+                classPathFiles,
+                extension);
         if (!classPathFiles.isEmpty()) {
             List<URL> deps = new ArrayList<>();
             for (String file : classPathFiles) {
@@ -283,11 +283,11 @@ public class CompilerClassloaderUtils {
         try {
 
             br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
+                    "UTF-8"));
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
                 StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                        ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     urls.add(new URI(sb.toString()));
@@ -297,7 +297,7 @@ public class CompilerClassloaderUtils {
             logger.error(e.getMessage());
         } finally {
             close(filePath,
-                  br);
+                    br);
         }
         return urls;
     }
@@ -338,7 +338,7 @@ public class CompilerClassloaderUtils {
             logger.error(e.getMessage());
         } finally {
             close(filePath,
-                  br);
+                    br);
         }
         return urls;
     }
@@ -363,7 +363,7 @@ public class CompilerClassloaderUtils {
             logger.error(e.getMessage());
         } finally {
             close(filePath,
-                  br);
+                    br);
         }
         return items;
     }
@@ -371,13 +371,13 @@ public class CompilerClassloaderUtils {
     public static Optional<List<String>> getStringFromTargets(Path prjPath) {
         List<String> classPathFiles = new ArrayList<>();
         searchTargetFiles(prjPath,
-                          classPathFiles,
-                          JAVA_CLASS_EXT,
-                          DROOLS_EXT,
-                          GDROOLS_EXT,
-                          RDROOLS_EXT,
-                          XML_EXT,
-                          SCENARIO_EXT);
+                classPathFiles,
+                JAVA_CLASS_EXT,
+                DROOLS_EXT,
+                GDROOLS_EXT,
+                RDROOLS_EXT,
+                XML_EXT,
+                SCENARIO_EXT);
         if (!classPathFiles.isEmpty()) {
             return Optional.of(classPathFiles);
         }
@@ -388,8 +388,8 @@ public class CompilerClassloaderUtils {
                                                                String... extensions) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(prjPath,
-                      classPathFiles,
-                      extensions);
+                classPathFiles,
+                extensions);
         if (!classPathFiles.isEmpty()) {
             return Optional.of(classPathFiles);
         }
@@ -399,14 +399,14 @@ public class CompilerClassloaderUtils {
     public static Optional<List<String>> getStringsFromAllDependencies(Path prjPath) {
         List<String> classPathFiles = new ArrayList<>();
         searchCPFiles(prjPath,
-                      classPathFiles,
-                      MavenConfig.CLASSPATH_EXT,
-                      JAVA_ARCHIVE_RESOURCE_EXT,
-                      JAVA_CLASS_EXT,
-                      DROOLS_EXT,
-                      GDROOLS_EXT,
-                      RDROOLS_EXT,
-                      SCENARIO_EXT);
+                classPathFiles,
+                MavenConfig.CLASSPATH_EXT,
+                JAVA_ARCHIVE_RESOURCE_EXT,
+                JAVA_CLASS_EXT,
+                DROOLS_EXT,
+                GDROOLS_EXT,
+                RDROOLS_EXT,
+                SCENARIO_EXT);
         if (!classPathFiles.isEmpty()) {
             List<String> deps = processScannedFilesAsString(classPathFiles);
             if (!deps.isEmpty()) {
@@ -528,11 +528,11 @@ public class CompilerClassloaderUtils {
         for (String item : paths) {
             if (item.endsWith(JAVA_CLASS_EXT)) {
                 String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15,
-                                            item.lastIndexOf("/")).replace("/", ".");
+                        item.lastIndexOf("/")).replace("/", ".");
                 filtered.add(one);
             } else if (item.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
                 String one = item.substring(item.lastIndexOf(mavenRpo) + mavenRepoLenght,
-                                            item.lastIndexOf("/")).replace("/", ".");
+                        item.lastIndexOf("/")).replace("/", ".");
                 filtered.add(one);
             }
         }
@@ -545,7 +545,7 @@ public class CompilerClassloaderUtils {
         for (String item : items) {
             if (item.endsWith(JAVA_CLASS_EXT)) {
                 String one = item.replace("/", ".").substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(JAVA_CLASS_EXT));
-                if(one.contains(packageName)){
+                if (one.contains(packageName)) {
                     filtered.add(one);
                 }
             }
@@ -555,10 +555,10 @@ public class CompilerClassloaderUtils {
 
     public static Class<?> getClass(String pkgName, String className, MapClassLoader classloader) {
         try {
-            String input ;
-            if(pkgName != null && pkgName.trim().length() != 0){
+            String input;
+            if (pkgName != null && pkgName.trim().length() != 0) {
                 input = className;
-            }else{
+            } else {
                 return null;
             }
             Class<?> clazz = classloader.loadClass(input);

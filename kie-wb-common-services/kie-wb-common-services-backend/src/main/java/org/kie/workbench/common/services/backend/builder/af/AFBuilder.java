@@ -61,7 +61,7 @@ public interface AFBuilder {
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder
      * and maven repo remain the same between compilaton requests
      */
-    CompilationResponse buildAndInstall( Boolean skipPrjDependenciesCreationList);
+    CompilationResponse buildAndInstall(Boolean skipPrjDependenciesCreationList);
 
 
     /**
