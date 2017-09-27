@@ -59,6 +59,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
             Optional<MapClassLoader> opClassloader = buildClassLoader(project);
             if(opClassloader.isPresent()) {
                 setEntry(nioFsPAth, opClassloader.get());
+                classLoader = opClassloader.get();
             }
         }
         return classLoader;
