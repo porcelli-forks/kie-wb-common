@@ -15,6 +15,7 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,12 +36,14 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     private Map<Path, KieAFBuilder> buildersMap;
     private Map<Path, KieModuleMetaData> kieMetaDataMap;
     private Map<Path, List<String>> depsRawMap;
+    private Map<String, Path> alias ;
 
     public DefaultCompilerMapsHolder() {
         gitMap = new ConcurrentHashMap<>();
         buildersMap = new ConcurrentHashMap<>();
         kieMetaDataMap = new ConcurrentHashMap<>();
         depsRawMap = new ConcurrentHashMap<>();
+        alias = new ConcurrentHashMap<>();
     }
 
     /**
@@ -95,6 +98,11 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
         buildersMap.clear();
     }
 
+
+    /**
+     * KIE METADATA
+     */
+
     public KieModuleMetaData getMetadata(Path projectRootPath) {
         return kieMetaDataMap.get(projectRootPath);
     }
@@ -115,6 +123,10 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
                 metadata);
     }
 
+    /**
+     * DEPENDENCIES
+     */
+
     public List<String> getDependenciesRaw(Path projectRootPath) {
         return depsRawMap.get(projectRootPath);
     }
@@ -134,6 +146,28 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
         depsRawMap.replace(projectRootPath,
                 depsRaw);
     }
+
+
+
+    /**
+     * ALIAS
+     */
+
+    public boolean addAlias(String gitURI, Path workingFolder) {
+        return alias.put(gitURI, workingFolder) != null;
+    }
+
+    public Path getWorkingFolder(String gitURI) {
+        return alias.get(gitURI);
+    }
+
+    public void removeAlias(String gitURI) {
+        alias.remove(gitURI);
+    }
+
+    /**
+     * UTILS
+     */
 
     @Override
     public Path getProjectRoot(org.uberfire.backend.vfs.Path path) {

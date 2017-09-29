@@ -93,7 +93,7 @@ public class BuildServiceImpl implements BuildService {
 
 
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
-        //@TODO check if is correct this conversion
+
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
                                                                      compilerMapsHolder,
                                                                      guvnorM2Repository);
@@ -128,7 +128,7 @@ public class BuildServiceImpl implements BuildService {
     @Override
     public boolean isBuilt( final Project project ) {
         org.uberfire.java.nio.file.Path path = Paths.convert(project.getRootPath());
-        return compilerMapsHolder.getBuilder(path) != null;
+        return compilerMapsHolder.getBuilder(path) != null;//@TOOD check if with the invalidation of the cache could be better the classloaderHolder
     }
 
     @Override

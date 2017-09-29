@@ -99,11 +99,12 @@ public class ProjectDataModelOracleBuilderProvider {
 
     private InnerBuilder runNewBuild(KieProject project, Optional<KieAFBuilder> builder) {
         KieModuleMetaData kieModuleMetaData;
-        KieCompilationResponse res = builder.get().build(Boolean.TRUE, Boolean.FALSE);
+        KieCompilationResponse res = builder.get().build(Boolean.TRUE, Boolean.FALSE);// this could be readed from the ui
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
             kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                           res.getProjectDependenciesAsURI().get());
             compilerMapsHolder.addKieMetaData(res.getWorkingDir().get(), kieModuleMetaData);
+            compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), res.getWorkingDir().get());
             if (res.getProjectDependenciesRaw().isPresent()) {
                 final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
                 final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,

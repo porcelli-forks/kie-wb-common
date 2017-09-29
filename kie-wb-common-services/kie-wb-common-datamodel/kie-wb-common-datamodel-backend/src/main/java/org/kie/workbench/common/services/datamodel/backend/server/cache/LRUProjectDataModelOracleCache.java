@@ -68,7 +68,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
         org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
         //If resource was not within a Project there's nothing to invalidate
         if ( project != null ) {
-            invalidateCache( workingDir );
+            invalidateCache( workingDir );//@TOdo AFTER THE STARTUP INDEXING THE FIRST IMPORT CAUSE THE INVALIDATION CACHE OF THE PRJ INDEXED DURING THE STARTUP
         }
     }
 

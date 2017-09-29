@@ -396,7 +396,7 @@ public class AFMavenCli {
         if (cliRequest.getCommandLine().hasOption(CLIManager.LOG_FILE)) {
             File logFile = new File(cliRequest.getCommandLine().getOptionValue(CLIManager.LOG_FILE).trim());
             logFile = resolveFile(logFile,
-                    cliRequest.getWorkingDirectory());
+                                  cliRequest.getWorkingDirectory());
 
             try {
                 PrintStream ps = new PrintStream(new FileOutputStream(logFile));
@@ -405,12 +405,14 @@ public class AFMavenCli {
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             }
-            slf4jConfiguration.activate();
-
-            plexusLoggerManager = new Slf4jLoggerManager();
-            slf4jLogger = slf4jLoggerFactory.getLogger(this.getClass().getName());
-            MDC.put("compileid", logFile.getAbsolutePath());//@TODO this is redundant with the maven output if slf4k and logback are configured into wildlfy
         }
+
+        slf4jConfiguration.activate();
+
+        plexusLoggerManager = new Slf4jLoggerManager();
+        slf4jLogger = slf4jLoggerFactory.getLogger(this.getClass().getName());
+        //MDC.put("compileid", logFile.getAbsolutePath());//@TODO this is redundant with the maven output if slf4k and logback are configured into wildlfy
+
     }
 
     protected void version(AFCliRequest cliRequest) {

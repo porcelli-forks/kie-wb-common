@@ -15,6 +15,7 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
+import java.net.URI;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -28,7 +29,7 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
  **/
 public interface CompilerMapsHolder {
 
-    //GIT
+    /** GIT **/
 
     Git getGit(JGitFileSystem key);
 
@@ -41,7 +42,7 @@ public interface CompilerMapsHolder {
 
     void clearGitMap();
 
-    //BUILDER
+    /** BUILDER **/
 
     KieAFBuilder getBuilder(Path projectRootPath);
 
@@ -54,7 +55,17 @@ public interface CompilerMapsHolder {
 
     void clearBuilderMap();
 
-    //KieModueleMetaData
+
+    /** Alias git URI-working-folder **/
+
+    boolean addAlias(String gitURI, Path workingFolder);
+
+    Path getWorkingFolder(String gitURI);
+
+    void removeAlias(String gitURI);
+
+
+    /** KieModuleMetaData **/
 
     KieModuleMetaData getMetadata(Path projectRootPath);
 
@@ -66,7 +77,7 @@ public interface CompilerMapsHolder {
     void replaceKieMetaData(Path projectRootPath,
                             KieModuleMetaData metadata);
 
-    // Dependencies Raw
+    /** Dependencies Raw **/
 
     List<String> getDependenciesRaw(Path projectRootPath);
 
@@ -77,6 +88,8 @@ public interface CompilerMapsHolder {
 
     void replaceDependenciesRaw(Path projectRootPath,
                                 List<String> depsRaw);
+
+    /** UTILS **/
 
     Path getProjectRoot(org.uberfire.backend.vfs.Path path);
 }

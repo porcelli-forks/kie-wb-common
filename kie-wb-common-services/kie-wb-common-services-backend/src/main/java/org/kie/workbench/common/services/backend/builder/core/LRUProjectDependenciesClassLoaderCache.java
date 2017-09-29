@@ -23,6 +23,7 @@ import javax.inject.Named;
 
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
@@ -73,11 +74,19 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
 
     protected Optional<MapClassLoader> buildClassLoader(final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        Optional<MapClassLoader> classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,
-                                                                                                            compilerMapsHolder,
-                                                                                                            guvnorM2Repository, classloadersResourcesHolder);
-
+        Optional<MapClassLoader> classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,compilerMapsHolder,guvnorM2Repository, classloadersResourcesHolder);
+        Path workingDir = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), workingDir.toAbsolutePath());
         return  classLoader;
     }
 
+    @Override
+    public void invalidateCache(Path path) {
+        compilerMapsHolder.removeDependenciesRaw(path);
+        compilerMapsHolder.removeKieModuleMetaData(path);
+        classloadersResourcesHolder.removeTargetClassloader(path);
+        if(path.toUri().toString().endsWith("pom.xml")){
+            classloadersResourcesHolder.removeDependenciesClassloader(path);
+        }
+    }
 }

@@ -51,7 +51,7 @@ import java.util.UUID;
 @ApplicationScoped
 @Named("LRUProjectPOMDependenciesClassloaderCache")
 public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<Path, ClassLoader> {
-
+        //@TODO check if this class is used or not
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
 
@@ -70,8 +70,8 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<Path, Cl
         ClassLoader classLoader = getEntry(nioPAth);
         if (classLoader == null) {
             classLoader = buildClassLoader(project);
-            /*setEntry(project,
-                    classLoader);*/
+            Path nioFsPath = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+           setEntry(nioFsPath, classLoader);
         }
         return classLoader;
     }
@@ -106,12 +106,16 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<Path, Cl
                     new String[]{MavenCLIArgs.COMPILE, MavenCLIArgs.DEBUG},
                     compiler, Boolean.FALSE, compilerMapsHolder);
             compilerMapsHolder.addBuilder(nioPath, builder);
+
         }
         Path nioFsPath = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
         ClassLoader classLoader = getEntry(nioFsPath);
         if(classLoader != null) return classLoader;
         KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
         if(res.isSuccessful() && res.getProjectDependenciesAsURL().isPresent()) {
+            if(res.getWorkingDir().isPresent()){
+                compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), res.getWorkingDir().get());
+            }
             List<URL> pomDeps = res.getProjectDependenciesAsURL().get();
             Optional<ClassLoader> urlClassloader = buildResult(pomDeps);
             if(urlClassloader.isPresent()){
@@ -139,6 +143,12 @@ public class LRUProjectPOMDependenciesClassloaderCache extends LRUCache<Path, Cl
         AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
                 compilerMapsHolder);
         return outerDecorator;
+    }
+
+    @Override
+    public void invalidateCache(Path path) {
+        compilerMapsHolder.removeDependenciesRaw(path);
+        compilerMapsHolder.removeKieModuleMetaData(path);
     }
 
 }

@@ -46,7 +46,7 @@ public class KieAfBuilderClassloaderUtil {
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
                 compilerMapsHolder,
                 guvnorM2Repository);
-        KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
+        KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);//Here the log is not required during the indexing startup
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 
             /* absolute path on the fs */
