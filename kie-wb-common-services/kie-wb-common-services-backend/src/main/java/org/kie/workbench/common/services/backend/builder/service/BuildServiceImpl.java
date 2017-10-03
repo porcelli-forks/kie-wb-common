@@ -28,6 +28,7 @@ import org.guvnor.common.services.project.service.DeploymentMode;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
@@ -53,6 +54,8 @@ public class BuildServiceImpl implements BuildService {
 
     private CompilerMapsHolder compilerMapsHolder;
 
+    private User user;
+
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
     }
@@ -61,15 +64,18 @@ public class BuildServiceImpl implements BuildService {
     public BuildServiceImpl(final KieProjectService projectService,
                             final GuvnorM2Repository guvnorM2Repository,
                             final CompilerMapsHolder compilerMapsHolder,
-                            final ClassLoadersResourcesHolder classloadersResourcesHolder) {
+                            final ClassLoadersResourcesHolder classloadersResourcesHolder,
+                            final User user) {
         this.projectService = projectService;
         this.compilerMapsHolder = compilerMapsHolder;
         this.guvnorM2Repository = guvnorM2Repository;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
+        this.user = user;
     }
 
     @Override
     public BuildResults build( final Project project ) {
+        String username = user.getIdentifier();
         return buildInternal(project);
     }
 
@@ -82,7 +88,7 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildInternal(final Project project){
-            //@TODO build senza creazione classloader o con classloader ?
+            //@TODO build senwithout classloader creation ot without classloader creation ?
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository);
@@ -102,7 +108,7 @@ public class BuildServiceImpl implements BuildService {
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project ) {
+    public BuildResults buildAndDeploy(final Project project) {
         return buildAndDeployInternal(project);
     }
 
@@ -128,7 +134,7 @@ public class BuildServiceImpl implements BuildService {
     @Override
     public boolean isBuilt( final Project project ) {
         org.uberfire.java.nio.file.Path path = Paths.convert(project.getRootPath());
-        return compilerMapsHolder.getBuilder(path) != null;//@TOOD check if with the invalidation of the cache could be better the classloaderHolder
+        return compilerMapsHolder.getBuilder(path) != null;//@TODO check if could be better the classloaderHolder
     }
 
     @Override

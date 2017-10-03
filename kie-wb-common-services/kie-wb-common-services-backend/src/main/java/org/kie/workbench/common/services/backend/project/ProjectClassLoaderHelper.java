@@ -31,8 +31,12 @@ public class ProjectClassLoaderHelper {
     private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;
 
 
+    public ClassLoader getProjectClassLoader(KieProject project, Boolean indexing) {
+       return dependenciesClassLoaderCache.assertDependenciesClassLoader(project, indexing);
+    }
+
     public ClassLoader getProjectClassLoader(KieProject project) {
-       return dependenciesClassLoaderCache.assertDependenciesClassLoader(project);
+        return dependenciesClassLoaderCache.assertDependenciesClassLoader(project, Boolean.FALSE);
     }
 
 }

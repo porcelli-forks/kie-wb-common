@@ -39,11 +39,18 @@ public class KieAFBuilderUtil {
     public static KieAFBuilder getKieAFBuilder(org.uberfire.java.nio.file.Path nioPath,
                                                CompilerMapsHolder compilerMapsHolder,
                                                GuvnorM2Repository guvnorM2Repository) {
+
+        return getKieAFBuilder(nioPath,compilerMapsHolder,guvnorM2Repository,Boolean.FALSE);
+    }
+
+    public static KieAFBuilder getKieAFBuilder(org.uberfire.java.nio.file.Path nioPath,
+                                               CompilerMapsHolder compilerMapsHolder,
+                                               GuvnorM2Repository guvnorM2Repository, Boolean indexing) {
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
-                Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(),
-                        UUID.randomUUID().toString());
+                String folderName = getFolderName(indexing);
+                Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), folderName);
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(),
                         repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
@@ -58,6 +65,15 @@ public class KieAFBuilderUtil {
         return builder;
     }
 
+    private static String getFolderName(Boolean indexing) {
+        String folderName;
+        if(indexing) {
+            folderName = "index-" + UUID.randomUUID().toString();
+        }else{
+            folderName = UUID.randomUUID().toString();
+        } return folderName;
+    }
+
     private static AFCompiler getCompiler(CompilerMapsHolder compilerMapsHolder) {
         // we create the compiler in this weird mode to use the gitMap used internally
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
@@ -66,14 +82,17 @@ public class KieAFBuilderUtil {
         return outerDecorator;
     }
 
+    public static Path getFSPath(KieProject project, CompilerMapsHolder compilerMapsHolder, GuvnorM2Repository guvnorM2Repository) {
+        return getFSPath(project,compilerMapsHolder,guvnorM2Repository,Boolean.FALSE);
+    }
+
     public static Path getFSPath(KieProject project,
                                  CompilerMapsHolder compilerMapsHolder,
-                                 GuvnorM2Repository guvnorM2Repository) {
+                                 GuvnorM2Repository guvnorM2Repository, Boolean indexing) {
 
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
-                compilerMapsHolder,
-                guvnorM2Repository);
+                compilerMapsHolder, guvnorM2Repository, indexing);
         Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         return prjPath;
     }

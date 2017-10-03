@@ -37,16 +37,16 @@ import org.uberfire.java.nio.file.Path;
 public class KieAfBuilderClassloaderUtil {
 
     /**
-     * Thi smethod return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
+     * This method return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
     public static Optional<MapClassLoader> getProjectClassloader(Path nioPath,
                                                                  CompilerMapsHolder compilerMapsHolder,
-                                                                 GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder) {
+                                                                 GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder, Boolean indexing) {
 
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
-                compilerMapsHolder,
-                guvnorM2Repository);
-        KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);//Here the log is not required during the indexing startup
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository,indexing);
+
+        KieCompilationResponse res = builder.build( !indexing , Boolean.FALSE);//Here the log is not required during the indexing startup
+
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 
             /* absolute path on the fs */

@@ -54,10 +54,20 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     }
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
-        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        return assertDependenciesClassLoader(project, Boolean.FALSE);
+    }
+
+    public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project, Boolean indexing) {
+        Path nioFsPAth;
+        if(project.getRootPath().toURI().contains("@myrepo")){
+            nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository,!indexing);
+        }else{
+            nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository,indexing);
+        }
+
         ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
-            Optional<MapClassLoader> opClassloader = buildClassLoader(project);
+            Optional<MapClassLoader> opClassloader = buildClassLoader(project, indexing);
             if(opClassloader.isPresent()) {
                 setEntry(nioFsPAth, opClassloader.get());
                 classLoader = opClassloader.get();
@@ -72,9 +82,9 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
         setEntry(nioFsPAth, classLoader);
     }
 
-    protected Optional<MapClassLoader> buildClassLoader(final KieProject project) {
+    protected Optional<MapClassLoader> buildClassLoader(final KieProject project, Boolean indexing) {
         Path nioPath = Paths.convert(project.getRootPath());
-        Optional<MapClassLoader> classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,compilerMapsHolder,guvnorM2Repository, classloadersResourcesHolder);
+        Optional<MapClassLoader> classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,compilerMapsHolder,guvnorM2Repository, classloadersResourcesHolder, indexing);
         Path workingDir = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
         compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), workingDir.toAbsolutePath());
         return  classLoader;
