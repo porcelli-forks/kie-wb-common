@@ -23,7 +23,6 @@ import org.appformer.project.datamodel.imports.Import;
 import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
 import org.appformer.project.datamodel.oracle.TypeSource;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
@@ -34,7 +33,6 @@ import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilatio
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -57,7 +55,6 @@ public class ProjectDataModelOracleBuilderProvider {
     private BuilderUtils builderUtils;
     private ClassLoadersResourcesHolder resourcesHolder;
     private CompilerMapsHolder compilerMapsHolder;
-    private User user;
 
     public ProjectDataModelOracleBuilderProvider() {
         //CDI proxy
@@ -66,13 +63,12 @@ public class ProjectDataModelOracleBuilderProvider {
     @Inject
     public ProjectDataModelOracleBuilderProvider(final PackageNameWhiteListService packageNameWhiteListService,
                                                  final ProjectImportsService importsService, final ClassLoadersResourcesHolder resourcesHolder,
-                                                 final BuilderUtils builderUtils, final CompilerMapsHolder compilerMapsHolder, final User user) {
+                                                 final BuilderUtils builderUtils, final CompilerMapsHolder compilerMapsHolder) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
         this.resourcesHolder = resourcesHolder;
         this.builderUtils = builderUtils;
         this.compilerMapsHolder = compilerMapsHolder;
-        this.user = user;
     }
 
     public InnerBuilder newBuilder( final KieProject project) {
@@ -84,7 +80,6 @@ public class ProjectDataModelOracleBuilderProvider {
         }
         DefaultKieAFBuilder defaultKieBuilder = (DefaultKieAFBuilder)builder.get();
         Path workingDir = defaultKieBuilder.getInfo().getPrjPath();
-        //Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
         KieModuleMetaData kieModuleMetaData =compilerMapsHolder.getMetadata(workingDir);
 
         if(kieModuleMetaData != null){
@@ -96,8 +91,6 @@ public class ProjectDataModelOracleBuilderProvider {
 
 
     private InnerBuilder getInnerBuilderWithAlreadyPresentData(KieProject project,KieModuleMetaData kieModuleMetaData) {
-       // Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
-
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
@@ -233,10 +226,6 @@ public class ProjectDataModelOracleBuilderProvider {
 
         private List<Import> getImports() {
             return importsService.load(project.getImportsPath()).getImports().getImports();
-        }
-
-        private String getPathName(Path nioPath){
-            return user == null ?  nioPath.toString()+"-index" : nioPath.toString();
         }
 
     }
