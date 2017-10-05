@@ -169,13 +169,9 @@ public class BpmnFileIndexer extends AbstractFileIndexer {
 
     // Protected method for testing
     protected ClassLoader getProjectClassLoader(final KieProject project) {
-        return classLoaderHelper.getProjectClassLoader(project, Boolean.TRUE);
+        return classLoaderHelper.getProjectClassLoader(project);
     }
 
-    // Protected method for testing
-    protected ClassLoader getProjectClassLoader(final KieProject project, Boolean indexing) {
-        return classLoaderHelper.getProjectClassLoader(project, indexing);
-    }
 
     private List<BpmnProcessDataEventListener> buildProcessDefinition(String bpmn2Content,
                                                                       ClassLoader projectClassLoader) throws IllegalArgumentException {
