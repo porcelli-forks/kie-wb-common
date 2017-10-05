@@ -26,6 +26,8 @@ public interface DataModelService {
 
     PackageDataModelOracle getDataModel( final Path resourcePath );
 
-    ProjectDataModelOracle getProjectDataModel( final Path resourcePath );
+    ProjectDataModelOracle getProjectDataModel( final Path resourcePath);
+
+    ProjectDataModelOracle getProjectDataModel( final Path resourcePath, Boolean indexing );
 
 }

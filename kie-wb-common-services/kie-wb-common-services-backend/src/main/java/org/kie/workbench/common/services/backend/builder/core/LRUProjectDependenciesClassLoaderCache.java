@@ -18,11 +18,13 @@ package org.kie.workbench.common.services.backend.builder.core;
 
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
@@ -40,6 +42,8 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
     private ClassLoadersResourcesHolder classloadersResourcesHolder;
+    private String myRepoPrj = "@myrepo"; // see LibraryPreferences
+    private Instance< User > identity;
 
     public LRUProjectDependenciesClassLoaderCache() {
     }
@@ -47,27 +51,19 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     @Inject
     public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository,
                                                   CompilerMapsHolder compilerMapsHolder,
-                                                  ClassLoadersResourcesHolder classloadersResourcesHolder) {
+                                                  ClassLoadersResourcesHolder classloadersResourcesHolder, Instance< User > identity) {
         this.guvnorM2Repository = guvnorM2Repository;
         this.compilerMapsHolder = compilerMapsHolder;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
+        this.identity = identity;
     }
 
-    public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project) {
-        return assertDependenciesClassLoader(project, Boolean.FALSE);
-    }
 
-    public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project, Boolean indexing) {
-        Path nioFsPAth;
-        if(project.getRootPath().toURI().contains("@myrepo")){
-            nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository,!indexing);
-        }else{
-            nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository,indexing);
-        }
-
+    public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project, String identity) {
+        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
         ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
-            Optional<MapClassLoader> opClassloader = buildClassLoader(project, indexing);
+            Optional<MapClassLoader> opClassloader = buildClassLoader(project, identity);
             if(opClassloader.isPresent()) {
                 setEntry(nioFsPAth, opClassloader.get());
                 classLoader = opClassloader.get();
@@ -77,15 +73,15 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     }
 
     public synchronized void setDependenciesClassLoader(final KieProject project,
-                                                        ClassLoader classLoader) {
-        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+                                                        ClassLoader classLoader, String identity) {
+        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
         setEntry(nioFsPAth, classLoader);
     }
 
-    protected Optional<MapClassLoader> buildClassLoader(final KieProject project, Boolean indexing) {
+    protected Optional<MapClassLoader> buildClassLoader(final KieProject project, String identity) {
         Path nioPath = Paths.convert(project.getRootPath());
-        Optional<MapClassLoader> classLoader =KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,compilerMapsHolder,guvnorM2Repository, classloadersResourcesHolder, indexing);
-        Path workingDir = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository);
+        Optional<MapClassLoader> classLoader = KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,compilerMapsHolder,guvnorM2Repository, classloadersResourcesHolder, identity);
+        Path workingDir = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
         compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), workingDir.toAbsolutePath());
         return  classLoader;
     }
@@ -95,8 +91,12 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
         compilerMapsHolder.removeDependenciesRaw(path);
         compilerMapsHolder.removeKieModuleMetaData(path);
         classloadersResourcesHolder.removeTargetClassloader(path);
-        if(path.toUri().toString().endsWith("pom.xml")){
+        if(path.endsWith("pom.xml")){
             classloadersResourcesHolder.removeDependenciesClassloader(path);
         }
+    }
+
+    private String getKey(String projectRootPath){
+        return  new StringBuilder().append(projectRootPath.toString()).append("-").append(KieAFBuilderUtil.getIdentifier(identity)).toString();
     }
 }

@@ -44,7 +44,7 @@ public class ProjectDataModelDependencyExclusionTest extends AbstractDataModelWe
         final org.uberfire.java.nio.file.Path nioPackagePath = fs.getPath( packageUrl.toURI() );
         final Path packagePath = paths.convert( nioPackagePath );
 
-        final ProjectDataModelOracle oracle = dataModelService.getProjectDataModel( packagePath );
+        final ProjectDataModelOracle oracle = dataModelService.getProjectDataModel( packagePath , Boolean.FALSE);
 
         assertNotNull( oracle );
 

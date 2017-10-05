@@ -18,9 +18,13 @@ package org.kie.workbench.common.services.backend.compiler.impl.utils;
 import java.net.URI;
 import java.util.UUID;
 
+import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.inject.Instance;
+
 import org.eclipse.jgit.api.Git;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
@@ -36,45 +40,33 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class KieAFBuilderUtil {
 
-    public static KieAFBuilder getKieAFBuilder(org.uberfire.java.nio.file.Path nioPath,
-                                               CompilerMapsHolder compilerMapsHolder,
-                                               GuvnorM2Repository guvnorM2Repository) {
-
-        return getKieAFBuilder(nioPath,compilerMapsHolder,guvnorM2Repository,Boolean.FALSE);
-    }
 
     public static KieAFBuilder getKieAFBuilder(org.uberfire.java.nio.file.Path nioPath,
                                                CompilerMapsHolder compilerMapsHolder,
-                                               GuvnorM2Repository guvnorM2Repository, Boolean indexing) {
+                                               GuvnorM2Repository guvnorM2Repository, String user) {
+
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
-                String folderName = getFolderName(indexing);
+                String folderName = getFolderName(user);
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), folderName);
-                compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(),
-                        repo);
+                compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
                 builder = new DefaultKieAFBuilder(prj,
                         MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                         getCompiler(compilerMapsHolder),
                         compilerMapsHolder);
-                compilerMapsHolder.addBuilder(nioPath,
-                        builder);
+                compilerMapsHolder.addBuilder(nioPath, builder);
             }
         }
         return builder;
     }
 
-    private static String getFolderName(Boolean indexing) {
-        String folderName;
-        if(indexing) {
-            folderName = "index-" + UUID.randomUUID().toString();
-        }else{
-            folderName = UUID.randomUUID().toString();
-        } return folderName;
+    public static String getFolderName(String user) {
+        return  user +"-" + UUID.randomUUID().toString();
     }
 
-    private static AFCompiler getCompiler(CompilerMapsHolder compilerMapsHolder) {
+    public static AFCompiler getCompiler(CompilerMapsHolder compilerMapsHolder) {
         // we create the compiler in this weird mode to use the gitMap used internally
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
         AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
@@ -82,18 +74,27 @@ public class KieAFBuilderUtil {
         return outerDecorator;
     }
 
-    public static Path getFSPath(KieProject project, CompilerMapsHolder compilerMapsHolder, GuvnorM2Repository guvnorM2Repository) {
-        return getFSPath(project,compilerMapsHolder,guvnorM2Repository,Boolean.FALSE);
-    }
-
     public static Path getFSPath(KieProject project,
                                  CompilerMapsHolder compilerMapsHolder,
-                                 GuvnorM2Repository guvnorM2Repository, Boolean indexing) {
+                                 GuvnorM2Repository guvnorM2Repository, String user) {
 
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
-                compilerMapsHolder, guvnorM2Repository, indexing);
+                compilerMapsHolder, guvnorM2Repository, user);
         Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         return prjPath;
     }
+
+    public static String getIdentifier(Instance<User> identity) {
+        if ( identity.isUnsatisfied( ) ) {
+            return "system";
+        }
+        try {
+            return identity.get( ).getIdentifier( );
+        } catch ( ContextNotActiveException e ) {
+            return "system";
+        }
+    }
+
+
 }

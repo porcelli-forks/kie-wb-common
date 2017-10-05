@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 package org.kie.workbench.common.services.backend.project;
+
+import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -30,13 +34,11 @@ public class ProjectClassLoaderHelper {
     @Named("LRUProjectDependenciesClassLoaderCache")
     private LRUProjectDependenciesClassLoaderCache dependenciesClassLoaderCache;
 
-
-    public ClassLoader getProjectClassLoader(KieProject project, Boolean indexing) {
-       return dependenciesClassLoaderCache.assertDependenciesClassLoader(project, indexing);
-    }
+    @Inject
+    private Instance< User > identity;
 
     public ClassLoader getProjectClassLoader(KieProject project) {
-        return dependenciesClassLoaderCache.assertDependenciesClassLoader(project, Boolean.FALSE);
+        return dependenciesClassLoaderCache.assertDependenciesClassLoader(project,
+                                                                          KieAFBuilderUtil.getIdentifier(identity));
     }
-
 }

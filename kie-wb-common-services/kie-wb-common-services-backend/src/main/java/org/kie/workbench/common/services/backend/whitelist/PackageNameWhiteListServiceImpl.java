@@ -24,7 +24,6 @@ import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -32,7 +31,6 @@ import org.kie.workbench.common.services.shared.whitelist.PackageNameWhiteListSe
 import org.kie.workbench.common.services.shared.whitelist.WhiteList;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 
@@ -86,7 +84,7 @@ public class PackageNameWhiteListServiceImpl
      */
     @Override
     public WhiteList filterPackageNames( final Project project,
-                                         final Collection<String> packageNames ) {
+                                         final Collection<String> packageNames) {
         if ( packageNames == null ) {
             return new WhiteList();
         } else if ( project instanceof KieProject ) {

@@ -22,10 +22,10 @@ import java.util.Optional;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
-import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
@@ -36,16 +36,17 @@ import org.uberfire.java.nio.file.Path;
 
 public class KieAfBuilderClassloaderUtil {
 
+
     /**
      * This method return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
     public static Optional<MapClassLoader> getProjectClassloader(Path nioPath,
                                                                  CompilerMapsHolder compilerMapsHolder,
-                                                                 GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder, Boolean indexing) {
+                                                                 GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder, String user) {
 
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository,indexing);
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository, user);
 
-        KieCompilationResponse res = builder.build( !indexing , Boolean.FALSE);//Here the log is not required during the indexing startup
+        KieCompilationResponse res = builder.build( !user.equals("system") , Boolean.FALSE);//Here the log is not required during the indexing startup
 
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 

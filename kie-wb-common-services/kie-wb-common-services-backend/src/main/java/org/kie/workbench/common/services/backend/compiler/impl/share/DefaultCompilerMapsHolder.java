@@ -15,13 +15,15 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import org.eclipse.jgit.api.Git;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
@@ -37,6 +39,9 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
     private Map<Path, KieModuleMetaData> kieMetaDataMap;
     private Map<Path, List<String>> depsRawMap;
     private Map<String, Path> alias ;
+
+    @Inject
+    private Instance< User > identity;
 
     public DefaultCompilerMapsHolder() {
         gitMap = new ConcurrentHashMap<>();
@@ -80,10 +85,8 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
         return buildersMap.get(projectRootPath);
     }
 
-    public boolean addBuilder(final Path projectRootPath,
-                              final KieAFBuilder builder) {
-        return buildersMap.put(projectRootPath,
-                builder) != null;
+    public boolean addBuilder(final Path projectRootPath, final KieAFBuilder builder) {
+        return buildersMap.put(projectRootPath, builder) != null;
     }
 
     public KieAFBuilder removeBuilder(Path projectRootPath) {
@@ -109,8 +112,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     public void addKieMetaData(Path projectRootPath,
                                KieModuleMetaData metadata) {
-        kieMetaDataMap.put(projectRootPath,
-                metadata);
+        kieMetaDataMap.put(projectRootPath, metadata);
     }
 
     public boolean removeKieModuleMetaData(Path projectRootPath) {
@@ -119,8 +121,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     public void replaceKieMetaData(Path projectRootPath,
                                    KieModuleMetaData metadata) {
-        kieMetaDataMap.replace(projectRootPath,
-                metadata);
+        kieMetaDataMap.replace(projectRootPath, metadata);
     }
 
     /**
@@ -133,8 +134,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     public void addDependenciesRaw(Path projectRootPath,
                                    List<String> depsRaw) {
-        depsRawMap.put(projectRootPath,
-                depsRaw);
+        depsRawMap.put(projectRootPath, depsRaw);
     }
 
     public boolean removeDependenciesRaw(Path projectRootPath) {
@@ -143,8 +143,7 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     public void replaceDependenciesRaw(Path projectRootPath,
                                        List<String> depsRaw) {
-        depsRawMap.replace(projectRootPath,
-                depsRaw);
+        depsRawMap.replace(projectRootPath, depsRaw);
     }
 
 
@@ -180,4 +179,5 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
             return nioPath;
         }
     }
+
 }

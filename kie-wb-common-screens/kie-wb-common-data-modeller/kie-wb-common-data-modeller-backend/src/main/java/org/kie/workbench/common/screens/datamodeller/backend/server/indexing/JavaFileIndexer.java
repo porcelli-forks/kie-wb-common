@@ -131,7 +131,7 @@ public class JavaFileIndexer extends AbstractFileIndexer {
                                              ResourceType.JAVA);
 
             if (javaType instanceof JavaSource) {
-                ClassLoader projectClassLoader = getProjectClassLoader(project, Boolean.TRUE);
+                ClassLoader projectClassLoader = getProjectClassLoader(project);
                 JavaSourceVisitor visitor = new JavaSourceVisitor((JavaSource) javaType,
                                                                   projectClassLoader,
                                                                   resParts);
@@ -147,17 +147,10 @@ public class JavaFileIndexer extends AbstractFileIndexer {
     }
 
     /*
-     * Present in order to be overridden in tests
-     */
-    protected ClassLoader getProjectClassLoader(final KieProject project) {
-        return classLoaderHelper.getProjectClassLoader(project, Boolean.TRUE);
-    }
-
-    /*
    * Present in order to be overridden in tests
    */
-    protected ClassLoader getProjectClassLoader(final KieProject project, Boolean indexing) {
-        return classLoaderHelper.getProjectClassLoader(project, indexing);
+    protected ClassLoader getProjectClassLoader(final KieProject project) {
+        return classLoaderHelper.getProjectClassLoader(project);
     }
 
     /*

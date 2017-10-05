@@ -25,6 +25,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilat
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
@@ -289,7 +290,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse buildAndInstall(String projectPath,
                                                   String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.INSTALL},
@@ -300,7 +301,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse buildAndInstall(String projectPath,
                                                   String mavenRepo, Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.INSTALL},
@@ -312,7 +313,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
                                                    String[] args) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -324,7 +325,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
                                                    String[] args, Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -338,7 +339,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                                    String[] args,
                                                    KieDecorator decorator) {
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(decorator);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -352,7 +353,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                                    String[] args,
                                                    KieDecorator decorator, Boolean skipPrjDependenciesCreationList) {
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(decorator);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
