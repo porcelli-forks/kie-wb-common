@@ -17,8 +17,8 @@ public class BuilderUtils {
     @Inject
     private GuvnorM2Repository guvnorM2Repository;
 
-    public Optional<KieAFBuilder> getBuilder(Path nioPath, Boolean indexing) {
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,compilerMapsHolder,guvnorM2Repository,indexing);
+    public Optional<KieAFBuilder> getBuilder(Path nioPath) {
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,compilerMapsHolder,guvnorM2Repository);
         return Optional.ofNullable(builder);
     }
 
