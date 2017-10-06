@@ -48,7 +48,7 @@ public class KieAFBuilderUtil {
         KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
-                String folderName = getFolderName(user);
+                String folderName = getFolderName(nioPath, user);
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), folderName);
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
@@ -62,8 +62,9 @@ public class KieAFBuilderUtil {
         return builder;
     }
 
-    public static String getFolderName(String user) {
-        return  user +"-" + UUID.randomUUID().toString();
+    public static String getFolderName(Path nioPath, String user) {
+        //@TODO currently the only way to understand if is a imported prj
+        return nioPath.toUri().toString().contains("@myrepo") ? UUID.randomUUID().toString() : user +"-" + UUID.randomUUID().toString();
     }
 
     public static AFCompiler getCompiler(CompilerMapsHolder compilerMapsHolder) {
