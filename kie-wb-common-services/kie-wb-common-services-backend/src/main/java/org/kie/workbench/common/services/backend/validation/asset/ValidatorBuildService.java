@@ -162,10 +162,13 @@ public class ValidatorBuildService {
         final org.uberfire.java.nio.file.Path resourcePath = convert(_resourcePath);
         final JGitFileSystem fs = (JGitFileSystem) resourcePath.getFileSystem();
         Git git = compilerMapsHolder.getGit(fs);
+        Boolean alreadyBuild = Boolean.FALSE;
+        CompilationResponse res = null;
         if (git == null) {
             //one build discarded to create the git in compiler map
             final KieAFBuilder builder = getBuilder(kieProject);
-            CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);// this log output is not rreaded in the ui
+            res = builder.build(Boolean.TRUE, Boolean.FALSE);//TODO why this buidl this log output is not rreaded in the ui
+            alreadyBuild = Boolean.TRUE;
             git = compilerMapsHolder.getGit(fs);
             if (git == null) {
                 logger.error("Git not constructed in the JGitDecorator");
@@ -179,7 +182,7 @@ public class ValidatorBuildService {
 
         try {
 
-            return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject);
+            return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject, res, alreadyBuild);
 
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
@@ -206,12 +209,20 @@ public class ValidatorBuildService {
 
     private List<ValidationMessage> writeFileChangeAndBuild(final java.nio.file.Path tempResourcePath,
                                                             final InputStream inputStream,
-                                                            final KieProject project) throws IOException {
+                                                            final KieProject project,
+                                                            final CompilationResponse alreadyBuildRes,
+                                                            Boolean alreadyBuild) throws IOException {
 
         Files.copy(inputStream, tempResourcePath, StandardCopyOption.REPLACE_EXISTING);
-        final KieAFBuilder builder = getBuilder(project);
-        final CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE); //this is readed by the ui
-        return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
+        if(alreadyBuild && alreadyBuildRes != null) {
+            return MavenOutputConverter.convertIntoValidationMessage(alreadyBuildRes.getMavenOutput().get(), ERROR_LEVEL);
+        }else{
+
+            final KieAFBuilder builder = getBuilder(project);
+            final CompilationResponse res = builder.build(Boolean.TRUE,Boolean.FALSE); //this is readed by the ui
+            return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
+        }
+
     }
 
     private Optional<KieProject> project(final Path resourcePath) throws NoProjectException {
