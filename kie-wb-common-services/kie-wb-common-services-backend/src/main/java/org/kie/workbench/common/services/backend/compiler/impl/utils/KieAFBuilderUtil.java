@@ -41,14 +41,14 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 public class KieAFBuilderUtil {
 
 
-    public static KieAFBuilder getKieAFBuilder(org.uberfire.java.nio.file.Path nioPath,
+    public static KieAFBuilder getKieAFBuilder(String uri, org.uberfire.java.nio.file.Path nioPath,
                                                CompilerMapsHolder compilerMapsHolder,
                                                GuvnorM2Repository guvnorM2Repository, String user) {
 
-        KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
+        KieAFBuilder builder = compilerMapsHolder.getBuilder(uri);
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
-                String folderName = getFolderName(nioPath, user);
+                String folderName = getFolderName(uri, user);
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), folderName);
                 compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
@@ -56,15 +56,15 @@ public class KieAFBuilderUtil {
                         MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                         getCompiler(compilerMapsHolder),
                         compilerMapsHolder);
-                compilerMapsHolder.addBuilder(nioPath, builder);
+                compilerMapsHolder.addBuilder(uri, builder);
             }
         }
         return builder;
     }
 
-    public static String getFolderName(Path nioPath, String user) {
+    public static String getFolderName(String uri, String user) {
         //@TODO currently the only way to understand if is a imported prj
-        return nioPath.toUri().toString().contains("@myrepo") ? UUID.randomUUID().toString() : user +"-" + UUID.randomUUID().toString();
+        return uri.contains("@myrepo") ? UUID.randomUUID().toString() : user +"-" + UUID.randomUUID().toString();
     }
 
     public static AFCompiler getCompiler(CompilerMapsHolder compilerMapsHolder) {
@@ -78,9 +78,8 @@ public class KieAFBuilderUtil {
     public static Path getFSPath(KieProject project,
                                  CompilerMapsHolder compilerMapsHolder,
                                  GuvnorM2Repository guvnorM2Repository, String user) {
-
         Path nioPath = Paths.convert(project.getRootPath());
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI(), nioPath,
                 compilerMapsHolder, guvnorM2Repository, user);
         Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         return prjPath;

@@ -15,7 +15,6 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
-import java.net.URI;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -44,14 +43,13 @@ public interface CompilerMapsHolder {
 
     /** BUILDER **/
 
-    KieAFBuilder getBuilder(Path projectRootPath);
+    KieAFBuilder getBuilder(String uri);
 
-    boolean addBuilder(Path projectRootPath,
-                       KieAFBuilder builder);
+    boolean addBuilder(String uri , KieAFBuilder builder);
 
-    KieAFBuilder removeBuilder(Path projectRootPath);
+    KieAFBuilder removeBuilder(String uri );
 
-    boolean containsBuilder(Path projectRootPath);
+    boolean containsBuilder(String uri );
 
     void clearBuilderMap();
 
@@ -91,5 +89,5 @@ public interface CompilerMapsHolder {
 
     /** UTILS **/
 
-    Path getProjectRoot(org.uberfire.backend.vfs.Path path);
+    Path getProjectRoot(String uri );
 }

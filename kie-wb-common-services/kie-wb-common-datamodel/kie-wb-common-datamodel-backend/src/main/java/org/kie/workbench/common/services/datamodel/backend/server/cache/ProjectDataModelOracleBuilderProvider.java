@@ -73,7 +73,7 @@ public class ProjectDataModelOracleBuilderProvider {
 
     public InnerBuilder newBuilder( final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        Optional<KieAFBuilder> builder =  builderUtils.getBuilder(nioPath);
+        Optional<KieAFBuilder> builder =  builderUtils.getBuilder(project.getRootPath().toURI(),nioPath);
 
         if(!builder.isPresent()){
             throw new RuntimeException("Isn't possible create a Builder"+ project.toString());
@@ -91,8 +91,7 @@ public class ProjectDataModelOracleBuilderProvider {
 
 
     private InnerBuilder getInnerBuilderWithAlreadyPresentData(KieProject project,KieModuleMetaData kieModuleMetaData) {
-        Path nioPath = Paths.convert(project.getRootPath());
-        KieAFBuilder builder = compilerMapsHolder.getBuilder(nioPath);
+        KieAFBuilder builder = compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString());
         Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
         final Set<String> javaResources = new HashSet<String>(compilerMapsHolder.getDependenciesRaw(workingDir));
         final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData, javaResources);
@@ -162,7 +161,7 @@ public class ProjectDataModelOracleBuilderProvider {
         }
 
         private void addFromKieModuleMetadata() {
-            Path prjRoot =  compilerMapsHolder.getProjectRoot(project.getRootPath());
+            Path prjRoot =  compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
             WhiteList whiteList = getFilteredPackageNames();
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
@@ -175,7 +174,7 @@ public class ProjectDataModelOracleBuilderProvider {
          * @return A "white list" of package names that are available for authoring
          */
         private WhiteList getFilteredPackageNames() {
-            DefaultKieAFBuilder builder = (DefaultKieAFBuilder) compilerMapsHolder.getBuilder(Paths.convert(project.getRootPath()));
+            DefaultKieAFBuilder builder = (DefaultKieAFBuilder) compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString());
             Collection<String> pkgs = kieModuleMetaData.getPackages();
             //@TODO change /global with guvnor repo
             Set<String> filtered = CompilerClassloaderUtils.filterPathClasses(classloadersResourcesHolder.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");

@@ -96,12 +96,12 @@ public class ValidatorBuildService {
 
     private KieAFBuilder getBuilder(final Project project) {
         final org.uberfire.java.nio.file.Path projectRootPath = convert(project.getRootPath());
-        final KieAFBuilder builder = compilerMapsHolder.getBuilder(projectRootPath);
+        final KieAFBuilder builder = compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString()/* projectRootPath*/);
         if (builder == null) {
             final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
                     MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                                     getCompiler(), compilerMapsHolder);
-            compilerMapsHolder.addBuilder(projectRootPath, newBuilder);
+            compilerMapsHolder.addBuilder(project.getRootPath().toURI().toString()/* projectRootPath*/, newBuilder);
             return newBuilder;
         }
         return builder;

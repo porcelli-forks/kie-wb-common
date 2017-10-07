@@ -15,6 +15,7 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,6 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
-import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
@@ -35,7 +35,7 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
 
     private Map<JGitFileSystem, Git> gitMap;
-    private Map<Path, KieAFBuilder> buildersMap;
+    private Map<String, KieAFBuilder> buildersMap;
     private Map<Path, KieModuleMetaData> kieMetaDataMap;
     private Map<Path, List<String>> depsRawMap;
     private Map<String, Path> alias ;
@@ -81,20 +81,20 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
      * BUILDER
      */
 
-    public KieAFBuilder getBuilder(Path projectRootPath) {
-        return buildersMap.get(projectRootPath);
+    public KieAFBuilder getBuilder(String uri) {
+        return buildersMap.get(uri);
     }
 
-    public boolean addBuilder(final Path projectRootPath, final KieAFBuilder builder) {
-        return buildersMap.put(projectRootPath, builder) != null;
+    public boolean addBuilder(final String uri , final KieAFBuilder builder) {
+        return buildersMap.put(uri, builder) != null;
     }
 
-    public KieAFBuilder removeBuilder(Path projectRootPath) {
-        return buildersMap.remove(projectRootPath);
+    public KieAFBuilder removeBuilder(String uri) {
+        return buildersMap.remove(uri);
     }
 
-    public boolean containsBuilder(Path projectRootPath) {
-        return buildersMap.containsKey(projectRootPath);
+    public boolean containsBuilder(String uri) {
+        return buildersMap.containsKey(uri);
     }
 
     public void clearBuilderMap() {
@@ -169,14 +169,13 @@ public class DefaultCompilerMapsHolder implements CompilerMapsHolder {
      */
 
     @Override
-    public Path getProjectRoot(org.uberfire.backend.vfs.Path path) {
-        Path nioPath = Paths.convert(path);
-        KieAFBuilder builder = getBuilder(nioPath);
+    public Path getProjectRoot( String uri ) {
+        KieAFBuilder builder = getBuilder(uri);
         if (builder != null) {
             Path prjRoot = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
             return prjRoot;
         } else {
-            return nioPath;
+            return  org.uberfire.java.nio.file.Paths.get(URI.create(uri));
         }
     }
 

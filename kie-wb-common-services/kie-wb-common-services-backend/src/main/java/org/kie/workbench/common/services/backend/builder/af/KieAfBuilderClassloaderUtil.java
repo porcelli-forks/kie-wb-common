@@ -32,6 +32,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoader
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
+import org.kie.workbench.common.services.shared.project.KieProject;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 
 public class KieAfBuilderClassloaderUtil {
@@ -40,13 +42,16 @@ public class KieAfBuilderClassloaderUtil {
     /**
      * This method return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
-    public static Optional<MapClassLoader> getProjectClassloader(Path nioPath,
+    public static Optional<MapClassLoader> getProjectClassloader(KieProject project,
                                                                  CompilerMapsHolder compilerMapsHolder,
-                                                                 GuvnorM2Repository guvnorM2Repository, ClassLoadersResourcesHolder classloadersResourcesHolder, String user) {
+                                                                 GuvnorM2Repository guvnorM2Repository,
+                                                                 ClassLoadersResourcesHolder classloadersResourcesHolder,
+                                                                 String indentity) {
 
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath, compilerMapsHolder, guvnorM2Repository, user);
+        Path nioPath = Paths.convert(project.getRootPath());
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), nioPath, compilerMapsHolder, guvnorM2Repository, indentity);
 
-        KieCompilationResponse res = builder.build( !user.equals("system") , Boolean.FALSE);//Here the log is not required during the indexing startup
+        KieCompilationResponse res = builder.build( !indentity.equals("system") , Boolean.FALSE);//Here the log is not required during the indexing startup
 
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 

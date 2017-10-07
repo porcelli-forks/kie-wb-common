@@ -25,14 +25,12 @@ import javax.inject.Named;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.shared.project.KieProject;
-import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
@@ -42,7 +40,6 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     private GuvnorM2Repository guvnorM2Repository;
     private CompilerMapsHolder compilerMapsHolder;
     private ClassLoadersResourcesHolder classloadersResourcesHolder;
-    private String myRepoPrj = "@myrepo"; // see LibraryPreferences
     private Instance< User > identity;
 
     public LRUProjectDependenciesClassLoaderCache() {
@@ -79,8 +76,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     }
 
     protected Optional<MapClassLoader> buildClassLoader(final KieProject project, String identity) {
-        Path nioPath = Paths.convert(project.getRootPath());
-        Optional<MapClassLoader> classLoader = KieAfBuilderClassloaderUtil.getProjectClassloader(nioPath,compilerMapsHolder,guvnorM2Repository, classloadersResourcesHolder, identity);
+        Optional<MapClassLoader> classLoader = KieAfBuilderClassloaderUtil.getProjectClassloader(project, compilerMapsHolder, guvnorM2Repository, classloadersResourcesHolder, identity);
         Path workingDir = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
         compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), workingDir.toAbsolutePath());
         return  classLoader;

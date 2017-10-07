@@ -62,7 +62,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
                                             event );
         final Path resourcePath = event.getResourcePath();
         final KieProject project = projectService.resolveProject( resourcePath );
-        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath()); //@TODO is always called during the indexing ?
+        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString()); //@TODO is always called during the indexing ?
         //If resource was not within a Project there's nothing to invalidate
         if ( project != null && (workingDir.toString().length() > project.getProjectName().length() + 1)) {
             // the path resolved is /<projectname> this mean project not yet compiled and cached
@@ -75,7 +75,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
     //Check the ProjectOracle for the Project has been created, otherwise create one!
     public synchronized ProjectDataModelOracle assertProjectDataModelOracle( final KieProject project) {
         ProjectDataModelOracle  projectOracle;
-        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
         if(workingDir == null){
             projectOracle = buildAndSetEntry(project);
         }else{
@@ -92,7 +92,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
         ProjectDataModelOracle projectOracle;
         org.uberfire.java.nio.file.Path workingDir;
         projectOracle = makeProjectOracle(project);
-        workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+        workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
         setEntry( workingDir, projectOracle );
         return projectOracle;
     }

@@ -36,12 +36,10 @@ import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBui
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.ResourceChange;
 
@@ -82,7 +80,7 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildAndDeployInternal(final Project project){
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), PathConverter.getNioPath(project),
                                                                 compilerMapsHolder,
                                                                 guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
 
@@ -91,8 +89,8 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private BuildResults buildInternal(final Project project){
-            //@TODO build without classloader creation rt with classloader creation ?
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
+            //@TODO build without classloader creation or with classloader creation ?
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
                                                                 compilerMapsHolder,guvnorM2Repository,
                                                                      KieAFBuilderUtil.getIdentifier(identity));
 
@@ -103,7 +101,7 @@ public class BuildServiceImpl implements BuildService {
 
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
 
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(PathConverter.getNioPath(project),
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
                                                                      compilerMapsHolder,
                                                                      guvnorM2Repository,  KieAFBuilderUtil.getIdentifier(identity));
         KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
@@ -136,8 +134,7 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt( final Project project ) {
-        org.uberfire.java.nio.file.Path path = Paths.convert(project.getRootPath());
-        return compilerMapsHolder.getBuilder(path) != null;//@TODO check if could be better the classloaderHolder
+        return compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString()) != null;//@TODO check if could be better the classloaderHolder
     }
 
     @Override

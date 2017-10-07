@@ -89,7 +89,7 @@ public class PackageNameWhiteListServiceImpl
             return new WhiteList();
         } else if ( project instanceof KieProject ) {
 
-            org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath());
+            org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
             org.uberfire.java.nio.file.Path pnwl = org.uberfire.java.nio.file.Paths.get(FILE_URI + workingDir.toUri()+"/"+PACKAGE_NAME_WHITE_LIST );
             final WhiteList whiteList = load( Paths.convert(pnwl));
 

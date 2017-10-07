@@ -21,8 +21,8 @@ public class BuilderUtils {
     @Inject
     private Instance<User> identity;
 
-    public Optional<KieAFBuilder> getBuilder(Path nioPath) {
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(nioPath,compilerMapsHolder,guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
+    public Optional<KieAFBuilder> getBuilder(String uri, Path nioPath) {
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(uri,nioPath,compilerMapsHolder,guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
         return Optional.ofNullable(builder);
     }
 
