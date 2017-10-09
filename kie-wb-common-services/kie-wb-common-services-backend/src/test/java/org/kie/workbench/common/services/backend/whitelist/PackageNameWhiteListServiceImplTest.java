@@ -16,12 +16,16 @@
 
 package org.kie.workbench.common.services.backend.whitelist;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Set;
 
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
@@ -32,7 +36,9 @@ import org.kie.workbench.common.services.shared.whitelist.WhiteList;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
+import org.uberfire.mocks.FileSystemTestingUtils;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -55,21 +61,35 @@ public class PackageNameWhiteListServiceImplTest {
     @Mock
     PackageNameWhiteListSaver saver;
 
-    @Mock
-    BuilderCache builderCache;
+   // private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
+
 
     @Before
     public void setUp() throws Exception {
+        //fileSystemTestingUtils.setup();
         when( packageNameSearchProvider.newTopLevelPackageNamesSearch( any( POM.class ) ) ).thenReturn( mock( PackageNameSearchProvider.PackageNameSearch.class ) );
     }
 
+    @After
+    public void tearDown() throws  Exception{
+       // fileSystemTestingUtils.cleanup();
+    }
+
+
 
     @Test
-    public void ifWhiteListIsEmptyWhiteListEverything() throws
-                                                        Exception {
-        final PackageNameWhiteListService packageNameWhiteListService = makeService( "" );
+    public void ifWhiteListIsEmptyWhiteListEverything() throws Exception {
+        KieProject kiePrj = mock( KieProject.class );
+        BuilderCache builderCacheInternal = mock( BuilderCache.class );
+        File f = new File("test/resources/PackageNameWhiteListServiceImplTest");
+        Path vfsPath = PathFactory.newPath("package-names-white-list",f.getAbsolutePath());
+        when(kiePrj.getRootPath()).thenReturn(vfsPath);
+        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
+        when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
 
-        WhiteList filterPackageNames = packageNameWhiteListService.filterPackageNames( mock( KieProject.class ),
+
+        final PackageNameWhiteListService packageNameWhiteListService = makeService( "" ,builderCacheInternal);
+        WhiteList filterPackageNames = packageNameWhiteListService.filterPackageNames( kiePrj,
                                                                                        new ArrayList<String>
                                                                                                () {{
                                                                                            add( "a" );
@@ -84,11 +104,21 @@ public class PackageNameWhiteListServiceImplTest {
         assertTrue( filterPackageNames.contains( "c" ) );
     }
 
+
     @Test
     public void testWindowsEncoding() {
 
-        final PackageNameWhiteListService packageNameWhiteListService = makeService( "a.**\r\nb\r\n" );
-        final Set<String> results = packageNameWhiteListService.filterPackageNames( mock( KieProject.class ),
+        KieProject kiePrj = mock( KieProject.class );
+        BuilderCache builderCacheInternal = mock( BuilderCache.class );
+        File f = new File("test/resources/PackageNameWhiteListServiceImplTest");
+        Path vfsPath = PathFactory.newPath("package-names-white-list",f.getAbsolutePath());
+        when(kiePrj.getRootPath()).thenReturn(vfsPath);
+        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
+        when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
+
+
+        final PackageNameWhiteListService packageNameWhiteListService = makeService( "a.**\r\nb\r\n" , builderCacheInternal);
+        final Set<String> results = packageNameWhiteListService.filterPackageNames( kiePrj,
                                                                                     new ArrayList<String>() {{
                                                                                         add( "a" );
                                                                                         add( "b" );
@@ -106,7 +136,8 @@ public class PackageNameWhiteListServiceImplTest {
 
     @Test
     public void testSave() throws Exception {
-        final PackageNameWhiteListService service = makeService( "" );
+        BuilderCache builderCache = mock(BuilderCache.class);
+        final PackageNameWhiteListService service = makeService( "" ,builderCache);
 
         final Path path = mock( Path.class );
         final WhiteList whiteList = new WhiteList();
@@ -124,10 +155,21 @@ public class PackageNameWhiteListServiceImplTest {
                               comment );
     }
 
+
     @Test
     public void testUnixEncoding() {
-        final PackageNameWhiteListService packageNameWhiteListService = makeService( "a.**\nb\n" );
-        final Set<String> results = packageNameWhiteListService.filterPackageNames( mock( KieProject.class ),
+
+        KieProject kiePrj = mock( KieProject.class );
+        BuilderCache builderCacheInternal = mock( BuilderCache.class );
+        File f = new File("test/resources/PackageNameWhiteListServiceImplTest");
+        Path vfsPath = PathFactory.newPath("package-names-white-list",f.getAbsolutePath());
+        when(kiePrj.getRootPath()).thenReturn(vfsPath);
+        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
+        when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
+
+        
+        final PackageNameWhiteListService packageNameWhiteListService = makeService( "a.**\nb\n" , builderCacheInternal);
+        final Set<String> results = packageNameWhiteListService.filterPackageNames( kiePrj,
                                                                                     new ArrayList<String>() {{
                                                                                         add( "a" );
                                                                                         add( "b" );
@@ -153,7 +195,7 @@ public class PackageNameWhiteListServiceImplTest {
         fail( "Expected pattern '" + expected + "' was not found in actual." );
     }
 
-    private PackageNameWhiteListService makeService( final String content ) {
+    private PackageNameWhiteListService makeService( final String content, BuilderCache builderCache ) {
         return new PackageNameWhiteListServiceImpl(mock(IOService.class),
                                                    mock(KieProjectService.class),
                                                    new PackageNameWhiteListLoader(packageNameSearchProvider,
