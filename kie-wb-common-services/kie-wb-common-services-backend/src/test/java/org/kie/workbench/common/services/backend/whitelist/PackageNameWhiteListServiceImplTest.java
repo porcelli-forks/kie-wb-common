@@ -17,15 +17,12 @@
 package org.kie.workbench.common.services.backend.whitelist;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Set;
 
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
@@ -38,7 +35,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
-import org.uberfire.mocks.FileSystemTestingUtils;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -65,16 +61,16 @@ public class PackageNameWhiteListServiceImplTest {
     public void setUp() throws Exception {
         when( packageNameSearchProvider.newTopLevelPackageNamesSearch( any( POM.class ) ) ).thenReturn( mock( PackageNameSearchProvider.PackageNameSearch.class ) );
     }
-    
+
 
     @Test
     public void ifWhiteListIsEmptyWhiteListEverything() throws Exception {
         KieProject kiePrj = mock( KieProject.class );
         BuilderCache builderCacheInternal = mock( BuilderCache.class );
         File f = new File("test/resources/PackageNameWhiteListServiceImplTest");
-        Path vfsPath = PathFactory.newPath("package-names-white-list",f.getAbsolutePath());
+        Path vfsPath = PathFactory.newPath("package-names-white-list", f.getAbsolutePath());
         when(kiePrj.getRootPath()).thenReturn(vfsPath);
-        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
+        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get(f.getAbsolutePath());
         when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
 
 
@@ -103,7 +99,7 @@ public class PackageNameWhiteListServiceImplTest {
         File f = new File("test/resources/PackageNameWhiteListServiceImplTest");
         Path vfsPath = PathFactory.newPath("package-names-white-list",f.getAbsolutePath());
         when(kiePrj.getRootPath()).thenReturn(vfsPath);
-        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
+        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get(f.getAbsolutePath());
         when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
 
 
@@ -154,7 +150,7 @@ public class PackageNameWhiteListServiceImplTest {
         File f = new File("test/resources/PackageNameWhiteListServiceImplTest");
         Path vfsPath = PathFactory.newPath("package-names-white-list",f.getAbsolutePath());
         when(kiePrj.getRootPath()).thenReturn(vfsPath);
-        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
+        org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get(f.getAbsolutePath());
         when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
 
 

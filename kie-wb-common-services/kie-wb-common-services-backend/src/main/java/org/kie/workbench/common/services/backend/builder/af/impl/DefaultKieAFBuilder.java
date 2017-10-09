@@ -39,7 +39,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     private String FILE_URI = "file://";
 
     public DefaultKieAFBuilder(Path projectRepo,
-                               String mavenRepor) {
+                               String mavenRepo) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
