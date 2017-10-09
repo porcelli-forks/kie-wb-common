@@ -31,7 +31,7 @@ import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
@@ -55,10 +55,10 @@ public class ProjectDataModelOracleBuilderProvider {
     private ProjectImportsService importsService;
     private PackageNameWhiteListService packageNameWhiteListService;
     private BuilderUtils builderUtils;
-    private ClassLoadersResourcesHolder resourcesHolder;
     private BuilderCache builderCache;
     private KieModuleMetaDataCache kieModuleMetaDataCache;
     private DependenciesCache dependenciesCache;
+    private ClassLoaderCache classLoaderCache;
 
     public ProjectDataModelOracleBuilderProvider() {
         //CDI proxy
@@ -66,17 +66,18 @@ public class ProjectDataModelOracleBuilderProvider {
 
     @Inject
     public ProjectDataModelOracleBuilderProvider(final PackageNameWhiteListService packageNameWhiteListService,
-                                                 final ProjectImportsService importsService, final ClassLoadersResourcesHolder resourcesHolder,
+                                                 final ProjectImportsService importsService,
                                                  final BuilderUtils builderUtils, final BuilderCache builderCache,
                                                  final KieModuleMetaDataCache kieModuleMetaDataCache,
-                                                 final DependenciesCache dependenciesCache) {
+                                                 final DependenciesCache dependenciesCache,
+                                                 final ClassLoaderCache classLoaderCache) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
-        this.resourcesHolder = resourcesHolder;
         this.builderUtils = builderUtils;
         this.builderCache = builderCache;
         this.kieModuleMetaDataCache = kieModuleMetaDataCache;
         this.dependenciesCache = dependenciesCache;
+        this.classLoaderCache = classLoaderCache;
     }
 
     public InnerBuilder newBuilder( final KieProject project) {
@@ -103,7 +104,7 @@ public class ProjectDataModelOracleBuilderProvider {
         Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
         final Set<String> javaResources = new HashSet<String>(dependenciesCache.getDependenciesRaw(workingDir));
         final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData, javaResources);
-        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, resourcesHolder);
+        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver,  classLoaderCache);
     }
 
     private InnerBuilder runNewBuild(KieProject project, Optional<KieAFBuilder> builder) {
@@ -118,7 +119,7 @@ public class ProjectDataModelOracleBuilderProvider {
                 final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
                                                                                      javaResources);
 
-                return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, resourcesHolder);
+                return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, classLoaderCache);
             } else {
                 throw new RuntimeException("Failed to build correctly the project:" + project.toString());
             }
@@ -135,16 +136,16 @@ public class ProjectDataModelOracleBuilderProvider {
         private final KieProject project;
         private final KieModuleMetaData kieModuleMetaData;
         private final TypeSourceResolver typeSourceResolver;
-        private final ClassLoadersResourcesHolder classloadersResourcesHolder;
+        private final ClassLoaderCache classLoaderCache;
 
         private InnerBuilder(final KieProject project,
                              final KieModuleMetaData kieModuleMetaData,
                              final TypeSourceResolver typeSourceResolver,
-                             final ClassLoadersResourcesHolder classloadersResourcesHolder) {
+                             final ClassLoaderCache classLoaderCache) {
             this.project = project;
             this.kieModuleMetaData = kieModuleMetaData;
             this.typeSourceResolver = typeSourceResolver;
-            this.classloadersResourcesHolder = classloadersResourcesHolder;
+            this.classLoaderCache = classLoaderCache;
         }
 
         public ProjectDataModelOracle build() {
@@ -173,7 +174,7 @@ public class ProjectDataModelOracleBuilderProvider {
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
                 addClasses(packageName, kieModuleMetaData.getClasses(packageName), prjRoot);
-                addClasses(packageName, classloadersResourcesHolder.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot);
+                addClasses(packageName, classLoaderCache.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot);
             }
         }
 
@@ -184,7 +185,7 @@ public class ProjectDataModelOracleBuilderProvider {
             DefaultKieAFBuilder builder = (DefaultKieAFBuilder) builderCache.getBuilder(project.getRootPath().toURI().toString());
             Collection<String> pkgs = kieModuleMetaData.getPackages();
             //@TODO change /global with guvnor repo
-            Set<String> filtered = CompilerClassloaderUtils.filterPathClasses(classloadersResourcesHolder.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");
+            Set<String> filtered = CompilerClassloaderUtils.filterPathClasses(classLoaderCache.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");
             pkgs.addAll(filtered);
             return packageNameWhiteListService.filterPackageNames(project, pkgs);
         }
@@ -211,7 +212,7 @@ public class ProjectDataModelOracleBuilderProvider {
 
         private void addClass(final String packageName, final String className, Path project) {
             try {
-                Optional<MapClassLoader> prjClassloaderOpt = classloadersResourcesHolder.getTargetClassLoader(project);
+                Optional<MapClassLoader> prjClassloaderOpt = classLoaderCache.getTargetClassLoader(project);
                 if(prjClassloaderOpt.isPresent()) {
 
                     final Class clazz = CompilerClassloaderUtils.getClass(packageName,

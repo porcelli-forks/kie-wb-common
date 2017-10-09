@@ -28,7 +28,7 @@ import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
@@ -49,7 +49,7 @@ public class KieAfBuilderClassloaderUtil {
                                                                  KieModuleMetaDataCache kieModuleMetaDataCache,
                                                                  DependenciesCache dependenciesCache,
                                                                  GuvnorM2Repository guvnorM2Repository,
-                                                                 ClassLoadersResourcesHolder classloadersResourcesHolder,
+                                                                 ClassLoaderCache classLoaderCache,
                                                                  String indentity) {
 
         Path nioPath = Paths.convert(project.getRootPath());
@@ -65,11 +65,11 @@ public class KieAfBuilderClassloaderUtil {
             Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(workingDir);
 
             if (artifactsFromTargets.isPresent()) {
-                classloadersResourcesHolder.addTargetProjectDependencies(workingDir, artifactsFromTargets.get());
+                classLoaderCache.addTargetProjectDependencies(workingDir, artifactsFromTargets.get());
             } else {
                 Optional<List<String>> targetClassesOptional = CompilerClassloaderUtils.getStringsFromTargets(workingDir);
                 if (targetClassesOptional.isPresent()) {
-                    classloadersResourcesHolder.addTargetProjectDependencies(workingDir, targetClassesOptional.get());// check this add
+                    classLoaderCache.addTargetProjectDependencies(workingDir, targetClassesOptional.get());// check this add
                 }
             }
             MapClassLoader projectClassLoader = null;
@@ -79,14 +79,14 @@ public class KieAfBuilderClassloaderUtil {
                 ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(workingDir,
                         kieModuleMetaDataCache,
                         dependenciesCache,
-                        classloadersResourcesHolder,
+                        classLoaderCache,
                         res);
 
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
                 projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString()), dependenciesClassLoader);
-                classloadersResourcesHolder.addTargetClassLoader(workingDir, projectClassLoader);
+                classLoaderCache.addTargetClassLoader(workingDir, projectClassLoader);
             }
             return Optional.ofNullable(projectClassLoader);
         }
@@ -96,12 +96,12 @@ public class KieAfBuilderClassloaderUtil {
     private static ClassLoader addToHolderAndGetDependenciesClassloader(Path workingDir,
                                                                         KieModuleMetaDataCache kieModuleMetaDataCache,
                                                                         DependenciesCache dependenciesCache,
-                                                                        ClassLoadersResourcesHolder classloadersResourcesHolder,
+                                                                        ClassLoaderCache classLoaderCache,
                                                                         KieCompilationResponse res) {
 
         Optional<ClassLoader> opDependenciesClassLoader = Optional.empty();
         if (res.getWorkingDir().isPresent()) {
-            opDependenciesClassLoader = classloadersResourcesHolder.getDependenciesClassLoader(workingDir);
+            opDependenciesClassLoader = classLoaderCache.getDependenciesClassLoader(workingDir);
         }
 
         ClassLoader dependenciesClassLoader;
@@ -110,7 +110,7 @@ public class KieAfBuilderClassloaderUtil {
         } else {
             dependenciesClassLoader = opDependenciesClassLoader.get();
         }
-        classloadersResourcesHolder.addDependenciesClassLoader(workingDir, dependenciesClassLoader);
+        classLoaderCache.addDependenciesClassLoader(workingDir, dependenciesClassLoader);
 
         if (res.getProjectDependenciesRaw().isPresent()) {
             dependenciesCache.addDependenciesRaw(workingDir, res.getProjectDependenciesRaw().get());

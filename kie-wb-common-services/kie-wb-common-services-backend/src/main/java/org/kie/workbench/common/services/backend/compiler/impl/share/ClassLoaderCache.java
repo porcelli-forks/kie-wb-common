@@ -23,9 +23,10 @@ import org.uberfire.java.nio.file.Path;
 
 /***
  * Contract to manage Resources URI in terms of pom dependencies (included transient)
- * and .class and resources (.drl and similar) present in the target folders and List of deps raw, instead of rebuild to read the same resources from a previous build
+ * and .class and resources (.drl and similar) present in the target folders and List of deps raw,
+ * instead of rebuild to read the same resources from a previous build
  */
-public interface ClassLoadersResourcesHolder {
+public interface ClassLoaderCache {
 
     void addTargetClassLoader(Path projectRootPath,
                               MapClassLoader classLoader);
@@ -44,7 +45,7 @@ public interface ClassLoadersResourcesHolder {
 
     void clearClassloaderResourcesMap();
 
-    Boolean removeProjectDeps(Path projectRootPath);
+    void removeProjectDeps(Path projectRootPath);
 
 
     //Target deps

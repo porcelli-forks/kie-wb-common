@@ -34,23 +34,23 @@ public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements B
      * BUILDER
      */
 
-    public KieAFBuilder getBuilder(String uri) {
+    public synchronized KieAFBuilder getBuilder(String uri) {
         return getEntry(uri);
     }
 
-    public void addBuilder(final String uri , final KieAFBuilder builder) {
+    public synchronized void addBuilder(final String uri , final KieAFBuilder builder) {
         setEntry(uri, builder);
     }
 
-    public void removeBuilder(String uri) {
+    public synchronized void removeBuilder(String uri) {
         invalidateCache(uri);
     }
 
-    public boolean containsBuilder(String uri) {
+    public synchronized boolean containsBuilder(String uri) {
         return getKeys().contains(uri);
     }
 
-    public void clearBuilderCache() { invalidateCache(); }
+    public synchronized void clearBuilderCache() { invalidateCache(); }
 
 
     @Override

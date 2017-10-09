@@ -27,7 +27,7 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
@@ -41,28 +41,27 @@ import org.uberfire.java.nio.file.Path;
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, ClassLoader> {
 
     private GuvnorM2Repository guvnorM2Repository;
-    private ClassLoadersResourcesHolder classloadersResourcesHolder;
     private Instance< User > identity;
     private GitCache gitCache;
     private BuilderCache builderCache;
     private DependenciesCache dependenciesCache;
     private KieModuleMetaDataCache kieModuleMetaDataCache;
+    private ClassLoaderCache classLoaderCache;
 
     public LRUProjectDependenciesClassLoaderCache() {
     }
 
     @Inject
     public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository,
-                                                  ClassLoadersResourcesHolder classloadersResourcesHolder,
                                                   Instance< User > identity, GitCache gitCache, BuilderCache builderCache,
-                                                  KieModuleMetaDataCache kieModuleMetaDataCache, DependenciesCache dependenciesCache) {
+                                                  KieModuleMetaDataCache kieModuleMetaDataCache, DependenciesCache dependenciesCache, ClassLoaderCache classLoaderCache) {
         this.guvnorM2Repository = guvnorM2Repository;
-        this.classloadersResourcesHolder = classloadersResourcesHolder;
         this.identity = identity;
         this.gitCache = gitCache;
         this.builderCache = builderCache;
         this.kieModuleMetaDataCache = kieModuleMetaDataCache;
         this.dependenciesCache = dependenciesCache;
+        this.classLoaderCache = classLoaderCache;
     }
 
 
@@ -91,7 +90,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
                                                                                                  kieModuleMetaDataCache,
                                                                                                  dependenciesCache,
                                                                                                  guvnorM2Repository,
-                                                                                                 classloadersResourcesHolder,
+                                                                                                 classLoaderCache,
                                                                                                  identity);
         return  classLoader;
     }
@@ -100,9 +99,9 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     public void invalidateCache(Path path) {
         dependenciesCache.removeDependenciesRaw(path);
         kieModuleMetaDataCache.removeKieModuleMetaData(path);
-        classloadersResourcesHolder.removeTargetClassloader(path);
+        classLoaderCache.removeTargetClassloader(path);
         if(path.endsWith("pom.xml")){
-            classloadersResourcesHolder.removeDependenciesClassloader(path);
+            classLoaderCache.removeDependenciesClassloader(path);
         }
     }
 

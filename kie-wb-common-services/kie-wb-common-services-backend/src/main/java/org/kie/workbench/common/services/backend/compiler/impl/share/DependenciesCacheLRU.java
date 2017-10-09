@@ -27,20 +27,20 @@ import org.uberfire.java.nio.file.Path;
 public class DependenciesCacheLRU extends LRUCache<Path, List<String>> implements DependenciesCache{
 
 
-    public List<String> getDependenciesRaw(Path projectRootPath) {
+    public synchronized List<String> getDependenciesRaw(Path projectRootPath) {
         return getEntry(projectRootPath);
     }
 
-    public void addDependenciesRaw(Path projectRootPath, List<String> depsRaw) {
+    public synchronized void addDependenciesRaw(Path projectRootPath, List<String> depsRaw) {
         setEntry(projectRootPath, depsRaw);
     }
 
-    public void removeDependenciesRaw(Path projectRootPath) {
+    public synchronized void removeDependenciesRaw(Path projectRootPath) {
         invalidateCache(projectRootPath);
     }
 
     @Override
-    public void clearDependenciesCache() {
+    public synchronized void clearDependenciesCache() {
         invalidateCache();
     }
 }
