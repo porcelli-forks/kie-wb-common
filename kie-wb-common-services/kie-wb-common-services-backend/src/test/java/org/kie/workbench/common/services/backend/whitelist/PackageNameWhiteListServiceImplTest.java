@@ -61,21 +61,11 @@ public class PackageNameWhiteListServiceImplTest {
     @Mock
     PackageNameWhiteListSaver saver;
 
-   // private FileSystemTestingUtils fileSystemTestingUtils = new FileSystemTestingUtils();
-
-
     @Before
     public void setUp() throws Exception {
-        //fileSystemTestingUtils.setup();
         when( packageNameSearchProvider.newTopLevelPackageNamesSearch( any( POM.class ) ) ).thenReturn( mock( PackageNameSearchProvider.PackageNameSearch.class ) );
     }
-
-    @After
-    public void tearDown() throws  Exception{
-       // fileSystemTestingUtils.cleanup();
-    }
-
-
+    
 
     @Test
     public void ifWhiteListIsEmptyWhiteListEverything() throws Exception {
@@ -167,7 +157,7 @@ public class PackageNameWhiteListServiceImplTest {
         org.uberfire.java.nio.file.Path returnPath = org.uberfire.java.nio.file.Paths.get("file://",f.getAbsolutePath());
         when(builderCacheInternal.getProjectRoot(f.getAbsolutePath())).thenReturn(returnPath);
 
-        
+
         final PackageNameWhiteListService packageNameWhiteListService = makeService( "a.**\nb\n" , builderCacheInternal);
         final Set<String> results = packageNameWhiteListService.filterPackageNames( kiePrj,
                                                                                     new ArrayList<String>() {{
