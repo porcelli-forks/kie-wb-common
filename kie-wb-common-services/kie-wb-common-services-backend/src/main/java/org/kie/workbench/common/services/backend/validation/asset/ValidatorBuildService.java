@@ -40,12 +40,13 @@ import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -66,7 +67,8 @@ public class ValidatorBuildService {
     private IOService ioService;
     private KieProjectService projectService;
     private GuvnorM2Repository guvnorM2Repository;
-    private CompilerMapsHolder compilerMapsHolder;
+    private GitCache gitCache;
+    private BuilderCache builderCache;
     private Logger logger = LoggerFactory.getLogger(ValidatorBuildService.class);
     private String ERROR_LEVEL = "ERROR";
 
@@ -79,29 +81,30 @@ public class ValidatorBuildService {
     public ValidatorBuildService(final @Named("ioStrategy") IOService ioService,
                                  final KieProjectService projectService,
                                  final GuvnorM2Repository guvnorM2Repository,
-                                 final CompilerMapsHolder compilerMapsHolder) {
+                                 final GitCache gitCache,
+                                 final BuilderCache builderCache) {
         this.ioService = ioService;
         this.projectService = projectService;
         this.guvnorM2Repository = guvnorM2Repository;
-        this.compilerMapsHolder = compilerMapsHolder;
+        this.gitCache = gitCache;
+        this.builderCache = builderCache;
     }
 
     private AFCompiler getCompiler() {
         // we create the compiler in this weird mode to use the gitMap used internally
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
-        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
-                                                                    compilerMapsHolder);
+        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator);
         return outerDecorator;
     }
 
     private KieAFBuilder getBuilder(final Project project) {
         final org.uberfire.java.nio.file.Path projectRootPath = convert(project.getRootPath());
-        final KieAFBuilder builder = compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString()/* projectRootPath*/);
+        final KieAFBuilder builder = builderCache.getBuilder(project.getRootPath().toURI().toString());
         if (builder == null) {
             final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
                     MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                                                                    getCompiler(), compilerMapsHolder);
-            compilerMapsHolder.addBuilder(project.getRootPath().toURI().toString()/* projectRootPath*/, newBuilder);
+                                                                    getCompiler());
+            builderCache.addBuilder(project.getRootPath().toURI().toString(), newBuilder);
             return newBuilder;
         }
         return builder;
@@ -161,7 +164,7 @@ public class ValidatorBuildService {
         final KieProject kieProject = project.get();
         final org.uberfire.java.nio.file.Path resourcePath = convert(_resourcePath);
         final JGitFileSystem fs = (JGitFileSystem) resourcePath.getFileSystem();
-        Git git = compilerMapsHolder.getGit(fs);
+        Git git = gitCache.getGit(fs);
         Boolean alreadyBuild = Boolean.FALSE;
         CompilationResponse res = null;
         if (git == null) {
@@ -169,7 +172,7 @@ public class ValidatorBuildService {
             final KieAFBuilder builder = getBuilder(kieProject);
             res = builder.build(Boolean.TRUE, Boolean.FALSE);//TODO why this buidl this log output is not rreaded in the ui
             alreadyBuild = Boolean.TRUE;
-            git = compilerMapsHolder.getGit(fs);
+            git = gitCache.getGit(fs);
             if (git == null) {
                 logger.error("Git not constructed in the JGitDecorator");
                 throw new RuntimeException("Git repo not found");

@@ -24,7 +24,6 @@ import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieMavenCompilerFactory;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
@@ -37,17 +36,15 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     private WorkspaceCompilationInfo info;
     private CompilationRequest req;
     private String mavenRepo;
-    private CompilerMapsHolder compilerMapsHolder;
     private String FILE_URI = "file://";
 
     public DefaultKieAFBuilder(Path projectRepo,
-                               String mavenRepo, CompilerMapsHolder compilerMapsHolder) {
+                               String mavenRepor) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(projectRepo, compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(projectRepo);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -55,13 +52,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     }
 
     public DefaultKieAFBuilder(Path projectRepo,
-                               String mavenRepo, AFCompiler compiler, CompilerMapsHolder compilerMapsHolder) {
+                               String mavenRepo, AFCompiler compiler) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(projectRepo, compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(projectRepo);
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -69,13 +65,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     }
 
     public DefaultKieAFBuilder(String projectRepo,
-                               String mavenRepo, CompilerMapsHolder compilerMapsHolder) {
+                               String mavenRepo) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -83,13 +78,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     }
 
     public DefaultKieAFBuilder(String projectRepo,
-                               String mavenRepo, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               String mavenRepo, Boolean skipPrjDependenciesCreationList) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -98,13 +92,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               String[] args, CompilerMapsHolder compilerMapsHolder) {
+                               String[] args) {
         /**In the  construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -114,13 +107,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               String[] args, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               String[] args, Boolean skipPrjDependenciesCreationList) {
         /**In the  construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         compiler = KieMavenCompilerFactory.getCompiler(KieDecorator.LOG_OUTPUT_AFTER);
-        info = new WorkspaceCompilationInfo(Paths.get(projectRepo), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -129,13 +121,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               AFCompiler compiler, CompilerMapsHolder compilerMapsHolder) {
+                               AFCompiler compiler) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compiler = compiler;
-        this.compilerMapsHolder = compilerMapsHolder;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -144,13 +135,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
 
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
-                               AFCompiler compiler, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               AFCompiler compiler, Boolean skipPrjDependenciesCreationList) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -160,13 +150,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public DefaultKieAFBuilder(String projectRepo,
                                String mavenRepo,
                                String[] mavenArgs,
-                               AFCompiler compiler, Boolean skipPrjDependenciesCreationList, CompilerMapsHolder compilerMapsHolder) {
+                               AFCompiler compiler, Boolean skipPrjDependenciesCreationList) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
-        this.compilerMapsHolder = compilerMapsHolder;
         this.compiler = compiler;
-        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)), compilerMapsHolder);
+        info = new WorkspaceCompilationInfo(Paths.get(URI.create(FILE_URI + projectRepo)));
         req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 mavenArgs,
@@ -246,7 +235,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse build(String projectPath,
                                         String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -257,7 +246,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse build(String projectPath,
                                         String mavenRepo, Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.COMPILE},
@@ -268,7 +257,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse buildAndPackage(String projectPath,
                                                   String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.PACKAGE},
@@ -279,7 +268,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse buildAndPackage(String projectPath,
                                                   String mavenRepo, Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.PACKAGE},
@@ -290,7 +279,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse buildAndInstall(String projectPath,
                                                   String mavenRepo) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.INSTALL},
@@ -301,7 +290,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     @Override
     public KieCompilationResponse buildAndInstall(String projectPath,
                                                   String mavenRepo, Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 new String[]{MavenCLIArgs.INSTALL},
@@ -313,7 +302,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
                                                    String[] args) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -325,7 +314,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     public KieCompilationResponse buildSpecialized(String projectPath,
                                                    String mavenRepo,
                                                    String[] args, Boolean skipPrjDependenciesCreationList) {
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -339,7 +328,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                                    String[] args,
                                                    KieDecorator decorator) {
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(decorator);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -353,7 +342,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
                                                    String[] args,
                                                    KieDecorator decorator, Boolean skipPrjDependenciesCreationList) {
         AFCompiler compiler = KieMavenCompilerFactory.getCompiler(decorator);
-        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath), compilerMapsHolder);
+        WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(PathConverter.createPathFromString(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
                 info,
                 args,
@@ -377,7 +366,4 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
         return mavenRepo;
     }
 
-    public CompilerMapsHolder getCompilerMapsHolder() {
-        return compilerMapsHolder;
-    }
 }

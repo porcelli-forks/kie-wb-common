@@ -17,7 +17,6 @@ package org.kie.workbench.common.services.backend.compiler.impl;
 
 import java.util.Optional;
 
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
 import org.uberfire.java.nio.file.Path;
 
 /***
@@ -28,17 +27,16 @@ public class WorkspaceCompilationInfo {
     protected Path prjPath;
     protected Path enhancedMainPomFile;
     protected Boolean kiePluginPresent = Boolean.FALSE;
-    protected CompilerMapsHolder compilerMapsHolder;
+    //protected GitCache gitCache;
 
     public WorkspaceCompilationInfo(Path prjPath) {
         this.prjPath = prjPath;
     }
 
-    public WorkspaceCompilationInfo(Path prjPath,
-                                    CompilerMapsHolder compilerMapsHolder) {
+    /*public WorkspaceCompilationInfo(Path prjPath, GitCache gitCache) {
         this.prjPath = prjPath;
-        this.compilerMapsHolder = compilerMapsHolder;
-    }
+        this.gitCache = gitCache;
+    }*/
 
     public Boolean lateAdditionEnhancedMainPomFile(Path enhancedPom) {
         if (enhancedMainPomFile == null && enhancedPom != null) {
@@ -72,9 +70,6 @@ public class WorkspaceCompilationInfo {
         return Optional.ofNullable(enhancedMainPomFile);
     }
 
-    public Optional<CompilerMapsHolder> getCompilerMapsHolder() {
-        return Optional.ofNullable(compilerMapsHolder);
-    }
 
     @Override
     public String toString() {

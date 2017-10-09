@@ -34,8 +34,8 @@ import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
@@ -51,11 +51,12 @@ public class BuildServiceImpl implements BuildService {
 
     private GuvnorM2Repository guvnorM2Repository;
 
-    private ClassLoadersResourcesHolder classloadersResourcesHolder;
-
-    private CompilerMapsHolder compilerMapsHolder;
 
     private Instance< User > identity;
+
+    private GitCache gitCache;
+
+    private BuilderCache builderCache;
 
     public BuildServiceImpl( ) {
         //Empty constructor for Weld
@@ -64,14 +65,14 @@ public class BuildServiceImpl implements BuildService {
     @Inject
     public BuildServiceImpl(final KieProjectService projectService,
                             final GuvnorM2Repository guvnorM2Repository,
-                            final CompilerMapsHolder compilerMapsHolder,
-                            final ClassLoadersResourcesHolder classloadersResourcesHolder,
-                            final Instance< User > identity) {
+                            final Instance< User > identity,
+                            final GitCache gitCache,
+                            final BuilderCache builderCache) {
         this.projectService = projectService;
-        this.compilerMapsHolder = compilerMapsHolder;
         this.guvnorM2Repository = guvnorM2Repository;
-        this.classloadersResourcesHolder = classloadersResourcesHolder;
         this.identity = identity;
+        this.gitCache = gitCache;
+        this.builderCache = builderCache;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class BuildServiceImpl implements BuildService {
 
     private BuildResults buildAndDeployInternal(final Project project){
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), PathConverter.getNioPath(project),
-                                                                compilerMapsHolder,
+                                                                 gitCache, builderCache,
                                                                 guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
 
         KieCompilationResponse res = kieAfBuilder.buildAndInstall(((DefaultKieAFBuilder)kieAfBuilder).getInfo().getPrjPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
@@ -91,7 +92,7 @@ public class BuildServiceImpl implements BuildService {
     private BuildResults buildInternal(final Project project){
             //@TODO build without classloader creation or with classloader creation ?
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
-                                                                compilerMapsHolder,guvnorM2Repository,
+                                                                gitCache, builderCache, guvnorM2Repository,
                                                                      KieAFBuilderUtil.getIdentifier(identity));
 
         KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
@@ -102,7 +103,7 @@ public class BuildServiceImpl implements BuildService {
     private IncrementalBuildResults buildIncrementallyInternal(final Project project){
 
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
-                                                                     compilerMapsHolder,
+                                                                     gitCache, builderCache,
                                                                      guvnorM2Repository,  KieAFBuilderUtil.getIdentifier(identity));
         KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
         return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
@@ -134,7 +135,7 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt( final Project project ) {
-        return compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString()) != null;//@TODO check if could be better the classloaderHolder
+        return builderCache.getBuilder(project.getRootPath().toURI().toString()) != null;//@TODO check if could be better the classloaderHolder
     }
 
     @Override

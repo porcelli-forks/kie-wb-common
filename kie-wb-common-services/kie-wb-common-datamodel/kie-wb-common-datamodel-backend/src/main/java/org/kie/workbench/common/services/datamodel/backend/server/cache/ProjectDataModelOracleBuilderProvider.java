@@ -30,8 +30,10 @@ import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBui
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.BuilderUtils;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
@@ -54,7 +56,9 @@ public class ProjectDataModelOracleBuilderProvider {
     private PackageNameWhiteListService packageNameWhiteListService;
     private BuilderUtils builderUtils;
     private ClassLoadersResourcesHolder resourcesHolder;
-    private CompilerMapsHolder compilerMapsHolder;
+    private BuilderCache builderCache;
+    private KieModuleMetaDataCache kieModuleMetaDataCache;
+    private DependenciesCache dependenciesCache;
 
     public ProjectDataModelOracleBuilderProvider() {
         //CDI proxy
@@ -63,12 +67,16 @@ public class ProjectDataModelOracleBuilderProvider {
     @Inject
     public ProjectDataModelOracleBuilderProvider(final PackageNameWhiteListService packageNameWhiteListService,
                                                  final ProjectImportsService importsService, final ClassLoadersResourcesHolder resourcesHolder,
-                                                 final BuilderUtils builderUtils, final CompilerMapsHolder compilerMapsHolder) {
+                                                 final BuilderUtils builderUtils, final BuilderCache builderCache,
+                                                 final KieModuleMetaDataCache kieModuleMetaDataCache,
+                                                 final DependenciesCache dependenciesCache) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
         this.resourcesHolder = resourcesHolder;
         this.builderUtils = builderUtils;
-        this.compilerMapsHolder = compilerMapsHolder;
+        this.builderCache = builderCache;
+        this.kieModuleMetaDataCache = kieModuleMetaDataCache;
+        this.dependenciesCache = dependenciesCache;
     }
 
     public InnerBuilder newBuilder( final KieProject project) {
@@ -80,7 +88,7 @@ public class ProjectDataModelOracleBuilderProvider {
         }
         DefaultKieAFBuilder defaultKieBuilder = (DefaultKieAFBuilder)builder.get();
         Path workingDir = defaultKieBuilder.getInfo().getPrjPath();
-        KieModuleMetaData kieModuleMetaData =compilerMapsHolder.getMetadata(workingDir);
+        KieModuleMetaData kieModuleMetaData =kieModuleMetaDataCache.getMetadata(workingDir);
 
         if(kieModuleMetaData != null){
             return getInnerBuilderWithAlreadyPresentData(project, kieModuleMetaData);
@@ -91,9 +99,9 @@ public class ProjectDataModelOracleBuilderProvider {
 
 
     private InnerBuilder getInnerBuilderWithAlreadyPresentData(KieProject project,KieModuleMetaData kieModuleMetaData) {
-        KieAFBuilder builder = compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString());
+        KieAFBuilder builder = builderCache.getBuilder(project.getRootPath().toURI().toString());
         Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
-        final Set<String> javaResources = new HashSet<String>(compilerMapsHolder.getDependenciesRaw(workingDir));
+        final Set<String> javaResources = new HashSet<String>(dependenciesCache.getDependenciesRaw(workingDir));
         final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData, javaResources);
         return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, resourcesHolder);
     }
@@ -104,8 +112,7 @@ public class ProjectDataModelOracleBuilderProvider {
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
             kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                           res.getProjectDependenciesAsURI().get());
-            compilerMapsHolder.addKieMetaData(res.getWorkingDir().get(), kieModuleMetaData);
-            compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), res.getWorkingDir().get());
+            kieModuleMetaDataCache.addKieMetaData(res.getWorkingDir().get(), kieModuleMetaData);
             if (res.getProjectDependenciesRaw().isPresent()) {
                 final Set<String> javaResources = new HashSet<String>(res.getProjectDependenciesRaw().get());
                 final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
@@ -161,7 +168,7 @@ public class ProjectDataModelOracleBuilderProvider {
         }
 
         private void addFromKieModuleMetadata() {
-            Path prjRoot =  compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
+            Path prjRoot =  builderCache.getProjectRoot(project.getRootPath().toURI().toString());
             WhiteList whiteList = getFilteredPackageNames();
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
@@ -174,7 +181,7 @@ public class ProjectDataModelOracleBuilderProvider {
          * @return A "white list" of package names that are available for authoring
          */
         private WhiteList getFilteredPackageNames() {
-            DefaultKieAFBuilder builder = (DefaultKieAFBuilder) compilerMapsHolder.getBuilder(project.getRootPath().toURI().toString());
+            DefaultKieAFBuilder builder = (DefaultKieAFBuilder) builderCache.getBuilder(project.getRootPath().toURI().toString());
             Collection<String> pkgs = kieModuleMetaData.getPackages();
             //@TODO change /global with guvnor repo
             Set<String> filtered = CompilerClassloaderUtils.filterPathClasses(classloadersResourcesHolder.getTargetsProjectDependencies(builder.getInfo().getPrjPath()), "global/");

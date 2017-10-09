@@ -32,7 +32,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCo
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
@@ -42,21 +43,20 @@ public class KieAFBuilderUtil {
 
 
     public static KieAFBuilder getKieAFBuilder(String uri, org.uberfire.java.nio.file.Path nioPath,
-                                               CompilerMapsHolder compilerMapsHolder,
+                                               GitCache gitCache, BuilderCache builderCache,
                                                GuvnorM2Repository guvnorM2Repository, String user) {
 
-        KieAFBuilder builder = compilerMapsHolder.getBuilder(uri);
+        KieAFBuilder builder = builderCache.getBuilder(uri);
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
                 String folderName = getFolderName(uri, user);
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), folderName);
-                compilerMapsHolder.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
+                gitCache.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
                 builder = new DefaultKieAFBuilder(prj,
                         MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                        getCompiler(compilerMapsHolder),
-                        compilerMapsHolder);
-                compilerMapsHolder.addBuilder(uri, builder);
+                        getCompiler(gitCache));
+                builderCache.addBuilder(uri, builder);
             }
         }
         return builder;
@@ -67,20 +67,19 @@ public class KieAFBuilderUtil {
         return uri.contains("@myrepo") ? UUID.randomUUID().toString() : user +"-" + UUID.randomUUID().toString();
     }
 
-    public static AFCompiler getCompiler(CompilerMapsHolder compilerMapsHolder) {
+    public static AFCompiler getCompiler(GitCache gitCache) {
         // we create the compiler in this weird mode to use the gitMap used internally
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
-        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator,
-                compilerMapsHolder);
+        AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator, gitCache);
         return outerDecorator;
     }
 
     public static Path getFSPath(KieProject project,
-                                 CompilerMapsHolder compilerMapsHolder,
+                                 GitCache gitCache, BuilderCache builderCache,
                                  GuvnorM2Repository guvnorM2Repository, String user) {
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI(), nioPath,
-                compilerMapsHolder, guvnorM2Repository, user);
+                gitCache, builderCache, guvnorM2Repository, user);
         Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         return prjPath;
     }

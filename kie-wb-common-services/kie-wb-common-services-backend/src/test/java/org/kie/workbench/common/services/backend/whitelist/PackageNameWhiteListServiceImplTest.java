@@ -24,8 +24,7 @@ import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.share.DefaultCompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.common.services.shared.whitelist.PackageNameWhiteListService;
@@ -55,6 +54,9 @@ public class PackageNameWhiteListServiceImplTest {
 
     @Mock
     PackageNameWhiteListSaver saver;
+
+    @Mock
+    BuilderCache builderCache;
 
     @Before
     public void setUp() throws Exception {
@@ -162,6 +164,6 @@ public class PackageNameWhiteListServiceImplTest {
                                                        }
                                                    },
                                                    saver,
-                                                   new DefaultCompilerMapsHolder());
+                                                   builderCache);
     }
 }

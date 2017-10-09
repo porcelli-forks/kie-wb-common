@@ -26,7 +26,7 @@ import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
@@ -38,7 +38,7 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extends AFCompiler<T>> implements CompilerDecorator {
 
     private Map<JGitFileSystem, Git> gitMap;
-    private CompilerMapsHolder compilerMapsHolder;
+    private GitCache gitCache;
     private boolean holder;
     private C compiler;
 
@@ -48,10 +48,9 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
         holder = Boolean.FALSE;
     }
 
-    public JGITCompilerBeforeDecorator(C compiler,
-                                       CompilerMapsHolder compilerMapsHolder) {
+    public JGITCompilerBeforeDecorator(C compiler, GitCache gitCache) {
         this.compiler = compiler;
-        this.compilerMapsHolder = compilerMapsHolder;
+        this.gitCache = gitCache;
         holder = Boolean.TRUE;
     }
 
@@ -71,8 +70,7 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
             }
 
             _req = new DefaultCompilationRequest(req.getMavenRepo(),
-                    new WorkspaceCompilationInfo(Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(path.getFileName().toString()).normalize().toUri()),
-                            compilerMapsHolder),
+                    new WorkspaceCompilationInfo(Paths.get(repo.getRepository().getDirectory().toPath().getParent().resolve(path.getFileName().toString()).normalize().toUri())),
                     req.getOriginalArgs(),
                     req.getLogRequested(),
                     req.skipPrjDependenciesCreationList());
@@ -99,13 +97,11 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
     private Git useHolder(JGitFileSystem fs,
                           CompilationRequest req) {
         Git repo;
-        if (!compilerMapsHolder.containsGit(fs)) {
-            repo = JGitUtils.tempClone(fs,
-                    req.getRequestUUID());
-            compilerMapsHolder.addGit(fs,
-                    repo);
+        if (!gitCache.containsGit(fs)) {
+            repo = JGitUtils.tempClone(fs, req.getRequestUUID());
+            gitCache.addGit(fs, repo);
         }
-        repo = compilerMapsHolder.getGit(fs);
+        repo = gitCache.getGit(fs);
         return repo;
     }
 

@@ -26,8 +26,11 @@ import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -38,26 +41,33 @@ import org.uberfire.java.nio.file.Path;
 public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, ClassLoader> {
 
     private GuvnorM2Repository guvnorM2Repository;
-    private CompilerMapsHolder compilerMapsHolder;
     private ClassLoadersResourcesHolder classloadersResourcesHolder;
     private Instance< User > identity;
+    private GitCache gitCache;
+    private BuilderCache builderCache;
+    private DependenciesCache dependenciesCache;
+    private KieModuleMetaDataCache kieModuleMetaDataCache;
 
     public LRUProjectDependenciesClassLoaderCache() {
     }
 
     @Inject
     public LRUProjectDependenciesClassLoaderCache(GuvnorM2Repository guvnorM2Repository,
-                                                  CompilerMapsHolder compilerMapsHolder,
-                                                  ClassLoadersResourcesHolder classloadersResourcesHolder, Instance< User > identity) {
+                                                  ClassLoadersResourcesHolder classloadersResourcesHolder,
+                                                  Instance< User > identity, GitCache gitCache, BuilderCache builderCache,
+                                                  KieModuleMetaDataCache kieModuleMetaDataCache, DependenciesCache dependenciesCache) {
         this.guvnorM2Repository = guvnorM2Repository;
-        this.compilerMapsHolder = compilerMapsHolder;
         this.classloadersResourcesHolder = classloadersResourcesHolder;
         this.identity = identity;
+        this.gitCache = gitCache;
+        this.builderCache = builderCache;
+        this.kieModuleMetaDataCache = kieModuleMetaDataCache;
+        this.dependenciesCache = dependenciesCache;
     }
 
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project, String identity) {
-        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
+        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, gitCache, builderCache, guvnorM2Repository, identity);
         ClassLoader classLoader = getEntry(nioFsPAth);
         if (classLoader == null) {
             Optional<MapClassLoader> opClassloader = buildClassLoader(project, identity);
@@ -71,21 +81,25 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
 
     public synchronized void setDependenciesClassLoader(final KieProject project,
                                                         ClassLoader classLoader, String identity) {
-        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
+        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project,  gitCache, builderCache,  guvnorM2Repository, identity);
         setEntry(nioFsPAth, classLoader);
     }
 
     protected Optional<MapClassLoader> buildClassLoader(final KieProject project, String identity) {
-        Optional<MapClassLoader> classLoader = KieAfBuilderClassloaderUtil.getProjectClassloader(project, compilerMapsHolder, guvnorM2Repository, classloadersResourcesHolder, identity);
-        Path workingDir = KieAFBuilderUtil.getFSPath(project, compilerMapsHolder, guvnorM2Repository, identity);
-        compilerMapsHolder.addAlias(project.getKModuleXMLPath().toURI(), workingDir.toAbsolutePath());
+        Optional<MapClassLoader> classLoader = KieAfBuilderClassloaderUtil.getProjectClassloader(project,
+                                                                                                 gitCache, builderCache,
+                                                                                                 kieModuleMetaDataCache,
+                                                                                                 dependenciesCache,
+                                                                                                 guvnorM2Repository,
+                                                                                                 classloadersResourcesHolder,
+                                                                                                 identity);
         return  classLoader;
     }
 
     @Override
     public void invalidateCache(Path path) {
-        compilerMapsHolder.removeDependenciesRaw(path);
-        compilerMapsHolder.removeKieModuleMetaData(path);
+        dependenciesCache.removeDependenciesRaw(path);
+        kieModuleMetaDataCache.removeKieModuleMetaData(path);
         classloadersResourcesHolder.removeTargetClassloader(path);
         if(path.endsWith("pom.xml")){
             classloadersResourcesHolder.removeDependenciesClassloader(path);

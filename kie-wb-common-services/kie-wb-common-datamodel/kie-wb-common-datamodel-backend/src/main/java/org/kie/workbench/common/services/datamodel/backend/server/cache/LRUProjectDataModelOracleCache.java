@@ -23,9 +23,8 @@ import javax.inject.Named;
 import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
-import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
@@ -40,8 +39,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
 
     private ProjectDataModelOracleBuilderProvider builderProvider;
     private KieProjectService projectService;
-    private CompilerMapsHolder compilerMapsHolder;
-    private GuvnorM2Repository guvnorM2Repository;
+    private BuilderCache builderCache;
 
     public LRUProjectDataModelOracleCache() {
     }
@@ -49,12 +47,10 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
     @Inject
     public LRUProjectDataModelOracleCache( final ProjectDataModelOracleBuilderProvider builderProvider,
                                            final KieProjectService projectService,
-                                           final CompilerMapsHolder compilerMapsHolder,
-                                           final GuvnorM2Repository guvnorM2Repository) {
+                                           final BuilderCache builderCache) {
         this.builderProvider = builderProvider;
         this.projectService = projectService;
-        this.compilerMapsHolder = compilerMapsHolder;
-        this.guvnorM2Repository = guvnorM2Repository;
+        this.builderCache = builderCache;
     }
 
     public synchronized void invalidateProjectCache( @Observes final InvalidateDMOProjectCacheEvent event ) {
@@ -62,7 +58,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
                                             event );
         final Path resourcePath = event.getResourcePath();
         final KieProject project = projectService.resolveProject( resourcePath );
-        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString()); //@TODO is always called during the indexing ?
+        org.uberfire.java.nio.file.Path workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString()); //@TODO is always called during the indexing ?
         //If resource was not within a Project there's nothing to invalidate
         if ( project != null && (workingDir.toString().length() > project.getProjectName().length() + 1)) {
             // the path resolved is /<projectname> this mean project not yet compiled and cached
@@ -75,7 +71,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
     //Check the ProjectOracle for the Project has been created, otherwise create one!
     public synchronized ProjectDataModelOracle assertProjectDataModelOracle( final KieProject project) {
         ProjectDataModelOracle  projectOracle;
-        org.uberfire.java.nio.file.Path workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
+        org.uberfire.java.nio.file.Path workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString());
         if(workingDir == null){
             projectOracle = buildAndSetEntry(project);
         }else{
@@ -92,7 +88,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
         ProjectDataModelOracle projectOracle;
         org.uberfire.java.nio.file.Path workingDir;
         projectOracle = makeProjectOracle(project);
-        workingDir = compilerMapsHolder.getProjectRoot(project.getRootPath().toURI().toString());
+        workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString());
         setEntry( workingDir, projectOracle );
         return projectOracle;
     }

@@ -399,6 +399,13 @@ public class AFMavenCli {
                                   cliRequest.getWorkingDirectory());
 
             try {
+
+                /*ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(baos);
+                //write on printstream
+                String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                */
+
                 PrintStream ps = new PrintStream(new FileOutputStream(logFile));
                 System.setOut(ps);
                 System.setErr(ps);

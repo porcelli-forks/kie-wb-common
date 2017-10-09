@@ -22,14 +22,16 @@ import java.util.Optional;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoadersResourcesHolder;
-import org.kie.workbench.common.services.backend.compiler.impl.share.CompilerMapsHolder;
+import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -43,13 +45,15 @@ public class KieAfBuilderClassloaderUtil {
      * This method return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
     public static Optional<MapClassLoader> getProjectClassloader(KieProject project,
-                                                                 CompilerMapsHolder compilerMapsHolder,
+                                                                 GitCache gitCache, BuilderCache builderCache,
+                                                                 KieModuleMetaDataCache kieModuleMetaDataCache,
+                                                                 DependenciesCache dependenciesCache,
                                                                  GuvnorM2Repository guvnorM2Repository,
                                                                  ClassLoadersResourcesHolder classloadersResourcesHolder,
                                                                  String indentity) {
 
         Path nioPath = Paths.convert(project.getRootPath());
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), nioPath, compilerMapsHolder, guvnorM2Repository, indentity);
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), nioPath, gitCache, builderCache,  guvnorM2Repository, indentity);
 
         KieCompilationResponse res = builder.build( !indentity.equals("system") , Boolean.FALSE);//Here the log is not required during the indexing startup
 
@@ -73,7 +77,8 @@ public class KieAfBuilderClassloaderUtil {
             if (module instanceof InternalKieModule) {
 
                 ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(workingDir,
-                        compilerMapsHolder,
+                        kieModuleMetaDataCache,
+                        dependenciesCache,
                         classloadersResourcesHolder,
                         res);
 
@@ -89,7 +94,8 @@ public class KieAfBuilderClassloaderUtil {
     }
 
     private static ClassLoader addToHolderAndGetDependenciesClassloader(Path workingDir,
-                                                                        CompilerMapsHolder compilerMapsHolder,
+                                                                        KieModuleMetaDataCache kieModuleMetaDataCache,
+                                                                        DependenciesCache dependenciesCache,
                                                                         ClassLoadersResourcesHolder classloadersResourcesHolder,
                                                                         KieCompilationResponse res) {
 
@@ -107,12 +113,12 @@ public class KieAfBuilderClassloaderUtil {
         classloadersResourcesHolder.addDependenciesClassLoader(workingDir, dependenciesClassLoader);
 
         if (res.getProjectDependenciesRaw().isPresent()) {
-            compilerMapsHolder.addDependenciesRaw(workingDir, res.getProjectDependenciesRaw().get());
+            dependenciesCache.addDependenciesRaw(workingDir, res.getProjectDependenciesRaw().get());
         }
         if (res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                     res.getProjectDependenciesAsURI().get());
-            compilerMapsHolder.addKieMetaData(workingDir, kieModuleMetaData);
+            kieModuleMetaDataCache.addKieMetaData(workingDir, kieModuleMetaData);
         }
         return dependenciesClassLoader;
     }
