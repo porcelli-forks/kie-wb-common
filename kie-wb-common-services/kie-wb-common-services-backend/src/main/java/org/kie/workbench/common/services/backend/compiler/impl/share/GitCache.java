@@ -23,17 +23,18 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
  */
 public interface GitCache {
 
-    /** GIT **/
+    /**
+     * GIT
+     **/
 
     Git getGit(JGitFileSystem key);
 
     void addGit(JGitFileSystem key,
-                   Git git);
+                Git git);
 
     void removeGit(JGitFileSystem key);
 
     boolean containsGit(JGitFileSystem key);
 
     void clearGitCache();
-
 }

@@ -20,7 +20,9 @@ import org.uberfire.java.nio.file.Path;
 
 public interface KieModuleMetaDataCache {
 
-    /** KieModuleMetaData **/
+    /**
+     * KieModuleMetaData
+     **/
 
     KieModuleMetaData getMetadata(Path projectRootPath);
 

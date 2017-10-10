@@ -40,7 +40,6 @@ import org.uberfire.java.nio.file.Path;
 
 public class KieAfBuilderClassloaderUtil {
 
-
     /**
      * This method return the classloader with the .class founded in the target folder and the UrlClassloader with all .jsrs declared and transitives from poms
      */
@@ -53,9 +52,9 @@ public class KieAfBuilderClassloaderUtil {
                                                                  String indentity) {
 
         Path nioPath = Paths.convert(project.getRootPath());
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), nioPath, gitCache, builderCache,  guvnorM2Repository, indentity);
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), nioPath, gitCache, builderCache, guvnorM2Repository, indentity);
 
-        KieCompilationResponse res = builder.build( !indentity.equals("system") , Boolean.FALSE);//Here the log is not required during the indexing startup
+        KieCompilationResponse res = builder.build(!indentity.equals("system"), Boolean.FALSE);//Here the log is not required during the indexing startup
 
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
 
@@ -77,10 +76,10 @@ public class KieAfBuilderClassloaderUtil {
             if (module instanceof InternalKieModule) {
 
                 ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(workingDir,
-                        kieModuleMetaDataCache,
-                        dependenciesCache,
-                        classLoaderCache,
-                        res);
+                                                                                               kieModuleMetaDataCache,
+                                                                                               dependenciesCache,
+                                                                                               classLoaderCache,
+                                                                                               res);
 
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
@@ -117,10 +116,9 @@ public class KieAfBuilderClassloaderUtil {
         }
         if (res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
-                    res.getProjectDependenciesAsURI().get());
+                                                                            res.getProjectDependenciesAsURI().get());
             kieModuleMetaDataCache.addKieMetaData(workingDir, kieModuleMetaData);
         }
         return dependenciesClassLoader;
     }
-
 }

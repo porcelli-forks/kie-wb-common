@@ -1,6 +1,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
 import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -25,8 +26,7 @@ public class BuilderUtils {
     private BuilderCache builderCache;
 
     public Optional<KieAFBuilder> getBuilder(String uri, Path nioPath) {
-        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(uri,nioPath, gitCache, builderCache, guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
+        KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(uri, nioPath, gitCache, builderCache, guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
         return Optional.ofNullable(builder);
     }
-
 }

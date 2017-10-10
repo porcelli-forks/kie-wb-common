@@ -25,6 +25,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,13 +40,13 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
-import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCompilerBeforeDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
@@ -71,7 +72,6 @@ public class ValidatorBuildService {
     private BuilderCache builderCache;
     private Logger logger = LoggerFactory.getLogger(ValidatorBuildService.class);
     private String ERROR_LEVEL = "ERROR";
-
 
     public ValidatorBuildService() {
         //CDI proxies
@@ -102,7 +102,7 @@ public class ValidatorBuildService {
         final KieAFBuilder builder = builderCache.getBuilder(project.getRootPath().toURI().toString());
         if (builder == null) {
             final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
-                    MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
+                                                                    MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                                     getCompiler());
             builderCache.addBuilder(project.getRootPath().toURI().toString(), newBuilder);
             return newBuilder;
@@ -139,7 +139,6 @@ public class ValidatorBuildService {
             inputStream = ioService.newInputStream(convert(resourcePath));
             final List<ValidationMessage> results = doValidation(resourcePath, inputStream);
             return results;
-
         } catch (NoClassDefFoundError e) {
             return error(MessageFormat.format(ERROR_CLASS_NOT_FOUND,
                                               e.getLocalizedMessage()));
@@ -159,7 +158,9 @@ public class ValidatorBuildService {
                                                  final InputStream inputStream) throws NoProjectException {
 
         final Optional<KieProject> project = project(_resourcePath);
-        if (!project.isPresent()) {  return getNoProjectExceptionMsgs(); }
+        if (!project.isPresent()) {
+            return getNoProjectExceptionMsgs();
+        }
 
         final KieProject kieProject = project.get();
         final org.uberfire.java.nio.file.Path resourcePath = convert(_resourcePath);
@@ -186,7 +187,6 @@ public class ValidatorBuildService {
         try {
 
             return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject, res, alreadyBuild);
-
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
             return getNoProjectExceptionMsgs();
@@ -194,7 +194,6 @@ public class ValidatorBuildService {
             try {
 
                 git.revert().call();
-
             } catch (GitAPIException e) {
                 logger.error(e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -217,15 +216,14 @@ public class ValidatorBuildService {
                                                             Boolean alreadyBuild) throws IOException {
 
         Files.copy(inputStream, tempResourcePath, StandardCopyOption.REPLACE_EXISTING);
-        if(alreadyBuild && alreadyBuildRes != null) {
+        if (alreadyBuild && alreadyBuildRes != null) {
             return MavenOutputConverter.convertIntoValidationMessage(alreadyBuildRes.getMavenOutput().get(), ERROR_LEVEL);
-        }else{
+        } else {
 
             final KieAFBuilder builder = getBuilder(project);
-            final CompilationResponse res = builder.build(Boolean.TRUE,Boolean.FALSE); //this is readed by the ui
+            final CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE); //this is readed by the ui
             return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
         }
-
     }
 
     private Optional<KieProject> project(final Path resourcePath) throws NoProjectException {

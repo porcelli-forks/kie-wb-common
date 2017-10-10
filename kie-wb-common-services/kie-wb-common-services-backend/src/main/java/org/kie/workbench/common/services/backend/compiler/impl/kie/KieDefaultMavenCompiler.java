@@ -35,7 +35,7 @@ public class KieDefaultMavenCompiler extends BaseMavenCompiler<KieCompilationRes
     public KieCompilationResponse buildDefaultCompilationResponse(final Boolean value,
                                                                   final List<String> output) {
         return new DefaultKieCompilationResponse(value,
-                output);
+                                                 output);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class KieDefaultMavenCompiler extends BaseMavenCompiler<KieCompilationRes
                                                                      String message,
                                                                      List<String> output) {
         return new DefaultKieCompilationResponse(value,
-                message,
-                output);
+                                                 message,
+                                                 output);
     }
 }

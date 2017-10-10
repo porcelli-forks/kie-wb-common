@@ -15,8 +15,8 @@
  */
 package org.kie.workbench.common.services.backend.builder.af;
 
-import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.KieDecorator;
+import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 
 /***
  * Defines the behaviours available in the AppFormer Builder on Kie Projects
@@ -31,7 +31,6 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse build();
 
-
     /**
      * Run a mvn compile and create the output and the prj dependencies in the response
      */
@@ -44,14 +43,12 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse buildAndPackage();
 
-
     /**
      * Run a mvn package on the prj and maven repo configured in the constructor, maven output provided in the
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder and maven repo
      * remain the same between compilaton requests
      */
     KieCompilationResponse buildAndPackage(Boolean skipPrjDependenciesCreationList);
-
 
     /**
      * Run a mvn install on the prj and maven repo configured in the constructor, maven output provided in the
@@ -60,7 +57,6 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse buildAndInstall();
 
-
     /**
      * Run a mvn install on the prj and maven repo configured in the constructor, maven output provided in the
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder
@@ -68,14 +64,12 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse buildAndInstall(Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn compile on the prj configured in the constructor, maven output provided in the CompilationResponse,
      * a new CompilationRequest will be created at every invocation, useful if the project folder remain the same but
      * different maven repo are required between compilation requests
      */
     KieCompilationResponse build(String mavenRepo);
-
 
     /**
      * Run a mvn compile on the prj configured in the constructor, maven output provided in the CompilationResponse,
@@ -92,7 +86,6 @@ public interface KieAFBuilder {
     KieCompilationResponse build(String projectPath,
                                  String mavenRepo);
 
-
     /**
      * Run a mvn compile on the projectPath with mavenRepo specified, maven output provided in the CompilationResponse
      * a new CompilationRequest will be created at every invocation, useful if the project folder and maven repo changes
@@ -101,7 +94,6 @@ public interface KieAFBuilder {
     KieCompilationResponse build(String projectPath,
                                  String mavenRepo, Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn compile package on the projectPath, maven output provided in the CompilationResponse
      * a new CompilationRequest will be created at every invocation, useful if the project folder and maven repo changes
@@ -109,7 +101,6 @@ public interface KieAFBuilder {
      */
     KieCompilationResponse buildAndPackage(String projectPath,
                                            String mavenRepo);
-
 
     /**
      * Run a mvn compile package on the projectPath, maven output provided in the CompilationResponse
@@ -170,6 +161,4 @@ public interface KieAFBuilder {
                                             String mavenRepo,
                                             String[] args,
                                             KieDecorator decorator, Boolean skipPrjDependenciesCreationList);
-
-
 }

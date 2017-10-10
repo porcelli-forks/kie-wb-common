@@ -42,7 +42,6 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class KieAFBuilderUtil {
 
-
     public static KieAFBuilder getKieAFBuilder(String uri, org.uberfire.java.nio.file.Path nioPath,
                                                GitCache gitCache, BuilderCache builderCache,
                                                GuvnorM2Repository guvnorM2Repository, String user) {
@@ -55,8 +54,8 @@ public class KieAFBuilderUtil {
                 gitCache.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
                 builder = new DefaultKieAFBuilder(prj,
-                        MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                        getCompiler(gitCache));
+                                                  MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
+                                                  getCompiler(gitCache));
                 builderCache.addBuilder(uri, builder);
             }
         }
@@ -65,7 +64,7 @@ public class KieAFBuilderUtil {
 
     public static String getFolderName(String uri, String user) {
         //@TODO currently the only way to understand if is a imported prj
-        return uri.contains("@myrepo") ? UUID.randomUUID().toString() : user +"-" + UUID.randomUUID().toString();
+        return uri.contains("@myrepo") ? UUID.randomUUID().toString() : user + "-" + UUID.randomUUID().toString();
     }
 
     public static AFCompiler getCompiler(GitCache gitCache) {
@@ -76,29 +75,27 @@ public class KieAFBuilderUtil {
     }
 
     public static Optional<Path> getFSPath(KieProject project,
-                                 GitCache gitCache, BuilderCache builderCache,
-                                 GuvnorM2Repository guvnorM2Repository, String user) {
+                                           GitCache gitCache, BuilderCache builderCache,
+                                           GuvnorM2Repository guvnorM2Repository, String user) {
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI(), nioPath,
-                gitCache, builderCache, guvnorM2Repository, user);
-        if(builder != null){
+                                                                gitCache, builderCache, guvnorM2Repository, user);
+        if (builder != null) {
             Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
             return Optional.ofNullable(prjPath);
-        }else {
-           return Optional.empty();
+        } else {
+            return Optional.empty();
         }
     }
 
     public static String getIdentifier(Instance<User> identity) {
-        if ( identity.isUnsatisfied( ) ) {
+        if (identity.isUnsatisfied()) {
             return "system";
         }
         try {
-            return identity.get( ).getIdentifier( );
-        } catch ( ContextNotActiveException e ) {
+            return identity.get().getIdentifier();
+        } catch (ContextNotActiveException e) {
             return "system";
         }
     }
-
-
 }

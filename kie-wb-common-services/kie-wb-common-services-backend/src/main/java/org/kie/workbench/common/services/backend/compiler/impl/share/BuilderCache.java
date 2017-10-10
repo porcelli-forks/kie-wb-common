@@ -18,23 +18,25 @@ package org.kie.workbench.common.services.backend.compiler.impl.share;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.uberfire.java.nio.file.Path;
 
-
 public interface BuilderCache {
 
-    /** BUILDER **/
+    /**
+     * BUILDER
+     **/
 
     KieAFBuilder getBuilder(String uri);
 
-    void addBuilder(String uri , KieAFBuilder builder);
+    void addBuilder(String uri, KieAFBuilder builder);
 
-    void removeBuilder(String uri );
+    void removeBuilder(String uri);
 
-    boolean containsBuilder(String uri );
+    boolean containsBuilder(String uri);
 
     void clearBuilderCache();
 
-    /** UTILS **/
+    /**
+     * UTILS
+     **/
 
-    Path getProjectRoot(String uri );
-
+    Path getProjectRoot(String uri);
 }

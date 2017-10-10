@@ -31,14 +31,12 @@ public interface AFBuilder {
      */
     CompilationResponse build();
 
-
     /**
      * Run a mvn package on the prj and maven repo configured in the constructor, maven output provided in the
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder and maven repo
      * remain the same between compilaton requests
      */
     CompilationResponse buildAndPackage();
-
 
     /**
      * Run a mvn package on the prj and maven repo configured in the constructor, maven output provided in the
@@ -47,14 +45,12 @@ public interface AFBuilder {
      */
     CompilationResponse buildAndPackage(Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn install on the prj and maven repo configured in the constructor, maven output provided in the
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder
      * and maven repo remain the same between compilaton requests
      */
     CompilationResponse buildAndInstall();
-
 
     /**
      * Run a mvn install on the prj and maven repo configured in the constructor, maven output provided in the
@@ -63,14 +59,12 @@ public interface AFBuilder {
      */
     CompilationResponse buildAndInstall(Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn compile on the prj configured in the constructor, maven output provided in the CompilationResponse,
      * useful if the project folder remain the same but
      * different maven repo are required between compilation requests
      */
     CompilationResponse build(String mavenRepo);
-
 
     /**
      * Run a mvn compile on the prj configured in the constructor, maven output provided in the CompilationResponse,
@@ -79,7 +73,6 @@ public interface AFBuilder {
      */
     CompilationResponse build(String mavenRepo,
                               Boolean skipPrjDependenciesCreationList);
-
 
     /**
      * Run a mvn compile on the projectPath with mavenRepo specified, maven output provided in the CompilationResponse,
@@ -90,7 +83,6 @@ public interface AFBuilder {
                               String mavenRepo,
                               Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn compile on the projectPath with mavenRepo specified, maven output provided in the CompilationResponse,
      * useful if the project folder and maven repo changes
@@ -99,7 +91,6 @@ public interface AFBuilder {
     CompilationResponse build(String projectPath,
                               String mavenRepo);
 
-
     /**
      * Run a mvn compile package on the projectPath, maven output provided in the CompilationResponse,
      * useful if the project folder and maven repo changes
@@ -107,7 +98,6 @@ public interface AFBuilder {
      */
     CompilationResponse buildAndPackage(String projectPath,
                                         String mavenRepo);
-
 
     /**
      * Run a mvn compile package on the projectPath, maven output provided in the CompilationResponse,
@@ -118,7 +108,6 @@ public interface AFBuilder {
                                         String mavenRepo,
                                         Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn install on the projectPath, maven output provided in the CompilationResponse,
      * useful if the project folder and maven repo changes
@@ -128,7 +117,6 @@ public interface AFBuilder {
                                         String mavenRepo,
                                         Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn install on the projectPath, maven output provided in the CompilationResponse,
      * useful if the project folder and maven repo changes
@@ -136,7 +124,6 @@ public interface AFBuilder {
      */
     CompilationResponse buildAndInstall(String kieProjectPath,
                                         String mavenRepo);
-
 
     /**
      * Run a mvn {args}, maven output provided in the CompilationResponse,
@@ -146,7 +133,6 @@ public interface AFBuilder {
     CompilationResponse buildSpecialized(String kieProjectPath,
                                          String mavenRepo,
                                          String[] args);
-
 
     /**
      * Run a mvn {args}, maven output provided in the CompilationResponse,
@@ -158,7 +144,6 @@ public interface AFBuilder {
                                          String[] args,
                                          Boolean skipPrjDependenciesCreationList);
 
-
     /**
      * Run a mvn {args}, maven output provided in the CompilationResponse, behaviour before and after compilation based
      * on the decoator
@@ -167,7 +152,6 @@ public interface AFBuilder {
                                          String mavenRepo,
                                          String[] args,
                                          Decorator decorator);
-
 
     /**
      * Run a mvn {args}, maven output provided in the CompilationResponse, behaviour before and after compilation based

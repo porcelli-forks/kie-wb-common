@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
@@ -24,8 +25,7 @@ import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 @Named("LRUDependenciesCache")
-public class DependenciesCacheLRU extends LRUCache<Path, List<String>> implements DependenciesCache{
-
+public class DependenciesCacheLRU extends LRUCache<Path, List<String>> implements DependenciesCache {
 
     public synchronized List<String> getDependenciesRaw(Path projectRootPath) {
         return getEntry(projectRootPath);

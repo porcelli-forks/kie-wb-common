@@ -24,14 +24,14 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 @ApplicationScoped
 @Named("LRUGitCache")
-public class GitCacheLRU extends LRUCache<JGitFileSystem, Git> implements GitCache{
+public class GitCacheLRU extends LRUCache<JGitFileSystem, Git> implements GitCache {
 
     public synchronized Git getGit(JGitFileSystem key) {
         return getEntry(key);
     }
 
     public synchronized void addGit(JGitFileSystem key, Git git) {
-        setEntry(key, git) ;
+        setEntry(key, git);
     }
 
     public synchronized void removeGit(JGitFileSystem key) {
@@ -43,6 +43,7 @@ public class GitCacheLRU extends LRUCache<JGitFileSystem, Git> implements GitCac
     }
 
     public synchronized void clearGitCache() {
-        invalidateCache();;
+        invalidateCache();
+        ;
     }
 }

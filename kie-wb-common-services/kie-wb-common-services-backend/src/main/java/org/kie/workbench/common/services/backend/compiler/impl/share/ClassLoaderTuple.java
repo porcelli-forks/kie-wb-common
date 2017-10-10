@@ -23,7 +23,6 @@ import java.util.Optional;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.uberfire.java.nio.file.Path;
 
-
 class ClassLoaderTuple {
 
     private List<String> targetDeps;
@@ -37,7 +36,6 @@ class ClassLoaderTuple {
     public List<String> getTargetDeps() {
         return Collections.unmodifiableList(targetDeps);
     }
-
 
     public Optional<MapClassLoader> getTargetClassloader() {
         return Optional.ofNullable(targetClassloader);

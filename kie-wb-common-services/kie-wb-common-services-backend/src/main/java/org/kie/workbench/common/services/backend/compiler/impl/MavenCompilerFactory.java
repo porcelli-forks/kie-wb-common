@@ -68,7 +68,7 @@ public class MavenCompilerFactory {
                 compiler = new DefaultMavenCompiler();
         }
         compilers.put(Decorator.NONE.name(),
-                compiler);
+                      compiler);
         return compiler;
     }
 

@@ -87,7 +87,7 @@ public class KieMavenCompilerFactory {
                 compiler = new KieDefaultMavenCompiler();
         }
         compilers.put(Decorator.NONE.name(),
-                compiler);
+                      compiler);
         return compiler;
     }
 

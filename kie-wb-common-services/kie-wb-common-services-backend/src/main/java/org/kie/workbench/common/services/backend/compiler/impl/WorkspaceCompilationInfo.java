@@ -64,7 +64,6 @@ public class WorkspaceCompilationInfo {
         return Optional.ofNullable(enhancedMainPomFile);
     }
 
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WorkspaceCompilationInfo{");

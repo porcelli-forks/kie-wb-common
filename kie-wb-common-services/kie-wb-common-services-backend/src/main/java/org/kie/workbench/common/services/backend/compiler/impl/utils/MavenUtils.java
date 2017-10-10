@@ -50,11 +50,11 @@ public class MavenUtils {
                 Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pom)));
                 if (model.getDependencyManagement() != null && model.getDependencyManagement().getDependencies() != null) {
                     createArtifacts(model.getDependencyManagement().getDependencies(),
-                            deps);
+                                    deps);
                 }
                 if (model.getDependencies() != null) {
                     createArtifacts(model.getDependencies(),
-                            deps);
+                                    deps);
                 }
             }
         } catch (Exception ex) {
@@ -69,12 +69,12 @@ public class MavenUtils {
         if (pomDeps != null && pomDeps.size() > 0) {
             for (Dependency dep : pomDeps) {
                 Artifact artifact = new DefaultArtifact(dep.getGroupId(),
-                        dep.getArtifactId(),
-                        dep.getVersion(),
-                        dep.getScope(),
-                        dep.getType(),
-                        dep.getClassifier(),
-                        new DefaultArtifactHandler());
+                                                        dep.getArtifactId(),
+                                                        dep.getVersion(),
+                                                        dep.getScope(),
+                                                        dep.getType(),
+                                                        dep.getClassifier(),
+                                                        new DefaultArtifactHandler());
                 deps.add(artifact);
             }
         }
@@ -86,7 +86,7 @@ public class MavenUtils {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
                     searchPoms(p,
-                            pomsList);
+                               pomsList);
                 } else if (p.endsWith(POM_NAME)) {
                     pomsList.add(p.toAbsolutePath().toString());
                 }

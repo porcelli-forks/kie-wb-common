@@ -16,14 +16,14 @@
 package org.kie.workbench.common.services.backend.builder.af.impl;
 
 import org.kie.workbench.common.services.backend.builder.af.AFBuilder;
+import org.kie.workbench.common.services.backend.compiler.AFCompiler;
+import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.configuration.Decorator;
 import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLIArgs;
-import org.kie.workbench.common.services.backend.compiler.AFCompiler;
-import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
-import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
+import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
 import org.uberfire.java.nio.file.Paths;
 
 public class DefaultAFBuilder implements AFBuilder {
@@ -42,10 +42,10 @@ public class DefaultAFBuilder implements AFBuilder {
         compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE,
-                skipPrjDependenciesCreationList);
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            Boolean.TRUE,
+                                            skipPrjDependenciesCreationList);
     }
 
     public DefaultAFBuilder(String projectRepo,
@@ -56,9 +56,9 @@ public class DefaultAFBuilder implements AFBuilder {
         compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE, Boolean.FALSE);
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            Boolean.TRUE, Boolean.FALSE);
     }
 
     /***
@@ -76,9 +76,9 @@ public class DefaultAFBuilder implements AFBuilder {
         compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                args,
-                Boolean.TRUE, Boolean.FALSE);
+                                            info,
+                                            args,
+                                            Boolean.TRUE, Boolean.FALSE);
     }
 
     /***
@@ -97,12 +97,11 @@ public class DefaultAFBuilder implements AFBuilder {
         compiler = MavenCompilerFactory.getCompiler(Decorator.LOG_OUTPUT_AFTER);
         info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                args,
-                Boolean.TRUE,
-                skipPrjDependenciesCreationList);
+                                            info,
+                                            args,
+                                            Boolean.TRUE,
+                                            skipPrjDependenciesCreationList);
     }
-
 
     public DefaultAFBuilder(String projectRepo,
                             String mavenRepo, AFCompiler compiler) {
@@ -112,11 +111,10 @@ public class DefaultAFBuilder implements AFBuilder {
         this.compiler = compiler;
         info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE, Boolean.FALSE);
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            Boolean.TRUE, Boolean.FALSE);
     }
-
 
     public DefaultAFBuilder(String projectRepo,
                             String mavenRepo, AFCompiler compiler,
@@ -127,15 +125,13 @@ public class DefaultAFBuilder implements AFBuilder {
         this.compiler = compiler;
         info = new WorkspaceCompilationInfo(Paths.get(projectRepo));
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE,
-                skipPrjDependenciesCreationList);
+                                            info,
+                                            new String[]{MavenCLIArgs.COMPILE},
+                                            Boolean.TRUE,
+                                            skipPrjDependenciesCreationList);
     }
 
-
     /*******************************************************************************************************************************/
-
 
     @Override
     public CompilationResponse build() {
@@ -146,54 +142,54 @@ public class DefaultAFBuilder implements AFBuilder {
     @Override
     public CompilationResponse buildAndPackage() {
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.PACKAGE},
-                Boolean.TRUE, Boolean.FALSE);
+                                            info,
+                                            new String[]{MavenCLIArgs.PACKAGE},
+                                            Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse buildAndPackage(Boolean skipPrjDependenciesCreationList) {
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.PACKAGE},
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                            info,
+                                            new String[]{MavenCLIArgs.PACKAGE},
+                                            Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse buildAndInstall() {
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.INSTALL},
-                Boolean.TRUE, Boolean.FALSE);
+                                            info,
+                                            new String[]{MavenCLIArgs.INSTALL},
+                                            Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse buildAndInstall(Boolean skipPrjDependenciesCreationList) {
         req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.INSTALL},
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                            info,
+                                            new String[]{MavenCLIArgs.INSTALL},
+                                            Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse build(String mavenRepo) {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE, Boolean.FALSE);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
     @Override
     public CompilationResponse build(String mavenRepo, Boolean skipPrjDependenciesCreationList) {
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
@@ -202,9 +198,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                      String mavenRepo) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE, Boolean.FALSE);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
@@ -213,9 +209,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                      String mavenRepo, Boolean skipPrjDependenciesCreationList) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.COMPILE},
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.COMPILE},
+                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
@@ -224,9 +220,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                                String mavenRepo) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.PACKAGE},
-                Boolean.TRUE, Boolean.FALSE);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.PACKAGE},
+                                                               Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
@@ -235,9 +231,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                                String mavenRepo, Boolean skipPrjDependenciesCreationList) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.PACKAGE},
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.PACKAGE},
+                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
@@ -246,9 +242,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                                String mavenRepo) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.INSTALL},
-                Boolean.TRUE, Boolean.FALSE);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.INSTALL},
+                                                               Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
@@ -257,9 +253,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                                String mavenRepo, Boolean skipPrjDependenciesCreationList) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                new String[]{MavenCLIArgs.INSTALL},
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                                               info,
+                                                               new String[]{MavenCLIArgs.INSTALL},
+                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
@@ -269,9 +265,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                                 String[] args) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                args,
-                Boolean.TRUE, Boolean.FALSE);
+                                                               info,
+                                                               args,
+                                                               Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
@@ -281,9 +277,9 @@ public class DefaultAFBuilder implements AFBuilder {
                                                 String[] args, Boolean skipPrjDependenciesCreationList) {
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                args,
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                                               info,
+                                                               args,
+                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 
@@ -296,9 +292,9 @@ public class DefaultAFBuilder implements AFBuilder {
         AFCompiler compiler = MavenCompilerFactory.getCompiler(decorator);
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                args,
-                Boolean.TRUE, Boolean.FALSE);
+                                                               info,
+                                                               args,
+                                                               Boolean.TRUE, Boolean.FALSE);
         return compiler.compileSync(req);
     }
 
@@ -311,9 +307,9 @@ public class DefaultAFBuilder implements AFBuilder {
         AFCompiler compiler = MavenCompilerFactory.getCompiler(decorator);
         WorkspaceCompilationInfo info = new WorkspaceCompilationInfo(Paths.get(projectPath));
         CompilationRequest req = new DefaultCompilationRequest(mavenRepo,
-                info,
-                args,
-                Boolean.TRUE, skipPrjDependenciesCreationList);
+                                                               info,
+                                                               args,
+                                                               Boolean.TRUE, skipPrjDependenciesCreationList);
         return compiler.compileSync(req);
     }
 }

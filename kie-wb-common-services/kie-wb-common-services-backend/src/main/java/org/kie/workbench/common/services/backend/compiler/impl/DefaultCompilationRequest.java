@@ -56,12 +56,12 @@ public class DefaultCompilationRequest implements CompilationRequest {
         this.originalArgs = args;
         this.logRequested = logRequested;
         String[] internalArgs = getInternalArgs(args,
-                logRequested);
+                                                logRequested);
         this.req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
-                internalArgs,
-                new HashMap<>(),
-                this.requestUUID,
-                logRequested);
+                                    internalArgs,
+                                    new HashMap<>(),
+                                    this.requestUUID,
+                                    logRequested);
     }
 
     /***
@@ -84,12 +84,12 @@ public class DefaultCompilationRequest implements CompilationRequest {
         this.originalArgs = args;
         this.logRequested = logRequested;
         String[] internalArgs = getInternalArgs(args,
-                logRequested);
+                                                logRequested);
         this.req = new AFCliRequest(this.info.getPrjPath().toAbsolutePath().toString(),
-                internalArgs,
-                new HashMap<>(),
-                this.requestUUID,
-                logRequested);
+                                    internalArgs,
+                                    new HashMap<>(),
+                                    this.requestUUID,
+                                    logRequested);
     }
 
     private String[] getInternalArgs(String[] args,
@@ -100,11 +100,11 @@ public class DefaultCompilationRequest implements CompilationRequest {
         if (logRequested) {
             StringBuilder sbLogID = new StringBuilder().append("-l ").append("log").append(".").append(requestUUID).append(".log");
             internalArgs = Arrays.copyOf(args,
-                    args.length + 2);
+                                         args.length + 2);
             internalArgs[args.length + 1] = sbLogID.toString();
         } else {
             internalArgs = Arrays.copyOf(args,
-                    args.length + 1);
+                                         args.length + 1);
         }
 
         internalArgs[args.length] = sbCompilationID.toString();

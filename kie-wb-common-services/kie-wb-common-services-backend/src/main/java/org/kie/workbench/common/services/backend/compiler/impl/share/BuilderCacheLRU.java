@@ -25,7 +25,6 @@ import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.uberfire.java.nio.file.Path;
 
-
 @ApplicationScoped
 @Named("LRUBuilderCache")
 public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements BuilderCache {
@@ -38,7 +37,7 @@ public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements B
         return getEntry(uri);
     }
 
-    public synchronized void addBuilder(final String uri , final KieAFBuilder builder) {
+    public synchronized void addBuilder(final String uri, final KieAFBuilder builder) {
         setEntry(uri, builder);
     }
 
@@ -50,17 +49,18 @@ public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements B
         return getKeys().contains(uri);
     }
 
-    public synchronized void clearBuilderCache() { invalidateCache(); }
-
+    public synchronized void clearBuilderCache() {
+        invalidateCache();
+    }
 
     @Override
-    public Path getProjectRoot(String uri ) {
+    public Path getProjectRoot(String uri) {
         KieAFBuilder builder = getBuilder(uri);
         if (builder != null) {
             Path prjRoot = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
             return prjRoot;
         } else {
-            return  org.uberfire.java.nio.file.Paths.get(URI.create(uri));
+            return org.uberfire.java.nio.file.Paths.get(URI.create(uri));
         }
     }
 }

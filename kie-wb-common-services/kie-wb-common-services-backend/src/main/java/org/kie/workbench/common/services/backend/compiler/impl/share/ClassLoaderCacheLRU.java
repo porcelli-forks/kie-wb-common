@@ -66,7 +66,7 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized void replaceTargetDependencies(Path projectRootPath,
-                                          List<String> uris) {
+                                                       List<String> uris) {
         if (getEntry(projectRootPath) != null) {
             getEntry(projectRootPath).replaceTargetDeps(uris);
         }
@@ -84,17 +84,16 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized void removeProjectDeps(Path projectRootPath) {
-        invalidateCache(projectRootPath) ;
+        invalidateCache(projectRootPath);
     }
-
 
     @Override
     public synchronized void addTargetProjectDependencies(Path projectRootPath,
-                                             List<String> uris) {
+                                                          List<String> uris) {
         if (getEntry(projectRootPath) != null) {
             getEntry(projectRootPath).addTargetDeps(uris);
         } else {
-            ClassLoaderTuple  tuple = new ClassLoaderTuple();
+            ClassLoaderTuple tuple = new ClassLoaderTuple();
             tuple.addTargetDeps(uris);
             setEntry(projectRootPath, tuple);
         }
@@ -102,7 +101,7 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized void addTargetClassLoader(Path project,
-                                     MapClassLoader classLoader) {
+                                                  MapClassLoader classLoader) {
         if (getEntry(project) != null) {
             getEntry(project).addTargetClassloader(classLoader);
         } else {
@@ -114,7 +113,7 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized void addDependenciesClassLoader(Path project,
-                                           ClassLoader classLoader) {
+                                                        ClassLoader classLoader) {
 
         if (getEntry(project) != null) {
             getEntry(project).addDependenciesClassloader(classLoader);
@@ -143,5 +142,4 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
             return Optional.empty();
         }
     }
-
 }

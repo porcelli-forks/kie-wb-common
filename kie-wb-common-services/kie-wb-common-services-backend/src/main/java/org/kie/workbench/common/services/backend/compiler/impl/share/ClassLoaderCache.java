@@ -47,7 +47,6 @@ public interface ClassLoaderCache {
 
     void removeProjectDeps(Path projectRootPath);
 
-
     //Target deps
 
     void addTargetProjectDependencies(Path projectRootPath,

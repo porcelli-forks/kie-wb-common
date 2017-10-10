@@ -16,7 +16,9 @@
 
 package org.kie.workbench.common.services.backend.builder.service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -32,7 +34,6 @@ import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
@@ -52,21 +53,20 @@ public class BuildServiceImpl implements BuildService {
 
     private GuvnorM2Repository guvnorM2Repository;
 
-
-    private Instance< User > identity;
+    private Instance<User> identity;
 
     private GitCache gitCache;
 
     private BuilderCache builderCache;
 
-    public BuildServiceImpl( ) {
+    public BuildServiceImpl() {
         //Empty constructor for Weld
     }
 
     @Inject
     public BuildServiceImpl(final KieProjectService projectService,
                             final GuvnorM2Repository guvnorM2Repository,
-                            final Instance< User > identity,
+                            final Instance<User> identity,
                             final GitCache gitCache,
                             final BuilderCache builderCache) {
         this.projectService = projectService;
@@ -77,43 +77,42 @@ public class BuildServiceImpl implements BuildService {
     }
 
     @Override
-    public BuildResults build( final Project project ) {
+    public BuildResults build(final Project project) {
         return buildInternal(project);
     }
 
-    private BuildResults buildAndDeployInternal(final Project project){
+    private BuildResults buildAndDeployInternal(final Project project) {
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), PathConverter.getNioPath(project),
-                                                                 gitCache, builderCache,
-                                                                guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
+                                                                     gitCache, builderCache,
+                                                                     guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
 
-        KieCompilationResponse res = kieAfBuilder.buildAndInstall(((DefaultKieAFBuilder)kieAfBuilder).getInfo().getPrjPath().toString(),guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
+        KieCompilationResponse res = kieAfBuilder.buildAndInstall(((DefaultKieAFBuilder) kieAfBuilder).getInfo().getPrjPath().toString(), guvnorM2Repository.getM2RepositoryRootDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME));
         return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
     }
 
-    private BuildResults buildInternal(final Project project){
-            //@TODO build without classloader creation or with classloader creation ?
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
-                                                                gitCache, builderCache, guvnorM2Repository,
+    private BuildResults buildInternal(final Project project) {
+        //@TODO build without classloader creation or with classloader creation ?
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), PathConverter.getNioPath(project),
+                                                                     gitCache, builderCache, guvnorM2Repository,
                                                                      KieAFBuilderUtil.getIdentifier(identity));
-        if(kieAfBuilder != null) {
+        if (kieAfBuilder != null) {
             KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE,
                                                             Boolean.FALSE);
             return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
-        }else{
+        } else {
             BuildResults buildRs = new BuildResults();
             BuildMessage msg = new BuildMessage();
-            msg.setText("[ERROR] Isn't possible build the project "+project.getRootPath().toURI().toString()+ " because isn't a Git FS project");
+            msg.setText("[ERROR] Isn't possible build the project " + project.getRootPath().toURI().toString() + " because isn't a Git FS project");
             buildRs.addBuildMessage(msg);
             return buildRs;
         }
     }
 
+    private IncrementalBuildResults buildIncrementallyInternal(final Project project) {
 
-    private IncrementalBuildResults buildIncrementallyInternal(final Project project){
-
-        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
+        KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(), PathConverter.getNioPath(project),
                                                                      gitCache, builderCache,
-                                                                     guvnorM2Repository,  KieAFBuilderUtil.getIdentifier(identity));
+                                                                     guvnorM2Repository, KieAFBuilderUtil.getIdentifier(identity));
         KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
         return MavenOutputConverter.convertIntoIncrementalBuildResults(res.getMavenOutput().get());
     }
@@ -124,55 +123,53 @@ public class BuildServiceImpl implements BuildService {
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project,
-                                        final DeploymentMode mode ) {
+    public BuildResults buildAndDeploy(final Project project,
+                                       final DeploymentMode mode) {
         return buildAndDeployInternal(project);
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project,
-                                        final boolean suppressHandlers ) {
+    public BuildResults buildAndDeploy(final Project project,
+                                       final boolean suppressHandlers) {
         return buildAndDeployInternal(project);
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project,
-                                        final boolean suppressHandlers,
-                                        final DeploymentMode mode ) {
+    public BuildResults buildAndDeploy(final Project project,
+                                       final boolean suppressHandlers,
+                                       final DeploymentMode mode) {
         return buildAndDeployInternal(project);
     }
 
     @Override
-    public boolean isBuilt( final Project project ) {
+    public boolean isBuilt(final Project project) {
         return builderCache.getBuilder(project.getRootPath().toURI().toString()) != null;//@TODO check if could be better the classloaderHolder
     }
 
     @Override
-    public IncrementalBuildResults addPackageResource( final Path resource ) {
-        Project project = projectService.resolveProject( resource );
+    public IncrementalBuildResults addPackageResource(final Path resource) {
+        Project project = projectService.resolveProject(resource);
         return buildIncrementallyInternal(project);
     }
 
     @Override
-    public IncrementalBuildResults deletePackageResource( final Path resource) {
-        Project project = projectService.resolveProject( resource );
+    public IncrementalBuildResults deletePackageResource(final Path resource) {
+        Project project = projectService.resolveProject(resource);
         return buildIncrementallyInternal(project);
     }
 
     @Override
-    public IncrementalBuildResults updatePackageResource( final Path resource ) {
-        Project project = projectService.resolveProject( resource );
+    public IncrementalBuildResults updatePackageResource(final Path resource) {
+        Project project = projectService.resolveProject(resource);
         return buildIncrementallyInternal(project);
     }
 
     @Override
-    public IncrementalBuildResults applyBatchResourceChanges( final Project project,
-                                                              final Map< Path, Collection< ResourceChange > > changes ) {
-        if ( project == null ) {
-            return new IncrementalBuildResults( );
+    public IncrementalBuildResults applyBatchResourceChanges(final Project project,
+                                                             final Map<Path, Collection<ResourceChange>> changes) {
+        if (project == null) {
+            return new IncrementalBuildResults();
         }
         return buildIncrementallyInternal(project);
     }
-
-
 }

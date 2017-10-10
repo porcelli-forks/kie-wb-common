@@ -45,8 +45,8 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
 
     public DefaultIncrementalCompilerEnabler(Compilers compiler) {
         editor = new DefaultPomEditor(new HashSet<PomPlaceHolder>(),
-                new ConfigurationContextProvider(),
-                compiler);
+                                      new ConfigurationContextProvider(),
+                                      compiler);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
 
         if (!Files.isReadable(mainPom)) {
             return new ProcessedPoms(Boolean.FALSE,
-                    Collections.emptyList());
+                                     Collections.emptyList());
         }
 
         PomPlaceHolder placeHolder = editor.readSingle(mainPom);
@@ -63,17 +63,17 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
         if (placeHolder.isValid() && !isPresent) {
             List<String> pomsList = new ArrayList<>();
             MavenUtils.searchPoms(mainPom.getParent(),
-                    pomsList);// recursive NIO search in all subfolders
+                                  pomsList);// recursive NIO search in all subfolders
 
             if (pomsList.size() > 0) {
                 processFoundPoms(pomsList,
-                        req);
+                                 req);
             }
             return new ProcessedPoms(Boolean.TRUE,
-                    pomsList);
+                                     pomsList);
         } else {
             return new ProcessedPoms(Boolean.FALSE,
-                    Collections.emptyList());
+                                     Collections.emptyList());
         }
     }
 
@@ -85,7 +85,7 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
             PomPlaceHolder tmpPlaceHolder = editor.readSingle(tmpPom);
             if (!isPresent(tmpPlaceHolder)) {
                 editor.write(tmpPom,
-                        request);
+                             request);
             }
         }
     }

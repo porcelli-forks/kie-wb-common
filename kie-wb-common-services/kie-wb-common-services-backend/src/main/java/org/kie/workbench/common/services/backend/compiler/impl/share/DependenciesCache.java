@@ -28,6 +28,5 @@ public interface DependenciesCache {
 
     void removeDependenciesRaw(Path projectRootPath);
 
-
     void clearDependenciesCache();
 }

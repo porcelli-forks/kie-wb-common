@@ -40,7 +40,7 @@ public class LogUtils {
         List<String> log = new ArrayList<>();
         if (Files.isReadable(logPath)) {
             for (String line : Files.readAllLines(logPath,
-                    Charset.defaultCharset())) {
+                                                  Charset.defaultCharset())) {
                 log.add(line);
             }
             return log;

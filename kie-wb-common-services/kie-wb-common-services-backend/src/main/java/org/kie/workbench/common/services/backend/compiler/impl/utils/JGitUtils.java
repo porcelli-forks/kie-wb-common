@@ -66,8 +66,8 @@ public class JGitUtils {
             return Git.cloneRepository()
                     .setURI(fs.getGit().getRepository().getDirectory().toURI().toString())
                     .setDirectory(new File(TEMP + uuid,
-                            fs.getGit().getRepository().getDirectory().getName().replaceFirst("\\.git",
-                                    "")))
+                                           fs.getGit().getRepository().getDirectory().getName().replaceFirst("\\.git",
+                                                                                                             "")))
                     .setBare(false)
                     .setCloneAllBranches(true)
                     .call();

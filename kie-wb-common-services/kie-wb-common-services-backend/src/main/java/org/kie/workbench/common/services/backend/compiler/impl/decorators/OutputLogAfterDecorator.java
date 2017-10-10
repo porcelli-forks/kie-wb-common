@@ -39,8 +39,8 @@ public class OutputLogAfterDecorator<T extends CompilationResponse, C extends AF
         T res = compiler.compileSync(req);
         if (req.getLogRequested()) {
             return compiler.buildDefaultCompilationResponse(res.isSuccessful(),
-                    LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
-                            req.getKieCliRequest().getRequestUUID()));
+                                                            LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
+                                                                               req.getKieCliRequest().getRequestUUID()));
         } else {
             return compiler.buildDefaultCompilationResponse(res.isSuccessful(), Collections.emptyList());
         }

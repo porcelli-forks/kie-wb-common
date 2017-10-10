@@ -24,19 +24,19 @@ import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 @Named("LRUKieModuleMetaDataCache")
-public class KieModuleMetaDataCacheLRU extends LRUCache<Path, KieModuleMetaData> implements KieModuleMetaDataCache{
+public class KieModuleMetaDataCacheLRU extends LRUCache<Path, KieModuleMetaData> implements KieModuleMetaDataCache {
 
     public synchronized KieModuleMetaData getMetadata(Path projectRootPath) {
         return getEntry(projectRootPath);
     }
 
     public synchronized void addKieMetaData(Path projectRootPath,
-                               KieModuleMetaData metadata) {
+                                            KieModuleMetaData metadata) {
         setEntry(projectRootPath, metadata);
     }
 
     public synchronized void removeKieModuleMetaData(Path projectRootPath) {
-        invalidateCache(projectRootPath) ;
+        invalidateCache(projectRootPath);
     }
 
     @Override

@@ -58,7 +58,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
             if (req.getInfo().isKiePluginPresent()) {
                 return (T) handleKieMavenPlugin(req,
-                        res);
+                                                res);
             }
         }
         return res;
@@ -85,12 +85,11 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
         if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
             List<String> allDepsAsString = readAllDepsAsString(req);
             return new DefaultKieCompilationResponse(Boolean.TRUE,
-                    (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
-                    (KieModule) kieModuleTuple.getOptionalObject().get(),
-                    mavenOutput,
-                    allDepsAsString,
-                    req.getInfo().getPrjPath());
-
+                                                     (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
+                                                     (KieModule) kieModuleTuple.getOptionalObject().get(),
+                                                     mavenOutput,
+                                                     allDepsAsString,
+                                                     req.getInfo().getPrjPath());
         } else {
             StringBuilder sb = new StringBuilder();
             if (kieModuleMetaInfoTuple.getErrorMsg().isPresent()) {

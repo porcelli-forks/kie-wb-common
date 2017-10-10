@@ -26,7 +26,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
  * Default implementation, this class can be extended to change the protected configuration Map
  */
 public class ConfigurationStaticStrategy implements ConfigurationStrategy,
-        Order {
+                                                    Order {
 
     protected Map<ConfigurationKey, String> conf;
 
@@ -36,25 +36,25 @@ public class ConfigurationStaticStrategy implements ConfigurationStrategy,
         conf = new HashMap<>();
 
         conf.put(ConfigurationKey.MAVEN_PLUGINS,
-                "org.apache.maven.plugins");
+                 "org.apache.maven.plugins");
         conf.put(ConfigurationKey.MAVEN_COMPILER_PLUGIN,
-                "maven-compiler-plugin");
+                 "maven-compiler-plugin");
         conf.put(ConfigurationKey.MAVEN_COMPILER_PLUGIN_VERSION,
-                "3.6.1");
+                 "3.6.1");
 
         conf.put(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGINS,
-                "io.takari.maven.plugins");
+                 "io.takari.maven.plugins");
         conf.put(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN,
-                "takari-lifecycle-plugin");
+                 "takari-lifecycle-plugin");
         conf.put(ConfigurationKey.ALTERNATIVE_COMPILER_PLUGIN_VERSION,
-                "1.13.0");
+                 "1.13.0");
 
         conf.put(ConfigurationKey.KIE_MAVEN_PLUGINS,
-                "org.kie");
+                 "org.kie");
         conf.put(ConfigurationKey.KIE_MAVEN_PLUGIN,
-                "kie-maven-plugin");
+                 "kie-maven-plugin");
         conf.put(ConfigurationKey.KIE_TAKARI_PLUGIN,
-                "kie-takari-plugin");
+                 "kie-takari-plugin");
 
         valid = Boolean.TRUE;
     }
