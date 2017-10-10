@@ -399,13 +399,6 @@ public class AFMavenCli {
                                   cliRequest.getWorkingDirectory());
 
             try {
-
-                /*ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(baos);
-                //write on printstream
-                String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-                */
-
                 PrintStream ps = new PrintStream(new FileOutputStream(logFile));
                 System.setOut(ps);
                 System.setErr(ps);
@@ -419,7 +412,6 @@ public class AFMavenCli {
         plexusLoggerManager = new Slf4jLoggerManager();
         slf4jLogger = slf4jLoggerFactory.getLogger(this.getClass().getName());
         //MDC.put("compileid", logFile.getAbsolutePath());//@TODO this is redundant with the maven output if slf4k and logback are configured into wildlfy
-
     }
 
     protected void version(AFCliRequest cliRequest) {

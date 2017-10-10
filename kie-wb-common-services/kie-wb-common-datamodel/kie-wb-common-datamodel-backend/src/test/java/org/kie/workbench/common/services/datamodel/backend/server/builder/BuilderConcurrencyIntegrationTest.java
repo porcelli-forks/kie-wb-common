@@ -27,9 +27,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.junit.Test;
+import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,9 @@ import org.uberfire.rpc.SessionInfo;
 public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(BuilderConcurrencyIntegrationTest.class);
+
+    @Inject
+    private BuilderCache builderCache;
 
     @Test
     //https://bugzilla.redhat.com/show_bug.cgi?id=1145105
@@ -104,12 +110,12 @@ public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegr
                     break;
                 default:
                     //@MAXWasHere
-                    /*es.execute( new Runnable() {
+                    es.execute( new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 logger.debug( "Thread " + Thread.currentThread().getName() + " has started: LRUBuilderCache.assertBuilder( project ).getKieModuleIgnoringErrors();" );
-                                builderCache.assertBuilder( project ).getKieModuleIgnoringErrors();
+                                //builderCache.getBuilder( project ).getKieModuleIgnoringErrors();
                                 logger.debug( "Thread " + Thread.currentThread().getName() + " has completed." );
                             } catch ( Throwable e ) {
                                 result.setFailed( true );
@@ -117,7 +123,7 @@ public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegr
                                 logger.debug( e.getMessage() );
                             }
                         }
-                    } );*/
+                    } );
             }
         }
 

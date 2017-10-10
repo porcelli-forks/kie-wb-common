@@ -27,16 +27,10 @@ public class WorkspaceCompilationInfo {
     protected Path prjPath;
     protected Path enhancedMainPomFile;
     protected Boolean kiePluginPresent = Boolean.FALSE;
-    //protected GitCache gitCache;
 
     public WorkspaceCompilationInfo(Path prjPath) {
         this.prjPath = prjPath;
     }
-
-    /*public WorkspaceCompilationInfo(Path prjPath, GitCache gitCache) {
-        this.prjPath = prjPath;
-        this.gitCache = gitCache;
-    }*/
 
     public Boolean lateAdditionEnhancedMainPomFile(Path enhancedPom) {
         if (enhancedMainPomFile == null && enhancedPom != null) {

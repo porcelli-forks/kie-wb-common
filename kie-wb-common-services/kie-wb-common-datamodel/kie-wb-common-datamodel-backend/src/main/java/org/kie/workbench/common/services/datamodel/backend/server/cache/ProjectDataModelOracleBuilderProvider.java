@@ -85,7 +85,7 @@ public class ProjectDataModelOracleBuilderProvider {
         Optional<KieAFBuilder> builder =  builderUtils.getBuilder(project.getRootPath().toURI(),nioPath);
 
         if(!builder.isPresent()){
-            throw new RuntimeException("Isn't possible create a Builder"+ project.toString());
+            throw new RuntimeException("Isn't possible create a Builder :"+ project.getRootPath().toURI() + " because the project isn't a Git FS project");
         }
         DefaultKieAFBuilder defaultKieBuilder = (DefaultKieAFBuilder)builder.get();
         Path workingDir = defaultKieBuilder.getInfo().getPrjPath();
@@ -94,7 +94,7 @@ public class ProjectDataModelOracleBuilderProvider {
         if(kieModuleMetaData != null){
             return getInnerBuilderWithAlreadyPresentData(project, kieModuleMetaData);
         }else {
-            return runNewBuild(project, builder);
+            return runNewBuild(project, builder.get());
         }
     }
 
@@ -107,9 +107,9 @@ public class ProjectDataModelOracleBuilderProvider {
         return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver,  classLoaderCache);
     }
 
-    private InnerBuilder runNewBuild(KieProject project, Optional<KieAFBuilder> builder) {
+    private InnerBuilder runNewBuild(KieProject project, KieAFBuilder builder) {
         KieModuleMetaData kieModuleMetaData;
-        KieCompilationResponse res = builder.get().build(Boolean.TRUE, Boolean.FALSE);// this could be readed from the ui
+        KieCompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);// this could be readed from the ui
         if (res.isSuccessful() && res.getKieModule().isPresent() && res.getWorkingDir().isPresent()) {
             kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                           res.getProjectDependenciesAsURI().get());

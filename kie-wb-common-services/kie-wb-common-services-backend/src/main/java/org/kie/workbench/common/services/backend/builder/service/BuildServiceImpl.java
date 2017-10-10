@@ -21,6 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
@@ -94,9 +95,17 @@ public class BuildServiceImpl implements BuildService {
         KieAFBuilder kieAfBuilder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI().toString(),PathConverter.getNioPath(project),
                                                                 gitCache, builderCache, guvnorM2Repository,
                                                                      KieAFBuilderUtil.getIdentifier(identity));
-
-        KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE, Boolean.FALSE);
-        return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
+        if(kieAfBuilder != null) {
+            KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE,
+                                                            Boolean.FALSE);
+            return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get());
+        }else{
+            BuildResults buildRs = new BuildResults();
+            BuildMessage msg = new BuildMessage();
+            msg.setText("[ERROR] Isn't possible build the project "+project.getRootPath().toURI().toString()+ " because isn't a Git FS project");
+            buildRs.addBuildMessage(msg);
+            return buildRs;
+        }
     }
 
 

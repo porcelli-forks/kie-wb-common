@@ -16,6 +16,10 @@
 
 package org.kie.workbench.common.services.backend.builder.core;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -66,22 +70,30 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
 
 
     public synchronized ClassLoader assertDependenciesClassLoader(final KieProject project, String identity) {
-        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project, gitCache, builderCache, guvnorM2Repository, identity);
-        ClassLoader classLoader = getEntry(nioFsPAth);
-        if (classLoader == null) {
-            Optional<MapClassLoader> opClassloader = buildClassLoader(project, identity);
-            if(opClassloader.isPresent()) {
-                setEntry(nioFsPAth, opClassloader.get());
-                classLoader = opClassloader.get();
+        Optional<Path> nioFsPath = KieAFBuilderUtil.getFSPath(project, gitCache, builderCache, guvnorM2Repository, identity);
+        if(nioFsPath.isPresent()){
+            ClassLoader classLoader = getEntry(nioFsPath.get());
+            if (classLoader == null) {
+                Optional<MapClassLoader> opClassloader = buildClassLoader(project, identity);
+                if(opClassloader.isPresent()) {
+                    setEntry(nioFsPath.get(), opClassloader.get());
+                    classLoader = opClassloader.get();
+                }
             }
+            return classLoader;
+        }else{
+            List<URL> urls = new ArrayList<>(1);
+            URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[1]));
+            return urlClassLoader;
         }
-        return classLoader;
     }
 
     public synchronized void setDependenciesClassLoader(final KieProject project,
                                                         ClassLoader classLoader, String identity) {
-        Path nioFsPAth = KieAFBuilderUtil.getFSPath(project,  gitCache, builderCache,  guvnorM2Repository, identity);
-        setEntry(nioFsPAth, classLoader);
+        Optional<Path> nioFsPAth = KieAFBuilderUtil.getFSPath(project,  gitCache, builderCache,  guvnorM2Repository, identity);
+        if(nioFsPAth.isPresent()){
+            setEntry(nioFsPAth.get(), classLoader);
+        }
     }
 
     protected Optional<MapClassLoader> buildClassLoader(final KieProject project, String identity) {

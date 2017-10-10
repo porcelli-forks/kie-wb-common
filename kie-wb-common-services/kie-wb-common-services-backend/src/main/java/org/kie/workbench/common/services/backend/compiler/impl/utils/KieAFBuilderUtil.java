@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.utils;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.enterprise.context.ContextNotActiveException;
@@ -74,14 +75,18 @@ public class KieAFBuilderUtil {
         return outerDecorator;
     }
 
-    public static Path getFSPath(KieProject project,
+    public static Optional<Path> getFSPath(KieProject project,
                                  GitCache gitCache, BuilderCache builderCache,
                                  GuvnorM2Repository guvnorM2Repository, String user) {
         Path nioPath = Paths.convert(project.getRootPath());
         KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(project.getRootPath().toURI(), nioPath,
                 gitCache, builderCache, guvnorM2Repository, user);
-        Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
-        return prjPath;
+        if(builder != null){
+            Path prjPath = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
+            return Optional.ofNullable(prjPath);
+        }else {
+           return Optional.empty();
+        }
     }
 
     public static String getIdentifier(Instance<User> identity) {
