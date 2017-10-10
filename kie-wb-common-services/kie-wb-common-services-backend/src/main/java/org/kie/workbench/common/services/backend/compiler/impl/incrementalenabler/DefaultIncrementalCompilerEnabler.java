@@ -61,10 +61,7 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
         PomPlaceHolder placeHolder = editor.readSingle(mainPom);
         Boolean isPresent = isPresent(placeHolder);   // check if the main pom is already scanned and edited
         if (placeHolder.isValid() && !isPresent) {
-            List<String> pomsList = new ArrayList<>();
-            MavenUtils.searchPoms(mainPom.getParent(),
-                                  pomsList);// recursive NIO search in all subfolders
-
+            List<String> pomsList = MavenUtils.searchPoms(mainPom.getParent()); // recursive NIO search in all subfolders
             if (pomsList.size() > 0) {
                 processFoundPoms(pomsList,
                                  req);

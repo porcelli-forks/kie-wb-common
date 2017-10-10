@@ -82,9 +82,7 @@ public class KieClassLoaderProviderTest {
         }
         assertTrue(res.isSuccessful());
 
-        List<String> pomList = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.get("src/test/projects/dummy_kie_multimodule_classloader/"),
-                              pomList);
+        List<String> pomList = MavenUtils.searchPoms(Paths.get("src/test/projects/dummy_kie_multimodule_classloader/"));
         Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.loadDependenciesClassloaderFromProject(pomList,
                                                                                                             mavenRepo.toAbsolutePath().toString());
         assertNotNull(clazzLoader);
@@ -184,9 +182,7 @@ public class KieClassLoaderProviderTest {
         }
         assertTrue(res.isSuccessful());
 
-        List<String> pomList = new ArrayList<>();
-        MavenUtils.searchPoms(uberfireTmp,
-                              pomList);
+        List<String> pomList = MavenUtils.searchPoms(uberfireTmp);
         Optional<ClassLoader> clazzLoader = CompilerClassloaderUtils.getClassloaderFromProjectTargets(pomList,
                                                                                                       Boolean.FALSE);
         assertNotNull(clazzLoader);

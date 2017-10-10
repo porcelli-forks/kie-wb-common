@@ -37,28 +37,28 @@ import org.uberfire.java.nio.file.Path;
 
 /**
  * The following information is being indexed for java files.
- * <p>
+ * <p/>
  * Java type definition minimal information:
- * <p>
+ * <p/>
  * (java_type, {class|enum|interface|annotation})
  * (java_type_name, qualifiedClassName)
- * <p>
+ * <p/>
  * Java type definition inheritance information:
- * <p>
+ * <p/>
  * (java_type_parent, superClassQualifiedName)
  * (java_type_interface, implementedInterface1QualifiedName)
  * (java_type_interface, implementedInterface2QualifiedName)
- * <p>
+ * <p/>
  * Java type definition fields information:
- * <p>
+ * <p/>
  * (field_name, theField1Name)
  * (field_type:theField1Name, field1TypeQualifiedName)
- * <p>
+ * <p/>
  * (field_name, theField2Name)
  * (field_type:theField2Name, field2TypeQualifiedName)
- * <p>
+ * <p/>
  * References to types used by this .java class definition, uses the Type references standard used by the other assets:
- * <p>
+ * <p/>
  * (type_name, superClassQualifiedName)
  * (type_name, implementedInterface1)
  * (type_name, implementedInterface2)

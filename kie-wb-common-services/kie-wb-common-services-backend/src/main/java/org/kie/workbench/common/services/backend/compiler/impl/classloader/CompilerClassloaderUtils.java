@@ -159,9 +159,8 @@ public class CompilerClassloaderUtils {
 
     public static Optional<ClassLoader> loadDependenciesClassloaderFromProject(String prjPath,
                                                                                String localRepo) {
-        List<String> poms = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI + prjPath)),
-                              poms);
+        List<String> poms =
+        MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI + prjPath)));
         List<URL> urls = getDependenciesURL(poms,
                                             localRepo);
         return buildResult(urls);

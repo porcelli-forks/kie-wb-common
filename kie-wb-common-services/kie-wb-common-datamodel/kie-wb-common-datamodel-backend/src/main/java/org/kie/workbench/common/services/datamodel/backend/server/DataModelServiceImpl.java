@@ -82,7 +82,7 @@ public class DataModelServiceImpl
     }
 
     @Override
-    public ProjectDataModelOracle getProjectDataModel( final Path resourcePath, Boolean indexing ) {
+    public ProjectDataModelOracle getProjectDataModel( final Path resourcePath, boolean indexing ) {
         try {
             PortablePreconditions.checkNotNull( "resourcePath",
                                                 resourcePath );

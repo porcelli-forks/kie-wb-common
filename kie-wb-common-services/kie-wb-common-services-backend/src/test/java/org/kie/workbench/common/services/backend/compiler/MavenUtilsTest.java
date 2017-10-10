@@ -16,7 +16,6 @@
 
 package org.kie.workbench.common.services.backend.compiler;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.maven.artifact.Artifact;
 
@@ -24,7 +23,6 @@ import org.junit.Test;
 import org.kie.workbench.common.services.backend.compiler.configuration.Compilers;
 import org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler.DefaultIncrementalCompilerEnabler;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
-import org.kie.workbench.common.services.backend.file.AntPathMatcher;
 import org.uberfire.java.nio.file.Paths;
 
 import static org.junit.Assert.*;
@@ -34,9 +32,7 @@ public class MavenUtilsTest {
     @Test
     public void presenceOfDepInThePrj() throws Exception {
         DefaultIncrementalCompilerEnabler enabler = new DefaultIncrementalCompilerEnabler(Compilers.JAVAC);
-        List<String> pomList = new ArrayList<>();
-        MavenUtils.searchPoms(Paths.get("src/test/projects/dummy_kie_multimodule_untouched/"),
-                              pomList);
+        List<String> pomList = MavenUtils.searchPoms(Paths.get("src/test/projects/dummy_kie_multimodule_untouched/"));
         assertTrue(pomList.size() == 3);
         List<Artifact> deps = MavenUtils.resolveDependenciesFromMultimodulePrj(pomList);
         assertTrue(deps.size() == 1);

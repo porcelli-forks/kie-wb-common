@@ -80,20 +80,20 @@ public class MavenUtils {
         }
     }
 
-    public static void searchPoms(Path file,
-                                  List<String> pomsList) {
+    public static List<String> searchPoms(Path file) {
+        List<String> poms = new ArrayList<>();
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(file.toAbsolutePath())) {
             for (Path p : ds) {
                 if (Files.isDirectory(p)) {
-                    searchPoms(p,
-                               pomsList);
+                    poms.addAll(searchPoms(p));
                 } else if (p.endsWith(POM_NAME)) {
-                    pomsList.add(p.toAbsolutePath().toString());
+                    poms.add(p.toAbsolutePath().toString());
                 }
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+        return poms;
     }
 
     public static String getMavenRepoDir(String defaultName) {
