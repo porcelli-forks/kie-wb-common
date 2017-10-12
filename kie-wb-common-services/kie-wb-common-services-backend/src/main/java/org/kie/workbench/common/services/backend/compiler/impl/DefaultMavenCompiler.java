@@ -18,6 +18,7 @@ package org.kie.workbench.common.services.backend.compiler.impl;
 import java.util.List;
 
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
+import org.uberfire.java.nio.file.Path;
 
 /**
  * Run maven with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
@@ -34,23 +35,20 @@ import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 public class DefaultMavenCompiler extends BaseMavenCompiler<CompilationResponse> implements MavenCompiler {
 
     @Override
-    public CompilationResponse buildDefaultCompilationResponse(final Boolean value) {
-        return new DefaultCompilationResponse(value);
+    public CompilationResponse buildDefaultCompilationResponse(final Boolean successful) {
+        return new DefaultCompilationResponse(successful);
     }
 
     @Override
-    public CompilationResponse buildDefaultCompilationResponse(final Boolean value,
-                                                               final List<String> output) {
-        return new DefaultCompilationResponse(value,
-                                              output);
+    public CompilationResponse buildDefaultCompilationResponse(final Boolean successful,
+                                                               final List mavenOutput) {
+        return new DefaultCompilationResponse(successful, mavenOutput);
     }
 
     @Override
-    protected CompilationResponse buildDefaultCompilationResponse(Boolean value,
-                                                                  String message,
-                                                                  List<String> output) {
-        return new DefaultCompilationResponse(value,
-                                              message,
-                                              output);
+    public CompilationResponse buildDefaultCompilationResponse(final Boolean successful,
+                                                               final List mavenOutput,
+                                                               final Path workingDir) {
+        return new DefaultCompilationResponse(successful, mavenOutput, workingDir);
     }
 }

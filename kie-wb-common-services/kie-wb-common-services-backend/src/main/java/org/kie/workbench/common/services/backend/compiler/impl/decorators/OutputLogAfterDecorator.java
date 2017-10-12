@@ -22,6 +22,7 @@ import org.kie.workbench.common.services.backend.compiler.AFCompiler;
 import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.LogUtils;
+import org.uberfire.java.nio.file.Path;
 
 /***
  * After decorator to read and store the maven output into a List<String> in the CompilationResponse
@@ -40,9 +41,10 @@ public class OutputLogAfterDecorator<T extends CompilationResponse, C extends AF
         if (req.getLogRequested()) {
             return compiler.buildDefaultCompilationResponse(res.isSuccessful(),
                                                             LogUtils.getOutput(req.getInfo().getPrjPath().toAbsolutePath().toString(),
-                                                                               req.getKieCliRequest().getRequestUUID()));
+                                                                               req.getKieCliRequest().getRequestUUID()),
+                                                            req.getInfo().getPrjPath());
         } else {
-            return compiler.buildDefaultCompilationResponse(res.isSuccessful(), Collections.emptyList());
+            return compiler.buildDefaultCompilationResponse(res.isSuccessful(), Collections.emptyList(), req.getInfo().getPrjPath());
         }
     }
 
@@ -52,8 +54,7 @@ public class OutputLogAfterDecorator<T extends CompilationResponse, C extends AF
     }
 
     @Override
-    public T buildDefaultCompilationResponse(final Boolean value,
-                                             final List output) {
-        return compiler.buildDefaultCompilationResponse(value);
+    public T buildDefaultCompilationResponse(final Boolean successful, final List output, final Path workingDir) {
+        return (T) compiler.buildDefaultCompilationResponse(successful, output, workingDir);
     }
 }

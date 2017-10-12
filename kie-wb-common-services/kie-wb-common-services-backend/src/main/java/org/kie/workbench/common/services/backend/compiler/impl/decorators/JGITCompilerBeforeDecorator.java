@@ -111,8 +111,7 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
     }
 
     @Override
-    public T buildDefaultCompilationResponse(final Boolean value,
-                                             final List output) {
-        return compiler.buildDefaultCompilationResponse(value);
+    public T buildDefaultCompilationResponse(final Boolean successful, final List mavenOutput, final Path workingDir) {
+        return (T) compiler.buildDefaultCompilationResponse(successful, mavenOutput, workingDir);
     }
 }

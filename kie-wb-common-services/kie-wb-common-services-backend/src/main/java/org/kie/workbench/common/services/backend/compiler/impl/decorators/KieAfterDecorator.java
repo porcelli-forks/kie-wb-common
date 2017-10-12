@@ -23,6 +23,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import org.kie.workbench.common.services.backend.compiler.impl.classloader.Compi
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.java.nio.file.Path;
 
 /***
  * After decorator that reads and store the Object created by the Kie takari plugin and placed in the CompilationResponse
@@ -59,20 +61,11 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             if (req.getInfo().isKiePluginPresent()) {
                 return (T) handleKieMavenPlugin(req,
                                                 res);
+            } else {
+                return (T) handleNormalBuild(req, res);
             }
         }
         return res;
-    }
-
-    @Override
-    public T buildDefaultCompilationResponse(final Boolean value) {
-        return compiler.buildDefaultCompilationResponse(value);
-    }
-
-    @Override
-    public T buildDefaultCompilationResponse(final Boolean value,
-                                             final List output) {
-        return compiler.buildDefaultCompilationResponse(value);
     }
 
     private KieCompilationResponse handleKieMavenPlugin(CompilationRequest req,
@@ -91,14 +84,30 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
                                                      allDepsAsString,
                                                      req.getInfo().getPrjPath());
         } else {
-            StringBuilder sb = new StringBuilder();
+            List<String> msgs = new ArrayList<>();
             if (kieModuleMetaInfoTuple.getErrorMsg().isPresent()) {
-                sb.append(" Error in the kieModuleMetaInfo from the kieMap:").append(kieModuleMetaInfoTuple.getErrorMsg().get());
+
+                msgs.add("[ERROR] Error in the kieModuleMetaInfo from the kieMap :" + kieModuleMetaInfoTuple.getErrorMsg().get());
             }
             if (kieModuleTuple.getErrorMsg().isPresent()) {
-                sb.append(" Error in the kieModule:").append(kieModuleTuple.getErrorMsg().get());
+                msgs.add("[ERROR] Error in the kieModule :" + kieModuleTuple.getErrorMsg().get());
             }
-            return new DefaultKieCompilationResponse(Boolean.FALSE, sb.toString(), mavenOutput);
+            msgs.addAll(mavenOutput);
+            return new DefaultKieCompilationResponse(Boolean.FALSE, msgs, req.getInfo().getPrjPath());
+        }
+    }
+
+    private KieCompilationResponse handleNormalBuild(CompilationRequest req,
+                                                     CompilationResponse res) {
+
+        List<String> mavenOutput = getMavenOutput(req, res);
+        List<String> allDepsAsString = readAllDepsAsString(req);
+        if (res.isSuccessful()) {
+            return new DefaultKieCompilationResponse(Boolean.TRUE, null, null, mavenOutput, allDepsAsString, req.getInfo().getPrjPath());
+        } else {
+            List<String> msgs = new ArrayList<>();
+            msgs.addAll(mavenOutput);
+            return new DefaultKieCompilationResponse(Boolean.FALSE, msgs, req.getInfo().getPrjPath());
         }
     }
 
@@ -121,15 +130,18 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
     }
 
     private List<String> getAllDepsAsString(CompilationRequest req) {
-        List<String> items = Collections.emptyList();
-        Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(req.getInfo().getPrjPath());
+        List<String> items = Collections.EMPTY_LIST;
         if (!req.skipPrjDependenciesCreationList()) {
             Optional<List<String>> optionalDeps = CompilerClassloaderUtils.getStringsFromAllDependencies(req.getInfo().getPrjPath());
             if (optionalDeps.isPresent()) {
                 items = optionalDeps.get();
             }
         }
+        Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(req.getInfo().getPrjPath());
         if (artifactsFromTargets.isPresent()) {
+            if (items.equals(Collections.EMPTY_LIST)) {
+                items = new ArrayList<>(artifactsFromTargets.get().size());
+            }
             items.addAll(artifactsFromTargets.get());
         }
         return items;
@@ -150,8 +162,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
                 return new KieTuple(tuple.getOptionalObject().get());
             } else {
 
-                return new KieTuple(
-                        tuple.getErrorMsg());
+                return new KieTuple(tuple.getErrorMsg());
             }
         } else {
             return new KieTuple("kieModuleMetaInfo not present in the map");
@@ -174,8 +185,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
                 return new KieTuple(tuple.getOptionalObject().get());
             } else {
 
-                return new KieTuple(
-                        tuple.getErrorMsg());
+                return new KieTuple(tuple.getErrorMsg());
             }
         } else {
 
@@ -225,6 +235,16 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
                 logger.error(ex.getMessage());
             }
         }
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean value) {
+        return (T) compiler.buildDefaultCompilationResponse(value);
+    }
+
+    @Override
+    public T buildDefaultCompilationResponse(final Boolean successful, final List output, final Path workingDir) {
+        return (T) compiler.buildDefaultCompilationResponse(successful, output, workingDir);
     }
 
     static class KieTuple {

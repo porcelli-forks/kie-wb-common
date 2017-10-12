@@ -50,39 +50,22 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
              null);
     }
 
+    public DefaultKieCompilationResponse(Boolean successful, List<String> mavenOutput) {
+        this(successful,
+             null,
+             null,
+             mavenOutput,
+             null,
+             null);
+    }
+
     public DefaultKieCompilationResponse(Boolean successful,
                                          List<String> mavenOutput,
                                          Path workingDir) {
         defaultResponse = new DefaultCompilationResponse(successful,
-                                                         null,
                                                          mavenOutput);
         this.kieModuleMetaInfo = null;
         this.workingDir = workingDir;
-    }
-
-    public DefaultKieCompilationResponse(Boolean successful,
-                                         List<String> mavenOutput) {
-        defaultResponse = new DefaultCompilationResponse(successful,
-                                                         null,
-                                                         mavenOutput);
-        this.kieModuleMetaInfo = null;
-    }
-
-    public DefaultKieCompilationResponse(Boolean successful,
-                                         String errorMessage) {
-
-        defaultResponse = new DefaultCompilationResponse(successful,
-                                                         errorMessage,
-                                                         Collections.emptyList());
-    }
-
-    public DefaultKieCompilationResponse(Boolean successful,
-                                         String errorMessage,
-                                         List<String> mavenOutput) {
-
-        defaultResponse = new DefaultCompilationResponse(successful,
-                                                         errorMessage,
-                                                         mavenOutput);
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -151,11 +134,6 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     @Override
     public Boolean isSuccessful() {
         return defaultResponse.isSuccessful();
-    }
-
-    @Override
-    public Optional<String> getErrorMessage() {
-        return defaultResponse.getErrorMessage();
     }
 
     @Override

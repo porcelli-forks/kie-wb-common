@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.kie.workbench.common.services.backend.compiler.impl.BaseMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultKieCompilationResponse;
+import org.uberfire.java.nio.file.Path;
 
 /**
  * Run maven on Kie projects with https://maven.apache.org/ref/3.3.9/maven-embedder/xref/index.html
@@ -27,23 +28,18 @@ import org.kie.workbench.common.services.backend.compiler.impl.DefaultKieCompila
 public class KieDefaultMavenCompiler extends BaseMavenCompiler<KieCompilationResponse> implements KieMavenCompiler {
 
     @Override
-    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean value) {
-        return new DefaultKieCompilationResponse(value);
+    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean successful) {
+        return new DefaultKieCompilationResponse(successful);
     }
 
     @Override
-    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean value,
-                                                                  final List<String> output) {
-        return new DefaultKieCompilationResponse(value,
-                                                 output);
+    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean successful,
+                                                                  final List mavenOutput) {
+        return new DefaultKieCompilationResponse(successful, mavenOutput);
     }
 
     @Override
-    protected KieCompilationResponse buildDefaultCompilationResponse(Boolean value,
-                                                                     String message,
-                                                                     List<String> output) {
-        return new DefaultKieCompilationResponse(value,
-                                                 message,
-                                                 output);
+    public KieCompilationResponse buildDefaultCompilationResponse(final Boolean successful, final List mavenOutput, final Path workingDir) {
+        return new DefaultKieCompilationResponse(successful, mavenOutput, workingDir);
     }
 }

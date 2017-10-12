@@ -42,6 +42,10 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class KieAFBuilderUtil {
 
+    private static final String IMPORTED_REPO_URI = "@myrepo";
+
+    private static final String SYSTEM_IDENTITY = "system";
+
     public static KieAFBuilder getKieAFBuilder(String uri, org.uberfire.java.nio.file.Path nioPath,
                                                GitCache gitCache, BuilderCache builderCache,
                                                GuvnorM2Repository guvnorM2Repository, String user) {
@@ -57,6 +61,13 @@ public class KieAFBuilderUtil {
                                                   MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                   getCompiler(gitCache));
                 builderCache.addBuilder(uri, builder);
+            } else {
+                //uri is the working dir
+                org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(uri);
+                builder = new DefaultKieAFBuilder(prj,
+                                                  MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
+                                                  getCompilerWithoutGITsupport());
+                builderCache.addBuilder(uri, builder);
             }
         }
         return builder;
@@ -64,7 +75,7 @@ public class KieAFBuilderUtil {
 
     public static String getFolderName(String uri, String user) {
         //@TODO currently the only way to understand if is a imported prj
-        return uri.contains("@myrepo") ? UUID.randomUUID().toString() : user + "-" + UUID.randomUUID().toString();
+        return uri.contains(IMPORTED_REPO_URI) ? UUID.randomUUID().toString() : user + "-" + UUID.randomUUID().toString();
     }
 
     public static AFCompiler getCompiler(GitCache gitCache) {
@@ -72,6 +83,11 @@ public class KieAFBuilderUtil {
         AFCompiler innerDecorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
         AFCompiler outerDecorator = new JGITCompilerBeforeDecorator(innerDecorator, gitCache);
         return outerDecorator;
+    }
+
+    public static AFCompiler getCompilerWithoutGITsupport() {
+        AFCompiler decorator = new KieAfterDecorator(new OutputLogAfterDecorator(new KieDefaultMavenCompiler()));
+        return decorator;
     }
 
     public static Optional<Path> getFSPath(KieProject project,
@@ -90,12 +106,12 @@ public class KieAFBuilderUtil {
 
     public static String getIdentifier(Instance<User> identity) {
         if (identity.isUnsatisfied()) {
-            return "system";
+            return SYSTEM_IDENTITY;
         }
         try {
             return identity.get().getIdentifier();
         } catch (ContextNotActiveException e) {
-            return "system";
+            return SYSTEM_IDENTITY;
         }
     }
 }

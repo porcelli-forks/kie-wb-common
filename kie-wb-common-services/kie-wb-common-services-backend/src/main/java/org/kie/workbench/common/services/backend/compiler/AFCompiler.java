@@ -17,8 +17,10 @@ package org.kie.workbench.common.services.backend.compiler;
 
 import java.util.List;
 
+import org.uberfire.java.nio.file.Path;
+
 /***
- * Define the behaviour of a NIO compiler
+ * Define the behaviour of a Compiler
  */
 public interface AFCompiler<T extends CompilationResponse> {
 
@@ -30,5 +32,6 @@ public interface AFCompiler<T extends CompilationResponse> {
     T buildDefaultCompilationResponse(final Boolean value);
 
     T buildDefaultCompilationResponse(final Boolean successful,
-                                      final List<String> output);
+                                      final List<String> output,
+                                      final Path workingDir);
 }

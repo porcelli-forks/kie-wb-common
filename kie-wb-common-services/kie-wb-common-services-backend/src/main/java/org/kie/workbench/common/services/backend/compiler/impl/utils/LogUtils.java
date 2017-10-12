@@ -38,13 +38,16 @@ public class LogUtils {
     public static List<String> readTmpLog(String logFile) {
         Path logPath = Paths.get(URI.create(FILE_URI + logFile));
         List<String> log = new ArrayList<>();
-        if (Files.isReadable(logPath)) {
-            for (String line : Files.readAllLines(logPath,
-                                                  Charset.defaultCharset())) {
-                log.add(line);
+        try {
+            if (Files.isReadable(logPath)) {
+                for (String line : Files.readAllLines(logPath, Charset.defaultCharset())) {
+                    log.add(line);
+                }
+                return log;
             }
-            return log;
+            return Collections.emptyList();
+        } finally {
+            Files.delete(logPath);
         }
-        return Collections.emptyList();
     }
 }

@@ -23,7 +23,7 @@ import javax.inject.Named;
 import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
-
+import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -40,48 +40,48 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
     private ProjectDataModelOracleBuilderProvider builderProvider;
     private KieProjectService projectService;
     private BuilderCache builderCache;
+    private LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache;
 
     public LRUProjectDataModelOracleCache() {
     }
 
     @Inject
-    public LRUProjectDataModelOracleCache( final ProjectDataModelOracleBuilderProvider builderProvider,
-                                           final KieProjectService projectService,
-                                           final BuilderCache builderCache) {
+    public LRUProjectDataModelOracleCache(final ProjectDataModelOracleBuilderProvider builderProvider,
+                                          final KieProjectService projectService,
+                                          final BuilderCache builderCache,
+                                          final LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache) {
         this.builderProvider = builderProvider;
         this.projectService = projectService;
         this.builderCache = builderCache;
+        this.lruProjectDependenciesClassLoaderCache = lruProjectDependenciesClassLoaderCache;
     }
 
-    public synchronized void invalidateProjectCache( @Observes final InvalidateDMOProjectCacheEvent event ) {
-        PortablePreconditions.checkNotNull( "event",
-                                            event );
+    public synchronized void invalidateProjectCache(@Observes final InvalidateDMOProjectCacheEvent event) {
+        PortablePreconditions.checkNotNull("event",
+                                           event);
         final Path resourcePath = event.getResourcePath();
-        final KieProject project = projectService.resolveProject( resourcePath );
+        final KieProject project = projectService.resolveProject(resourcePath);
         org.uberfire.java.nio.file.Path workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString()); //@TODO is always called during the indexing ?
         //If resource was not within a Project there's nothing to invalidate
-        if ( project != null && (workingDir.toString().length() > project.getProjectName().length() + 1)) {
+        if (project != null && (workingDir.toString().length() > project.getProjectName().length() + 1)) {
             // the path resolved is /<projectname> this mean project not yet compiled and cached
-            invalidateCache( workingDir );//@TOdo AFTER THE STARTUP INDEXING THE FIRST IMPORT CAUSE THE INVALIDATION CACHE OF THE PRJ INDEXED DURING THE STARTUP
+            invalidateCache(workingDir);//@TOdo AFTER THE STARTUP INDEXING THE FIRST IMPORT CAUSE THE INVALIDATION CACHE OF THE PRJ INDEXED DURING THE STARTUP
         }
     }
 
-
-
     //Check the ProjectOracle for the Project has been created, otherwise create one!
-    public synchronized ProjectDataModelOracle assertProjectDataModelOracle( final KieProject project) {
-        ProjectDataModelOracle  projectOracle;
+    public synchronized ProjectDataModelOracle assertProjectDataModelOracle(final KieProject project) {
+        ProjectDataModelOracle projectOracle;
         org.uberfire.java.nio.file.Path workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString());
-        if(workingDir == null){
+        if (workingDir == null) {
             projectOracle = buildAndSetEntry(project);
-        }else{
-            projectOracle = getEntry( workingDir );
-            if ( projectOracle == null ) {
+        } else {
+            projectOracle = getEntry(workingDir);
+            if (projectOracle == null) {
                 projectOracle = buildAndSetEntry(project);
             }
         }
         return projectOracle;
-
     }
 
     private ProjectDataModelOracle buildAndSetEntry(KieProject project) {
@@ -89,12 +89,11 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
         org.uberfire.java.nio.file.Path workingDir;
         projectOracle = makeProjectOracle(project);
         workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString());
-        setEntry( workingDir, projectOracle );
+        setEntry(workingDir, projectOracle);
         return projectOracle;
     }
 
-    private ProjectDataModelOracle makeProjectOracle( final KieProject project) {
+    private ProjectDataModelOracle makeProjectOracle(final KieProject project) {
         return builderProvider.newBuilder(project).build();
     }
-
 }

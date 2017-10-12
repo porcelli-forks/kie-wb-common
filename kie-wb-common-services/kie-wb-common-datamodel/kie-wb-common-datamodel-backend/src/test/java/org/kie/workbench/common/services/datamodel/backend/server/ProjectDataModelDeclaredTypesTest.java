@@ -49,8 +49,7 @@ public class ProjectDataModelDeclaredTypesTest extends AbstractDataModelWeldTest
 
         assertNotNull( oracle );
 
-        assertEquals( 4,
-                      oracle.getProjectModelFields().size() );
+        assertEquals( 4, oracle.getProjectModelFields().size() );
         assertContains( "t1p1.Bean1",
                         oracle.getProjectModelFields().keySet() );
         assertContains( "t1p1.DRLBean",

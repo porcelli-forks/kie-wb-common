@@ -17,6 +17,7 @@
 package org.kie.workbench.common.services.backend.compiler.plugin;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -100,8 +101,11 @@ public class KieMetadataTest {
                                                       "KieMetadataTest.compileAndLoadKieJarMetadataAllResourcesPackagedJar");
         }
 
-        if (res.getErrorMessage().isPresent()) {
-            logger.info("Error:" + res.getErrorMessage().get());
+        if (!res.isSuccessful() && res.getMavenOutput().isPresent()) {
+            List<String> msgs = res.getMavenOutput().get();
+            for(String msg: msgs){
+                logger.info(msg);
+            }
         }
 
         Assert.assertTrue(res.isSuccessful());
@@ -162,8 +166,11 @@ public class KieMetadataTest {
             }
 
             Assert.assertTrue(res.getMavenOutput().isPresent());
-            if (res.getErrorMessage().isPresent()) {
-                logger.info(res.getErrorMessage().get());
+            if (!res.isSuccessful() && res.getMavenOutput().isPresent()) {
+                List<String> msgs = res.getMavenOutput().get();
+                for(String msg: msgs){
+                    logger.info(msg);
+                }
             }
 
             Assert.assertTrue(res.isSuccessful());
@@ -214,8 +221,11 @@ public class KieMetadataTest {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
                                                       "KieMetadataTest.compileAndloadKieJarSingleMetadataWithPackagedJar");
         }
-        if (res.getErrorMessage().isPresent()) {
-            logger.info(res.getErrorMessage().get());
+        if (!res.isSuccessful() && res.getMavenOutput().isPresent()) {
+            List<String> msgs = res.getMavenOutput().get();
+            for(String msg: msgs){
+                logger.info(msg);
+            }
         }
 
         Assert.assertTrue(res.isSuccessful());

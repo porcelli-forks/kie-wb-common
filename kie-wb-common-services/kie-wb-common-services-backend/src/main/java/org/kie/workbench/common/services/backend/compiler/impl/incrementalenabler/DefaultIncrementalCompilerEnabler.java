@@ -16,7 +16,6 @@
 package org.kie.workbench.common.services.backend.compiler.impl.incrementalenabler;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -100,5 +99,9 @@ public class DefaultIncrementalCompilerEnabler implements IncrementalCompilerEna
      */
     public Set<PomPlaceHolder> getHistory() {
         return Collections.unmodifiableSet(editor.getHistory());
+    }
+
+    public void cleanHistory() {
+        editor.cleanHistory();
     }
 }

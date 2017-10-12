@@ -15,7 +15,7 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.plexus.classworlds.ClassWorld;
@@ -69,6 +69,10 @@ public abstract class BaseMavenCompiler<T extends CompilationResponse> implement
         return Files.exists(mavenRepo) && Files.isDirectory(mavenRepo) && Files.isWritable(mavenRepo) && Files.isReadable(mavenRepo);
     }
 
+    public void invalidatePomHistory() {
+        enabler.cleanHistory();
+    }
+
     @Override
     public T compileSync(CompilationRequest req) {
         if (logger.isDebugEnabled()) {
@@ -79,14 +83,16 @@ public abstract class BaseMavenCompiler<T extends CompilationResponse> implement
         if (!req.getInfo().getEnhancedMainPomFile().isPresent()) {
             ProcessedPoms processedPoms = enabler.process(req);
             if (!processedPoms.getResult()) {
+                List<String> msgs = new ArrayList<>(1);
+                msgs.add("[ERROR] Processing poms failed");
                 return buildDefaultCompilationResponse(Boolean.FALSE,
-                                                       "Processing poms failed",
-                                                       Collections.emptyList());
+                                                       msgs,
+                                                       req.getInfo().getPrjPath());
             }
         }
         req.getKieCliRequest().getRequest().setLocalRepositoryPath(req.getMavenRepo());
         /**
-         The classworld is now Created in the NioMavenCompiler and in the DefaultMaven compielr for this reasons:
+         The classworld is now Created in the DefaultMaven compiler for this reasons:
          problem: https://stackoverflow.com/questions/22410706/error-when-execute-mavencli-in-the-loop-maven-embedder
          problem:https://stackoverflow.com/questions/40587683/invocation-of-mavencli-fails-within-a-maven-plugin
          solution:https://dev.eclipse.org/mhonarc/lists/sisu-users/msg00063.html
@@ -105,7 +111,5 @@ public abstract class BaseMavenCompiler<T extends CompilationResponse> implement
         }
     }
 
-    protected abstract T buildDefaultCompilationResponse(final Boolean aFalse,
-                                                         final String message,
-                                                         final List<String> output);
+    protected abstract T buildDefaultCompilationResponse(final Boolean successful, final List mavenOutput);
 }

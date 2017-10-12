@@ -25,4 +25,6 @@ import org.kie.workbench.common.services.backend.compiler.impl.pomprocessor.Proc
 public interface IncrementalCompilerEnabler {
 
     ProcessedPoms process(CompilationRequest req);
+
+    void cleanHistory();
 }

@@ -160,7 +160,7 @@ public class CompilerClassloaderUtils {
     public static Optional<ClassLoader> loadDependenciesClassloaderFromProject(String prjPath,
                                                                                String localRepo) {
         List<String> poms =
-        MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI + prjPath)));
+                MavenUtils.searchPoms(Paths.get(URI.create(FILE_URI + prjPath)));
         List<URL> urls = getDependenciesURL(poms,
                                             localRepo);
         return buildResult(urls);
@@ -280,12 +280,10 @@ public class CompilerClassloaderUtils {
         List<URI> urls = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),
-                                                          "UTF-8"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
-                StringTokenizer token = new StringTokenizer(sCurrentLine,
-                                                            ":");
+                StringTokenizer token = new StringTokenizer(sCurrentLine, ":");
                 while (token.hasMoreTokens()) {
                     StringBuilder sb = new StringBuilder(FILE_URI).append(token.nextToken());
                     urls.add(new URI(sb.toString()));
@@ -517,17 +515,18 @@ public class CompilerClassloaderUtils {
         }
     }
 
-    public static Set<String> filterPathClasses(List<String> paths,
-                                                String mavenRpo) {
-        int mavenRepoLenght = mavenRpo.length();
+    public static Set<String> filterPathClasses(List<String> paths,  String mavenRpo) {
+        int mavenRepoLength = mavenRpo.length();
         Set<String> filtered = new HashSet<>(paths.size());
         for (String item : paths) {
             if (item.endsWith(JAVA_CLASS_EXT)) {
-                String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15,
-                                            item.lastIndexOf("/")).replace("/", ".");
-                filtered.add(one);
+                String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15); // 15 chars are for "target/classes/"
+                if(one.contains("/")){  //there is a package
+                   one =  one.substring(0, one.lastIndexOf("/")).replace("/", ".");
+                    filtered.add(one);
+                }
             } else if (item.endsWith(JAVA_ARCHIVE_RESOURCE_EXT)) {
-                String one = item.substring(item.lastIndexOf(mavenRpo) + mavenRepoLenght,
+                String one = item.substring(item.lastIndexOf(mavenRpo) + mavenRepoLength,
                                             item.lastIndexOf("/")).replace("/", ".");
                 filtered.add(one);
             }
@@ -540,9 +539,12 @@ public class CompilerClassloaderUtils {
         List<String> filtered = new ArrayList<>(items.size());
         for (String item : items) {
             if (item.endsWith(JAVA_CLASS_EXT)) {
-                String one = item.replace("/", ".").substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(JAVA_CLASS_EXT));
-                if (one.contains(packageName)) {
-                    filtered.add(one);
+                String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(JAVA_CLASS_EXT)); // 15 chars are for "target/classes/"
+                if(one.contains("/")) { //there is a package
+                    one = one.replace("/", ".");
+                    if (one.contains(packageName)) {
+                        filtered.add(one);
+                    }
                 }
             }
         }

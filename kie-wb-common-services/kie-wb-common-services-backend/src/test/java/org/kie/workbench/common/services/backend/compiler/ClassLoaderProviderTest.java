@@ -268,8 +268,11 @@ public class ClassLoaderProviderTest {
             TestUtil.writeMavenOutputIntoTargetFolder(res.getMavenOutput().get(),
                                                       "KieMetadataTest.compileAndloadKieJarSingleMetadataWithPackagedJar");
         }
-        if (res.getErrorMessage().isPresent()) {
-            logger.info(res.getErrorMessage().get());
+        if (!res.isSuccessful() && res.getMavenOutput().isPresent()) {
+            List<String> msgs = res.getMavenOutput().get();
+            for(String msg: msgs){
+                logger.info(msg);
+            }
         }
 
         Assert.assertTrue(res.isSuccessful());

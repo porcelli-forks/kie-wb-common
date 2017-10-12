@@ -16,7 +16,12 @@
 package org.kie.workbench.common.services.datamodel.backend.server.cache;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.appformer.project.datamodel.imports.Import;
@@ -46,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
-
 
 public class ProjectDataModelOracleBuilderProvider {
 
@@ -80,31 +84,30 @@ public class ProjectDataModelOracleBuilderProvider {
         this.classLoaderCache = classLoaderCache;
     }
 
-    public InnerBuilder newBuilder( final KieProject project) {
+    public InnerBuilder newBuilder(final KieProject project) {
         Path nioPath = Paths.convert(project.getRootPath());
-        Optional<KieAFBuilder> builder =  builderUtils.getBuilder(project.getRootPath().toURI(),nioPath);
+        Optional<KieAFBuilder> builder = builderUtils.getBuilder(project.getRootPath().toURI(), nioPath);
 
-        if(!builder.isPresent()){
-            throw new RuntimeException("Isn't possible create a Builder :"+ project.getRootPath().toURI() + " because the project isn't a Git FS project");
+        if (!builder.isPresent()) {
+            throw new RuntimeException("Isn't possible create a Builder :" + project.getRootPath().toURI() + " because the project isn't a Git FS project");
         }
-        DefaultKieAFBuilder defaultKieBuilder = (DefaultKieAFBuilder)builder.get();
+        DefaultKieAFBuilder defaultKieBuilder = (DefaultKieAFBuilder) builder.get();
         Path workingDir = defaultKieBuilder.getInfo().getPrjPath();
-        KieModuleMetaData kieModuleMetaData =kieModuleMetaDataCache.getMetadata(workingDir);
+        KieModuleMetaData kieModuleMetaData = kieModuleMetaDataCache.getMetadata(workingDir);
 
-        if(kieModuleMetaData != null){
+        if (kieModuleMetaData != null) {
             return getInnerBuilderWithAlreadyPresentData(project, kieModuleMetaData);
-        }else {
+        } else {
             return runNewBuild(project, builder.get());
         }
     }
 
-
-    private InnerBuilder getInnerBuilderWithAlreadyPresentData(KieProject project,KieModuleMetaData kieModuleMetaData) {
+    private InnerBuilder getInnerBuilderWithAlreadyPresentData(KieProject project, KieModuleMetaData kieModuleMetaData) {
         KieAFBuilder builder = builderCache.getBuilder(project.getRootPath().toURI().toString());
-        Path workingDir = ((DefaultKieAFBuilder)builder).getInfo().getPrjPath();
+        Path workingDir = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         final Set<String> javaResources = new HashSet<String>(dependenciesCache.getDependenciesRaw(workingDir));
         final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData, javaResources);
-        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver,  classLoaderCache);
+        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, classLoaderCache);
     }
 
     private InnerBuilder runNewBuild(KieProject project, KieAFBuilder builder) {
@@ -127,7 +130,6 @@ public class ProjectDataModelOracleBuilderProvider {
             throw new RuntimeException("Failed to build correctly the project:" + project.toString());
         }
     }
-
 
     class InnerBuilder {
 
@@ -169,7 +171,7 @@ public class ProjectDataModelOracleBuilderProvider {
         }
 
         private void addFromKieModuleMetadata() {
-            Path prjRoot =  builderCache.getProjectRoot(project.getRootPath().toURI().toString());
+            Path prjRoot = builderCache.getProjectRoot(project.getRootPath().toURI().toString());
             WhiteList whiteList = getFilteredPackageNames();
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
@@ -213,13 +215,13 @@ public class ProjectDataModelOracleBuilderProvider {
         private void addClass(final String packageName, final String className, Path project) {
             try {
                 Optional<MapClassLoader> prjClassloaderOpt = classLoaderCache.getTargetClassLoader(project);
-                if(prjClassloaderOpt.isPresent()) {
+                if (prjClassloaderOpt.isPresent()) {
 
                     final Class clazz = CompilerClassloaderUtils.getClass(packageName,
                                                                           className,
                                                                           (MapClassLoader) prjClassloaderOpt.get());
 
-                    if(clazz != null) {
+                    if (clazz != null) {
                         pdBuilder.addClass(clazz,
                                            kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(),
                                            typeSourceResolver.getTypeSource(clazz));
@@ -234,6 +236,5 @@ public class ProjectDataModelOracleBuilderProvider {
         private List<Import> getImports() {
             return importsService.load(project.getImportsPath()).getImports().getImports();
         }
-
     }
 }
