@@ -73,6 +73,8 @@ public class CompilerClassloaderUtils {
     protected static String SCENARIO_EXT = ".scenario";
     protected static String FILE_URI = "file://";
     protected static String MAVEN_TARGET = "target/classes/";
+    protected static String META_INF = "META-INF";
+    protected static String UTF_8 = "UTF-8";
 
     /**
      * Execute a maven run to create the classloaders with the dependencies in the Poms, transitive included
@@ -119,7 +121,7 @@ public class CompilerClassloaderUtils {
     }
 
     public static Predicate<File> filterClasses() {
-        return f -> f.toString().endsWith(JAVA_CLASS_EXT) && !FilenameUtils.getName(f.toString()).startsWith(DOT_FILE);
+        return f -> f.toString().contains(MAVEN_TARGET) && !f.toString().contains(META_INF) &&!FilenameUtils.getName(f.toString()).startsWith(DOT_FILE);
     }
 
     public static void searchCPFiles(Path file,
@@ -280,7 +282,7 @@ public class CompilerClassloaderUtils {
         List<URI> urls = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), UTF_8));
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
                 StringTokenizer token = new StringTokenizer(sCurrentLine, ":");
@@ -320,7 +322,7 @@ public class CompilerClassloaderUtils {
         List<URL> urls = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), UTF_8));
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
@@ -345,7 +347,7 @@ public class CompilerClassloaderUtils {
         List<String> items = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), UTF_8));
 
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
@@ -538,13 +540,13 @@ public class CompilerClassloaderUtils {
 
         List<String> filtered = new ArrayList<>(items.size());
         for (String item : items) {
-            if (item.endsWith(JAVA_CLASS_EXT)) {
-                String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(JAVA_CLASS_EXT)); // 15 chars are for "target/classes/"
-                if(one.contains("/")) { //there is a package
-                    one = one.replace("/", ".");
-                    if (one.contains(packageName)) {
-                        filtered.add(one);
+            if (!item.contains(META_INF)) {
+                String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(".")); // 15 chars are for "target/classes/"
+                if (one.contains(packageName)) {
+                    if(one.contains("/")) { //there is a package
+                        one = one.replace("/", ".");
                     }
+                    filtered.add(one);
                 }
             }
         }

@@ -17,6 +17,7 @@ package org.kie.workbench.common.services.backend.builder.af;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,10 +62,9 @@ public class KieAfBuilderClassloaderUtil {
             /* absolute path on the fs */
             Path workingDir = res.getWorkingDir().get();
             /* we collects all the thing produced in the target/classes folders */
-            Optional<List<String>> artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(workingDir);
-
-            if (artifactsFromTargets.isPresent()) {
-                classLoaderCache.addTargetProjectDependencies(workingDir, artifactsFromTargets.get());
+            List<String> artifactsFromTargets = getArtifactFromTargets(res, workingDir);
+            if (artifactsFromTargets.size() > 0) {
+                classLoaderCache.addTargetProjectDependencies(workingDir, artifactsFromTargets);
             } else {
                 Optional<List<String>> targetClassesOptional = CompilerClassloaderUtils.getStringsFromTargets(workingDir);
                 if (targetClassesOptional.isPresent()) {
@@ -81,6 +81,7 @@ public class KieAfBuilderClassloaderUtil {
                                                                                                classLoaderCache,
                                                                                                res);
 
+
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
@@ -90,6 +91,20 @@ public class KieAfBuilderClassloaderUtil {
             return Optional.ofNullable(projectClassLoader);
         }
         return Optional.empty();
+    }
+
+    private static List<String> getArtifactFromTargets(KieCompilationResponse res, Path workingDir) {
+        List<String> artifactsFromTargets = Collections.emptyList();
+        if(res.getProjectDependenciesRaw().isPresent()) {
+            artifactsFromTargets = res.getProjectDependenciesRaw().get();
+            CompilerClassloaderUtils.getStringFromTargets(workingDir);
+        }else{
+            Optional<List<String>> optional = CompilerClassloaderUtils.getStringFromTargets(workingDir);
+            if(optional.isPresent()) {
+                artifactsFromTargets = CompilerClassloaderUtils.getStringFromTargets(workingDir).get();
+            }
+        }
+        return artifactsFromTargets;
     }
 
     private static ClassLoader addToHolderAndGetDependenciesClassloader(Path workingDir,
@@ -117,6 +132,7 @@ public class KieAfBuilderClassloaderUtil {
         if (res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                             res.getProjectDependenciesAsURI().get());
+            //final ClassLoader classLoaderWithDrlIstances = kieModuleMetaData.getClassLoader().getParent();
             kieModuleMetaDataCache.addKieMetaData(workingDir, kieModuleMetaData);
         }
         return dependenciesClassLoader;

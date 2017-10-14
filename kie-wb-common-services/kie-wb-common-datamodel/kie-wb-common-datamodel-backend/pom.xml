@@ -248,4 +248,17 @@
     </dependency>
   </dependencies>
 
+  <build>
+  <testResources>
+    <!--<testResource>
+      <directory>src/test/projects</directory>
+      <filtering>true</filtering>
+    </testResource>-->
+    <testResource>
+      <directory>src/test/resources</directory>
+      <filtering>true</filtering>
+    </testResource>
+  </testResources>
+  </build>
+
 </project>
