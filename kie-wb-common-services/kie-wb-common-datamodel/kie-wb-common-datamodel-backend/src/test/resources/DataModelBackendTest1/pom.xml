@@ -9,7 +9,13 @@
   <version>1.0</version>
 
   <packaging>kjar</packaging>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+      <version>${version.org.kie}</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
