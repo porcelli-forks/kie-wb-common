@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.drools.core.rule.KieModuleMetaInfo;
@@ -36,6 +37,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
 
     private KieModuleMetaInfo kieModuleMetaInfo;
     private KieModule kieModule;
+    private Map<String, byte[]> projectClassLoaderStore;
     private List<String> projectDependenciesRaw;
     private List<URI> projectDependenciesAsURI;
     private List<URL> projectDependenciesAsURL;
@@ -54,6 +56,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         this(successful,
              null,
              null,
+                null,
              mavenOutput,
              null,
              null);
@@ -71,6 +74,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     public DefaultKieCompilationResponse(Boolean successful,
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
+                                         Map<String,byte[]> projectClassLoaderStore,
                                          List<String> mavenOutput,
                                          List<String> projectDependenciesRaw,
                                          Path workingDir) {
@@ -79,6 +83,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                                          mavenOutput);
         this.kieModuleMetaInfo = kieModuleMetaInfo;
         this.kieModule = kieModule;
+        this.projectClassLoaderStore = projectClassLoaderStore;
         this.projectDependenciesRaw = projectDependenciesRaw;
         this.workingDir = workingDir;
     }
@@ -86,11 +91,13 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     public DefaultKieCompilationResponse(Boolean successful,
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
+                                         Map<String, byte[]> projectClassloaderStore,
                                          List<String> projectDependenciesRaw,
                                          Path workingDir) {
 
         defaultResponse = new DefaultCompilationResponse(successful);
         this.kieModuleMetaInfo = kieModuleMetaInfo;
+        this.projectClassLoaderStore = projectClassloaderStore;
         this.kieModule = kieModule;
         this.projectDependenciesRaw = projectDependenciesRaw;
         this.workingDir = workingDir;
@@ -99,11 +106,13 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     public DefaultKieCompilationResponse(Boolean successful,
                                          KieModuleMetaInfo kieModuleMetaInfo,
                                          KieModule kieModule,
+                                         Map<String, byte[]> projectClassloaderStore,
                                          Path workingDir) {
 
         defaultResponse = new DefaultCompilationResponse(successful);
         this.kieModuleMetaInfo = kieModuleMetaInfo;
         this.kieModule = kieModule;
+        this.projectClassLoaderStore = projectClassloaderStore;
         this.workingDir = workingDir;
     }
 
@@ -144,6 +153,11 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     @Override
     public Optional<Path> getWorkingDir() {
         return Optional.ofNullable(workingDir);
+    }
+
+    @Override
+    public Optional<Map<String, byte[]>> getProjectClassLoaderStore() {
+        return Optional.ofNullable(projectClassLoaderStore);
     }
 
     private List<URL> getRawAsURLs() {

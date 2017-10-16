@@ -165,7 +165,7 @@ public class ValidatorTest {
                 convert(fs.getPath("/META-INF/beans.xml")),  Resources.toString( urlToValidate,
                                                                                                                                                                            Charsets.UTF_8 ) );
         assertFalse( errors.isEmpty() );
-        assertTrue(errors.get(0).getText().equals("ERROR no project found"));
+        assertTrue(errors.get(0).getText().equals("[ERROR] no project found"));
     }
 
     @Test

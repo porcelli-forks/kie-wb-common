@@ -48,12 +48,14 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.Output
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
@@ -72,6 +74,7 @@ public class ValidatorBuildService {
     private BuilderCache builderCache;
     private Logger logger = LoggerFactory.getLogger(ValidatorBuildService.class);
     private String ERROR_LEVEL = "ERROR";
+    private String SYSTEM_IDENTITY = "system";
 
     public ValidatorBuildService() {
         //CDI proxies
@@ -159,71 +162,66 @@ public class ValidatorBuildService {
 
         final Optional<KieProject> project = project(_resourcePath);
         if (!project.isPresent()) {
-            return getNoProjectExceptionMsgs();
+            return getExceptionMsgs("[ERROR] no project found");
         }
 
         final KieProject kieProject = project.get();
         final org.uberfire.java.nio.file.Path resourcePath = convert(_resourcePath);
-        final JGitFileSystem fs = (JGitFileSystem) resourcePath.getFileSystem();
-        Git git = gitCache.getGit(fs);
-        Boolean alreadyBuild = Boolean.FALSE;
-        CompilationResponse res = null;
-        if (git == null) {
-            //one build discarded to create the git in compiler map
-            final KieAFBuilder builder = getBuilder(kieProject);
-            res = builder.build(Boolean.TRUE, Boolean.FALSE);//TODO why this buidl this log output is not rreaded in the ui
-            alreadyBuild = Boolean.TRUE;
-            git = gitCache.getGit(fs);
+        if(resourcePath.getFileSystem() instanceof JGitFileSystem) {
+            final JGitFileSystem fs = (JGitFileSystem) resourcePath.getFileSystem();
+            Git git = gitCache.getGit(fs);
             if (git == null) {
-                logger.error("Git not constructed in the JGitDecorator");
-                throw new RuntimeException("Git repo not found");
+                //one build discarded to create the git in compiler map
+                org.uberfire.java.nio.file.Path nioPath = Paths.convert(kieProject.getRootPath());
+                final KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(kieProject.getRootPath().toURI(),nioPath,gitCache,builderCache,guvnorM2Repository, SYSTEM_IDENTITY);
+                builder.build(Boolean.TRUE, Boolean.FALSE);
+                git = gitCache.getGit(fs);
+                if (git == null) {
+                    logger.error("Git not constructed in the JGitDecorator");
+                    throw new RuntimeException("Git repo not found");
+                }
             }
-        }
 
-        final java.nio.file.Path rootRepoPath = git.getRepository().getDirectory().toPath().getParent();
-        final org.uberfire.java.nio.file.Path projectRootPath = convert(kieProject.getRootPath());
-        final java.nio.file.Path tempResourcePath = rootRepoPath.resolve(kieProject.getRootPath().getFileName()).resolve(projectRootPath.relativize(resourcePath).toString());
+            final java.nio.file.Path rootRepoPath = git.getRepository().getDirectory().toPath().getParent();
+            final org.uberfire.java.nio.file.Path projectRootPath = convert(kieProject.getRootPath());
+            final java.nio.file.Path tempResourcePath = rootRepoPath.resolve(kieProject.getRootPath().getFileName()).resolve(projectRootPath.relativize(resourcePath).toString());
 
-        try {
-
-            return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject, res, alreadyBuild);
-        } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
-            return getNoProjectExceptionMsgs();
-        } finally {
             try {
+                return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject/*, res, Boolean.FALSE*/);
+            } catch (IOException ex) {
+                logger.error(ex.getMessage(), ex);
+                return getExceptionMsgs("[ERROR] no project found");
+            } finally {
+                try {
 
-                git.revert().call();
-            } catch (GitAPIException e) {
-                logger.error(e.getMessage(), e);
-                throw new RuntimeException(e);
+                    git.revert().call();
+                } catch (GitAPIException e) {
+                    logger.error(e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
             }
+        }else{
+            return getExceptionMsgs("[ERROR] no GIT FS found");
         }
     }
 
-    private List<ValidationMessage> getNoProjectExceptionMsgs() {
+    private List<ValidationMessage> getExceptionMsgs(String msg) {
         List<ValidationMessage> msgs = new ArrayList<>();
-        ValidationMessage msg = new ValidationMessage();
-        msg.setText("ERROR no project found");
-        msgs.add(msg);
+        ValidationMessage msgInternal = new ValidationMessage();
+        msgInternal.setText(msg);
+        msgs.add(msgInternal);
         return msgs;
     }
 
     private List<ValidationMessage> writeFileChangeAndBuild(final java.nio.file.Path tempResourcePath,
                                                             final InputStream inputStream,
-                                                            final KieProject project,
-                                                            final CompilationResponse alreadyBuildRes,
-                                                            Boolean alreadyBuild) throws IOException {
+                                                            final KieProject project) throws IOException {
 
         Files.copy(inputStream, tempResourcePath, StandardCopyOption.REPLACE_EXISTING);
-        if (alreadyBuild && alreadyBuildRes != null) {
-            return MavenOutputConverter.convertIntoValidationMessage(alreadyBuildRes.getMavenOutput().get(), ERROR_LEVEL);
-        } else {
+        final KieAFBuilder builder = getBuilder(project);
+        final CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
+        return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
 
-            final KieAFBuilder builder = getBuilder(project);
-            final CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE); //this is readed by the ui
-            return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL);
-        }
     }
 
     private Optional<KieProject> project(final Path resourcePath) throws NoProjectException {

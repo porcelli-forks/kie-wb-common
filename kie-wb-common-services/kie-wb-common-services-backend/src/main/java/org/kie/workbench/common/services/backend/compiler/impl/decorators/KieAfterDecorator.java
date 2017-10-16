@@ -23,10 +23,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.drools.compiler.kie.builder.impl.FileKieModule;
 import org.drools.core.rule.KieModuleMetaInfo;
@@ -48,6 +45,8 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
     private static final Logger logger = LoggerFactory.getLogger(KieAfterDecorator.class);
     private C compiler;
+
+    private String prjClassloaderStoreKey = "ProjectClassloaderStore";
 
     public KieAfterDecorator(C compiler) {
         this.compiler = compiler;
@@ -73,6 +72,11 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
         KieTuple kieModuleMetaInfoTuple = readKieModuleMetaInfo(req);
         KieTuple kieModuleTuple = readKieModule(req);
+        KieTuple kieProjectClassloaderStore = readProjectClassloaderStore(req);
+        Map<String, byte[]> store = Collections.emptyMap();
+        if(kieProjectClassloaderStore.getOptionalObject().isPresent()){
+            store =  (Map<String, byte[]>) kieProjectClassloaderStore.getOptionalObject().get();
+        }
         List<String> mavenOutput = getMavenOutput(req, res);
 
         if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
@@ -80,6 +84,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             return new DefaultKieCompilationResponse(Boolean.TRUE,
                                                      (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                      (KieModule) kieModuleTuple.getOptionalObject().get(),
+                                                     store,
                                                      mavenOutput,
                                                      allDepsAsString,
                                                      req.getInfo().getPrjPath());
@@ -103,7 +108,7 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
         List<String> mavenOutput = getMavenOutput(req, res);
         List<String> allDepsAsString = readAllDepsAsString(req);
         if (res.isSuccessful()) {
-            return new DefaultKieCompilationResponse(Boolean.TRUE, null, null, mavenOutput, allDepsAsString, req.getInfo().getPrjPath());
+            return new DefaultKieCompilationResponse(Boolean.TRUE, null, null, null, mavenOutput, allDepsAsString, req.getInfo().getPrjPath());
         } else {
             List<String> msgs = new ArrayList<>();
             msgs.addAll(mavenOutput);
@@ -191,6 +196,26 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
 
             return new KieTuple("kieModule not present in the map");
         }
+    }
+
+
+    private KieTuple readProjectClassloaderStore(CompilationRequest req) {
+        StringBuilder sb = new StringBuilder(req.getKieCliRequest().getRequestUUID()).append(".").append(prjClassloaderStoreKey);
+        Object o = req.getKieCliRequest().getMap().get(sb.toString());
+        if (o != null) {
+            KieTuple tuple = readObjectFromADifferentClassloader(o);
+
+            if (tuple.getOptionalObject().isPresent()) {
+                return new KieTuple(tuple.getOptionalObject().get());
+            } else {
+
+                return new KieTuple(tuple.getErrorMsg());
+            }
+        } else {
+
+            return new KieTuple("ProjectClassLoaderStore Map not present in the map");
+        }
+
     }
 
     private KieTuple readObjectFromADifferentClassloader(Object o) {

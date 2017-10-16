@@ -41,6 +41,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
     private KieProjectService projectService;
     private BuilderCache builderCache;
     private LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache;
+    private String SYSTEM_IDENTITY = "system";
 
     public LRUProjectDataModelOracleCache() {
     }
@@ -65,7 +66,7 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
         //If resource was not within a Project there's nothing to invalidate
         if (project != null && (workingDir.toString().length() > project.getProjectName().length() + 1)) {
             // the path resolved is /<projectname> this mean project not yet compiled and cached
-            invalidateCache(workingDir);//@TOdo AFTER THE STARTUP INDEXING THE FIRST IMPORT CAUSE THE INVALIDATION CACHE OF THE PRJ INDEXED DURING THE STARTUP
+            invalidateCache(workingDir);
         }
     }
 
@@ -86,6 +87,8 @@ public class LRUProjectDataModelOracleCache extends LRUCache<org.uberfire.java.n
 
     private ProjectDataModelOracle buildAndSetEntry(KieProject project) {
         ProjectDataModelOracle projectOracle;
+        //this call is used to load the classloader and the correct KieMetaData
+        lruProjectDependenciesClassLoaderCache.assertDependenciesClassLoader(project, SYSTEM_IDENTITY);
         org.uberfire.java.nio.file.Path workingDir;
         projectOracle = makeProjectOracle(project);
         workingDir = builderCache.getProjectRoot(project.getRootPath().toURI().toString());
