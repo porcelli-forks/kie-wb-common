@@ -17,6 +17,7 @@
 package org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.runtime;
 
 import org.junit.Before;
+import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
 import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.AbstractBPMNFormGeneratorServiceTest;
 
 import static org.mockito.Mockito.mock;
@@ -29,6 +30,6 @@ public abstract class BPMNRuntimeFormDefinitionGeneratorServiceTest extends Abst
         source = mock(ClassLoader.class);
 
         service = new BPMNRuntimeFormGeneratorService(fieldManager,
-                                                      templateGenerator);
+                                                      new RawMVELEvaluator());
     }
 }

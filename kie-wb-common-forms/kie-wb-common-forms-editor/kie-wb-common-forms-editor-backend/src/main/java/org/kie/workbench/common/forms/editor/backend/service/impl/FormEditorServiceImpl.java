@@ -39,7 +39,6 @@ import org.kie.workbench.common.forms.editor.service.shared.VFSFormFinderService
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.HasFormModelProperties;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.kie.workbench.common.services.backend.service.KieService;
@@ -50,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.service.DeleteService;
+import org.uberfire.ext.editor.commons.service.RenameService;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
@@ -60,24 +60,16 @@ import org.uberfire.workbench.events.ResourceOpenedEvent;
 @ApplicationScoped
 public class FormEditorServiceImpl extends KieService<FormModelerContent> implements FormEditorService {
 
-    private Logger log = LoggerFactory.getLogger(FormEditorServiceImpl.class);
-
-    private IOService ioService;
-
-    private SessionInfo sessionInfo;
-
-    private Event<ResourceOpenedEvent> resourceOpenedEvent;
-
     protected FieldManager fieldManager;
-
     protected FormModelHandlerManager modelHandlerManager;
-
     protected FormDefinitionSerializer formDefinitionSerializer;
-
     protected VFSFormFinderService vfsFormFinderService;
-
     protected DeleteService deleteService;
-
+    protected RenameService renameService;
+    private Logger log = LoggerFactory.getLogger(FormEditorServiceImpl.class);
+    private IOService ioService;
+    private SessionInfo sessionInfo;
+    private Event<ResourceOpenedEvent> resourceOpenedEvent;
     private CommentedOptionFactory commentedOptionFactory;
 
     @Inject
@@ -90,7 +82,8 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
                                  FormDefinitionSerializer formDefinitionSerializer,
                                  VFSFormFinderService vfsFormFinderService,
                                  DeleteService deleteService,
-                                 CommentedOptionFactory commentedOptionFactory) {
+                                 CommentedOptionFactory commentedOptionFactory,
+                                 RenameService renameService) {
         this.ioService = ioService;
         this.sessionInfo = sessionInfo;
         this.resourceOpenedEvent = resourceOpenedEvent;
@@ -101,6 +94,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
         this.vfsFormFinderService = vfsFormFinderService;
         this.commentedOptionFactory = commentedOptionFactory;
         this.deleteService = deleteService;
+        this.renameService = renameService;
     }
 
     @Override
@@ -169,6 +163,34 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     }
 
     @Override
+    public FormModelerContent rename(Path path,
+                                     String newFileName,
+                                     String commitMessage,
+                                     boolean saveBeforeRenaming,
+                                     FormModelerContent content,
+                                     Metadata metadata) {
+
+        FormModelerContent contentToSave = content;
+        if (!saveBeforeRenaming) {
+            contentToSave = constructContent(path,
+                                             content.getOverview());
+        }
+
+        contentToSave.getDefinition().setName(newFileName);
+
+        save(path,
+             contentToSave,
+             metadata,
+             commitMessage);
+
+        renameService.rename(path,
+                             newFileName,
+                             commitMessage);
+
+        return contentToSave;
+    }
+
+    @Override
     protected FormModelerContent constructContent(Path path,
                                                   Overview overview) {
         try {
@@ -186,29 +208,26 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
             formModelConent.setRenderingContext(context);
 
-            if (Optional.ofNullable(form.getModel()).isPresent() && form.getModel() instanceof HasFormModelProperties) {
+            if (Optional.ofNullable(form.getModel()).isPresent()) {
 
-                HasFormModelProperties formModel = (HasFormModelProperties) form.getModel();
+                FormModel formModel = form.getModel();
 
-                Optional<FormModelHandler> modelOptional = getHandlerForForm(form,
+                Optional<FormModelHandler> modelHandlerOptional = getHandlerForForm(form,
                                                                              path);
-                if (modelOptional.isPresent()) {
+                if (modelHandlerOptional.isPresent()) {
 
-                    FormModelHandler formModelHandler = modelOptional.get();
+                    FormModelHandler formModelHandler = modelHandlerOptional.get();
 
                     FormModelSynchronizationResult synchronizationResult = formModelHandler.synchronizeFormModel();
 
                     formModel.getProperties().forEach(property -> {
                         Optional<FieldDefinition> fieldOptional = Optional.ofNullable(form.getFieldByBinding(property.getName()));
                         if (!fieldOptional.isPresent()) {
-                            formModelConent.getAvailableFields().add(formModelHandler.createFieldDefinition(property));
                             synchronizationResult.resolveConflict(property.getName());
                         }
                     });
 
                     formModelConent.setSynchronizationResult(synchronizationResult);
-
-                    formModelConent.getModelProperties().addAll(formModel.getProperties());
                 }
             }
 
@@ -254,14 +273,10 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     protected Optional<FormModelHandler> getHandlerForForm(FormDefinition form,
                                                            Path path) {
 
-        if (!(form.getModel() instanceof HasFormModelProperties)) {
-            return Optional.empty();
-        }
-
         Optional<FormModelHandler> optional = Optional.ofNullable(modelHandlerManager.getFormModelHandler(form.getModel().getClass()));
 
         if (optional.isPresent()) {
-            optional.get().init((HasFormModelProperties) form.getModel(),
+            optional.get().init(form.getModel(),
                                 path);
         }
         return optional;

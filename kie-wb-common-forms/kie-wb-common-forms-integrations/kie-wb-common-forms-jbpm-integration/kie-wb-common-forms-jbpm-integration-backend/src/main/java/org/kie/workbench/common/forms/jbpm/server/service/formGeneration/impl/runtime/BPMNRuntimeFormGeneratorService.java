@@ -26,12 +26,12 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.appformer.project.datamodel.commons.oracle.ProjectDataModelOracleImpl;
-import org.appformer.project.datamodel.oracle.DataType;
-import org.appformer.project.datamodel.oracle.ModelField;
-import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
-import org.appformer.project.datamodel.oracle.TypeSource;
-import org.kie.workbench.common.forms.commons.shared.layout.FormLayoutTemplateGenerator;
+import org.kie.soup.project.datamodel.commons.oracle.ProjectDataModelOracleImpl;
+import org.kie.soup.project.datamodel.commons.util.MVELEvaluator;
+import org.kie.soup.project.datamodel.oracle.DataType;
+import org.kie.soup.project.datamodel.oracle.ModelField;
+import org.kie.soup.project.datamodel.oracle.ProjectDataModelOracle;
+import org.kie.soup.project.datamodel.oracle.TypeSource;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.HasPlaceHolder;
 import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.AbstractBPMNFormGeneratorService;
 import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.GenerationContext;
@@ -44,7 +44,7 @@ import org.kie.workbench.common.forms.model.TypeInfo;
 import org.kie.workbench.common.forms.model.TypeKind;
 import org.kie.workbench.common.forms.model.impl.ModelPropertyImpl;
 import org.kie.workbench.common.forms.model.impl.TypeInfoImpl;
-import org.kie.workbench.common.forms.model.util.ModelPropertiesUtil;
+import org.kie.workbench.common.forms.model.util.formModel.FormModelPropertiesUtil;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ClassFactBuilder;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.FactBuilder;
@@ -54,11 +54,13 @@ import org.kie.workbench.common.services.datamodel.backend.server.builder.projec
 @Dependent
 public class BPMNRuntimeFormGeneratorService extends AbstractBPMNFormGeneratorService<ClassLoader> {
 
+    private MVELEvaluator evaluator;
+
     @Inject
     public BPMNRuntimeFormGeneratorService(FieldManager fieldManager,
-                                           FormLayoutTemplateGenerator layoutTemplateGenerator) {
-        super(fieldManager,
-              layoutTemplateGenerator);
+                                           MVELEvaluator evaluator) {
+        super(fieldManager);
+        this.evaluator = evaluator;
     }
 
     @Override
@@ -80,8 +82,6 @@ public class BPMNRuntimeFormGeneratorService extends AbstractBPMNFormGeneratorSe
                 form.getFields().add(field);
             }
         });
-
-        layoutTemplateGenerator.generateLayoutTemplate(form);
 
         return form;
     }
@@ -125,7 +125,7 @@ public class BPMNRuntimeFormGeneratorService extends AbstractBPMNFormGeneratorSe
                     fieldType = oracle.getProjectFieldParametersType().get(modelType + "#" + modelField.getName());
                 }
 
-                TypeKind typeKind = isEnunm ? TypeKind.ENUM : ModelPropertiesUtil.isBaseType(fieldType) ? TypeKind.BASE : TypeKind.OBJECT;
+                TypeKind typeKind = isEnunm ? TypeKind.ENUM : FormModelPropertiesUtil.isBaseType(fieldType) ? TypeKind.BASE : TypeKind.OBJECT;
 
                 TypeInfo info = new TypeInfoImpl(typeKind,
                                                  fieldType,
@@ -150,7 +150,7 @@ public class BPMNRuntimeFormGeneratorService extends AbstractBPMNFormGeneratorSe
 
     protected ProjectDataModelOracle getProjectOracle(Class clazz) {
         try {
-            final ProjectDataModelOracleBuilder builder = ProjectDataModelOracleBuilder.newProjectOracleBuilder();
+            final ProjectDataModelOracleBuilder builder = ProjectDataModelOracleBuilder.newProjectOracleBuilder(evaluator);
 
             final ClassFactBuilder modelFactBuilder = new ClassFactBuilder(builder,
                                                                            clazz,
@@ -182,23 +182,11 @@ public class BPMNRuntimeFormGeneratorService extends AbstractBPMNFormGeneratorSe
 
     protected FieldDefinition generateFieldDefinition(ModelProperty property,
                                                       GenerationContext<ClassLoader> context) {
-        FieldDefinition field = fieldManager.getDefinitionByDataType(property.getTypeInfo());
+
+        FieldDefinition field = fieldManager.getDefinitionByModelProperty(property);
 
         if (field == null) {
             return null;
-        }
-
-        String fieldName = property.getName();
-
-        String label = fieldName.substring(0,
-                                           1).toUpperCase() + fieldName.substring(1);
-        field.setName(fieldName);
-        field.setLabel(label);
-        field.setStandaloneClassName(property.getTypeInfo().getClassName());
-        field.setBinding(fieldName);
-
-        if (field instanceof HasPlaceHolder) {
-            ((HasPlaceHolder) field).setPlaceHolder(label);
         }
 
         processFieldDefinition(field,

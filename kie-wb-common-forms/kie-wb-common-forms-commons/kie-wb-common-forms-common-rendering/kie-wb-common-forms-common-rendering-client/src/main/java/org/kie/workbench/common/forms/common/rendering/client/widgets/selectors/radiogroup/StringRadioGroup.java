@@ -16,27 +16,11 @@
 
 package org.kie.workbench.common.forms.common.rendering.client.widgets.selectors.radiogroup;
 
-/*
-This class fixes an issue on GWT-BS3 StringRadioGroup. It seems that it doesn't unselect the previous selected radio
-when value change
-TODO: remove when possible
-*/
-public class StringRadioGroup extends org.gwtbootstrap3.client.ui.StringRadioGroup {
+import com.google.gwt.text.shared.testing.PassthroughParser;
+
+public class StringRadioGroup extends RadioGroupBase<String> {
 
     public StringRadioGroup(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setValue(String value,
-                         boolean fireEvents) {
-        String oldValue = getValue();
-        getRadioChildren().forEach(radio -> {
-            if (radio.getFormValue().equals(oldValue)) {
-                radio.setValue(false);
-            }
-        });
-        super.setValue(value,
-                       fireEvents);
+        super(name, PassthroughParser.instance());
     }
 }

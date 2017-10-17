@@ -89,6 +89,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-commons</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-io</artifactId>
     </dependency>
@@ -96,6 +101,11 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-layout-editor-api</artifactId>
     </dependency>
 
     <dependency>
@@ -128,12 +138,12 @@
 
     <!-- start default form adf -->
     <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-project-datamodel-api</artifactId>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-project-datamodel-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-project-datamodel-commons</artifactId>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-project-datamodel-commons</artifactId>
     </dependency>
 
     <dependency>
@@ -160,6 +170,16 @@
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-forms-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-adf-base</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-adf-engine-api</artifactId>
     </dependency>
 
     <dependency>

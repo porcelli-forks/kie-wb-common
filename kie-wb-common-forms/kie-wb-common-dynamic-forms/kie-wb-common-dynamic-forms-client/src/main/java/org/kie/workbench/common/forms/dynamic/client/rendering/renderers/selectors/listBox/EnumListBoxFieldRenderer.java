@@ -23,7 +23,7 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.l
 
 @Dependent
 public class EnumListBoxFieldRenderer
-        extends AbstractListBoxFieldRenderer<EnumListBoxFieldDefinition, EnumSelectorOption,Enum> {
+        extends AbstractListBoxFieldRenderer<EnumListBoxFieldDefinition, EnumSelectorOption, Enum> {
 
     @Override
     public Class<EnumListBoxFieldDefinition> getSupportedFieldDefinition() {

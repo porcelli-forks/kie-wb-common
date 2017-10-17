@@ -28,6 +28,10 @@
       <artifactId>uberfire-commons</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-refactoring-api</artifactId>
     </dependency>
@@ -99,6 +103,10 @@
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-project-explorer-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-editor-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>

@@ -57,6 +57,7 @@ import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.file.popups.DeletePopUpPresenter;
 import org.uberfire.ext.editor.commons.client.file.popups.DeletePopUpView;
+import org.uberfire.ext.editor.commons.client.file.popups.RenamePopUpPresenter;
 import org.uberfire.ext.editor.commons.client.file.popups.commons.ToggleCommentPresenter;
 import org.uberfire.ext.editor.commons.client.history.VersionRecordManager;
 import org.uberfire.ext.editor.commons.client.validation.DefaultFileNameValidator;
@@ -66,6 +67,7 @@ import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayou
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -142,6 +144,9 @@ public class FormEditorPresenterAbstractTest {
     @Mock
     protected ToggleCommentPresenter toggleCommentPresenter;
 
+    @Mock
+    protected RenamePopUpPresenter renamePopUpPresenter;
+
     protected DeletePopUpPresenter deletePopUpPresenter;
 
     @Mock
@@ -149,6 +154,8 @@ public class FormEditorPresenterAbstractTest {
 
     @Mock
     protected AssetsUsageService assetsUsagService;
+
+    protected TestFieldManager fieldManager;
 
     protected List<Path> assetUsages = new ArrayList<>();
 
@@ -161,9 +168,31 @@ public class FormEditorPresenterAbstractTest {
 
     protected FormModelSynchronizationResultImpl synchronizationResult = new FormModelSynchronizationResultImpl();
 
+    protected PortableJavaModel model;
+
+    protected FormDefinition form;
+
     @Before
     public void setUp() throws Exception {
-        initFields();
+        fieldManager = new TestFieldManager();
+
+        model = new PortableJavaModel("com.test.Employee");
+
+        model.addProperty("name", String.class.getName());
+        model.addProperty("lastName", String.class.getName());
+        model.addProperty("birthday", Date.class.getName());
+        model.addProperty("married", Boolean.class.getName());
+
+        form = new FormDefinition(model);
+
+        form.setName("EmployeeTestForm");
+        form.setId("_random_id");
+
+        //model.getProperties().stream().map(fieldManager::getDefinitionByModelProperty).forEach(fieldDefinition -> form.getFields().add(fieldDefinition));
+
+        modelProperties = new ArrayList<>(model.getProperties());
+
+        employeeFields = new ArrayList<>(form.getFields());
     }
 
     protected void loadContent() {
@@ -176,7 +205,7 @@ public class FormEditorPresenterAbstractTest {
 
         editorServiceCallerMock = new CallerMock<>(formEditorService);
 
-        editorHelper = spy(new TestFormEditorHelper(new TestFieldManager(),
+        editorHelper = spy(new TestFormEditorHelper(fieldManager,
                                                     editorFieldLayoutComponents));
 
         when(layoutEditorMock.getLayout()).thenReturn(new LayoutTemplate());
@@ -186,6 +215,7 @@ public class FormEditorPresenterAbstractTest {
                                      any(DefaultFileNameValidator.class))).thenReturn(menuBuilderMock);
         when(menuBuilderMock.addRename(any(ObservablePath.class),
                                        any(DefaultFileNameValidator.class))).thenReturn(menuBuilderMock);
+        when(menuBuilderMock.addRename(any(Command.class))).thenReturn(menuBuilderMock);
         when(menuBuilderMock.addDelete(any(ObservablePath.class))).thenReturn(menuBuilderMock);
         when(menuBuilderMock.addNewTopLevelMenu(any(MenuItem.class))).thenReturn(menuBuilderMock);
         when(menuBuilderMock.build()).thenReturn(mock(Menus.class));
@@ -227,8 +257,16 @@ public class FormEditorPresenterAbstractTest {
                 workbenchContext = FormEditorPresenterAbstractTest.this.workbenchContext;
                 projectController = FormEditorPresenterAbstractTest.this.projectController;
                 deletePopUpPresenter = FormEditorPresenterAbstractTest.this.deletePopUpPresenter;
+                renamePopUpPresenter = FormEditorPresenterAbstractTest.this.renamePopUpPresenter;
             }
 
+            @Override
+            public void doLoadContent(FormModelerContent content) {
+                super.doLoadContent(content);
+                employeeFields.addAll(editorHelper.getAvailableFields().values());
+            }
+
+            @Override
             protected void addSourcePage() {
             }
         };
@@ -240,69 +278,15 @@ public class FormEditorPresenterAbstractTest {
     }
 
     public FormModelerContent serviceLoad() {
-        FormDefinition form = new FormDefinition();
-        form.setName("EmployeeTestForm");
-        form.setId("_random_id");
 
         content = spy(new FormModelerContent());
-
-        PortableJavaModel model = new PortableJavaModel("com.test.Employee");
-
-        form.setModel(model);
 
         content.setDefinition(form);
         content.setOverview(new Overview());
         content.setPath(path);
-        content.setAvailableFields(employeeFields);
         content.setSynchronizationResult(synchronizationResult);
-        employeeFields.forEach(fieldDefinition -> {
-            model.addProperty(fieldDefinition.getBinding(),
-                              fieldDefinition.getStandaloneClassName());
-        });
-        content.getModelProperties().addAll(modelProperties);
+
         return content;
-    }
-
-    protected void initFields() {
-        TextBoxFieldDefinition name = new TextBoxFieldDefinition();
-        name.setId("name");
-        name.setName("employee_name");
-        name.setLabel("Name");
-        name.setPlaceHolder("Name");
-        name.setBinding("name");
-        name.setStandaloneClassName(String.class.getName());
-
-        TextBoxFieldDefinition lastName = new TextBoxFieldDefinition();
-        lastName.setId(LAST_NAME);
-        lastName.setName("employee_lastName");
-        lastName.setLabel("Last Name");
-        lastName.setPlaceHolder("Last Name");
-        lastName.setBinding("lastName");
-        lastName.setStandaloneClassName(String.class.getName());
-
-        DatePickerFieldDefinition birthday = new DatePickerFieldDefinition();
-        birthday.setId("birthday");
-        birthday.setName("employee_birthday");
-        birthday.setLabel("Birthday");
-        birthday.setBinding("birthday");
-        birthday.setStandaloneClassName(Date.class.getName());
-
-        CheckBoxFieldDefinition married = new CheckBoxFieldDefinition();
-        married.setId("married");
-        married.setName("employee_married");
-        married.setLabel("Married");
-        married.setBinding("married");
-        married.setStandaloneClassName(Boolean.class.getName());
-
-        employeeFields = new ArrayList<>();
-        employeeFields.add(name);
-        employeeFields.add(lastName);
-        employeeFields.add(birthday);
-        employeeFields.add(married);
-        modelProperties = new ArrayList<>();
-
-        employeeFields.forEach(fieldDefinition -> modelProperties.add(new ModelPropertyImpl(fieldDefinition.getBinding(),
-                                                                                            new TypeInfoImpl(fieldDefinition.getStandaloneClassName()))));
     }
 
     protected void loadAvailableFields() {

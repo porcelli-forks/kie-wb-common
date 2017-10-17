@@ -22,8 +22,9 @@ import org.ext.uberfire.social.activities.model.SocialActivitiesEvent;
 import org.ext.uberfire.social.activities.service.SocialSecurityConstraint;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.social.ProjectEventType;
+
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.uberfire.commons.validation.PortablePreconditions;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -34,6 +35,7 @@ import org.uberfire.security.authz.AuthorizationManager;
  * This implementation delegates filtering by Organizational Unit and Repository to SocialEventRepositoryConstraint.
  * This is a performance gain to avoid building collections for authorized Organizational Unit and Repository first
  * before we filter by authorized Projects.
+ *
  * @see SocialEventRepositoryConstraint
  */
 @ApplicationScoped
@@ -53,14 +55,10 @@ public class SocialEventProjectConstraint implements SocialSecurityConstraint {
                                         final AuthorizationManager authorizationManager,
                                         final KieProjectService projectService,
                                         final UserCDIContextHelper userCDIContextHelper) {
-        this.delegate = PortablePreconditions.checkNotNull("delegate",
-                                                           delegate);
-        this.authorizationManager = PortablePreconditions.checkNotNull("authorizationManager",
-                                                                       authorizationManager);
-        this.projectService = PortablePreconditions.checkNotNull("projectService",
-                                                                 projectService);
-        this.userCDIContextHelper = PortablePreconditions.checkNotNull("userCDIContextHelper",
-                                                                       userCDIContextHelper);
+        this.delegate = checkNotNull("delegate", delegate);
+        this.authorizationManager = checkNotNull("authorizationManager", authorizationManager);
+        this.projectService = checkNotNull("projectService", projectService);
+        this.userCDIContextHelper = checkNotNull("userCDIContextHelper", userCDIContextHelper);
     }
 
     @Override

@@ -20,12 +20,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.appformer.project.datamodel.commons.oracle.ProjectDataModelOracleImpl;
-import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
-import org.drools.workbench.models.commons.backend.oracle.PackageDataModelOracleImpl;
-import org.drools.workbench.models.datamodel.oracle.PackageDataModelOracle;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.project.model.Package;
+import org.kie.soup.commons.validation.PortablePreconditions;
+import org.kie.soup.project.datamodel.commons.oracle.PackageDataModelOracleImpl;
+import org.kie.soup.project.datamodel.commons.oracle.ProjectDataModelOracleImpl;
+import org.kie.soup.project.datamodel.oracle.PackageDataModelOracle;
+import org.kie.soup.project.datamodel.oracle.ProjectDataModelOracle;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.datamodel.backend.server.cache.LRUDataModelOracleCache;
 import org.kie.workbench.common.services.datamodel.backend.server.cache.LRUProjectDataModelOracleCache;
@@ -33,7 +34,6 @@ import org.kie.workbench.common.services.datamodel.backend.server.service.DataMo
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.commons.validation.PortablePreconditions;
 
 @ApplicationScoped
 public class DataModelServiceImpl
@@ -114,4 +114,5 @@ public class DataModelServiceImpl
     private Package resolvePackage(final Path resourcePath) {
         return projectService.resolvePackage(resourcePath);
     }
+
 }

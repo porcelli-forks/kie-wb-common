@@ -145,7 +145,24 @@ public interface DefaultWorkbenchConstants
 
     String EditGlobalPreferencesHelp();
 
+    String GuidedDecisionTableEditColumns();
+
+    String GuidedDecisionTableEditColumnsHelp();
+
     String Languages();
 
     String Tasks_Admin();
+
+    String GuidedDecisionTree();
+
+    String GuidedScoreCard();
+
+    String XLSScoreCard();
+
+    String StunnerDesigner();
+
+    String InvalidBusResponseProbablySessionTimeout();
+
+    String SessionTimeout();
+
 }

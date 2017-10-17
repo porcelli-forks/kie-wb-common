@@ -29,6 +29,8 @@ import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.api.builder.KieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.soup.project.datamodel.commons.util.MVELEvaluator;
+
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.shared.enums.EnumDropdownService;
@@ -51,6 +53,8 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
     @Inject
     private KieProjectService projectService;
 
+    @Inject
+    private MVELEvaluator mvelEvaluator;
 
     @Override
     public String[] loadDropDownExpression( final Path resource,

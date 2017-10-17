@@ -19,16 +19,18 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
 import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.appformer.project.datamodel.imports.Import;
-import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
-import org.appformer.project.datamodel.oracle.TypeSource;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.kie.scanner.KieModuleMetaData;
+import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
+import org.kie.soup.project.datamodel.imports.Import;
+import org.kie.soup.project.datamodel.oracle.ProjectDataModelOracle;
+import org.kie.soup.project.datamodel.oracle.TypeSource;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
@@ -133,7 +135,7 @@ public class ProjectDataModelOracleBuilderProvider {
 
     class InnerBuilder {
 
-        private final ProjectDataModelOracleBuilder pdBuilder = ProjectDataModelOracleBuilder.newProjectOracleBuilder();
+        private final ProjectDataModelOracleBuilder pdBuilder = ProjectDataModelOracleBuilder.newProjectOracleBuilder(new RawMVELEvaluator());
 
         private final KieProject project;
         private final KieModuleMetaData kieModuleMetaData;

@@ -20,15 +20,16 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.appformer.project.datamodel.oracle.ProjectDataModelOracle;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
 import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
+import org.kie.soup.commons.validation.PortablePreconditions;
+import org.kie.soup.project.datamodel.oracle.ProjectDataModelOracle;
+
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.commons.validation.PortablePreconditions;
 
 /**
  * A simple LRU cache for Project DataModelOracles

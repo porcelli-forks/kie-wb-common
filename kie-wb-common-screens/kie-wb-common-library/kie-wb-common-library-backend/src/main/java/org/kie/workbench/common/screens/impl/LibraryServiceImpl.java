@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -60,6 +61,7 @@ import org.kie.workbench.common.screens.library.api.index.LibraryValueFileNameIn
 import org.kie.workbench.common.screens.library.api.index.LibraryValueProjectRootPathIndexTerm;
 import org.kie.workbench.common.screens.library.api.preferences.LibraryInternalPreferences;
 import org.kie.workbench.common.screens.library.api.preferences.LibraryPreferences;
+import org.kie.workbench.common.screens.projecteditor.util.NewProjectUtils;
 import org.kie.workbench.common.services.refactoring.model.index.terms.valueterms.ValueIndexTerm;
 import org.kie.workbench.common.services.refactoring.model.query.RefactoringPageRequest;
 import org.kie.workbench.common.services.refactoring.model.query.RefactoringPageRow;
@@ -77,7 +79,7 @@ import org.uberfire.paging.PageResponse;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.security.authz.AuthorizationManager;
 
-import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 @Service
 @ApplicationScoped
@@ -320,9 +322,9 @@ public class LibraryServiceImpl implements LibraryService {
     public GAV createGAV(final String projectName,
                          final OrganizationalUnit selectedOrganizationalUnit) {
         final LibraryPreferences preferences = getPreferences();
+        final String artifactId = NewProjectUtils.sanitizeProjectName(projectName);
         return new GAV(selectedOrganizationalUnit.getDefaultGroupId(),
-                       projectName.replace(" ",
-                                           ""),
+                       artifactId,
                        preferences.getProjectPreferences().getVersion());
     }
 
