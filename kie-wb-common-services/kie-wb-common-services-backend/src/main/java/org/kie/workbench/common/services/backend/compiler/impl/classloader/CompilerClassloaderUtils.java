@@ -106,7 +106,7 @@ public class CompilerClassloaderUtils {
     /**
      * Used by the indexer
      **/
-    public static Map<String, byte[]> getMapClasses(String path) {
+    public static Map<String, byte[]> getMapClasses(String path, Map<String, byte[]> store) {
 
         List<String> keys = IoUtils.recursiveListFile(new File(path), "", filterClasses());
 
@@ -116,6 +116,11 @@ public class CompilerClassloaderUtils {
             byte[] bytez = getBytes(path + "/" + item);
             String fqn = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15); // 15 chars are for "target/classes"
             classes.put(fqn, bytez);
+        }
+        if(store != Collections.EMPTY_MAP){
+            for (Map.Entry<String, byte[]> entry : store.entrySet()) {
+                classes.put(entry.getKey(), entry.getValue());
+            }
         }
         return classes;
     }

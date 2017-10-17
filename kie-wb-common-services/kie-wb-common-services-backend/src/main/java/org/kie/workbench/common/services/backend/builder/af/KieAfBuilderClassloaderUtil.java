@@ -17,9 +17,7 @@ package org.kie.workbench.common.services.backend.builder.af;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
@@ -75,17 +73,21 @@ public class KieAfBuilderClassloaderUtil {
             final KieModule module = res.getKieModule().get();
             if (module instanceof InternalKieModule) {
 
+
                 ClassLoader dependenciesClassLoader = addToHolderAndGetDependenciesClassloader(workingDir,
                                                                                                kieModuleMetaDataCache,
                                                                                                dependenciesCache,
                                                                                                classLoaderCache,
                                                                                                res);
 
-
+                Map<String,byte[]> store = Collections.EMPTY_MAP;
+                if(res.getProjectClassLoaderStore().isPresent()){
+                    store = res.getProjectClassLoaderStore().get();
+                }
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
-                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString()), dependenciesClassLoader);
+                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString(),store), dependenciesClassLoader);
                 classLoaderCache.addTargetClassLoader(workingDir, projectClassLoader);
             }
             return Optional.ofNullable(projectClassLoader);
