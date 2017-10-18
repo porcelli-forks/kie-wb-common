@@ -18,9 +18,7 @@ package org.kie.workbench.common.services.backend.builder.core;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -30,6 +28,7 @@ import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
+import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
 import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
@@ -119,5 +118,30 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
 
     private String getKey(String projectRootPath){
         return  new StringBuilder().append(projectRootPath.toString()).append("-").append(KieAFBuilderUtil.getIdentifier(identity)).toString();
+    }
+
+    public List<Class<?>> getClazz(Path projectRootPath, String packageName, Set<String> declaredTypes) {
+        List<Class<?>> clazzes = Collections.EMPTY_LIST;
+        ClassLoader classLoader = getEntry(projectRootPath);
+        if (classLoader!= null && classLoader instanceof MapClassLoader) {
+            MapClassLoader mapClassLoader  = (MapClassLoader) classLoader;
+                if(!mapClassLoader.getKeys().isEmpty()){
+                    clazzes = new ArrayList<>();
+                    for(String key: mapClassLoader.getKeys()){
+                        if (key.contains(packageName) && declaredTypes.contains(key)){
+                            try{
+                                Class clazz = mapClassLoader.loadClass(key.substring(0,key.lastIndexOf(".")).replace("/","."));
+                                if(clazz != null) {
+                                    clazzes.add(clazz);
+                                }
+                            }catch (Exception e){
+                            //nothing to do
+                            }
+                        }
+                    }
+                }
+
+        }
+        return clazzes;
     }
 }

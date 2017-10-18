@@ -15,18 +15,19 @@
  */
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.uberfire.java.nio.file.Path;
 
 class ClassLoaderTuple {
 
+    private Map<String, byte[]> declaredTypes;
+
     private List<String> targetDeps;
+
     private MapClassLoader targetClassloader;
+
     private ClassLoader dependenciesClassloader;
 
     public ClassLoaderTuple() {
@@ -67,5 +68,13 @@ class ClassLoaderTuple {
 
     public void replaceTargetDeps(List<String> newTargetDeps) {
         this.targetDeps = newTargetDeps;
+    }
+
+    public void addDeclaredTypes(Map<String, byte[]> declaredTypes){
+        this.declaredTypes = declaredTypes;
+    }
+
+    public Map<String, byte[]> getDeclaredTypes(){
+        return Collections.unmodifiableMap(declaredTypes);
     }
 }

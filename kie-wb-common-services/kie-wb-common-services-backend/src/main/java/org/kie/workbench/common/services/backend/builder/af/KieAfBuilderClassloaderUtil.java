@@ -83,11 +83,12 @@ public class KieAfBuilderClassloaderUtil {
                 Map<String,byte[]> store = Collections.EMPTY_MAP;
                 if(res.getProjectClassLoaderStore().isPresent()){
                     store = res.getProjectClassLoaderStore().get();
+                    classLoaderCache.addDeclaredTypes(workingDir, store);
                 }
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
-                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString(),store), dependenciesClassLoader);
+                projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString(), store), dependenciesClassLoader);
                 classLoaderCache.addTargetClassLoader(workingDir, projectClassLoader);
             }
             return Optional.ofNullable(projectClassLoader);

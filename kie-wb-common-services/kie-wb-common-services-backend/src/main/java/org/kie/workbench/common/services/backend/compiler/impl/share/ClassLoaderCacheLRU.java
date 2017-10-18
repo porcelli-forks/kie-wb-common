@@ -17,6 +17,7 @@ package org.kie.workbench.common.services.backend.compiler.impl.share;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -100,8 +101,7 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
     }
 
     @Override
-    public synchronized void addTargetClassLoader(Path project,
-                                                  MapClassLoader classLoader) {
+    public synchronized void addTargetClassLoader(Path project, MapClassLoader classLoader) {
         if (getEntry(project) != null) {
             getEntry(project).addTargetClassloader(classLoader);
         } else {
@@ -112,8 +112,7 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
     }
 
     @Override
-    public synchronized void addDependenciesClassLoader(Path project,
-                                                        ClassLoader classLoader) {
+    public synchronized void addDependenciesClassLoader(Path project, ClassLoader classLoader) {
 
         if (getEntry(project) != null) {
             getEntry(project).addDependenciesClassloader(classLoader);
@@ -138,6 +137,26 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
     public synchronized Optional<ClassLoader> getDependenciesClassLoader(Path project) {
         if (getEntry(project) != null) {
             return getEntry(project).getDependenciesClassloader();
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public synchronized void addDeclaredTypes(Path project, Map<String, byte[]> store) {
+        if (getEntry(project) != null) {
+            getEntry(project).addDeclaredTypes(store);
+        } else {
+            ClassLoaderTuple tuple = new ClassLoaderTuple();
+            tuple.addDeclaredTypes(store);
+            setEntry(project, tuple);
+        }
+    }
+
+    @Override
+    public synchronized Optional<Map<String, byte[]>> getDeclaredTypes(Path project) {
+        if (getEntry(project) != null) {
+            return Optional.ofNullable(getEntry(project).getDeclaredTypes());
         } else {
             return Optional.empty();
         }

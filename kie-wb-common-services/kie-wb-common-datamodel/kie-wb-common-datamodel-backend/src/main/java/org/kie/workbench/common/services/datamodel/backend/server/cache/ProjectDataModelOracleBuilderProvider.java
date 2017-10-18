@@ -16,12 +16,7 @@
 package org.kie.workbench.common.services.datamodel.backend.server.cache;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -34,6 +29,7 @@ import org.kie.soup.project.datamodel.oracle.TypeSource;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
+import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
 import org.kie.workbench.common.services.backend.builder.core.TypeSourceResolver;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
@@ -65,6 +61,7 @@ public class ProjectDataModelOracleBuilderProvider {
     private KieModuleMetaDataCache kieModuleMetaDataCache;
     private DependenciesCache dependenciesCache;
     private ClassLoaderCache classLoaderCache;
+    private LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache;
 
     public ProjectDataModelOracleBuilderProvider() {
         //CDI proxy
@@ -76,7 +73,8 @@ public class ProjectDataModelOracleBuilderProvider {
                                                  final BuilderUtils builderUtils, final BuilderCache builderCache,
                                                  final KieModuleMetaDataCache kieModuleMetaDataCache,
                                                  final DependenciesCache dependenciesCache,
-                                                 final ClassLoaderCache classLoaderCache) {
+                                                 final ClassLoaderCache classLoaderCache,
+                                                 final LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache) {
         this.packageNameWhiteListService = packageNameWhiteListService;
         this.importsService = importsService;
         this.builderUtils = builderUtils;
@@ -84,6 +82,7 @@ public class ProjectDataModelOracleBuilderProvider {
         this.kieModuleMetaDataCache = kieModuleMetaDataCache;
         this.dependenciesCache = dependenciesCache;
         this.classLoaderCache = classLoaderCache;
+        this.lruProjectDependenciesClassLoaderCache = lruProjectDependenciesClassLoaderCache;
     }
 
     public InnerBuilder newBuilder(final KieProject project) {
@@ -109,7 +108,7 @@ public class ProjectDataModelOracleBuilderProvider {
         Path workingDir = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
         final Set<String> javaResources = new HashSet<String>(dependenciesCache.getDependenciesRaw(workingDir));
         final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData, javaResources);
-        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, classLoaderCache);
+        return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, classLoaderCache, lruProjectDependenciesClassLoaderCache);
     }
 
     private InnerBuilder runNewBuild(KieProject project, KieAFBuilder builder) {
@@ -124,7 +123,7 @@ public class ProjectDataModelOracleBuilderProvider {
                 final TypeSourceResolver typeSourceResolver = new TypeSourceResolver(kieModuleMetaData,
                                                                                      javaResources);
 
-                return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, classLoaderCache);
+                return new InnerBuilder(project, kieModuleMetaData, typeSourceResolver, classLoaderCache, lruProjectDependenciesClassLoaderCache);
             } else {
                 throw new RuntimeException("Failed to build correctly the project:" + project.toString());
             }
@@ -141,15 +140,18 @@ public class ProjectDataModelOracleBuilderProvider {
         private final KieModuleMetaData kieModuleMetaData;
         private final TypeSourceResolver typeSourceResolver;
         private final ClassLoaderCache classLoaderCache;
+        private final LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache;
 
         private InnerBuilder(final KieProject project,
                              final KieModuleMetaData kieModuleMetaData,
                              final TypeSourceResolver typeSourceResolver,
-                             final ClassLoaderCache classLoaderCache) {
+                             final ClassLoaderCache classLoaderCache,
+                             final LRUProjectDependenciesClassLoaderCache lruProjectDependenciesClassLoaderCache) {
             this.project = project;
             this.kieModuleMetaData = kieModuleMetaData;
             this.typeSourceResolver = typeSourceResolver;
             this.classLoaderCache = classLoaderCache;
+            this.lruProjectDependenciesClassLoaderCache = lruProjectDependenciesClassLoaderCache;
         }
 
         public ProjectDataModelOracle build() {
@@ -178,7 +180,16 @@ public class ProjectDataModelOracleBuilderProvider {
             for (final String packageName : whiteList) {
                 pdBuilder.addPackage(packageName);
                 addClasses(packageName, kieModuleMetaData.getClasses(packageName), prjRoot);
-                addClasses(packageName, classLoaderCache.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot);
+                addClasses(packageName, classLoaderCache.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot, TypeSource.JAVA_PROJECT);
+            }
+            Optional<Map<String, byte[]>> declaredTypes = classLoaderCache.getDeclaredTypes(prjRoot);
+            if(declaredTypes.isPresent()){
+                for (final String packageName : whiteList) {
+                    List<Class<?>> clazzes = lruProjectDependenciesClassLoaderCache.getClazz(prjRoot, packageName, declaredTypes.get().keySet());
+                    if(!clazzes.isEmpty()) {
+                        this.addClass(clazzes, TypeSource.DECLARED);
+                    }
+                }
             }
         }
 
@@ -200,9 +211,29 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
+        private void addClasses(final String packageName, final Collection<String> classes, Path projectPath, TypeSource typeSource) {
+            for (final String className : classes) {
+                addClass(packageName, className, projectPath, typeSource);
+            }
+        }
+
+        private void addClass(final Import item, TypeSource typeSource) {
+            try {
+                Class clazz = this.getClass().getClassLoader().loadClass(item.getType());
+                pdBuilder.addClass(clazz,
+                        false,
+                        typeSource);
+            } catch (ClassNotFoundException cnfe) {
+                //Class resolution would have happened in Builder and reported as warnings so log error here at debug level to avoid flooding logs
+                log.debug(cnfe.getMessage());
+            } catch (IOException ioe) {
+                log.debug(ioe.getMessage());
+            }
+        }
+
         private void addClass(final Import item) {
             try {
-                Class clazz = this.getClass().getClassLoader().loadClass(item.getType());//@ŢODO is it correct again the use of this classloader instead of the prj classloader ?
+                Class clazz = this.getClass().getClassLoader().loadClass(item.getType());
                 pdBuilder.addClass(clazz,
                                    false,
                                    TypeSource.JAVA_DEPENDENCY);
@@ -235,8 +266,43 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
+        private void addClass(final String packageName, final String className, Path project, TypeSource typeSource) {
+            try {
+                Optional<MapClassLoader> prjClassloaderOpt = classLoaderCache.getTargetClassLoader(project);
+                if (prjClassloaderOpt.isPresent()) {
+
+                    final Class clazz = CompilerClassloaderUtils.getClass(packageName,
+                            className,
+                            (MapClassLoader) prjClassloaderOpt.get());
+
+                    if (clazz != null) {
+                        pdBuilder.addClass(clazz,
+                                kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(),
+                                typeSource);
+                    }
+                }
+            } catch (Throwable e) {
+                //Class resolution would have happened in Builder and reported as warnings so log error here at debug level to avoid flooding logs
+                log.debug(e.getMessage());
+            }
+        }
+
+        private void addClass(final List<Class<?>> clazzes, TypeSource typeSource) {
+            try {
+                for(Class clazz : clazzes) {
+                    pdBuilder.addClass(clazz,
+                            false,
+                            typeSource);
+                }
+            } catch (IOException ioe) {
+                log.debug(ioe.getMessage());
+            }
+        }
+
         private List<Import> getImports() {
             return importsService.load(project.getImportsPath()).getImports().getImports();
         }
     }
+
+
 }

@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.compiler.impl.share;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
@@ -27,6 +28,10 @@ import org.uberfire.java.nio.file.Path;
  * instead of rebuild to read the same resources from a previous build
  */
 public interface ClassLoaderCache {
+
+    void addDeclaredTypes(Path projectRootPath, Map<String, byte[]> store);
+
+    Optional<Map<String, byte[]>> getDeclaredTypes(Path projectPath);
 
     void addTargetClassLoader(Path projectRootPath,
                               MapClassLoader classLoader);
