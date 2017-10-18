@@ -8,6 +8,14 @@
   <artifactId>DataModelerTest1</artifactId>
   <version>1.0</version>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+      <!--<version>${version.org.kie}</version> @TODO fix before merge-->
+      <version>8.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
   <packaging>kjar</packaging>
   <build>
     <plugins>
@@ -39,7 +47,8 @@
       <plugin>
         <groupId>org.kie</groupId>
         <artifactId>kie-takari-plugin</artifactId>
-        <version>${version.org.kie}</version>
+        <!--<version>${version.org.kie}</version> @TODO fix before merge-->
+        <version>8.0.0-SNAPSHOT</version>
         <extensions>true</extensions>
         <configuration>
           <properties>
