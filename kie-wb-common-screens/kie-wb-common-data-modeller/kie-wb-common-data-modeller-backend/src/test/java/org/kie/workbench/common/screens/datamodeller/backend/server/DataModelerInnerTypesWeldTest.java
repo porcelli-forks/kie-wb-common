@@ -18,14 +18,10 @@ package org.kie.workbench.common.screens.datamodeller.backend.server;
 import java.net.URL;
 
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.vfs.Path;
-
-import javax.inject.Inject;
 
 import static org.junit.Assert.*;
 
