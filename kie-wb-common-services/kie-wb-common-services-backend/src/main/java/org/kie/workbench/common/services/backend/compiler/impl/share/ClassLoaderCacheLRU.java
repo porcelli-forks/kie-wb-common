@@ -34,8 +34,9 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized List<String> getTargetsProjectDependencies(Path projectRootPath) {
-        if (getEntry(projectRootPath) != null) {
-            return getEntry(projectRootPath).getTargetDeps();
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            return tuple.getTargetDeps();
         } else {
             return Collections.emptyList();
         }
@@ -43,15 +44,17 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized void removeTargetClassloader(Path projectRootPath) {
-        if (getEntry(projectRootPath) != null) {
-            getEntry(projectRootPath).removeTargetClassloader(projectRootPath);
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            tuple.removeTargetClassloader(projectRootPath);
         }
     }
 
     @Override
     public synchronized List<String> getTargetsProjectDependenciesFiltered(Path projectRootPath, String packageName) {
-        if (getEntry(projectRootPath) != null) {
-            List<String> allTargetDeps = getEntry(projectRootPath).getTargetDeps();
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            List<String> allTargetDeps = tuple.getTargetDeps();
             return CompilerClassloaderUtils.filterClassesByPackage(allTargetDeps, packageName);
         } else {
             return Collections.emptyList();
@@ -60,16 +63,18 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
     @Override
     public synchronized void removeDependenciesClassloader(Path projectRootPath) {
-        if (getEntry(projectRootPath) != null) {
-            getEntry(projectRootPath).removeDependenciesClassloader(projectRootPath);
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            tuple.removeDependenciesClassloader(projectRootPath);
         }
     }
 
     @Override
     public synchronized void replaceTargetDependencies(Path projectRootPath,
                                                        List<String> uris) {
-        if (getEntry(projectRootPath) != null) {
-            getEntry(projectRootPath).replaceTargetDeps(uris);
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            tuple.replaceTargetDeps(uris);
         }
     }
 
@@ -91,72 +96,77 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
     @Override
     public synchronized void addTargetProjectDependencies(Path projectRootPath,
                                                           List<String> uris) {
-        if (getEntry(projectRootPath) != null) {
-            getEntry(projectRootPath).addTargetDeps(uris);
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            tuple.addTargetDeps(uris);
         } else {
-            ClassLoaderTuple tuple = new ClassLoaderTuple();
+            tuple = new ClassLoaderTuple();
             tuple.addTargetDeps(uris);
             setEntry(projectRootPath, tuple);
         }
     }
 
     @Override
-    public synchronized void addTargetClassLoader(Path project, MapClassLoader classLoader) {
-        if (getEntry(project) != null) {
-            getEntry(project).addTargetClassloader(classLoader);
-        } else {
-            ClassLoaderTuple tuple = new ClassLoaderTuple();
+    public synchronized void addTargetClassLoader(Path projectRootPath, MapClassLoader classLoader) {
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
             tuple.addTargetClassloader(classLoader);
-            setEntry(project, tuple);
+        } else {
+            tuple = new ClassLoaderTuple();
+            tuple.addTargetClassloader(classLoader);
+            setEntry(projectRootPath, tuple);
         }
     }
 
     @Override
-    public synchronized void addDependenciesClassLoader(Path project, ClassLoader classLoader) {
-
-        if (getEntry(project) != null) {
-            getEntry(project).addDependenciesClassloader(classLoader);
-        } else {
-            ClassLoaderTuple tuple = new ClassLoaderTuple();
+    public synchronized void addDependenciesClassLoader(Path projectRootPath, ClassLoader classLoader) {
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
             tuple.addDependenciesClassloader(classLoader);
-            setEntry(project, tuple);
+        } else {
+            tuple = new ClassLoaderTuple();
+            tuple.addDependenciesClassloader(classLoader);
+            setEntry(projectRootPath, tuple);
         }
     }
 
     @Override
-    public synchronized Optional<MapClassLoader> getTargetClassLoader(Path project) {
-
-        if (getEntry(project) != null) {
-            return getEntry(project).getTargetClassloader();
+    public synchronized Optional<MapClassLoader> getTargetClassLoader(Path projectRootPath) {
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            return tuple.getTargetClassloader();
         } else {
             return Optional.empty();
         }
     }
 
     @Override
-    public synchronized Optional<ClassLoader> getDependenciesClassLoader(Path project) {
-        if (getEntry(project) != null) {
-            return getEntry(project).getDependenciesClassloader();
+    public synchronized Optional<ClassLoader> getDependenciesClassLoader(Path projectRootPath) {
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            return tuple.getDependenciesClassloader();
         } else {
             return Optional.empty();
         }
     }
 
     @Override
-    public synchronized void addDeclaredTypes(Path project, Map<String, byte[]> store) {
-        if (getEntry(project) != null) {
-            getEntry(project).addDeclaredTypes(store);
-        } else {
-            ClassLoaderTuple tuple = new ClassLoaderTuple();
+    public synchronized void addDeclaredTypes(Path projectRootPath, Map<String, byte[]> store) {
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
             tuple.addDeclaredTypes(store);
-            setEntry(project, tuple);
+        } else {
+            tuple = new ClassLoaderTuple();
+            tuple.addDeclaredTypes(store);
+            setEntry(projectRootPath, tuple);
         }
     }
 
     @Override
-    public synchronized Optional<Map<String, byte[]>> getDeclaredTypes(Path project) {
-        if (getEntry(project) != null) {
-            return Optional.ofNullable(getEntry(project).getDeclaredTypes());
+    public synchronized Optional<Map<String, byte[]>> getDeclaredTypes(Path projectRootPath) {
+        ClassLoaderTuple tuple = getEntry(projectRootPath);
+        if (tuple != null) {
+            return Optional.ofNullable(tuple.getDeclaredTypes());
         } else {
             return Optional.empty();
         }

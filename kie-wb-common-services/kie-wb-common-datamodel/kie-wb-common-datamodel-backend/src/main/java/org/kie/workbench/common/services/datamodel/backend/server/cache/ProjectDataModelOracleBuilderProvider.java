@@ -183,7 +183,7 @@ public class ProjectDataModelOracleBuilderProvider {
                 addClasses(packageName, classLoaderCache.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot, TypeSource.JAVA_PROJECT);
             }
             Optional<Map<String, byte[]>> declaredTypes = classLoaderCache.getDeclaredTypes(prjRoot);
-            if(declaredTypes.isPresent()){
+            if(declaredTypes.isPresent() && ! declaredTypes.get().isEmpty()){
                 for (final String packageName : whiteList) {
                     List<Class<?>> clazzes = lruProjectDependenciesClassLoaderCache.getClazz(prjRoot, packageName, declaredTypes.get().keySet());
                     if(!clazzes.isEmpty()) {
