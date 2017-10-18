@@ -18,10 +18,14 @@ package org.kie.workbench.common.screens.datamodeller.backend.server;
 import java.net.URL;
 
 import org.junit.Test;
+import org.kie.workbench.common.services.backend.builder.core.LRUProjectDependenciesClassLoaderCache;
+import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.vfs.Path;
+
+import javax.inject.Inject;
 
 import static org.junit.Assert.*;
 
@@ -39,6 +43,7 @@ public class DataModelerInnerTypesWeldTest extends AbstractDataModelerServiceWel
             final Path packagePath = paths.convert( nioPackagePath );
 
             KieProject project = projectService.resolveProject( packagePath );
+            lruProjectDependenciesClassLoaderCache.assertDependenciesClassLoader(project, "system");
 
             DataModel dataModel = dataModelService.loadModel( project );
             DataObject dataObject = dataModel.getDataObject( "test.Outer" );
