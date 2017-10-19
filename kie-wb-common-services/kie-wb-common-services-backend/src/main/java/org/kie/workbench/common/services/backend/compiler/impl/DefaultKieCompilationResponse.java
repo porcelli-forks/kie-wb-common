@@ -17,10 +17,7 @@ package org.kie.workbench.common.services.backend.compiler.impl;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
@@ -38,6 +35,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     private KieModuleMetaInfo kieModuleMetaInfo;
     private KieModule kieModule;
     private Map<String, byte[]> projectClassLoaderStore;
+    private Set<String> eventsTypeClasses;
     private List<String> projectDependenciesRaw;
     private List<URI> projectDependenciesAsURI;
     private List<URL> projectDependenciesAsURL;
@@ -59,6 +57,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                 null,
              mavenOutput,
              null,
+             null,
              null);
     }
 
@@ -77,7 +76,8 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
                                          Map<String,byte[]> projectClassLoaderStore,
                                          List<String> mavenOutput,
                                          List<String> projectDependenciesRaw,
-                                         Path workingDir) {
+                                         Path workingDir,
+                                         Set<String> eventTypesClasses) {
 
         defaultResponse = new DefaultCompilationResponse(successful,
                                                          mavenOutput);
@@ -86,6 +86,7 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
         this.projectClassLoaderStore = projectClassLoaderStore;
         this.projectDependenciesRaw = projectDependenciesRaw;
         this.workingDir = workingDir;
+        this.eventsTypeClasses = eventTypesClasses;
     }
 
     public DefaultKieCompilationResponse(Boolean successful,
@@ -158,6 +159,11 @@ public class DefaultKieCompilationResponse implements KieCompilationResponse {
     @Override
     public Optional<Map<String, byte[]>> getProjectClassLoaderStore() {
         return Optional.ofNullable(projectClassLoaderStore);
+    }
+
+    @Override
+    public Optional<Set<String>> getEventTypeClasses() {
+        return Optional.ofNullable(eventsTypeClasses);
     }
 
     private List<URL> getRawAsURLs() {

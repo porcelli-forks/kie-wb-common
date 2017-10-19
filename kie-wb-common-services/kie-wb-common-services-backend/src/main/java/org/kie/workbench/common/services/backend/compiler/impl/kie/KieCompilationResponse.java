@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.drools.core.rule.KieModuleMetaInfo;
 import org.kie.api.builder.KieModule;
@@ -68,4 +69,9 @@ public interface KieCompilationResponse extends CompilationResponse {
      * @return
      */
     Optional<List<String>> getProjectDependenciesRaw();
+
+    /**
+     * Provides the List of classes annotated in the drl files with Event
+     * */
+    Optional<Set<String>> getEventTypeClasses();
 }
