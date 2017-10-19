@@ -85,6 +85,11 @@ public class KieAfBuilderClassloaderUtil {
                     store = res.getProjectClassLoaderStore().get();
                     classLoaderCache.addDeclaredTypes(workingDir, store);
                 }
+                Set<String> eventTypeClasses = Collections.EMPTY_SET;
+                if(res.getEventTypeClasses().isPresent()){
+                    eventTypeClasses = res.getEventTypeClasses().get();
+                    classLoaderCache.addEventTypes(workingDir, eventTypeClasses);
+                }
                 /** The integration works with CompilerClassloaderUtils.getMapClasses
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
@@ -135,7 +140,6 @@ public class KieAfBuilderClassloaderUtil {
         if (res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                             res.getProjectDependenciesAsURI().get());
-            //final ClassLoader classLoaderWithDrlIstances = kieModuleMetaData.getClassLoader().getParent();
             kieModuleMetaDataCache.addKieMetaData(workingDir, kieModuleMetaData);
         }
         return dependenciesClassLoader;

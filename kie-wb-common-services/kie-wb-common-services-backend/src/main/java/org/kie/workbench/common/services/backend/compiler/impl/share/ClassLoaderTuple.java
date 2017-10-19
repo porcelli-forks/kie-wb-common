@@ -24,30 +24,44 @@ class ClassLoaderTuple {
 
     private Map<String, byte[]> declaredTypes;
 
-    private List<String> targetDeps;
+    private List<String> targetProjectDependencies;
 
     private MapClassLoader targetClassloader;
 
     private ClassLoader dependenciesClassloader;
 
+    private Set<String> eventTypes;
+
     public ClassLoaderTuple() {
-        targetDeps = new ArrayList<>();
+        targetProjectDependencies = new ArrayList<>();
     }
 
-    public List<String> getTargetDeps() {
-        return Collections.unmodifiableList(targetDeps);
+    /** Event types*/
+
+    public void addEventTypes(Set<String> eventTypes){
+        this.eventTypes = eventTypes;
     }
+
+    public Set<String> getEventTypes(Path project) { return eventTypes;}
+
+    public void removeEventTypes(Path projectPath){ this.eventTypes = null; }
+
+
+    /** Declared types*/
+
+    public void addDeclaredTypes(Map<String, byte[]> declaredTypes){
+        this.declaredTypes = declaredTypes;
+    }
+
+    public Map<String, byte[]> getDeclaredTypes(){ return declaredTypes; }
+
+    public void removeDeclaredTypes(Path projectPath){ this.declaredTypes = null; }
+
+
+    /** Target classloader*/
 
     public Optional<MapClassLoader> getTargetClassloader() {
         return Optional.ofNullable(targetClassloader);
-    }
-
-    public Optional<ClassLoader> getDependenciesClassloader() {
-        return Optional.ofNullable(dependenciesClassloader);
-    }
-
-    public void addTargetDeps(List<String> resources) {
-        targetDeps.addAll(resources);
     }
 
     public void addTargetClassloader(MapClassLoader targetClassloader) {
@@ -58,23 +72,33 @@ class ClassLoaderTuple {
         this.targetClassloader = null;
     }
 
-    public void removeDependenciesClassloader(Path project) {
-        this.dependenciesClassloader = null;
-    }
+
+    /** Dependencies classloader*/
 
     public void addDependenciesClassloader(ClassLoader dependenciesClassloader) {
         this.dependenciesClassloader = dependenciesClassloader;
     }
 
-    public void replaceTargetDeps(List<String> newTargetDeps) {
-        this.targetDeps = newTargetDeps;
+    public Optional<ClassLoader> getDependenciesClassloader() {
+        return Optional.ofNullable(dependenciesClassloader);
     }
 
-    public void addDeclaredTypes(Map<String, byte[]> declaredTypes){
-        this.declaredTypes = declaredTypes;
+    public void removeDependenciesClassloader() {
+        this.dependenciesClassloader = null;
     }
 
-    public Map<String, byte[]> getDeclaredTypes(){
-        return Collections.unmodifiableMap(declaredTypes);
+
+
+    /** Target Project dependencies*/
+
+
+    public List<String> getTargetProjectDependencies() { return targetProjectDependencies; }
+
+    public void addTargetProjectDependencies(List<String> resources) {
+        targetProjectDependencies.addAll(resources);
+    }
+
+    public void removeTargetProjectDependencies(){
+        this.targetProjectDependencies = null;
     }
 }

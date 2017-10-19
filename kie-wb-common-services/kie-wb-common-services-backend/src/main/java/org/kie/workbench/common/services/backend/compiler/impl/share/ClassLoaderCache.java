@@ -18,6 +18,7 @@ package org.kie.workbench.common.services.backend.compiler.impl.share;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.uberfire.java.nio.file.Path;
@@ -29,37 +30,62 @@ import org.uberfire.java.nio.file.Path;
  */
 public interface ClassLoaderCache {
 
-    void addDeclaredTypes(Path projectRootPath, Map<String, byte[]> store);
-
-    Optional<Map<String, byte[]>> getDeclaredTypes(Path projectPath);
-
-    void addTargetClassLoader(Path projectRootPath,
-                              MapClassLoader classLoader);
-
-    void addDependenciesClassLoader(Path projectRootPath, ClassLoader classLoader);
-
-    void removeTargetClassloader(Path projectRootPath);
-
-    Optional<MapClassLoader> getTargetClassLoader(Path projectRootPath);
-
-    Optional<ClassLoader> getDependenciesClassLoader(Path projectRootPath);
-
-    void removeDependenciesClassloader(Path projectRootPath);
-
     boolean containsPomDependencies(Path projectRootPath);
 
     void clearClassloaderResourcesMap();
 
     void removeProjectDeps(Path projectRootPath);
 
-    //Target deps
 
-    void addTargetProjectDependencies(Path projectRootPath,
-                                      List<String> uri);
+
+    /** Event types*/
+
+    void addEventTypes(Path projectRootPath, Set<String> types);
+
+    Optional<Set<String>> getEventTypes(Path projectRootPath);
+
+    void removeEventTypes(Path projectPath);
+
+
+
+    /** Declared types*/
+
+    void addDeclaredTypes(Path projectRootPath, Map<String, byte[]> store);
+
+    Optional<Map<String, byte[]>> getDeclaredTypes(Path projectPath);
+
+    void removeDeclaredTypes(Path projectPath);
+
+
+
+    /** Target classloader*/
+
+    void addTargetClassLoader(Path projectRootPath, MapClassLoader classLoader);
+
+    Optional<MapClassLoader> getTargetClassLoader(Path projectRootPath);
+
+    void removeTargetClassloader(Path projectRootPath);
+
+
+
+    /** Dependencies classloader*/
+
+    void addDependenciesClassLoader(Path projectRootPath, ClassLoader classLoader);
+
+    Optional<ClassLoader> getDependenciesClassLoader(Path projectRootPath);
+
+    void removeDependenciesClassloader(Path projectRootPath);
+
+
+
+    /** Target Project dependencies*/
+
+    void addTargetProjectDependencies(Path projectRootPath, List<String> uri);
+
+    void removeTargetProjectDependencies(Path projectRootPath);
 
     List<String> getTargetsProjectDependencies(Path projectRootPath);
 
     List<String> getTargetsProjectDependenciesFiltered(Path projectRootPath, String packageName);
 
-    void replaceTargetDependencies(Path projectRootPath, List<String> uris);
 }

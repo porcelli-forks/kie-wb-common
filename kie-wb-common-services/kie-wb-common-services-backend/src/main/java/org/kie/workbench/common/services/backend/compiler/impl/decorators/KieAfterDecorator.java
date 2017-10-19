@@ -73,25 +73,18 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
     private KieCompilationResponse handleKieMavenPlugin(CompilationRequest req,
                                                         CompilationResponse res) {
 
-        KieTuple kieModuleMetaInfoTuple = readKieModuleMetaInfo(req);
-        KieTuple kieModuleTuple = readKieModule(req);
-        KieTuple kieProjectClassloaderStore = readProjectClassloaderStore(req);
-        KieTuple eventClasses = readEventClasses(req);
-        Set<String> events = Collections.emptySet();
-        if(kieModuleTuple.getOptionalObject().isPresent()){
-             events = (Set<String>)eventClasses.getOptionalObject().get();
-
-        }
-
-
-        Map<String, byte[]> store = Collections.emptyMap();
-        if(kieProjectClassloaderStore.getOptionalObject().isPresent()){
-            store =  (Map<String, byte[]>) kieProjectClassloaderStore.getOptionalObject().get();
-        }
+        KieTuple kieModuleMetaInfoTuple = read(req,KieModuleMetaInfo.class.getName(), "kieModuleMetaInfo not present in the map");
+        KieTuple kieModuleTuple = read(req, FileKieModule.class.getName(), "kieModule not present in the map");
         List<String> mavenOutput = getMavenOutput(req, res);
 
         if (kieModuleMetaInfoTuple.getOptionalObject().isPresent() && kieModuleTuple.getOptionalObject().isPresent()) {
+
             List<String> allDepsAsString = readAllDepsAsString(req);
+            KieTuple kieProjectClassloaderStore = read(req, prjClassloaderStoreKey, "ProjectClassLoaderStore Map not present in the map");
+            KieTuple eventClasses = read(req, eventClassesKey, "EventClasses Set not present in the map");
+            Set<String> events = getEventTypes(eventClasses);
+            Map<String, byte[]> store = getDroolsGeneratedClasses(kieProjectClassloaderStore);
+
             return new DefaultKieCompilationResponse(Boolean.TRUE,
                                                      (KieModuleMetaInfo) kieModuleMetaInfoTuple.getOptionalObject().get(),
                                                      (KieModule) kieModuleTuple.getOptionalObject().get(),
@@ -100,7 +93,9 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
                                                      allDepsAsString,
                                                      req.getInfo().getPrjPath(),
                                                      events);
+
         } else {
+
             List<String> msgs = new ArrayList<>();
             if (kieModuleMetaInfoTuple.getErrorMsg().isPresent()) {
 
@@ -111,7 +106,24 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
             }
             msgs.addAll(mavenOutput);
             return new DefaultKieCompilationResponse(Boolean.FALSE, msgs, req.getInfo().getPrjPath());
+
         }
+    }
+
+    private Map<String, byte[]> getDroolsGeneratedClasses(KieTuple kieProjectClassloaderStore) {
+        Map<String, byte[]> store = Collections.emptyMap();
+        if(kieProjectClassloaderStore.getOptionalObject().isPresent()){
+            store =  (Map<String, byte[]>) kieProjectClassloaderStore.getOptionalObject().get();
+        }
+        return store;
+    }
+
+    private Set<String> getEventTypes(KieTuple eventClasses) {
+        Set<String> events = Collections.emptySet();
+        if(eventClasses.getOptionalObject().isPresent()){
+             events = (Set<String>)eventClasses.getOptionalObject().get();
+        }
+        return events;
     }
 
     private KieCompilationResponse handleNormalBuild(CompilationRequest req,
@@ -164,88 +176,21 @@ public class KieAfterDecorator<T extends CompilationResponse, C extends AFCompil
         return items;
     }
 
-    private KieTuple readKieModuleMetaInfo(CompilationRequest req) {
-        /** This part is mandatory because the object loaded in the kie maven plugin is
-         * loaded in a different classloader and every accessing cause a ClassCastException
-         * Standard for the kieMap's keys -> compilationID + dot + classname
-         * */
-        StringBuilder sb = new StringBuilder(req.getKieCliRequest().getRequestUUID()).append(".").append(KieModuleMetaInfo.class.getName());
+    private KieTuple read(CompilationRequest req, String keyName, String errorMsg){
+        StringBuilder sb = new StringBuilder(req.getKieCliRequest().getRequestUUID()).append(".").append(keyName);
         Object o = req.getKieCliRequest().getMap().get(sb.toString());
         if (o != null) {
             KieTuple tuple = readObjectFromADifferentClassloader(o);
-
-            if (tuple.getOptionalObject().isPresent()) {
-
-                return new KieTuple(tuple.getOptionalObject().get());
-            } else {
-
-                return new KieTuple(tuple.getErrorMsg());
-            }
-        } else {
-            return new KieTuple("kieModuleMetaInfo not present in the map");
-        }
-    }
-
-    private KieTuple readKieModule(CompilationRequest req) {
-        /** This part is mandatory because the object loaded in the kie maven plugin is
-         * loaded in a different classloader and every accessing cause a ClassCastException
-         * Standard for the kieMap's keys -> compilationID + dot + classname
-         * */
-        StringBuilder sb = new StringBuilder(req.getKieCliRequest().getRequestUUID()).append(".").append(FileKieModule.class.getName());
-        Object o = req.getKieCliRequest().getMap().get(sb.toString());
-
-        if (o != null) {
-            KieTuple tuple = readObjectFromADifferentClassloader(o);
-
-            if (tuple.getOptionalObject().isPresent()) {
-
-                return new KieTuple(tuple.getOptionalObject().get());
-            } else {
-
-                return new KieTuple(tuple.getErrorMsg());
-            }
-        } else {
-
-            return new KieTuple("kieModule not present in the map");
-        }
-    }
-
-
-    private KieTuple readProjectClassloaderStore(CompilationRequest req) {
-        StringBuilder sb = new StringBuilder(req.getKieCliRequest().getRequestUUID()).append(".").append(prjClassloaderStoreKey);
-        Object o = req.getKieCliRequest().getMap().get(sb.toString());
-        if (o != null) {
-            KieTuple tuple = readObjectFromADifferentClassloader(o);
-
             if (tuple.getOptionalObject().isPresent()) {
                 return new KieTuple(tuple.getOptionalObject().get());
             } else {
-
                 return new KieTuple(tuple.getErrorMsg());
             }
         } else {
-
-            return new KieTuple("ProjectClassLoaderStore Map not present in the map");
+            return new KieTuple(errorMsg);
         }
     }
 
-    private KieTuple readEventClasses(CompilationRequest req) {
-        StringBuilder sb = new StringBuilder(req.getKieCliRequest().getRequestUUID()).append(".").append(eventClassesKey);
-        Object o = req.getKieCliRequest().getMap().get(sb.toString());
-        if (o != null) {
-            KieTuple tuple = readObjectFromADifferentClassloader(o);
-
-            if (tuple.getOptionalObject().isPresent()) {
-                return new KieTuple(tuple.getOptionalObject().get());
-            } else {
-
-                return new KieTuple(tuple.getErrorMsg());
-            }
-        } else {
-
-            return new KieTuple("EventClasses Set not present in the map");
-        }
-    }
 
     private KieTuple readObjectFromADifferentClassloader(Object o) {
 
