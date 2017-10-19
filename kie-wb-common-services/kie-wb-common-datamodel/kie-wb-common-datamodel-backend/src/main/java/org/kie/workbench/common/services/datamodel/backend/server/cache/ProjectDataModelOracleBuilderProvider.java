@@ -217,20 +217,7 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
-        private void addClass(final Import item, TypeSource typeSource) {
-            try {
-                Class clazz = this.getClass().getClassLoader().loadClass(item.getType());
-                pdBuilder.addClass(clazz,
-                        false,
-                        typeSource);
-            } catch (ClassNotFoundException cnfe) {
-                //Class resolution would have happened in Builder and reported as warnings so log error here at debug level to avoid flooding logs
-                log.debug(cnfe.getMessage());
-            } catch (IOException ioe) {
-                log.debug(ioe.getMessage());
-            }
-        }
-
+        
         private void addClass(final Import item) {
             try {
                 Class clazz = this.getClass().getClassLoader().loadClass(item.getType());
