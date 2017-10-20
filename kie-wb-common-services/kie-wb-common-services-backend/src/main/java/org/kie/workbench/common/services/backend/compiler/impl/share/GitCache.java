@@ -18,15 +18,8 @@ package org.kie.workbench.common.services.backend.compiler.impl.share;
 import org.eclipse.jgit.api.Git;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
-/**
- * Created by garfield on 09/10/17.
- */
 public interface GitCache {
-
-    /**
-     * GIT
-     **/
-
+    
     Git getGit(JGitFileSystem key);
 
     void addGit(JGitFileSystem key,
