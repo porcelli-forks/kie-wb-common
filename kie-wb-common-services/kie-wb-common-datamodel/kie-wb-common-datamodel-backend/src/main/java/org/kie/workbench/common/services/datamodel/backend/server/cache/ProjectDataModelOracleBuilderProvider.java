@@ -16,11 +16,13 @@
 package org.kie.workbench.common.services.datamodel.backend.server.cache;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 import javax.inject.Inject;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
+import org.kie.api.definition.type.Role;
 import org.kie.scanner.KieModuleMetaData;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
 import org.kie.soup.project.datamodel.imports.Import;
@@ -184,22 +186,28 @@ public class ProjectDataModelOracleBuilderProvider {
                 addClasses(packageName, kieModuleMetaData.getClasses(packageName), prjRoot);
                 addClasses(packageName, classLoaderCache.getTargetsProjectDependenciesFiltered(prjRoot, packageName), prjRoot, TypeSource.JAVA_PROJECT, eventTypes);
             }
+
             Optional<Map<String, byte[]>> declaredTypes = classLoaderCache.getDeclaredTypes(prjRoot);
             if(declaredTypes.isPresent() && ! declaredTypes.get().isEmpty()){
                 for (final String packageName : whiteList) {
                     List<Class<?>> clazzes = lruProjectDependenciesClassLoaderCache.getClazz(prjRoot, packageName, declaredTypes.get().keySet());
                     if(!clazzes.isEmpty()) {
-                        addClass(clazzes, TypeSource.DECLARED/*, isEvent(packageName, eventTypes)*/);
+                        addClass(clazzes, TypeSource.DECLARED);
                     }
                 }
             }
         }
 
-        private boolean isEvent(String className,  Optional<Set<String>> eventTypes){
-            if(eventTypes.isPresent()){
+        private boolean isEvent(String className,  Optional<Set<String>> eventTypes, Class<?> clazz){
+            if(eventTypes.isPresent() && eventTypes.get().size() > 0){
                 return eventTypes.get().contains(className);
             }else {
-                return false;
+                if(clazz.isAnnotationPresent(org.kie.api.definition.type.Role.class)) {
+                    Role.Type value = clazz.getAnnotation(org.kie.api.definition.type.Role.class).value();
+                    return value.equals(Role.Type.EVENT);
+                }else{
+                    return false;
+                }
             }
 
         }
@@ -216,17 +224,20 @@ public class ProjectDataModelOracleBuilderProvider {
             return packageNameWhiteListService.filterPackageNames(project, pkgs);
         }
 
+        
         private void addClasses(final String packageName, final Collection<String> classes, Path projectPath) {
             for (final String className : classes) {
                 addClass(packageName, className, projectPath);
             }
         }
 
+
         private void addClasses(final String packageName, final Collection<String> classes, Path projectPath, TypeSource typeSource, Optional<Set<String>> eventTypes) {
             for (final String className : classes) {
                 addClass(packageName, className, projectPath, typeSource, eventTypes);
             }
         }
+
 
         private void addClass(final List<Class<?>> clazzes, TypeSource typeSource) {
             try {
@@ -255,6 +266,7 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
+
         private void addClass(final String packageName, final String className, Path project) {
             try {
                 Optional<MapClassLoader> prjClassloaderOpt = classLoaderCache.getTargetClassLoader(project);
@@ -276,6 +288,7 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
+
         private void addClass(final String packageName, final String className, Path project, TypeSource typeSource, Optional<Set<String>> eventTypes) {
             try {
                 Optional<MapClassLoader> prjClassloaderOpt = classLoaderCache.getTargetClassLoader(project);
@@ -286,8 +299,7 @@ public class ProjectDataModelOracleBuilderProvider {
                             (MapClassLoader) prjClassloaderOpt.get());
 
                     if (clazz != null) {
-                        //pdBuilder.addClass(clazz, kieModuleMetaData.getTypeMetaInfo(clazz).isEvent(), typeSource);
-                        pdBuilder.addClass(clazz, isEvent(className, eventTypes), typeSource);
+                        pdBuilder.addClass(clazz, isEvent(className, eventTypes, clazz), typeSource);
                     }
                 }
             } catch (Throwable e) {
@@ -296,28 +308,9 @@ public class ProjectDataModelOracleBuilderProvider {
             }
         }
 
-        private void addClass(Class clazz, boolean isEvent, TypeSource typeSource){
-            try {
-                pdBuilder.addClass(clazz, isEvent, typeSource);
-            } catch (IOException ioe) {
-                log.debug(ioe.getMessage());
-            }
-        }
-
-        private void addClass(final List<Class<?>> clazzes, TypeSource typeSource, Boolean isEvent) {
-            try {
-                for(Class clazz : clazzes) {
-                    pdBuilder.addClass(clazz, isEvent, typeSource);
-                }
-            } catch (IOException ioe) {
-                log.debug(ioe.getMessage());
-            }
-        }
 
         private List<Import> getImports() {
             return importsService.load(project.getImportsPath()).getImports().getImports();
         }
     }
-
-
 }
