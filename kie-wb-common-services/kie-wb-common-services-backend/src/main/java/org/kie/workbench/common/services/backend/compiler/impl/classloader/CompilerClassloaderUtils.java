@@ -542,12 +542,12 @@ public class CompilerClassloaderUtils {
     }
 
     public static List<String> filterClassesByPackage(List<String> items, String packageName) {
-
+        String packageNameWithSlash = packageName.replace(".", "/");//fix for the wildcard
         List<String> filtered = new ArrayList<>(items.size());
         for (String item : items) {
             if (!item.contains(META_INF)) {
                 String one = item.substring(item.lastIndexOf(MAVEN_TARGET) + 15, item.lastIndexOf(".")); // 15 chars are for "target/classes/"
-                if (one.contains(packageName)) {
+                if (one.contains(packageNameWithSlash)) {
                     if(one.contains("/")) { //there is a package
                         one = one.replace("/", ".");
                     }
