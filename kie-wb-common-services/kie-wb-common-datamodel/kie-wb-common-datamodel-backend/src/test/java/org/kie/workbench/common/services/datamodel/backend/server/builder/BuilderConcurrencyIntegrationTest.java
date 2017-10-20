@@ -47,7 +47,7 @@ public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegr
     @Inject
     private BuilderCache builderCache;
 
-    @Ignore
+
     @Test
     //https://bugzilla.redhat.com/show_bug.cgi?id=1145105
     public void testBuilderConcurrency() throws URISyntaxException {
