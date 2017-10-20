@@ -19,7 +19,7 @@ import org.eclipse.jgit.api.Git;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public interface GitCache {
-    
+
     Git getGit(JGitFileSystem key);
 
     void addGit(JGitFileSystem key,
