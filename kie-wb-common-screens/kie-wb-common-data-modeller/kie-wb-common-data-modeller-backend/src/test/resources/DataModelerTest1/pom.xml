@@ -13,7 +13,7 @@
       <groupId>org.kie</groupId>
       <artifactId>kie-api</artifactId>
       <!--<version>${version.org.kie}</version> @TODO fix before merge-->
-      <version>8.0.0-SNAPSHOT</version>
+      <version>7.5.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <packaging>kjar</packaging>
