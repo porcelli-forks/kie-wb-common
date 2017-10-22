@@ -12,8 +12,7 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-api</artifactId>
-      <!--<version>${version.org.kie}</version> @TODO fix before merge-->
-      <version>7.5.0-SNAPSHOT</version>
+      <version>${version.org.kie}</version>
     </dependency>
   </dependencies>
   <packaging>kjar</packaging>
@@ -47,8 +46,7 @@
       <plugin>
         <groupId>org.kie</groupId>
         <artifactId>kie-takari-plugin</artifactId>
-        <!--<version>${version.org.kie}</version> @TODO fix before merge-->
-        <version>8.0.0-SNAPSHOT</version>
+        <version>${version.org.kie}</version><!-- @TODO fix before merge-->
         <extensions>true</extensions>
         <configuration>
           <properties>
