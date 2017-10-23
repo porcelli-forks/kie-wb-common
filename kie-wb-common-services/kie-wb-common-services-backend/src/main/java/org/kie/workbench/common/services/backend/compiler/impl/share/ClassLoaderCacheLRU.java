@@ -20,6 +20,7 @@ import java.util.*;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
+import org.guvnor.common.services.backend.cache.ClassLoaderCache;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
@@ -118,23 +119,23 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
     /** Target classloader **/
 
     @Override
-    public synchronized void addTargetClassLoader(Path projectRootPath, MapClassLoader classLoader) {
+    public synchronized void addTargetMapClassLoader(Path projectRootPath, ClassLoader classLoader) {
         ClassLoaderTuple tuple = getEntry(projectRootPath);
         if (tuple != null) {
-            tuple.addTargetClassloader(classLoader);
+            tuple.addTargetMapClassloader((MapClassLoader)classLoader);
         } else {
             tuple = new ClassLoaderTuple();
-            tuple.addTargetClassloader(classLoader);
+            tuple.addTargetMapClassloader((MapClassLoader)classLoader);
             setEntry(projectRootPath, tuple);
         }
     }
 
 
     @Override
-    public synchronized Optional<MapClassLoader> getTargetClassLoader(Path projectRootPath) {
+    public synchronized Optional<ClassLoader> getTargetMapClassLoader(Path projectRootPath) {
         ClassLoaderTuple tuple = getEntry(projectRootPath);
         if (tuple != null) {
-            return tuple.getTargetClassloader();
+            return tuple.getTargetMapClassloader();
         } else {
             return Optional.empty();
         }
@@ -142,10 +143,10 @@ public class ClassLoaderCacheLRU extends LRUCache<Path, ClassLoaderTuple> implem
 
 
     @Override
-    public synchronized void removeTargetClassloader(Path projectRootPath) {
+    public synchronized void removeTargetMapClassloader(Path projectRootPath) {
         ClassLoaderTuple tuple = getEntry(projectRootPath);
         if (tuple != null) {
-            tuple.removeTargetClassloader(projectRootPath);
+            tuple.removeTargetMapClassloader(projectRootPath);
         }
     }
 

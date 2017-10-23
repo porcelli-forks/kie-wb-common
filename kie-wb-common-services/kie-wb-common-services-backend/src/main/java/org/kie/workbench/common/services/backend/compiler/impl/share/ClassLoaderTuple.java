@@ -60,15 +60,15 @@ class ClassLoaderTuple {
 
     /** Target classloader*/
 
-    public Optional<MapClassLoader> getTargetClassloader() {
+    public Optional<ClassLoader> getTargetMapClassloader() {
         return Optional.ofNullable(targetClassloader);
     }
 
-    public void addTargetClassloader(MapClassLoader targetClassloader) {
+    public void addTargetMapClassloader(MapClassLoader targetClassloader) {
         this.targetClassloader = targetClassloader;
     }
 
-    public void removeTargetClassloader(Path project) {
+    public void removeTargetMapClassloader(Path project) {
         this.targetClassloader = null;
     }
 

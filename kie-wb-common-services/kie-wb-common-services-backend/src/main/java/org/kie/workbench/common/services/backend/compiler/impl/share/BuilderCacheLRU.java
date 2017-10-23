@@ -20,6 +20,9 @@ import java.net.URI;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
+import java.lang.Object;
+
+import org.guvnor.common.services.backend.cache.BuilderCache;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
@@ -29,17 +32,19 @@ import org.uberfire.java.nio.file.Path;
 @Named("LRUBuilderCache")
 public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements BuilderCache {
 
+
+    public synchronized void addKieAFBuilder(String uri, Object builder) {
+        setEntry(uri, (KieAFBuilder) builder);
+    }
+
     /**
      * BUILDER
      */
 
-    public synchronized KieAFBuilder getBuilder(String uri) {
+    public synchronized Object getKieAFBuilder(String uri) {
         return getEntry(uri);
     }
 
-    public synchronized void addBuilder(final String uri, final KieAFBuilder builder) {
-        setEntry(uri, builder);
-    }
 
     public synchronized void removeBuilder(String uri) {
         invalidateCache(uri);
@@ -55,7 +60,7 @@ public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements B
 
     @Override
     public Path getProjectRoot(String uri) {
-        KieAFBuilder builder = getBuilder(uri);
+        KieAFBuilder builder = (KieAFBuilder) getKieAFBuilder(uri);
         if (builder != null) {
             Path prjRoot = ((DefaultKieAFBuilder) builder).getInfo().getPrjPath();
             return prjRoot;

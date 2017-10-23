@@ -26,7 +26,7 @@ import org.kie.workbench.common.services.backend.compiler.CompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.CompilationResponse;
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.guvnor.common.services.backend.cache.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.JGitUtils;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
@@ -97,11 +97,11 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
     private Git useHolder(JGitFileSystem fs,
                           CompilationRequest req) {
         Git repo;
-        if (!gitCache.containsGit(fs)) {
+        if (!gitCache.containsJGitFileSystem(fs)) {
             repo = JGitUtils.tempClone(fs, req.getRequestUUID());
-            gitCache.addGit(fs, repo);
+            gitCache.addJGitFileSystem(fs, repo);
         }
-        repo = gitCache.getGit(fs);
+        repo = (Git)gitCache.getGit(fs);
         return repo;
     }
 

@@ -18,6 +18,7 @@ package org.kie.workbench.common.services.backend.compiler.impl.share;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
+import org.guvnor.common.services.backend.cache.KieModuleMetaDataCache;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.kie.scanner.KieModuleMetaData;
 import org.uberfire.java.nio.file.Path;
@@ -26,13 +27,13 @@ import org.uberfire.java.nio.file.Path;
 @Named("LRUKieModuleMetaDataCache")
 public class KieModuleMetaDataCacheLRU extends LRUCache<Path, KieModuleMetaData> implements KieModuleMetaDataCache {
 
-    public synchronized KieModuleMetaData getMetadata(Path projectRootPath) {
+    public synchronized Object getKieModuleMetaData(Path projectRootPath) {
         return getEntry(projectRootPath);
     }
 
-    public synchronized void addKieMetaData(Path projectRootPath,
-                                            KieModuleMetaData metadata) {
-        setEntry(projectRootPath, metadata);
+    public synchronized void addKieModuleMetaData(Path projectRootPath,
+                                                  Object metadata) {
+        setEntry(projectRootPath, (KieModuleMetaData)metadata);
     }
 
     public synchronized void removeKieModuleMetaData(Path projectRootPath) {

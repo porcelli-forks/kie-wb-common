@@ -19,6 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
 import org.eclipse.jgit.api.Git;
+import org.guvnor.common.services.backend.cache.GitCache;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
@@ -26,24 +27,23 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 @Named("LRUGitCache")
 public class GitCacheLRU extends LRUCache<JGitFileSystem, Git> implements GitCache {
 
-    public synchronized Git getGit(JGitFileSystem key) {
-        return getEntry(key);
+    public synchronized Object getGit(Object key) {
+        return getEntry((JGitFileSystem)key);
     }
 
-    public synchronized void addGit(JGitFileSystem key, Git git) {
-        setEntry(key, git);
+    public synchronized void addJGitFileSystem(Object jGitFileSystem, Object git) {
+        setEntry((JGitFileSystem)jGitFileSystem, (Git)git);
     }
 
-    public synchronized void removeGit(JGitFileSystem key) {
-        invalidateCache(key);
+    public synchronized void removeJGitFileSystem(Object key) {
+        invalidateCache((JGitFileSystem)key);
     }
 
-    public synchronized boolean containsGit(JGitFileSystem key) {
-        return getKeys().contains(key);
+    public synchronized boolean containsJGitFileSystem(Object key) {
+        return getKeys().contains((JGitFileSystem)key);
     }
 
-    public synchronized void clearGitCache() {
+    public synchronized void clearJGitFileSystemCache() {
         invalidateCache();
-        ;
     }
 }

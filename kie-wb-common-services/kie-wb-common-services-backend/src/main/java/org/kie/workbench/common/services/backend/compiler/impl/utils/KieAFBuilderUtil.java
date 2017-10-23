@@ -33,8 +33,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCo
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.guvnor.common.services.backend.cache.BuilderCache;
+import org.guvnor.common.services.backend.cache.GitCache;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
@@ -50,24 +50,24 @@ public class KieAFBuilderUtil {
                                                GitCache gitCache, BuilderCache builderCache,
                                                GuvnorM2Repository guvnorM2Repository, String user) {
 
-        KieAFBuilder builder = builderCache.getBuilder(uri);
+        KieAFBuilder builder = (KieAFBuilder) builderCache.getKieAFBuilder(uri);
         if (builder == null) {
             if (nioPath.getFileSystem() instanceof JGitFileSystem) {
                 String folderName = getFolderName(uri, user);
                 Git repo = JGitUtils.tempClone((JGitFileSystem) nioPath.getFileSystem(), folderName);
-                gitCache.addGit((JGitFileSystem) nioPath.getFileSystem(), repo);
+                gitCache.addJGitFileSystem((JGitFileSystem) nioPath.getFileSystem(), repo);
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
                 builder = new DefaultKieAFBuilder(prj,
                                                   MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                   getCompiler(gitCache));
-                builderCache.addBuilder(uri, builder);
+                builderCache.addKieAFBuilder(uri, builder);
             } else {
                 //uri is the working dir
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(uri);
                 builder = new DefaultKieAFBuilder(prj,
                                                   MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                   getCompilerWithoutGITsupport());
-                builderCache.addBuilder(uri, builder);
+                builderCache.addKieAFBuilder(uri, builder);
             }
         }
         return builder;

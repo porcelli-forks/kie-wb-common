@@ -29,11 +29,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.guvnor.common.services.backend.cache.BuilderCache;
 import org.guvnor.common.services.project.builder.events.InvalidateDMOProjectCacheEvent;
 import org.guvnor.common.services.project.builder.model.BuildResults;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
+
+import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +118,7 @@ public class BuilderConcurrencyIntegrationTest extends AbstractWeldBuilderIntegr
                         public void run() {
                             try {
                                 logger.debug( "Thread " + Thread.currentThread().getName() + " has started: LRUBuilderCache.assertBuilder( project ).getKieModuleIgnoringErrors();" );
-                                builderCache.getBuilder( project.getRootPath().toURI() ).build();//@TODO is ti correct a simple build ?
+                                ((KieAFBuilder)builderCache.getKieAFBuilder( project.getRootPath().toURI() )).build();//@TODO is ti correct a simple build ?
                                 logger.debug( "Thread " + Thread.currentThread().getName() + " has completed." );
                             } catch ( Throwable e ) {
                                 result.setFailed( true );

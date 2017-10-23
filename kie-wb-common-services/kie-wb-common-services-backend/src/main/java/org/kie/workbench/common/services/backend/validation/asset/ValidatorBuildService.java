@@ -46,8 +46,8 @@ import org.kie.workbench.common.services.backend.compiler.impl.decorators.JGITCo
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.KieAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.decorators.OutputLogAfterDecorator;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieDefaultMavenCompiler;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.guvnor.common.services.backend.cache.BuilderCache;
+import org.guvnor.common.services.backend.cache.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenUtils;
@@ -102,12 +102,12 @@ public class ValidatorBuildService {
 
     private KieAFBuilder getBuilder(final Project project) {
         final org.uberfire.java.nio.file.Path projectRootPath = convert(project.getRootPath());
-        final KieAFBuilder builder = builderCache.getBuilder(project.getRootPath().toURI().toString());
+        final KieAFBuilder builder = (KieAFBuilder) builderCache.getKieAFBuilder(project.getRootPath().toURI().toString());
         if (builder == null) {
             final KieAFBuilder newBuilder = new DefaultKieAFBuilder(projectRootPath.toUri().toString(),
                                                                     MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
                                                                     getCompiler());
-            builderCache.addBuilder(project.getRootPath().toURI().toString(), newBuilder);
+            builderCache.addKieAFBuilder(project.getRootPath().toURI().toString(), newBuilder);
             return newBuilder;
         }
         return builder;
@@ -169,13 +169,13 @@ public class ValidatorBuildService {
         final org.uberfire.java.nio.file.Path resourcePath = convert(_resourcePath);
         if(resourcePath.getFileSystem() instanceof JGitFileSystem) {
             final JGitFileSystem fs = (JGitFileSystem) resourcePath.getFileSystem();
-            Git git = gitCache.getGit(fs);
+            Git git = (Git)gitCache.getGit(fs);
             if (git == null) {
                 //one build discarded to create the git in compiler map
                 org.uberfire.java.nio.file.Path nioPath = Paths.convert(kieProject.getRootPath());
                 final KieAFBuilder builder = KieAFBuilderUtil.getKieAFBuilder(kieProject.getRootPath().toURI(),nioPath,gitCache,builderCache,guvnorM2Repository, SYSTEM_IDENTITY);
                 builder.build(Boolean.TRUE, Boolean.FALSE);
-                git = gitCache.getGit(fs);
+                git = (Git)gitCache.getGit(fs);
                 if (git == null) {
                     logger.error("Git not constructed in the JGitDecorator");
                     throw new RuntimeException("Git repo not found");

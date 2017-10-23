@@ -20,6 +20,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
+import org.guvnor.common.services.backend.cache.DependenciesCache;
 import org.guvnor.common.services.backend.cache.LRUCache;
 import org.uberfire.java.nio.file.Path;
 

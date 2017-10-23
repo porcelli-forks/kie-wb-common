@@ -36,8 +36,8 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.builder.af.impl.DefaultKieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.guvnor.common.services.backend.cache.BuilderCache;
+import org.guvnor.common.services.backend.cache.GitCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.PathConverter;
@@ -143,7 +143,7 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public boolean isBuilt(final Project project) {
-        return builderCache.getBuilder(project.getRootPath().toURI().toString()) != null;//@TODO check if could be better the classloaderHolder
+        return builderCache.getKieAFBuilder(project.getRootPath().toURI().toString()) != null;//@TODO check if could be better the classloaderHolder
     }
 
     @Override

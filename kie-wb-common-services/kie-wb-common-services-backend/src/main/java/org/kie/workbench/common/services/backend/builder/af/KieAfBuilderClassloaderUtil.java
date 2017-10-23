@@ -26,11 +26,11 @@ import org.kie.scanner.KieModuleMetaData;
 import org.kie.scanner.KieModuleMetaDataImpl;
 import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
 import org.kie.workbench.common.services.backend.compiler.impl.kie.KieCompilationResponse;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
+import org.guvnor.common.services.backend.cache.BuilderCache;
+import org.guvnor.common.services.backend.cache.ClassLoaderCache;
+import org.guvnor.common.services.backend.cache.DependenciesCache;
+import org.guvnor.common.services.backend.cache.GitCache;
+import org.guvnor.common.services.backend.cache.KieModuleMetaDataCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -94,7 +94,7 @@ public class KieAfBuilderClassloaderUtil {
                  * This MapClassloader needs the .class from the target folders in a prj produced by the build, as a Map
                  * with a key like this "curriculumcourse/curriculumcourse/Curriculum.class" and the byte[] as a value */
                 projectClassLoader = new MapClassLoader(CompilerClassloaderUtils.getMapClasses(workingDir.toString(), store), dependenciesClassLoader);
-                classLoaderCache.addTargetClassLoader(workingDir, projectClassLoader);
+                classLoaderCache.addTargetMapClassLoader(workingDir, projectClassLoader);
             }
             return Optional.ofNullable(projectClassLoader);
         }
@@ -140,7 +140,7 @@ public class KieAfBuilderClassloaderUtil {
         if (res.getProjectDependenciesAsURI().isPresent()) {
             KieModuleMetaData kieModuleMetaData = new KieModuleMetaDataImpl((InternalKieModule) res.getKieModule().get(),
                                                                             res.getProjectDependenciesAsURI().get());
-            kieModuleMetaDataCache.addKieMetaData(workingDir, kieModuleMetaData);
+            kieModuleMetaDataCache.addKieModuleMetaData(workingDir, kieModuleMetaData);
         }
         return dependenciesClassLoader;
     }

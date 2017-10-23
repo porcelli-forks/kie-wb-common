@@ -28,12 +28,11 @@ import org.guvnor.common.services.backend.cache.LRUCache;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAfBuilderClassloaderUtil;
-import org.kie.workbench.common.services.backend.compiler.impl.classloader.CompilerClassloaderUtils;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.ClassLoaderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.DependenciesCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.KieModuleMetaDataCache;
+import org.guvnor.common.services.backend.cache.BuilderCache;
+import org.guvnor.common.services.backend.cache.ClassLoaderCache;
+import org.guvnor.common.services.backend.cache.DependenciesCache;
+import org.guvnor.common.services.backend.cache.GitCache;
+import org.guvnor.common.services.backend.cache.KieModuleMetaDataCache;
 import org.kie.workbench.common.services.backend.compiler.impl.utils.KieAFBuilderUtil;
 import org.kie.workbench.common.services.backend.project.MapClassLoader;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -110,7 +109,7 @@ public class LRUProjectDependenciesClassLoaderCache extends LRUCache<Path, Class
     public void invalidateCache(Path path) {
         dependenciesCache.removeDependenciesRaw(path);
         kieModuleMetaDataCache.removeKieModuleMetaData(path);
-        classLoaderCache.removeTargetClassloader(path);
+        classLoaderCache.removeTargetMapClassloader(path);
         if(path.endsWith("pom.xml")){
             classLoaderCache.removeDependenciesClassloader(path);
         }

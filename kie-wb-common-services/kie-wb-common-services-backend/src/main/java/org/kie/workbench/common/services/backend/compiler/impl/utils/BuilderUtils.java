@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
-import org.kie.workbench.common.services.backend.compiler.impl.share.BuilderCache;
-import org.kie.workbench.common.services.backend.compiler.impl.share.GitCache;
+import org.guvnor.common.services.backend.cache.BuilderCache;
+import org.guvnor.common.services.backend.cache.GitCache;
 import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped

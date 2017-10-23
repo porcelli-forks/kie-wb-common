@@ -178,6 +178,11 @@
       <artifactId>guvnor-m2repo-editor-backend</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-services-api</artifactId>
+    </dependency>
+
     <!-- Weld Modules. For tests only -->
     <dependency>
       <groupId>org.jboss.weld.se</groupId>
