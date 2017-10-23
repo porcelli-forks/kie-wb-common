@@ -55,6 +55,9 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
     }
 
     @Override
+    public void cleanInternalCache() {}
+
+    @Override
     public T compileSync(CompilationRequest req) {
 
         final Path path = req.getInfo().getPrjPath();

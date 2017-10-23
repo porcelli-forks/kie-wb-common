@@ -33,6 +33,11 @@ public class DefaultAFBuilder implements AFBuilder {
     private CompilationRequest req;
     private String mavenRepo;
 
+    @Override
+    public void cleanInternalCache() {
+        compiler.cleanInternalCache();
+    }
+
     public DefaultAFBuilder(String projectRepo,
                             String mavenRepo,
                             Boolean skipPrjDependenciesCreationList) {

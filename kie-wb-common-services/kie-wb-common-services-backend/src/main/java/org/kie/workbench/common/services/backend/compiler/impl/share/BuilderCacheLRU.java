@@ -32,19 +32,17 @@ import org.uberfire.java.nio.file.Path;
 @Named("LRUBuilderCache")
 public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements BuilderCache {
 
+    /**
+     * KIE AFBUILDER
+     */
 
     public synchronized void addKieAFBuilder(String uri, Object builder) {
         setEntry(uri, (KieAFBuilder) builder);
     }
 
-    /**
-     * BUILDER
-     */
-
     public synchronized Object getKieAFBuilder(String uri) {
         return getEntry(uri);
     }
-
 
     public synchronized void removeBuilder(String uri) {
         invalidateCache(uri);
@@ -56,6 +54,11 @@ public class BuilderCacheLRU extends LRUCache<String, KieAFBuilder> implements B
 
     public synchronized void clearBuilderCache() {
         invalidateCache();
+    }
+
+    @Override
+    public void cleanInternalCache(String uri) {
+        getEntry(uri).cleanInternalCache();
     }
 
     @Override

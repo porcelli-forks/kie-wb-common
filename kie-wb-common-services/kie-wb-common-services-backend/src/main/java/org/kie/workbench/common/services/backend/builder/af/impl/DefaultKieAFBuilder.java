@@ -38,6 +38,11 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     private String mavenRepo;
     private String FILE_URI = "file://";
 
+    @Override
+    public void cleanInternalCache() {
+        compiler.cleanInternalCache();
+    }
+
     public DefaultKieAFBuilder(Path projectRepo,
                                String mavenRepo) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,

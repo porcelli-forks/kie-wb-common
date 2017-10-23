@@ -51,4 +51,9 @@ public class DefaultMavenCompiler extends BaseMavenCompiler<CompilationResponse>
                                                                final Path workingDir) {
         return new DefaultCompilationResponse(successful, mavenOutput, workingDir);
     }
+
+    @Override
+    public void cleanInternalCache() {
+        cleanInternalCache();
+    }
 }

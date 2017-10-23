@@ -42,4 +42,9 @@ public class KieDefaultMavenCompiler extends BaseMavenCompiler<KieCompilationRes
     public KieCompilationResponse buildDefaultCompilationResponse(final Boolean successful, final List mavenOutput, final Path workingDir) {
         return new DefaultKieCompilationResponse(successful, mavenOutput, workingDir);
     }
+
+    @Override
+    public void cleanInternalCache() {
+       cleanInternalCache();
+    }
 }

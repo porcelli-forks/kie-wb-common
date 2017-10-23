@@ -24,6 +24,11 @@ import org.kie.workbench.common.services.backend.compiler.configuration.Decorato
 public interface AFBuilder {
 
     /**
+     * Clean internal poms cached
+     */
+    void cleanInternalCache();
+
+    /**
      * Run a mvn compile if is used the contructor with no []args or run the maven tasks declared in the []args passed with
      * the prj and maven repo in the constructor, maven output provided in the
      * CompilationResponse, the internal objects in the impl will be reused, useful if the project folder and
