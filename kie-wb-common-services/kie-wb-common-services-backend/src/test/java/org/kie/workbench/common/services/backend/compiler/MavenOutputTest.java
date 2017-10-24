@@ -12,9 +12,14 @@ import org.kie.workbench.common.services.backend.compiler.configuration.MavenCLI
 import org.kie.workbench.common.services.backend.compiler.impl.DefaultCompilationRequest;
 import org.kie.workbench.common.services.backend.compiler.impl.MavenCompilerFactory;
 import org.kie.workbench.common.services.backend.compiler.impl.WorkspaceCompilationInfo;
+import org.kie.workbench.common.services.backend.compiler.impl.utils.MavenOutputConverter;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MavenOutputTest {
 
@@ -60,4 +65,6 @@ public class MavenOutputTest {
 
         TestUtil.rm(tmpRoot.toFile());
     }
+
+
 }

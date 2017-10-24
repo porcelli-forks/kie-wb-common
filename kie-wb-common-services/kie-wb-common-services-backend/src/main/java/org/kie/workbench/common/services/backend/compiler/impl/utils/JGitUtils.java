@@ -36,7 +36,7 @@ public class JGitUtils {
     private static String REMOTE = "origin";
     private static String TEMP = System.getProperty("java.io.tmpdir") + File.separatorChar + "maven/";
 
-    public static Boolean applyBefore(final Git git) {
+    public static Boolean pullAndRebase(final Git git) {
         Boolean result = Boolean.FALSE;
         try {
             PullCommand pc = git.pull().setRemote(REMOTE).setRebase(Boolean.TRUE);

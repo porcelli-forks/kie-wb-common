@@ -69,7 +69,7 @@ public class JGITCompilerBeforeDecorator<T extends CompilationResponse, C extend
                                           req) : useInternalMap(fs,
                                                                 req);
             if (!req.skipAutoSourceUpdate()) {
-                JGitUtils.applyBefore(repo);
+                JGitUtils.pullAndRebase(repo);
             }
 
             _req = new DefaultCompilationRequest(req.getMavenRepo(),

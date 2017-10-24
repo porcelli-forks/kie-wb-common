@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.builder.af.impl;
 
 import java.net.URI;
+import java.util.Optional;
 
 import org.kie.workbench.common.services.backend.builder.af.KieAFBuilder;
 import org.kie.workbench.common.services.backend.compiler.AFCompiler;
@@ -37,6 +38,7 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     private CompilationRequest req;
     private String mavenRepo;
     private String FILE_URI = "file://";
+    private Path GIT_URI;
 
     @Override
     public void cleanInternalCache() {
@@ -57,11 +59,12 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
     }
 
     public DefaultKieAFBuilder(Path projectRepo,
-                               String mavenRepo, AFCompiler compiler) {
+                               String mavenRepo, AFCompiler compiler, Path gitUri) {
         /**In the construct we create the objects ready for a call to the build() without params to reuse all the internal objects,
          * only in the internal maven compilation new objects will be created in the compileSync */
         this.mavenRepo = mavenRepo;
         this.compiler = compiler;
+        this.GIT_URI = gitUri;
         info = new WorkspaceCompilationInfo(projectRepo);
         req = new DefaultCompilationRequest(mavenRepo,
                                             info,
@@ -368,5 +371,9 @@ public class DefaultKieAFBuilder implements KieAFBuilder {
 
     public String getMavenRepo() {
         return mavenRepo;
+    }
+
+    public Path getGITURI(){
+        return GIT_URI;
     }
 }

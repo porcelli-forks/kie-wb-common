@@ -42,6 +42,7 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 public class KieAFBuilderUtil {
 
+    //@TODO currently the only way to understand if is a imported prj
     private static final String IMPORTED_REPO_URI = "@myrepo";
 
     private static final String SYSTEM_IDENTITY = "system";
@@ -59,14 +60,14 @@ public class KieAFBuilderUtil {
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(URI.create(repo.getRepository().getDirectory().toPath().getParent().toAbsolutePath().toUri().toString() + nioPath.toString()));
                 builder = new DefaultKieAFBuilder(prj,
                                                   MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                                                  getCompiler(gitCache));
+                                                  getCompiler(gitCache), nioPath);
                 builderCache.addKieAFBuilder(uri, builder);
             } else {
                 //uri is the working dir
                 org.uberfire.java.nio.file.Path prj = org.uberfire.java.nio.file.Paths.get(uri);
                 builder = new DefaultKieAFBuilder(prj,
                                                   MavenUtils.getMavenRepoDir(guvnorM2Repository.getM2RepositoryDir(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME)),
-                                                  getCompilerWithoutGITsupport());
+                                                  getCompilerWithoutGITsupport(), nioPath);
                 builderCache.addKieAFBuilder(uri, builder);
             }
         }
@@ -74,7 +75,6 @@ public class KieAFBuilderUtil {
     }
 
     public static String getFolderName(String uri, String user) {
-        //@TODO currently the only way to understand if is a imported prj
         return uri.contains(IMPORTED_REPO_URI) ? UUID.randomUUID().toString() : user + "-" + UUID.randomUUID().toString();
     }
 

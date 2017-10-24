@@ -23,6 +23,8 @@ import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.uberfire.backend.server.util.Paths;
+import org.uberfire.java.nio.file.Path;
 
 /**
  * Maven output converter
@@ -30,13 +32,19 @@ import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 public class MavenOutputConverter {
 
     public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput,
-                                                                       String filter) {
+                                                                       String filter, Path path, String partToCut) {
+
         if (mavenOutput.size() > 0) {
             List<ValidationMessage> validationMsgs = new ArrayList<>(mavenOutput.size());
+
             for (String item : mavenOutput) {
                 if (item.contains(filter)) {
                     ValidationMessage msg = new ValidationMessage();
-                    msg.setText(item);
+                    int indexOfPartToCut = item.indexOf(partToCut);
+                    int indexOfEdnFilePath = item.lastIndexOf(":[");
+                    path.resolve(item.substring(indexOfPartToCut, indexOfEdnFilePath));
+                    msg.setText(item.substring(item.lastIndexOf(":")));
+                    msg.setPath(Paths.convert(path.resolve(item.substring(indexOfPartToCut, indexOfEdnFilePath))));
                     validationMsgs.add(msg);
                 }
             }
@@ -44,6 +52,28 @@ public class MavenOutputConverter {
         }
         return Collections.emptyList();
     }
+
+    public static BuildResults convertIntoBuildResults(List<String> mavenOutput,
+                                                                       String filter, Path path, String partToCut) {
+        if (mavenOutput.size() > 0) {
+            BuildResults buildRs = new BuildResults();
+            for (String item : mavenOutput) {
+                if (item.contains(filter)) {
+                    BuildMessage msg = new BuildMessage();
+                    String purged = item.replace(partToCut, "");
+                    int indexOfEdnFilePath = purged.lastIndexOf(":[");
+                    int indexStartOf = purged.indexOf("src/main");
+                    String min = purged.substring(indexStartOf, indexOfEdnFilePath);
+                    msg.setText(purged.substring(indexOfEdnFilePath+1));
+                    msg.setPath(Paths.convert(path.resolve(min)));
+                    buildRs.addBuildMessage(msg);
+                }
+            }
+            return buildRs;
+        }
+        return new BuildResults();
+    }
+
 
     public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput) {
         if (mavenOutput.size() > 0) {
@@ -83,13 +113,21 @@ public class MavenOutputConverter {
         return buildRs;
     }
 
-    public static IncrementalBuildResults convertIntoIncrementalBuildResults(List<String> mavenOutput) {
+    public static IncrementalBuildResults convertIntoIncrementalBuildResults(List<String> mavenOutput,
+                                                                             String filter, Path path, String partToCut) {
         IncrementalBuildResults incrmBuildRes = new IncrementalBuildResults();
         if (mavenOutput.size() > 0) {
             for (String item : mavenOutput) {
-                BuildMessage msg = new BuildMessage();
-                msg.setText(item);
-                incrmBuildRes.addAddedMessage(msg);
+                if (item.contains(filter)) {
+                    BuildMessage msg = new BuildMessage();
+                    String purged = item.replace(partToCut, "");
+                    int indexOfEdnFilePath = purged.lastIndexOf(":[");
+                    int indexStartOf = purged.indexOf("src/main");
+                    String min = purged.substring(indexStartOf, indexOfEdnFilePath);
+                    msg.setText(purged.substring(indexOfEdnFilePath+1));
+                    msg.setPath(Paths.convert(path.resolve(min)));
+                    incrmBuildRes.addAddedMessage(msg);
+                }
             }
         }
         return incrmBuildRes;
