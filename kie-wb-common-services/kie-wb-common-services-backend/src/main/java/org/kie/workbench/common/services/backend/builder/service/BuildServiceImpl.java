@@ -104,7 +104,13 @@ public class BuildServiceImpl implements BuildService {
             gitPullAndRebase(project);
             KieCompilationResponse res = kieAfBuilder.build(Boolean.TRUE,
                                                             Boolean.FALSE);
-            return MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get(), ERROR_LEVEL, ((DefaultKieAFBuilder)kieAfBuilder).getGITURI(), ((DefaultKieAFBuilder) kieAfBuilder).getInfo().getPrjPath().getParent().toString());
+            BuildResults br =
+             MavenOutputConverter.convertIntoBuildResults(res.getMavenOutput().get(),
+                    ERROR_LEVEL,
+                    ((DefaultKieAFBuilder)kieAfBuilder).getGITURI(),
+                    ((DefaultKieAFBuilder) kieAfBuilder).getInfo().getPrjPath().getParent().toString());
+
+            return br;
         } else {
             BuildResults buildRs = new BuildResults();
             BuildMessage msg = new BuildMessage();
