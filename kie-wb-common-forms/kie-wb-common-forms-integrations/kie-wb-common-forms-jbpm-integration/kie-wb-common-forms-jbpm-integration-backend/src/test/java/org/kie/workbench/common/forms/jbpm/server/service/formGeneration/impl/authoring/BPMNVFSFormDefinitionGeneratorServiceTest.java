@@ -35,7 +35,9 @@ import org.kie.workbench.common.forms.services.backend.serialization.FormDefinit
 import org.kie.workbench.common.forms.services.backend.serialization.impl.FieldSerializer;
 import org.kie.workbench.common.forms.services.backend.serialization.impl.FormDefinitionSerializerImpl;
 import org.kie.workbench.common.forms.services.backend.serialization.impl.FormModelSerializer;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildDataImpl;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.mockito.Mock;
@@ -71,19 +73,21 @@ public abstract class BPMNVFSFormDefinitionGeneratorServiceTest extends Abstract
     protected CommentedOptionFactory commentedOptionFactory;
 
     @Mock
-    private KieModuleService projectService;
+    private KieModuleService moduleService;
 
     @Mock
     private KieModule module;
 
     @Mock
-    private ModuleClassLoaderHelper projectClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     @Before
     public void setup() throws IOException {
 
-        when(projectService.resolveModule(any())).thenReturn(module);
-        when(projectClassLoaderHelper.getModuleClassLoader(module)).thenReturn(this.getClass().getClassLoader());
+        when(moduleService.resolveModule(any())).thenReturn(module);
+        final ProjectBuildData projectBuildData = mock(ProjectBuildDataImpl.class);
+        when(projectBuildData.getClassLoader()).thenReturn(this.getClass().getClassLoader());
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(projectBuildData);
 
         source = mock(Path.class);
 
@@ -95,8 +99,8 @@ public abstract class BPMNVFSFormDefinitionGeneratorServiceTest extends Abstract
         when(commentedOptionFactory.makeCommentedOption(anyString())).then(invocationOnMock -> new CommentedOption("1",
                                                                                                                    invocationOnMock.getArguments()[0].toString()));
 
-        formModelHandlerManager = new TestFormModelHandlerManager(projectService,
-                                                                  projectClassLoaderHelper,
+        formModelHandlerManager = new TestFormModelHandlerManager(moduleService,
+                                                                  moduleCache,
                                                                   fieldManager,
                                                                   dataObjectFinderService);
 

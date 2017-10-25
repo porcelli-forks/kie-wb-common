@@ -49,7 +49,7 @@ import org.kie.workbench.common.forms.model.impl.meta.entries.FieldReadOnlyEntry
 import org.kie.workbench.common.forms.model.impl.meta.entries.FieldTypeEntry;
 import org.kie.workbench.common.forms.model.util.formModel.FormModelPropertiesUtil;
 import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,13 +61,13 @@ public class BPMNFormModelGeneratorImpl implements BPMNFormModelGenerator {
     private static final Logger logger = LoggerFactory.getLogger(BPMNFormModelGeneratorImpl.class);
 
     private KieModuleService moduleService;
-    private ModuleClassLoaderHelper projectClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     @Inject
-    public BPMNFormModelGeneratorImpl(KieModuleService moduleService,
-                                      ModuleClassLoaderHelper projectClassLoaderHelper) {
+    public BPMNFormModelGeneratorImpl(final KieModuleService moduleService,
+                                      final ModuleCache moduleCache) {
         this.moduleService = moduleService;
-        this.projectClassLoaderHelper = projectClassLoaderHelper;
+        this.moduleCache = moduleCache;
     }
 
     @Override
@@ -76,8 +76,7 @@ public class BPMNFormModelGeneratorImpl implements BPMNFormModelGenerator {
         Process process = getProcess(source);
 
         if (process != null) {
-
-            final ClassLoader projectClassLoader = projectClassLoaderHelper.getModuleClassLoader(moduleService.resolveModule(path));
+            final ClassLoader projectClassLoader = moduleCache.getOrCreateEntry(moduleService.resolveModule(path)).getClassLoader();
 
             List<ModelProperty> properties = process.getProperties().stream().map(property -> {
                 String varName = property.getId();
@@ -105,7 +104,7 @@ public class BPMNFormModelGeneratorImpl implements BPMNFormModelGenerator {
 
         Process process = getProcess(source);
 
-        final ClassLoader projectClassLoader = projectClassLoaderHelper.getModuleClassLoader(moduleService.resolveModule(path));
+        final ClassLoader projectClassLoader = moduleCache.getOrCreateEntry(moduleService.resolveModule(path)).getClassLoader();
 
         if (process != null) {
             ProcessTaskFormsGenerationResult result = readUserTaskFormVariables(process);
@@ -156,7 +155,7 @@ public class BPMNFormModelGeneratorImpl implements BPMNFormModelGenerator {
                     throw new IllegalStateException(generateErrorMessage(formVariables));
                 }
 
-                final ClassLoader projectClassLoader = projectClassLoaderHelper.getModuleClassLoader(moduleService.resolveModule(path));
+                final ClassLoader projectClassLoader = moduleCache.getOrCreateEntry(moduleService.resolveModule(path)).getClassLoader();
 
                 return formVariables.toFormModel(variable -> createModelProperty(variable,
                                                                                  projectClassLoader));

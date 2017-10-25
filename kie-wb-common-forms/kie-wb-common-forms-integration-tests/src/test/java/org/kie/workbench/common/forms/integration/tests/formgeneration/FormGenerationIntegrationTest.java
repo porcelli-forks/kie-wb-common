@@ -70,7 +70,9 @@ import org.kie.workbench.common.forms.services.backend.serialization.impl.FormDe
 import org.kie.workbench.common.forms.services.backend.serialization.impl.FormModelSerializer;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.screens.datamodeller.service.ServiceException;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildDataImpl;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.driver.FilterHolder;
 import org.kie.workbench.common.services.datamodeller.driver.ModelDriver;
@@ -92,6 +94,7 @@ import org.uberfire.java.nio.base.options.CommentedOption;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.workbench.common.forms.jbpm.model.authoring.document.type.DocumentFieldType.DOCUMENT_TYPE;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -133,7 +136,7 @@ public class FormGenerationIntegrationTest {
     private static KieModuleService moduleService;
 
     @Mock
-    private static ModuleClassLoaderHelper moduleClassLoaderHelper;
+    private static ModuleCache moduleCache;
     private static FormLayoutTemplateGenerator templateGenerator;
     private static BPMNFormModelGeneratorImpl generator;
     private static Path rootPathWithNestedForms;
@@ -193,7 +196,7 @@ public class FormGenerationIntegrationTest {
         finderService = new DataObjectFinderServiceImpl(moduleService, dataModelerService);
 
         formModelHandlerManager = new TestFormModelHandlerManager(moduleService,
-                                                                  moduleClassLoaderHelper,
+                                                                  moduleCache,
                                                                   fieldManager,
                                                                   finderService);
 
@@ -210,10 +213,12 @@ public class FormGenerationIntegrationTest {
                                                             formModelSynchronizationUtil);
 
         when(moduleService.resolveModule(any())).thenReturn(module);
-        when(moduleClassLoaderHelper.getModuleClassLoader(any())).thenReturn(moduleClassLoader);
+        final ProjectBuildData buildData = mock(ProjectBuildDataImpl.class);
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(buildData);
+        when(buildData.getClassLoader()).thenReturn(moduleClassLoader);
 
         generator = new BPMNFormModelGeneratorImpl(moduleService,
-                                                   moduleClassLoaderHelper);
+                                                   moduleCache);
         processFormModel = generator.generateProcessFormModel(formGenerationProcessDefinitions,
                                                               rootPathWithNestedForms);
         taskFormModels = generator.generateTaskFormModels(formGenerationProcessDefinitions, rootPathWithNestedForms);

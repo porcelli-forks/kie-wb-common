@@ -15,6 +15,8 @@
 
 package org.kie.workbench.common.screens.datamodeller.backend.server;
 
+import java.net.URL;
+
 import org.junit.Test;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
@@ -22,9 +24,13 @@ import org.kie.workbench.common.services.shared.project.KieModule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class DataModelerInnerTypesWeldTest extends AbstractDataModelerServiceWeldTest {
 
+    /**
+     * This test checks that class fields that of enum types or inner class types should be skipped.
+     */
     @Test
     public void dataModelerShouldIgnoreEnumFieldsOfInnerClasses() throws Exception {
         KieModule module = loadProjectFromResources("/TestInnerTypes");

@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.guvnor.common.services.project.model.WorkspaceProject;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.messageconsole.events.PublishBatchMessagesEvent;
 import org.guvnor.messageconsole.events.UnpublishMessagesEvent;
 import org.junit.Before;
@@ -41,8 +41,16 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.MenuItem;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyListOf;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DataModelerScreenPresenterTest
         extends DataModelerScreenPresenterTestBase {
@@ -342,7 +350,7 @@ public class DataModelerScreenPresenterTest
     @Test
     public void onSaveValidationFailedTest() {
         when(validationService.validateForSave(any(Path.class),
-                                               any(DataObject.class))).thenReturn(Arrays.asList(new ValidationMessage()));
+                                               any(DataObject.class))).thenReturn(Arrays.asList(new BuildMessage()));
         presenter.context = mock(DataModelerContext.class);
 
         presenter.save();
@@ -353,7 +361,7 @@ public class DataModelerScreenPresenterTest
         verify(validationPopup,
                times(1)).showSaveValidationMessages(any(Command.class),
                                                     any(Command.class),
-                                                    anyListOf(ValidationMessage.class));
+                                                    anyListOf(BuildMessage.class));
     }
 
     @Test
@@ -370,7 +378,7 @@ public class DataModelerScreenPresenterTest
         verify(validationPopup,
                never()).showCopyValidationMessages(any(Command.class),
                                                    any(Command.class),
-                                                   anyListOf(ValidationMessage.class));
+                                                   anyListOf(BuildMessage.class));
     }
 
     @Test
@@ -477,7 +485,7 @@ public class DataModelerScreenPresenterTest
         verify(validationPopup,
                never()).showSaveValidationMessages(any(Command.class),
                                                    any(Command.class),
-                                                   anyListOf(ValidationMessage.class));
+                                                   anyListOf(BuildMessage.class));
     }
 
     @Test
@@ -495,7 +503,7 @@ public class DataModelerScreenPresenterTest
                                               any(Command.class));
 
         // Simulate "yes" action in YesNoCancelPopup, with validation issues detected
-        presenter.getRenameValidationCallback().callback(Arrays.asList(new ValidationMessage()));
+        presenter.getRenameValidationCallback().callback(Arrays.asList(new BuildMessage()));
 
         verify(renamePopUpPresenter,
                never()).show(any(Path.class),
@@ -504,7 +512,7 @@ public class DataModelerScreenPresenterTest
         verify(validationPopup,
                times(1)).showSaveValidationMessages(any(Command.class),
                                                     any(Command.class),
-                                                    anyListOf(ValidationMessage.class));
+                                                    anyListOf(BuildMessage.class));
     }
 
     @Test
@@ -522,13 +530,13 @@ public class DataModelerScreenPresenterTest
         verify(validationPopup,
                never()).showCopyValidationMessages(any(Command.class),
                                                    any(Command.class),
-                                                   anyListOf(ValidationMessage.class));
+                                                   anyListOf(BuildMessage.class));
     }
 
     @Test
     public void onCopyValidationFailedTest() {
         when(validationService.validateForCopy(any(Path.class),
-                                               any(DataObject.class))).thenReturn(Arrays.asList(new ValidationMessage()));
+                                               any(DataObject.class))).thenReturn(Arrays.asList(new BuildMessage()));
         presenter.context = mock(DataModelerContext.class);
 
         presenter.onCopy();
@@ -540,7 +548,7 @@ public class DataModelerScreenPresenterTest
         verify(validationPopup,
                times(1)).showCopyValidationMessages(any(Command.class),
                                                     any(Command.class),
-                                                    anyListOf(ValidationMessage.class));
+                                                    anyListOf(BuildMessage.class));
     }
 
     @Test

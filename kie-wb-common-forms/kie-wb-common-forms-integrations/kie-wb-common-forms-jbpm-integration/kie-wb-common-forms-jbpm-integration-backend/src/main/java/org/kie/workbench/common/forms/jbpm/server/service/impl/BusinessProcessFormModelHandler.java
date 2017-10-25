@@ -27,7 +27,7 @@ import org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProce
 import org.kie.workbench.common.forms.jbpm.service.shared.BPMFinderService;
 import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +38,12 @@ public class BusinessProcessFormModelHandler extends AbstractJBPMFormModelHandle
     private static final Logger logger = LoggerFactory.getLogger(BusinessProcessFormModelHandler.class);
 
     @Inject
-    public BusinessProcessFormModelHandler(KieModuleService projectService,
-                                           ModuleClassLoaderHelper classLoaderHelper,
-                                           FieldManager fieldManager,
-                                           BPMFinderService bpmFinderService) {
-        super(projectService,
-              classLoaderHelper,
+    public BusinessProcessFormModelHandler(final KieModuleService kieModuleService,
+                                           final ModuleCache moduleCache,
+                                           final FieldManager fieldManager,
+                                           final BPMFinderService bpmFinderService) {
+        super(kieModuleService,
+              moduleCache,
               fieldManager,
               bpmFinderService);
     }
@@ -56,7 +56,7 @@ public class BusinessProcessFormModelHandler extends AbstractJBPMFormModelHandle
     @Override
     public FormModelHandler<BusinessProcessFormModel> newInstance() {
         return new BusinessProcessFormModelHandler(moduleService,
-                                                   classLoaderHelper,
+                                                   moduleCache,
                                                    fieldManager,
                                                    bpmFinderService);
     }

@@ -23,7 +23,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.backend.validation.GenericValidator;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 
@@ -44,8 +44,8 @@ public class DefaultGenericKieValidator implements GenericValidator {
         this.validatorBuildService = validatorBuildService;
     }
 
-    public List<ValidationMessage> validate(final Path path,
-                                            final String content) {
+    public List<BuildMessage> validate(final Path path,
+                                       final String content) {
         return validatorBuildService.validate(path,
                                               content)
                 .stream()
@@ -53,14 +53,14 @@ public class DefaultGenericKieValidator implements GenericValidator {
                 .collect(Collectors.toList());
     }
 
-    public List<ValidationMessage> validate(final Path path) {
+    public List<BuildMessage> validate(final Path path) {
         return validatorBuildService.validate(path)
                 .stream()
                 .filter(fromValidatedPath(path))
                 .collect(Collectors.toList());
     }
 
-    protected Predicate<ValidationMessage> fromValidatedPath(final Path path) {
+    protected Predicate<BuildMessage> fromValidatedPath(final Path path) {
         return message -> {
             final String destinationPathURI = removeFileExtension(Paths.normalizePath(path).toURI());
             final String messageURI = message.getPath() != null ? removeFileExtension(Paths.normalizePath(message.getPath()).toURI()) : "";

@@ -14,4 +14,11 @@
       <url>file:///home/jsoltes/Servers/eap-7.0.1/bin/repositories/kie/global</url>
     </repository>
   </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+      <version>7.8.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

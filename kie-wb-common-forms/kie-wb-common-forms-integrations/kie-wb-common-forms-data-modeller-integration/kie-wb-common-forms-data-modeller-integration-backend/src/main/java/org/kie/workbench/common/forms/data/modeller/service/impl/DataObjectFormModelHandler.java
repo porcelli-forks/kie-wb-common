@@ -33,7 +33,7 @@ import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.model.impl.meta.entries.FieldLabelEntry;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.datamodeller.core.Annotation;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
@@ -60,12 +60,12 @@ public class DataObjectFormModelHandler extends AbstractFormModelHandler<DataObj
     protected FieldManager fieldManager;
 
     @Inject
-    public DataObjectFormModelHandler(KieModuleService moduleService,
-                                      ModuleClassLoaderHelper classLoaderHelper,
-                                      DataObjectFinderService finderService,
-                                      FieldManager fieldManager) {
+    public DataObjectFormModelHandler(final KieModuleService moduleService,
+                                      final ModuleCache moduleCache,
+                                      final DataObjectFinderService finderService,
+                                      final FieldManager fieldManager) {
         super(moduleService,
-              classLoaderHelper);
+              moduleCache);
 
         this.finderService = finderService;
         this.fieldManager = fieldManager;
@@ -114,8 +114,6 @@ public class DataObjectFormModelHandler extends AbstractFormModelHandler<DataObj
                                                Path path) {
         this.path = path;
 
-        initClassLoader();
-
         DataObjectFormModel formModel = new DataObjectFormModel(dataObject.getName(),
                                                                 dataObject.getClassName());
 
@@ -150,7 +148,7 @@ public class DataObjectFormModelHandler extends AbstractFormModelHandler<DataObj
     @Override
     public FormModelHandler<DataObjectFormModel> newInstance() {
         return new DataObjectFormModelHandler(moduleService,
-                                              classLoaderHelper,
+                                              moduleCache,
                                               finderService,
                                               fieldManager);
     }

@@ -30,7 +30,9 @@ import org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProce
 import org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.ModelProperty;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildDataImpl;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.mockito.Mock;
@@ -45,6 +47,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -106,11 +109,12 @@ public class BPMNFormModelGeneratorImplTest {
     @Mock
     private Path path;
     @Mock
-    private KieModuleService projectService;
+    private KieModuleService moduleService;
     @Mock
     private KieModule module;
     @Mock
-    private ModuleClassLoaderHelper projectClassLoaderHelper;
+    private ModuleCache moduleCache;
+
     @Mock
     private ClassLoader projectClassLoader;
 
@@ -124,13 +128,15 @@ public class BPMNFormModelGeneratorImplTest {
 
     @Before
     public void init() throws ClassNotFoundException {
-        when(projectService.resolveModule(any())).thenReturn(module);
+        when(moduleService.resolveModule(any())).thenReturn(module);
         when(module.getRootPath()).thenReturn(path);
-        when(projectClassLoaderHelper.getModuleClassLoader(module)).thenReturn(projectClassLoader);
+        final ProjectBuildData projectBuildData = mock(ProjectBuildDataImpl.class);
+        when(projectBuildData.getClassLoader()).thenReturn(projectClassLoader);
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(projectBuildData);
         when(projectClassLoader.loadClass(anyString())).thenAnswer(invocation -> Object.class);
 
-        generator = new BPMNFormModelGeneratorImpl(projectService,
-                                                   projectClassLoaderHelper);
+        generator = new BPMNFormModelGeneratorImpl(moduleService,
+                                                   moduleCache);
     }
 
     @Test

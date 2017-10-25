@@ -26,6 +26,7 @@
   <inherits name="org.kie.workbench.common.stunner.shapes.StunnerShapesApi"/>
 
   <source path="definition"/>
+  <source path="definition/property/event/timer"/>
   <source path="factory"/>
   <source path="forms"/>
   <source path="qualifiers"/>

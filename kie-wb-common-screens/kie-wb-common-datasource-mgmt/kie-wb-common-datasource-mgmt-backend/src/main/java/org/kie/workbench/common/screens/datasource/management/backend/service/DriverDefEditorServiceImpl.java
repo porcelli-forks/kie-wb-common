@@ -22,6 +22,7 @@ import java.net.URLClassLoader;
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -30,8 +31,8 @@ import javax.inject.Named;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Module;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.common.services.shared.message.Level;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.screens.datasource.management.backend.core.DataSourceRuntimeManager;
 import org.kie.workbench.common.screens.datasource.management.backend.core.DeploymentOptions;
@@ -178,14 +179,14 @@ public class DriverDefEditorServiceImpl
     }
 
     @Override
-    public List<ValidationMessage> validate(DriverDef driverDef) {
+    public List<BuildMessage> validate(DriverDef driverDef) {
 
-        List<ValidationMessage> messages = new ArrayList<>();
-        ValidationMessage message;
+        List<BuildMessage> messages = new ArrayList<>();
+        BuildMessage message;
         try {
             validateDriver(driverDef);
         } catch (Exception e) {
-            message = new ValidationMessage();
+            message = new BuildMessage();
             message.setLevel(Level.ERROR);
             message.setText(e.getMessage());
             messages.add(message);

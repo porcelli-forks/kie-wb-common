@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
@@ -35,10 +36,10 @@ import org.guvnor.common.services.backend.validation.GenericValidator;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.utils.ModuleResourcePaths;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.messageconsole.events.PublishBatchMessagesEvent;
 import org.guvnor.messageconsole.events.SystemMessage;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -63,7 +64,7 @@ import org.kie.workbench.common.screens.datamodeller.model.GenerationResult;
 import org.kie.workbench.common.screens.datamodeller.model.TypeInfoResult;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.screens.datamodeller.service.ServiceException;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.backend.service.KieService;
 import org.kie.workbench.common.services.datamodel.backend.server.service.DataModelService;
 import org.kie.workbench.common.services.datamodeller.codegen.GenerationContext;
@@ -124,7 +125,7 @@ public class DataModelerServiceImpl
     @Inject
     private DataModelerServiceHelper serviceHelper;
     @Inject
-    private ModuleClassLoaderHelper classLoaderHelper;
+    private ModuleCache moduleCache;
 
     @Inject
     private Event<DataObjectCreatedEvent> dataObjectCreatedEvent;
@@ -323,7 +324,7 @@ public class DataModelerServiceImpl
                 logger.debug("Current module path is: " + modulePath);
             }
 
-            ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(module);
+            ClassLoader classLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
 
             ModelDriver modelDriver = new JavaRoasterModelDriver(ioService,
                                                                  Paths.convert(defaultPackage.getPackageMainSrcPath()),
@@ -397,7 +398,7 @@ public class DataModelerServiceImpl
                                             new ArrayList<DataModelerError>());
             }
 
-            ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(module);
+            ClassLoader classLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
             JavaRoasterModelDriver modelDriver = new JavaRoasterModelDriver(ioService,
                                                                             null,
                                                                             classLoader,
@@ -450,7 +451,7 @@ public class DataModelerServiceImpl
                 return result;
             }
 
-            ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(module);
+            ClassLoader classLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
             Pair<String, List<DataModelerError>> updateResult = updateJavaSource(source,
                                                                                  dataObject,
                                                                                  new HashMap<String, String>(),
@@ -495,7 +496,7 @@ public class DataModelerServiceImpl
                 return result;
             }
 
-            ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(module);
+            ClassLoader classLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
             JavaRoasterModelDriver modelDriver = new JavaRoasterModelDriver(ioService,
                                                                             Paths.convert(path),
                                                                             classLoader,
@@ -661,7 +662,7 @@ public class DataModelerServiceImpl
             }
 
             if (dataObject == null) {
-                ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(module);
+                ClassLoader classLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
                 JavaRoasterModelDriver modelDriver = new JavaRoasterModelDriver(ioService,
                                                                                 Paths.convert(path),
                                                                                 classLoader,
@@ -1019,22 +1020,22 @@ public class DataModelerServiceImpl
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<ValidationMessage> validate(final String source,
-                                            final Path path,
-                                            final DataObject dataObject) {
+    public List<BuildMessage> validate(final String source,
+                                       final Path path,
+                                       final DataObject dataObject) {
 
         try {
             String validationSource = null;
-            List<ValidationMessage> validations = new ArrayList<ValidationMessage>();
+            List<BuildMessage> validations = new ArrayList<>();
 
             KieModule module = moduleService.resolveModule(path);
             if (module == null) {
                 logger.warn("File : " + path.toURI() + " do not belong to a valid module");
-                ValidationMessage validationMessage = new ValidationMessage();
+                BuildMessage validationMessage = new BuildMessage();
                 validationMessage.setPath(path);
                 validationMessage.setText("File do no belong to a valid module");
                 validationMessage.setLevel(Level.ERROR);
-                validations.add(new ValidationMessage());
+                validations.add(new BuildMessage());
                 return validations;
             }
 
@@ -1212,7 +1213,7 @@ public class DataModelerServiceImpl
         //check the module class path to see if the class is defined likely in a module dependency or in curren module.
         KieModule module = moduleService.resolveModule(path);
         if (module != null) {
-            ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(module);
+            ClassLoader classLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
             try {
                 classLoader.loadClass(className);
                 return true;
@@ -1271,12 +1272,12 @@ public class DataModelerServiceImpl
     }
 
     @Override
-    public List<ValidationMessage> validateValuePair(String annotationClassName,
-                                                     ElementType target,
-                                                     String valuePairName,
-                                                     String literalValue) {
-        //Currently we only validate the syntax but additional checks may be added.
-        List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
+    public List<BuildMessage> validateValuePair(String annotationClassName,
+                                                ElementType target,
+                                                String valuePairName,
+                                                String literalValue) {
+        //Currently we only accept the syntax but additional checks may be added.
+        List<BuildMessage> validationMessages = new ArrayList<BuildMessage>();
         JavaRoasterModelDriver modelDriver = new JavaRoasterModelDriver();
         Pair<AnnotationSource<JavaClassSource>, List<DriverError>> parseResult =
                 modelDriver.parseAnnotationWithValuePair(annotationClassName,
@@ -1284,9 +1285,9 @@ public class DataModelerServiceImpl
                                                          valuePairName,
                                                          literalValue);
         if (parseResult.getK2() != null && parseResult.getK2().size() > 0) {
-            ValidationMessage validationMessage;
+            BuildMessage validationMessage;
             for (DriverError driverError : parseResult.getK2()) {
-                validationMessage = new ValidationMessage();
+                validationMessage = new BuildMessage();
                 validationMessage.setText(driverError.getMessage());
                 validationMessage.setColumn(driverError.getColumn());
                 validationMessage.setLine(driverError.getLine());
@@ -1306,7 +1307,7 @@ public class DataModelerServiceImpl
                 parseRequest.getTarget(),
                 parseRequest.getValuePairName(),
                 parseRequest.getValuePairLiteralValue(),
-                classLoaderHelper.getModuleClassLoader(kieModule));
+                moduleCache.getOrCreateEntry(kieModule).getClassLoader());
 
         AnnotationParseResponse response = new AnnotationParseResponse(driverResult.getK1());
         response.withErrors(driverResult.getK2());
@@ -1318,7 +1319,7 @@ public class DataModelerServiceImpl
                                                                  KieModule kieModule) {
 
         JavaRoasterModelDriver modelDriver = new JavaRoasterModelDriver();
-        ClassLoader classLoader = classLoaderHelper.getModuleClassLoader(kieModule);
+        ClassLoader classLoader = moduleCache.getOrCreateEntry(kieModule).getClassLoader();
         ClassTypeResolver classTypeResolver = DriverUtils.createClassTypeResolver(classLoader);
         AnnotationDefinitionResponse definitionResponse = new AnnotationDefinitionResponse();
 

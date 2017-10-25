@@ -24,7 +24,7 @@ import org.guvnor.common.services.project.model.Package;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaSource;
 import org.kie.workbench.common.screens.javaeditor.type.JavaResourceTypeDefinition;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.refactoring.Resource;
 import org.kie.workbench.common.services.refactoring.backend.server.indexing.AbstractFileIndexer;
 import org.kie.workbench.common.services.refactoring.backend.server.indexing.DefaultIndexBuilder;
@@ -78,7 +78,7 @@ public class JavaFileIndexer extends AbstractFileIndexer {
     protected Instance<JavaFileIndexerExtension> javaFileIndexerExtensions;
 
     @Inject
-    ModuleClassLoaderHelper classLoaderHelper;
+    protected ModuleCache moduleCache;
 
     @Override
     public boolean supportsPath(final Path path) {
@@ -131,9 +131,9 @@ public class JavaFileIndexer extends AbstractFileIndexer {
                                              ResourceType.JAVA);
 
             if (javaType instanceof JavaSource) {
-                ClassLoader moduleClassLoader = getModuleClassLoader(module);
+                ClassLoader projectClassLoader = getModuleClassLoader(module);
                 JavaSourceVisitor visitor = new JavaSourceVisitor((JavaSource) javaType,
-                                                                  moduleClassLoader,
+                                                                  projectClassLoader,
                                                                   resParts);
                 visitor.visit((JavaSource) javaType);
                 addReferencedResourcesToIndexBuilder(builder,
@@ -150,7 +150,7 @@ public class JavaFileIndexer extends AbstractFileIndexer {
      * Present in order to be overridden in tests
      */
     protected ClassLoader getModuleClassLoader(final KieModule module) {
-        return classLoaderHelper.getModuleClassLoader(module);
+        return moduleCache.getOrCreateEntry(module).getClassLoader();
     }
 
     /*

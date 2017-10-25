@@ -19,8 +19,9 @@ package org.kie.workbench.common.services.shared.project;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.kie.soup.commons.validation.PortablePreconditions;
 import org.uberfire.backend.vfs.Path;
+
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 @Portable
 public class KieModule
@@ -44,14 +45,10 @@ public class KieModule
 
         super(rootPath,
               pomXMLPath);
-        this.kmoduleXMLPath = PortablePreconditions.checkNotNull("kmoduleXMLPath",
-                                                                 kmoduleXMLPath);
-        this.importsPath = PortablePreconditions.checkNotNull("importsPath",
-                                                              importsPath);
-        this.repositoriesPath = PortablePreconditions.checkNotNull("repositoriesPath",
-                                                                   repositoriesPath);
-        this.packageNamesWhiteListPath = PortablePreconditions.checkNotNull("packageNamesWhiteListPath",
-                                                                            packageNamesWhiteListPath);
+        this.kmoduleXMLPath = checkNotNull("kmoduleXMLPath", kmoduleXMLPath);
+        this.importsPath = checkNotNull("importsPath", importsPath);
+        this.repositoriesPath = checkNotNull("repositoriesPath", repositoriesPath);
+        this.packageNamesWhiteListPath = checkNotNull("packageNamesWhiteListPath", packageNamesWhiteListPath);
     }
 
     public KieModule(final Path rootPath,
@@ -67,8 +64,7 @@ public class KieModule
              importsPath,
              repositoriesPath,
              packageNamesWhiteListPath);
-        this.pom = PortablePreconditions.checkNotNull("pom",
-                                                      pom);
+        this.pom = checkNotNull("pom", pom);
     }
 
     public Path getKModuleXMLPath() {

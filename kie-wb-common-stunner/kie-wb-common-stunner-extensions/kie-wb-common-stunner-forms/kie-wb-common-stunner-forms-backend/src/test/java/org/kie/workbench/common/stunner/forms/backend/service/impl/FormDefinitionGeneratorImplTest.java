@@ -50,7 +50,8 @@ import org.kie.workbench.common.forms.model.MetaDataEntry;
 import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.model.impl.meta.entries.FieldReadOnlyEntry;
 import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.kie.workbench.common.stunner.core.diagram.Diagram;
@@ -125,7 +126,9 @@ public class FormDefinitionGeneratorImplTest {
     @Mock
     private KieModule module;
     @Mock
-    private ModuleClassLoaderHelper moduleClassLoaderHelper;
+    private ModuleCache moduleCache;
+    @Mock
+    private ProjectBuildData projectBuildData;
     @Mock
     private ClassLoader moduleClassLoader;
 
@@ -168,12 +171,13 @@ public class FormDefinitionGeneratorImplTest {
         // Prepare BPMNFormModelGenerator
         when(kieModuleService.resolveModule(any())).thenReturn(module);
         when(module.getRootPath()).thenReturn(path);
-        when(moduleClassLoaderHelper.getModuleClassLoader(module)).thenReturn(moduleClassLoader);
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(projectBuildData);
+        when(projectBuildData.getClassLoader()).thenReturn(moduleClassLoader);
         when(moduleClassLoader.loadClass(anyString())).thenAnswer(invocation -> Object.class);
-        BPMNFormModelGenerator bpmnFormModelGenerator = spy(new BPMNFormModelGeneratorImpl(kieModuleService, moduleClassLoaderHelper));
+        BPMNFormModelGenerator bpmnFormModelGenerator = spy(new BPMNFormModelGeneratorImpl(kieModuleService, moduleCache));
 
         FormModelHandlerManager formModelHandlerManager = new TestFormModelHandlerManager(kieModuleService,
-                                                                                          moduleClassLoaderHelper,
+                                                                                          moduleCache,
                                                                                           new TestFieldManager()
         );
 

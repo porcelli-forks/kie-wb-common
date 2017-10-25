@@ -52,7 +52,9 @@ import org.kie.workbench.common.forms.model.TypeKind;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.kie.workbench.common.screens.datamodeller.backend.server.handler.JPADomainHandler;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildDataImpl;
 import org.kie.workbench.common.services.datamodeller.core.Annotation;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
@@ -106,7 +108,7 @@ public class DataObjectFormModelHandlerTest extends AbstractDataObjectTest {
     private KieModule module;
 
     @Mock
-    private ModuleClassLoaderHelper moduleClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     @Mock
     private ClassLoader classLoader;
@@ -115,7 +117,9 @@ public class DataObjectFormModelHandlerTest extends AbstractDataObjectTest {
     public void setUp() throws Exception {
 
         when(moduleService.resolveModule(any())).thenReturn(module);
-        when(moduleClassLoaderHelper.getModuleClassLoader(module)).thenReturn(classLoader);
+        final ProjectBuildData projectBuildData = mock(ProjectBuildDataImpl.class);
+        when(projectBuildData.getClassLoader()).thenReturn(classLoader);
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(projectBuildData);
         when(classLoader.loadClass(any())).thenAnswer((Answer<Class>) invocation -> String.class);
 
         createModel();
@@ -123,7 +127,7 @@ public class DataObjectFormModelHandlerTest extends AbstractDataObjectTest {
         finderService = new DataObjectFinderServiceImpl(moduleService,
                                                         dataModelerService);
         handler = new DataObjectFormModelHandler(moduleService,
-                                                 moduleClassLoaderHelper,
+                                                 moduleCache,
                                                  finderService,
                                                  new TestFieldManager());
         when(dataModelerService.loadModel(any())).thenReturn(dataModel);

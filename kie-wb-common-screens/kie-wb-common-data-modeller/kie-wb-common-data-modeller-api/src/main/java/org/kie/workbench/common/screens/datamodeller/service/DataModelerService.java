@@ -19,8 +19,8 @@ package org.kie.workbench.common.screens.datamodeller.service;
 import java.util.List;
 import java.util.Map;
 
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.kie.workbench.common.screens.datamodeller.model.EditorModelContent;
 import org.kie.workbench.common.screens.datamodeller.model.GenerationResult;
@@ -116,9 +116,9 @@ public interface DataModelerService {
                                    final String newPackageName,
                                    final String newClassName);
 
-    List<ValidationMessage> validate(String source,
-                                     final Path path,
-                                     DataObject dataObject);
+    List<BuildMessage> validate(String source,
+                                final Path path,
+                                DataObject dataObject);
 
     TypeInfoResult loadJavaTypeInfo(final String source);
 
@@ -139,10 +139,10 @@ public interface DataModelerService {
 
     AnnotationSourceResponse resolveSourceRequest(AnnotationSourceRequest sourceRequest);
 
-    List<ValidationMessage> validateValuePair(String annotationClassName,
-                                              ElementType target,
-                                              String valuePairName,
-                                              String literalValue);
+    List<BuildMessage> validateValuePair(String annotationClassName,
+                                         ElementType target,
+                                         String valuePairName,
+                                         String literalValue);
 
     AnnotationParseResponse resolveParseRequest(AnnotationParseRequest parseRequest,
                                                 KieModule module);

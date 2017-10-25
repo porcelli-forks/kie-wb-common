@@ -20,15 +20,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceDescriptorModel;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceUnitModel;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.TransactionType;
 import org.kie.workbench.common.screens.datamodeller.validation.PersistenceDescriptorValidator;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.vfs.Path;
@@ -41,7 +42,7 @@ public class PersistenceDescriptorValidatorImpl
 
     private KieModuleService moduleService;
 
-    private ModuleClassLoaderHelper moduleClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     private PersistableClassValidator classValidator = new PersistableClassValidator();
 
@@ -52,16 +53,16 @@ public class PersistenceDescriptorValidatorImpl
     }
 
     @Inject
-    public PersistenceDescriptorValidatorImpl(KieModuleService moduleService,
-                                              ModuleClassLoaderHelper moduleClassLoaderHelper) {
+    public PersistenceDescriptorValidatorImpl(final KieModuleService moduleService,
+                                              final ModuleCache moduleCache) {
         this.moduleService = moduleService;
-        this.moduleClassLoaderHelper = moduleClassLoaderHelper;
+        this.moduleCache = moduleCache;
     }
 
     @Override
-    public List<ValidationMessage> validate(Path path, PersistenceDescriptorModel model) {
+    public List<BuildMessage> validate(Path path, PersistenceDescriptorModel model) {
 
-        final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+        final List<BuildMessage> messages = new ArrayList<>();
         final KieModule module = moduleService.resolveModule(path);
 
         if (module == null) {
@@ -103,8 +104,8 @@ public class PersistenceDescriptorValidatorImpl
         }
 
         if (unitModel.getClasses() != null && !unitModel.getClasses().isEmpty()) {
-            ClassLoader moduleClassLoader = moduleClassLoaderHelper.getModuleClassLoader(module);
-            unitModel.getClasses().forEach(clazz -> Optional.ofNullable(classValidator.validate(clazz, moduleClassLoader)).ifPresent(messages::addAll));
+            final ClassLoader projectClassLoader = moduleCache.getOrCreateEntry(module).getClassLoader();
+            unitModel.getClasses().forEach(clazz -> Optional.ofNullable(classValidator.validate(clazz, projectClassLoader)).ifPresent(messages::addAll));
         }
 
         if (unitModel.getProperties() != null) {

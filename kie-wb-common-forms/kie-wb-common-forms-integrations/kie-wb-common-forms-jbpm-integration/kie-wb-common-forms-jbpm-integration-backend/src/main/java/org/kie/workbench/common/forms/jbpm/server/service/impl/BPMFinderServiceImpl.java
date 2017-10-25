@@ -142,7 +142,13 @@ public class BPMFinderServiceImpl implements BPMFinderService {
                                          final GenerationConfig generationConfig) {
         List<org.uberfire.java.nio.file.Path> nioPaths = new ArrayList<>();
 
-        nioPaths.add(Paths.convert(path));
+        final org.uberfire.java.nio.file.Path _path = Paths.convert(path);
+
+        if (_path.resolve("pom.xml").toFile().exists() && _path.resolve("src").toFile().exists()) {
+            nioPaths.add(_path.resolve("src"));
+        } else {
+            nioPaths.add(_path);
+        }
 
         Collection<FileUtils.ScanResult> processes = fileUtils.scan(ioService,
                                                                     nioPaths,

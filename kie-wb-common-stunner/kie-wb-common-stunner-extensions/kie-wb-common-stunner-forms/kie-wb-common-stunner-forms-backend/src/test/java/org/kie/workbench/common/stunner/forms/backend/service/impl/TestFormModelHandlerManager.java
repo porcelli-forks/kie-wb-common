@@ -24,22 +24,22 @@ import org.kie.workbench.common.forms.jbpm.server.service.impl.BusinessProcessFo
 import org.kie.workbench.common.forms.jbpm.server.service.impl.TaskFormModelHandler;
 import org.kie.workbench.common.forms.model.FormModel;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 
 public class TestFormModelHandlerManager implements FormModelHandlerManager {
 
     private KieModuleService projectService;
 
-    private ModuleClassLoaderHelper projectClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     private FieldManager fieldManager;
 
     public TestFormModelHandlerManager(KieModuleService projectService,
-                                       ModuleClassLoaderHelper projectClassLoaderHelper,
+                                       ModuleCache moduleCache,
                                        FieldManager fieldManager) {
         this.projectService = projectService;
-        this.projectClassLoaderHelper = projectClassLoaderHelper;
+        this.moduleCache = moduleCache;
         this.fieldManager = fieldManager;
     }
 
@@ -47,13 +47,13 @@ public class TestFormModelHandlerManager implements FormModelHandlerManager {
     public FormModelHandler getFormModelHandler(Class<? extends FormModel> clazz) {
         if (BusinessProcessFormModel.class.equals(clazz)) {
             return new BusinessProcessFormModelHandler(projectService,
-                                                       projectClassLoaderHelper,
+                                                       moduleCache,
                                                        fieldManager,
                                                        null);
         }
         if (TaskFormModel.class.equals(clazz)) {
             return new TaskFormModelHandler(projectService,
-                                            projectClassLoaderHelper,
+                                            moduleCache,
                                             fieldManager,
                                             null);
         }
