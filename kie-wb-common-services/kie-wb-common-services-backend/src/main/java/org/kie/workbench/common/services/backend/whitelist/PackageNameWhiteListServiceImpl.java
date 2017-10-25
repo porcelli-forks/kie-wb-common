@@ -16,6 +16,7 @@
 package org.kie.workbench.common.services.backend.whitelist;
 
 import java.util.Collection;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,10 +29,11 @@ import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.kie.workbench.common.services.shared.whitelist.PackageNameWhiteListService;
 import org.kie.workbench.common.services.shared.whitelist.WhiteList;
-import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
+
+import static org.uberfire.backend.server.util.Paths.convert;
 
 /**
  * Represents a "white list" of permitted package names for use with authoring
@@ -45,6 +47,7 @@ public class PackageNameWhiteListServiceImpl
     private KieModuleService moduleService;
     private PackageNameWhiteListLoader loader;
     private PackageNameWhiteListSaver saver;
+    private String PACKAGE_NAME_WHITE_LIST = "package-names-white-list";
 
     public PackageNameWhiteListServiceImpl() {
     }
@@ -61,11 +64,10 @@ public class PackageNameWhiteListServiceImpl
     }
 
     public void createModuleWhiteList(final Path packageNamesWhiteListPath) {
-        if (ioService.exists(Paths.convert(packageNamesWhiteListPath))) {
+        if (ioService.exists(convert(packageNamesWhiteListPath))) {
             throw new FileAlreadyExistsException(packageNamesWhiteListPath.toString());
         } else {
-            ioService.write(Paths.convert(packageNamesWhiteListPath),
-                            "");
+            ioService.write(convert(packageNamesWhiteListPath), "");
         }
     }
 

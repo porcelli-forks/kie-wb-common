@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -30,7 +31,7 @@ import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.Package;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -195,13 +196,13 @@ public abstract class BaseViewPresenter {
         final Path path = getFolderItemPath(folderItem);
 
         validationService.call(messages -> {
-            if (((List<ValidationMessage>) messages).isEmpty()) {
+            if (((List<BuildMessage>) messages).isEmpty()) {
                 showDeletePopup(folderItem);
             } else {
                 validationPopup.showDeleteValidationMessages(() -> showDeletePopup(folderItem),
                                                              () -> {
                                                              },
-                                                             (List<ValidationMessage>) messages);
+                                                             (List<BuildMessage>) messages);
             }
         }).validateForDelete(path);
     }
@@ -291,15 +292,13 @@ public abstract class BaseViewPresenter {
         final Path path = getFolderItemPath(folderItem);
 
         validationService.call(messages -> {
-            if (((List<ValidationMessage>) messages).isEmpty()) {
-                showCopyPopup(folderItem,
-                              path);
+            if (((List<BuildMessage>) messages).isEmpty()) {
+                showCopyPopup(folderItem, path);
             } else {
-                validationPopup.showCopyValidationMessages(() -> showCopyPopup(folderItem,
-                                                                               path),
+                validationPopup.showCopyValidationMessages(() -> showCopyPopup(folderItem, path),
                                                            () -> {
                                                            },
-                                                           (List<ValidationMessage>) messages);
+                                                           (List<BuildMessage>) messages);
             }
         }).validateForCopy(path);
     }

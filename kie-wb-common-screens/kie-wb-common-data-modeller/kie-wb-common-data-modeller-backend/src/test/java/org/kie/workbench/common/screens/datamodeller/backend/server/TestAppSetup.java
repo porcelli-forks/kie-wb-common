@@ -22,10 +22,9 @@ import javax.inject.Singleton;
 
 import org.guvnor.m2repo.service.M2RepoService;
 import org.guvnor.structure.server.config.ConfigurationService;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
 import org.kie.workbench.common.services.shared.kmodule.KModuleService;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 @Singleton
 @Alternative
@@ -47,13 +46,5 @@ public class TestAppSetup {
     @Alternative
     public ConfigurationService configurationService() {
         return mock(ConfigurationService.class);
-    }
-
-    @Produces
-    @Alternative
-    public ModuleClassLoaderHelper classLoaderHelper() {
-        ModuleClassLoaderHelper classLoaderHelper = mock(ModuleClassLoaderHelper.class);
-        when(classLoaderHelper.getModuleClassLoader(any())).thenReturn(this.getClass().getClassLoader());
-        return classLoaderHelper;
     }
 }

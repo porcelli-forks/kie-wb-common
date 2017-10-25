@@ -23,7 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.jbpm.model.authoring.JBPMProcessModel;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildDataImpl;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.mockito.Mock;
@@ -40,6 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -75,7 +78,7 @@ public class BPMFinderServiceImplTest {
     private KieModuleService moduleService;
 
     @Mock
-    private ModuleClassLoaderHelper moduleClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     @Mock
     private ClassLoader classLoader;
@@ -105,10 +108,12 @@ public class BPMFinderServiceImplTest {
 
         when(classLoader.loadClass(any())).thenAnswer((Answer<Class>) invocation -> String.class);
 
-        when(moduleClassLoaderHelper.getModuleClassLoader(any())).thenReturn(classLoader);
+        final ProjectBuildData projectBuildData = mock(ProjectBuildDataImpl.class);
+        when(projectBuildData.getClassLoader()).thenReturn(classLoader);
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(projectBuildData);
 
         bpmnFormModelGenerator = new BPMNFormModelGeneratorImpl(moduleService,
-                                                                moduleClassLoaderHelper);
+                                                                moduleCache);
 
         finderService = new BPMFinderServiceImpl(ioService,
                                                  moduleService,

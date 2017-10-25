@@ -20,7 +20,7 @@ import org.kie.workbench.common.forms.editor.backend.service.impl.AbstractFormMo
 import org.kie.workbench.common.forms.jbpm.model.authoring.JBPMFormModel;
 import org.kie.workbench.common.forms.jbpm.service.shared.BPMFinderService;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 
 public abstract class AbstractJBPMFormModelHandler<M extends JBPMFormModel> extends AbstractFormModelHandler<M> {
@@ -29,12 +29,12 @@ public abstract class AbstractJBPMFormModelHandler<M extends JBPMFormModel> exte
 
     protected BPMFinderService bpmFinderService;
 
-    public AbstractJBPMFormModelHandler(KieModuleService projectService,
-                                        ModuleClassLoaderHelper classLoaderHelper,
+    public AbstractJBPMFormModelHandler(KieModuleService kieModuleService,
+                                        ModuleCache moduleCache,
                                         FieldManager fieldManager,
                                         BPMFinderService bpmFinderService) {
-        super(projectService,
-              classLoaderHelper);
+        super(kieModuleService,
+              moduleCache);
         this.fieldManager = fieldManager;
         this.bpmFinderService = bpmFinderService;
     }

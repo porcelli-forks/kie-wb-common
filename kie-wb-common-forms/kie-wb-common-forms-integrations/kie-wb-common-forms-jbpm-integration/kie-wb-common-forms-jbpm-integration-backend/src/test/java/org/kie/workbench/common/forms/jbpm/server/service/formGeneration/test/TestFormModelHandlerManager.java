@@ -26,25 +26,25 @@ import org.kie.workbench.common.forms.jbpm.server.service.impl.BusinessProcessFo
 import org.kie.workbench.common.forms.jbpm.server.service.impl.TaskFormModelHandler;
 import org.kie.workbench.common.forms.model.FormModel;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 
 public class TestFormModelHandlerManager implements FormModelHandlerManager {
 
-    private KieModuleService projectService;
+    private KieModuleService moduleService;
 
-    private ModuleClassLoaderHelper projectClassLoaderHelper;
+    private ModuleCache moduleCache;
 
     private FieldManager fieldManager;
 
     private DataObjectFinderService finderService;
 
     public TestFormModelHandlerManager(KieModuleService projectService,
-                                       ModuleClassLoaderHelper projectClassLoaderHelper,
+                                       ModuleCache moduleCache,
                                        FieldManager fieldManager,
                                        DataObjectFinderService finderService) {
-        this.projectService = projectService;
-        this.projectClassLoaderHelper = projectClassLoaderHelper;
+        this.moduleService = projectService;
+        this.moduleCache = moduleCache;
         this.fieldManager = fieldManager;
         this.finderService = finderService;
     }
@@ -58,19 +58,19 @@ public class TestFormModelHandlerManager implements FormModelHandlerManager {
     @Override
     public FormModelHandler getFormModelHandler(Class<? extends FormModel> clazz) {
         if (BusinessProcessFormModel.class.equals(clazz)) {
-            return new BusinessProcessFormModelHandler(projectService,
-                                                       projectClassLoaderHelper,
+            return new BusinessProcessFormModelHandler(moduleService,
+                                                       moduleCache,
                                                        fieldManager,
                                                        null);
         }
         if (TaskFormModel.class.equals(clazz)) {
-            return new TaskFormModelHandler(projectService,
-                                            projectClassLoaderHelper,
+            return new TaskFormModelHandler(moduleService,
+                                            moduleCache,
                                             fieldManager,
                                             null);
         }
-        return new DataObjectFormModelHandler(projectService,
-                                              projectClassLoaderHelper,
+        return new DataObjectFormModelHandler(moduleService,
+                                              moduleCache,
                                               finderService,
                                               fieldManager);
     }

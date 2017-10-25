@@ -27,7 +27,7 @@ import org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel;
 import org.kie.workbench.common.forms.jbpm.service.shared.BPMFinderService;
 import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +38,12 @@ public class TaskFormModelHandler extends AbstractJBPMFormModelHandler<TaskFormM
     private static final Logger logger = LoggerFactory.getLogger(BusinessProcessFormModelHandler.class);
 
     @Inject
-    public TaskFormModelHandler(KieModuleService projectService,
-                                ModuleClassLoaderHelper classLoaderHelper,
+    public TaskFormModelHandler(KieModuleService moduleService,
+                                ModuleCache moduleCache,
                                 FieldManager fieldManager,
                                 BPMFinderService bpmFinderService) {
-        super(projectService,
-              classLoaderHelper,
+        super(moduleService,
+              moduleCache,
               fieldManager,
               bpmFinderService);
     }
@@ -56,7 +56,7 @@ public class TaskFormModelHandler extends AbstractJBPMFormModelHandler<TaskFormM
     @Override
     public FormModelHandler<TaskFormModel> newInstance() {
         return new TaskFormModelHandler(moduleService,
-                                        classLoaderHelper,
+                                        moduleCache,
                                         fieldManager,
                                         bpmFinderService);
     }

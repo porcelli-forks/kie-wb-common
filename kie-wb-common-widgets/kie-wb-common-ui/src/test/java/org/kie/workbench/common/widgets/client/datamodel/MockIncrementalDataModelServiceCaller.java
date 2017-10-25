@@ -21,15 +21,19 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.soup.project.datamodel.imports.Imports;
 import org.kie.soup.project.datamodel.oracle.PackageDataModelOracle;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildData;
+import org.kie.workbench.common.services.backend.builder.cache.ProjectBuildDataImpl;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
 import org.kie.workbench.common.services.datamodel.backend.server.IncrementalDataModelServiceImpl;
-import org.kie.workbench.common.services.datamodel.backend.server.cache.LRUDataModelOracleCache;
 import org.kie.workbench.common.services.datamodel.model.PackageDataModelOracleIncrementalPayload;
 import org.kie.workbench.common.services.datamodel.service.IncrementalDataModelService;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.vfs.Path;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockIncrementalDataModelServiceCaller implements Caller<IncrementalDataModelService> {
 
@@ -49,15 +53,17 @@ public class MockIncrementalDataModelServiceCaller implements Caller<Incremental
                                         packageLoader.getPackageName(),
                                         packageLoader.getPackageName(),
                                         packageLoader.getPackageName());
-        final LRUDataModelOracleCache cachePackages = mock(LRUDataModelOracleCache.class);
-        when(cachePackages.assertPackageDataModelOracle(module,
-                                                        pkg)).thenReturn(packageLoader);
+        final ModuleCache moduleCache = mock(ModuleCache.class);
+
+        final ProjectBuildData projectBuildData = mock(ProjectBuildDataImpl.class);
+        when(projectBuildData.getPackageDataModelOracle(any())).thenReturn(packageLoader);
+        when(moduleCache.getOrCreateEntry(module)).thenReturn(projectBuildData);
 
         final KieModuleService moduleService = mock(KieModuleService.class);
         when(moduleService.resolveModule(any(Path.class))).thenReturn(module);
         when(moduleService.resolvePackage(any(Path.class))).thenReturn(pkg);
 
-        this.service = new IncrementalDataModelServiceImplWrapper(cachePackages,
+        this.service = new IncrementalDataModelServiceImplWrapper(moduleCache,
                                                                   moduleService);
     }
 
@@ -83,9 +89,9 @@ public class MockIncrementalDataModelServiceCaller implements Caller<Incremental
 
         private RemoteCallback<?> remoteCallback;
 
-        public IncrementalDataModelServiceImplWrapper(final LRUDataModelOracleCache cachePackages,
+        public IncrementalDataModelServiceImplWrapper(final ModuleCache moduleCache,
                                                       final KieModuleService moduleService) {
-            super(cachePackages,
+            super(moduleCache,
                   moduleService);
         }
 

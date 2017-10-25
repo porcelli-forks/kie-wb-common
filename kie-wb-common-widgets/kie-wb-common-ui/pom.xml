@@ -131,11 +131,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-datamodel-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench-processors</artifactId>
       <scope>provided</scope>
@@ -232,7 +227,7 @@
 
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-datamodel-backend</artifactId>
+      <artifactId>kie-wb-common-services-backend</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -297,7 +292,6 @@
     </dependency>
 
   </dependencies>
-
   <build>
     <resources>
       <!-- Include module descriptors from src/main/resources in order not to break the Intellij GWT plug-in -->
@@ -305,6 +299,12 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
 
     <plugins>
       <plugin>

@@ -22,25 +22,23 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.common.base.Charsets;
-import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
-import org.guvnor.common.services.project.model.Module;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.common.services.shared.message.Level;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
-import org.kie.workbench.common.services.backend.builder.core.Builder;
-import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfo;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoImpl;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+import org.kie.workbench.common.services.backend.builder.cache.ModuleCache;
+import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+
+import static org.uberfire.backend.server.util.Paths.convert;
 
 @ApplicationScoped
 public class ValidatorBuildService {
@@ -48,9 +46,8 @@ public class ValidatorBuildService {
     private final static String ERROR_CLASS_NOT_FOUND = "Definition of class \"{0}\" was not found. Consequentially validation cannot be performed.\nPlease check the necessary external dependencies for this module are configured correctly.";
 
     private IOService ioService;
-    private LRUBuilderCache builderCache;
     private KieModuleService moduleService;
-    private BuildInfoService buildInfoService;
+    private ModuleCache moduleCache;
 
     public ValidatorBuildService() {
         //CDI proxies
@@ -58,25 +55,20 @@ public class ValidatorBuildService {
 
     @Inject
     public ValidatorBuildService(final @Named("ioStrategy") IOService ioService,
-                                 final LRUBuilderCache builderCache,
                                  final KieModuleService moduleService,
-                                 final BuildInfoService buildInfoService) {
+                                 final ModuleCache moduleCache) {
         this.ioService = ioService;
-        this.builderCache = builderCache;
         this.moduleService = moduleService;
-        this.buildInfoService = buildInfoService;
+        this.moduleCache = moduleCache;
     }
 
-    public List<ValidationMessage> validate(final Path resourcePath,
-                                            final String content) {
+    public List<BuildMessage> validate(final Path resourcePath,
+                                       final String content) {
         InputStream inputStream = null;
         try {
             inputStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
-            final List<ValidationMessage> results = doValidation(resourcePath,
-                                                                 inputStream);
+            final List<BuildMessage> results = doValidation(resourcePath, inputStream);
             return results;
-        } catch (NoModuleException e) {
-            return new ArrayList<>();
         } catch (NoClassDefFoundError e) {
             return error(MessageFormat.format(ERROR_CLASS_NOT_FOUND,
                                               e.getLocalizedMessage()));
@@ -92,15 +84,12 @@ public class ValidatorBuildService {
         }
     }
 
-    public List<ValidationMessage> validate(final Path resourcePath) {
+    public List<BuildMessage> validate(final Path resourcePath) {
         InputStream inputStream = null;
         try {
-            inputStream = ioService.newInputStream(Paths.convert(resourcePath));
-            final List<ValidationMessage> results = doValidation(resourcePath,
-                                                                 inputStream);
+            inputStream = ioService.newInputStream(convert(resourcePath));
+            final List<BuildMessage> results = doValidation(resourcePath, inputStream);
             return results;
-        } catch (NoModuleException e) {
-            return new ArrayList<>();
         } catch (NoClassDefFoundError e) {
             return error(MessageFormat.format(ERROR_CLASS_NOT_FOUND,
                                               e.getLocalizedMessage()));
@@ -116,56 +105,38 @@ public class ValidatorBuildService {
         }
     }
 
-    private List<ValidationMessage> doValidation(final Path resourcePath,
-                                                 final InputStream inputStream) throws NoModuleException {
-        final ValidatorResultBuilder resultBuilder = new ValidatorResultBuilder();
-        final Module module = module(resourcePath);
-        final org.uberfire.java.nio.file.Path nioResourcePath = Paths.convert(resourcePath);
+    private List<BuildMessage> doValidation(final Path _resourcePath,
+                                            final InputStream inputStream) throws NoModuleException {
 
-        //Incremental Build does not support Java classes
-        if (isIncrementalBuildPossible(resourcePath)) {
-            //Build the Builder from the cache so it's "built" state can be preserved for re-use
-            BuildInfo buildInfo = buildInfoService.getBuildInfo(module);
-            final Builder clone = ((BuildInfoImpl) buildInfo).getBuilder().clone();
-            //First delete resource otherwise if the resource already had errors following builder.build()
-            //the incremental compilation will not report any additional errors and the resource will be
-            //considered valid.
-            clone.deleteResource(nioResourcePath);
-
-            final IncrementalBuildResults incrementalBuildResults = clone.updateResource(nioResourcePath,
-                                                                                         inputStream);
-            resultBuilder.add(incrementalBuildResults.getAddedMessages());
-        } else {
-            Builder builder = builderCache.assertBuilder(module(resourcePath));
-            final Builder clone = builder.clone();
-            resultBuilder.add(clone.build(nioResourcePath,
-                                          inputStream).getMessages());
+        final Optional<KieModule> module = module(_resourcePath);
+        if (!module.isPresent()) {
+            return getExceptionMsgs("[ERROR] no project found");
         }
 
-        return resultBuilder.results();
-    }
-
-    private boolean isIncrementalBuildPossible(final Path resourcePath) throws NoModuleException {
-        return getDestinationPath(resourcePath).startsWith("src/main/resources/");
+        return moduleCache.getOrCreateEntry(module.get()).validate(convert(_resourcePath), inputStream);
     }
 
     private String getDestinationPath(final Path originalPath) throws NoModuleException {
-        return Paths.removePrefix(originalPath, module(originalPath).getRootPath());
+        return Paths.removePrefix(originalPath, module(originalPath).get().getRootPath());
     }
 
-    private Module module(final Path resourcePath) throws NoModuleException {
-        final Module module = moduleService.resolveModule(resourcePath);
+    private Optional<KieModule> module(final Path resourcePath) throws NoModuleException {
+        final KieModule module = moduleService.resolveModule(resourcePath);
 
-        if (module == null) {
-            throw new NoModuleException();
-        }
-
-        return module;
+        return Optional.ofNullable(module);
     }
 
-    private ArrayList<ValidationMessage> error(final String errorMessage) {
-        return new ArrayList<ValidationMessage>() {{
-            add(new ValidationMessage(Level.ERROR, errorMessage));
+    private List<BuildMessage> getExceptionMsgs(String msg) {
+        List<BuildMessage> msgs = new ArrayList<>();
+        BuildMessage msgInternal = new BuildMessage();
+        msgInternal.setText(msg);
+        msgs.add(msgInternal);
+        return msgs;
+    }
+
+    private ArrayList<BuildMessage> error(final String errorMessage) {
+        return new ArrayList<BuildMessage>() {{
+            add(new BuildMessage(Level.ERROR, errorMessage));
         }};
     }
 }

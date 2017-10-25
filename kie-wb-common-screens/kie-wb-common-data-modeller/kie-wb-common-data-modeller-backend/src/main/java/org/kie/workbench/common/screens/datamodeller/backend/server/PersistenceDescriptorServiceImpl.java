@@ -18,6 +18,7 @@ package org.kie.workbench.common.screens.datamodeller.backend.server;
 
 import java.io.BufferedInputStream;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,9 +26,9 @@ import javax.inject.Named;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Module;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceDescriptorModel;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceUnitModel;
@@ -139,10 +140,9 @@ public class PersistenceDescriptorServiceImpl implements PersistenceDescriptorSe
     }
 
     @Override
-    public List<ValidationMessage> validate(Path path,
-                                            PersistenceDescriptorModel model) {
-        return descriptorValidator.validate(path,
-                                            model);
+    public List<BuildMessage> validate(Path path,
+                                       PersistenceDescriptorModel model) {
+        return descriptorValidator.validate(path, model);
     }
 
     @Override

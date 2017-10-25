@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,8 +33,8 @@ import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.utils.ModuleResourcePaths;
+import org.guvnor.common.services.shared.builder.model.BuildMessage;
 import org.guvnor.common.services.shared.message.Level;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.forge.roaster.model.SyntaxError;
 import org.kie.workbench.common.screens.datamodeller.model.DataModelerError;
 import org.kie.workbench.common.services.datamodeller.driver.model.DriverError;
@@ -103,15 +104,15 @@ public class DataModelerServiceHelper {
         return vfsPaths;
     }
 
-    public List<ValidationMessage> toValidationMessage(List<DataModelerError> errors) {
-        List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
-        ValidationMessage validationMessage;
+    public List<BuildMessage> toValidationMessage(List<DataModelerError> errors) {
+        List<BuildMessage> validationMessages = new ArrayList<BuildMessage>();
+        BuildMessage validationMessage;
 
         if (errors == null) {
             return validationMessages;
         }
         for (DataModelerError error : errors) {
-            validationMessage = new ValidationMessage();
+            validationMessage = new BuildMessage();
             validationMessage.setPath(error.getFile());
             validationMessage.setText(error.getMessage());
             validationMessage.setColumn(error.getColumn());
@@ -168,7 +169,7 @@ public class DataModelerServiceHelper {
     }
 
     public Set<String> resolvePackages(final KieModule project) {
-        final Set<String> packages = new HashSet<String>();
+        final Set<String> packages = new HashSet<>();
 
         final Path rootPath = Paths.convert(project.getRootPath());
         final String[] subdirs = ModuleResourcePaths.MAIN_SRC_PATH.split("/");
