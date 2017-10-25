@@ -187,7 +187,7 @@ public class ValidatorBuildService {
             final java.nio.file.Path tempResourcePath = rootRepoPath.resolve(kieProject.getRootPath().getFileName()).resolve(projectRootPath.relativize(resourcePath).toString());
 
             try {
-                return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject/*, res, Boolean.FALSE*/);
+                return writeFileChangeAndBuild(tempResourcePath, inputStream, kieProject);
             } catch (IOException ex) {
                 logger.error(ex.getMessage(), ex);
                 return getExceptionMsgs("[ERROR] no project found");

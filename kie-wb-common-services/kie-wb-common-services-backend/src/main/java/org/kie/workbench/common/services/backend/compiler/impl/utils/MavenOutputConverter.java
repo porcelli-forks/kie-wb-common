@@ -37,9 +37,14 @@ public class MavenOutputConverter {
         if (mavenOutput.size() > 0) {
             Set<ValidationMessage> inserted = new TreeSet<>();
             for (String item : mavenOutput) {
-                if (item.contains( errorLineCheck) && item.contains(filter)) {
-                    ValidationMessage msg = getValidationMessage(path, partToCut, item);
-                    if(!inserted.contains(msg)){
+                if (item.contains(filter)) {
+                    ValidationMessage msg;
+                    if(item.contains( errorLineCheck)) {
+                         msg = getValidationMessage(path, partToCut, item);
+                    }else{
+                        msg = getValidationMessageWithoutLineAndColumn(partToCut, item);
+                    }
+                    if (!inserted.contains(msg)) {
                         inserted.add(msg);
                     }
                 }
@@ -66,8 +71,13 @@ public class MavenOutputConverter {
     private static Set<BuildMessage> getErrorMsgs(List<String> mavenOutput, String filter, Path path, String partToCut) {
         Set<BuildMessage> inserted = new TreeSet<>();
         for (String item : mavenOutput) {
-            if (item.contains(errorLineCheck) && item.contains(filter)) {
-                BuildMessage msg = getBuildMessage(path, partToCut, item);
+            if (item.contains(filter)) {
+                BuildMessage msg ;
+                if(item.contains(errorLineCheck)){
+                    msg = getBuildMessage(path, partToCut, item);
+                }else {
+                    msg = getBuildMessageWithoutLineAndColumn(partToCut, item);
+                }
                 if(!inserted.contains(msg)){
                     inserted.add(msg);
                 }
@@ -81,16 +91,23 @@ public class MavenOutputConverter {
         String purged = item.replace(partToCut, "");
         int indexOfEdnFilePath = purged.lastIndexOf(errorLineCheck);
         int indexStartOf = purged.indexOf("src/");
-        String errorLine = purged.substring(indexOfEdnFilePath+2, purged.lastIndexOf("]"));
+        String errorLine = purged.substring(indexOfEdnFilePath + 2, purged.lastIndexOf("]"));
         String[] lineAndColum = getErrorLineAndColumn(errorLine);
-        if(lineAndColum == null){
-            throw new RuntimeException("Line and code of error not present");
+        if (lineAndColum != null) {
+            msg.setLine(Integer.parseInt(lineAndColum[0]));
+            msg.setColumn(Integer.parseInt(lineAndColum[1]));
         }
-        msg.setLine(Integer.parseInt(lineAndColum[0]));
-        msg.setColumn(Integer.parseInt(lineAndColum[1]));
         msg.setText(purged.substring(purged.lastIndexOf("]")+1));
         String pathString = purged.substring(indexStartOf, indexOfEdnFilePath);
         msg.setPath(Paths.convert(path.resolve(pathString)));
+        msg.setLevel(Level.ERROR );
+        return msg;
+    }
+
+    private static ValidationMessage getValidationMessageWithoutLineAndColumn(String partToCut, String item) {
+        ValidationMessage msg = new ValidationMessage();
+        String purged = item.replace(partToCut, "");
+        msg.setText(purged);
         msg.setLevel(Level.ERROR );
         return msg;
     }
@@ -103,14 +120,21 @@ public class MavenOutputConverter {
         int indexStartOf = purged.indexOf("src/");
         String errorLine = purged.substring(indexOfEdnFilePath+2, purged.lastIndexOf("]"));
         String[] lineAndColum = getErrorLineAndColumn(errorLine);
-        if(lineAndColum == null){
-            throw new RuntimeException("Line and code of error not present");
+        if(lineAndColum != null){
+            msg.setLine(Integer.parseInt(lineAndColum[0]));
+            msg.setColumn(Integer.parseInt(lineAndColum[1]));
         }
-        msg.setLine(Integer.parseInt(lineAndColum[0]));
-        msg.setColumn(Integer.parseInt(lineAndColum[1]));
         msg.setText(purged.substring(purged.lastIndexOf("]")+1));
         String pathString = purged.substring(indexStartOf, indexOfEdnFilePath);
         msg.setPath(Paths.convert(path.resolve(pathString)));
+        msg.setLevel(Level.ERROR );
+        return msg;
+    }
+
+    private static BuildMessage getBuildMessageWithoutLineAndColumn(String partToCut, String item) {
+        BuildMessage msg = new BuildMessage();
+        String purged = item.replace(partToCut, "");
+        msg.setText(purged);
         msg.setLevel(Level.ERROR );
         return msg;
     }
