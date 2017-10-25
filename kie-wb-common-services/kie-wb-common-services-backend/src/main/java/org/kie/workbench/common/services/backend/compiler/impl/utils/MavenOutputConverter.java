@@ -34,19 +34,18 @@ public class MavenOutputConverter {
 
     public static List<ValidationMessage> convertIntoValidationMessage(List<String> mavenOutput,
                                                                        String filter, Path path, String partToCut) {
-
         if (mavenOutput.size() > 0) {
             Set<ValidationMessage> inserted = new TreeSet<>();
-            List<ValidationMessage> validationMsgs = new ArrayList<>(mavenOutput.size());
             for (String item : mavenOutput) {
                 if (item.contains( errorLineCheck) && item.contains(filter)) {
                     ValidationMessage msg = getValidationMessage(path, partToCut, item);
                     if(!inserted.contains(msg)){
                         inserted.add(msg);
                     }
-                    validationMsgs.add(msg);
                 }
             }
+            List<ValidationMessage> validationMsgs = new ArrayList<>(inserted.size());
+            validationMsgs.addAll(inserted);
             return validationMsgs;
         }
         return Collections.emptyList();
