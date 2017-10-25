@@ -220,7 +220,8 @@ public class ValidatorBuildService {
         Files.copy(inputStream, tempResourcePath, StandardCopyOption.REPLACE_EXISTING);
         final KieAFBuilder builder = getBuilder(project);
         final CompilationResponse res = builder.build(Boolean.TRUE, Boolean.FALSE);
-        return MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL, ((DefaultKieAFBuilder)builder).getGITURI(), ((DefaultKieAFBuilder) builder).getInfo().getPrjPath().getParent().toString());
+        List<ValidationMessage> valMsgs =  MavenOutputConverter.convertIntoValidationMessage(res.getMavenOutput().get(), ERROR_LEVEL, ((DefaultKieAFBuilder)builder).getGITURI(), ((DefaultKieAFBuilder) builder).getInfo().getPrjPath().getParent().toString());
+        return valMsgs;
 
     }
 
