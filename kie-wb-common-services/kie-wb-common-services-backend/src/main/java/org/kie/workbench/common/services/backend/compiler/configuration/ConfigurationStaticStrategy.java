@@ -20,13 +20,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.workbench.common.services.backend.compiler.impl.utils.Order;
+import org.guvnor.common.services.project.backend.server.utils.configuration.ConfigurationKey;
+import org.guvnor.common.services.project.backend.server.utils.configuration.ConfigurationStrategy;
+import org.guvnor.common.services.project.backend.server.utils.configuration.Order;
 
 /**
  * Default implementation, this class can be extended to change the protected configuration Map
  */
-public class ConfigurationStaticStrategy implements ConfigurationStrategy,
-                                                    Order {
+public class ConfigurationStaticStrategy implements ConfigurationStrategy, Order {
 
     protected Map<ConfigurationKey, String> conf;
 
@@ -55,6 +56,9 @@ public class ConfigurationStaticStrategy implements ConfigurationStrategy,
                  "kie-maven-plugin");
         conf.put(ConfigurationKey.KIE_TAKARI_PLUGIN,
                  "kie-takari-plugin");
+
+        conf.put(ConfigurationKey.KIE_VERSION,
+                "7.5.0-SNAPSHOT");
 
         valid = Boolean.TRUE;
     }

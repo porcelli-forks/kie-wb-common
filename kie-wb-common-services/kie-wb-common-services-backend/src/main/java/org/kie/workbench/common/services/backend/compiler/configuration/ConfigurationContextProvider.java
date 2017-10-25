@@ -15,11 +15,11 @@
  */
 package org.kie.workbench.common.services.backend.compiler.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.guvnor.common.services.project.backend.server.utils.configuration.ConfigurationKey;
+import org.guvnor.common.services.project.backend.server.utils.configuration.ConfigurationStrategy;
+
+import java.util.*;
+
 
 /**
  * THis implementation first try to load configuration keys from environment variables then load properties with a files called IncrementalCompiler.properties then an hard coded configuration like the following example
@@ -35,6 +35,8 @@ import java.util.Map;
  * KIE_MAVEN_PLUGINS=org.kie
  * KIE_MAVEN_PLUGIN=kie-maven-plugin
  * KIE_TAKARI_PLUGIN=kie-takari-plugin
+ *
+ * KIE_VERSION=7.5.0-SNAPSHOT
  */
 public class ConfigurationContextProvider implements ConfigurationProvider {
 
