@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -28,6 +29,7 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.DirectoryStream;
@@ -96,8 +98,16 @@ public class MavenUtils {
         return poms;
     }
 
-    //@ŢODO change with an alternative system (temp folder is enough ? )before merge
     public static String getMavenRepoDir(String defaultName) {
-        return "/tmp/maven/repo/" + defaultName;
+        boolean containedMaveRepo = System.getenv().containsKey(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME);
+        if(containedMaveRepo) {
+            String mavenRepoName = ArtifactRepositoryService.GLOBAL_M2_REPO_NAME;
+            return mavenRepoName + defaultName;
+        }else {
+            String tempDir = System.getProperty("java.io.tmpdir");
+            StringBuffer sb = new StringBuffer();
+            sb.append(tempDir).append("/maven/repo/").append(defaultName);
+            return sb.toString();
+        }
     }
 }
