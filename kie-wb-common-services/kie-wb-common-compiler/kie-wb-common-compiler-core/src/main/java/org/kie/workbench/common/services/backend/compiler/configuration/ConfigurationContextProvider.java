@@ -21,9 +21,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.guvnor.common.services.project.backend.server.utils.configuration.ConfigurationKey;
-import org.guvnor.common.services.project.backend.server.utils.configuration.ConfigurationStrategy;
-import org.guvnor.common.services.project.backend.server.utils.configuration.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
