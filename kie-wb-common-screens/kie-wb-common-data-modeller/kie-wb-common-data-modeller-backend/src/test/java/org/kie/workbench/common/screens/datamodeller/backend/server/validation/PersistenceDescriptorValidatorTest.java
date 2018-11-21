@@ -29,16 +29,17 @@ import org.kie.workbench.common.screens.datamodeller.model.persistence.Persisten
 import org.kie.workbench.common.screens.datamodeller.model.persistence.Property;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.TransactionType;
 import org.kie.workbench.common.screens.datamodeller.validation.PersistenceDescriptorValidator;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.kie.workbench.common.screens.datamodeller.backend.server.validation.PersistenceDescriptorValidationMessages.newErrorMessage;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersistenceDescriptorValidatorTest {
@@ -56,8 +57,7 @@ public class PersistenceDescriptorValidatorTest {
     @Mock
     private KieModuleService moduleService;
 
-    @Mock
-    private ModuleClassLoaderHelper classLoaderHelper;
+    private ModuleBuildInfo moduleBuildInfo;
 
     @Mock
     private Path path;
@@ -72,12 +72,12 @@ public class PersistenceDescriptorValidatorTest {
     @Before
     public void setUp() {
         validator = new PersistenceDescriptorValidatorImpl(moduleService,
-                                                           classLoaderHelper);
+                                                           moduleBuildInfo);
         descriptor = createValidDescriptor();
 
         classLoader = this.getClass().getClassLoader();
         when(moduleService.resolveModule(path)).thenReturn(module);
-        when(classLoaderHelper.getModuleClassLoader(module)).thenReturn(classLoader);
+//        when(classLoaderHelper.getModuleClassLoader(module)).thenReturn(classLoader);
     }
 
     @Test

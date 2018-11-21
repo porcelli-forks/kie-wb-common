@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.kie.workbench.common.widgets.client.datamodel;
 
@@ -21,15 +21,17 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.soup.project.datamodel.imports.Imports;
 import org.kie.soup.project.datamodel.oracle.PackageDataModelOracle;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.datamodel.backend.server.IncrementalDataModelServiceImpl;
-import org.kie.workbench.common.services.datamodel.backend.server.cache.LRUDataModelOracleCache;
 import org.kie.workbench.common.services.datamodel.model.PackageDataModelOracleIncrementalPayload;
 import org.kie.workbench.common.services.datamodel.service.IncrementalDataModelService;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.vfs.Path;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockIncrementalDataModelServiceCaller implements Caller<IncrementalDataModelService> {
 
@@ -49,15 +51,13 @@ public class MockIncrementalDataModelServiceCaller implements Caller<Incremental
                                         packageLoader.getPackageName(),
                                         packageLoader.getPackageName(),
                                         packageLoader.getPackageName());
-        final LRUDataModelOracleCache cachePackages = mock(LRUDataModelOracleCache.class);
-        when(cachePackages.assertPackageDataModelOracle(module,
-                                                        pkg)).thenReturn(packageLoader);
 
         final KieModuleService moduleService = mock(KieModuleService.class);
         when(moduleService.resolveModule(any(Path.class))).thenReturn(module);
         when(moduleService.resolvePackage(any(Path.class))).thenReturn(pkg);
+        ModuleBuildInfo moduleBuildInfo = null;
 
-        this.service = new IncrementalDataModelServiceImplWrapper(cachePackages,
+        this.service = new IncrementalDataModelServiceImplWrapper(moduleBuildInfo,
                                                                   moduleService);
     }
 
@@ -83,9 +83,9 @@ public class MockIncrementalDataModelServiceCaller implements Caller<Incremental
 
         private RemoteCallback<?> remoteCallback;
 
-        public IncrementalDataModelServiceImplWrapper(final LRUDataModelOracleCache cachePackages,
+        public IncrementalDataModelServiceImplWrapper(final ModuleBuildInfo moduleBuildInfo,
                                                       final KieModuleService moduleService) {
-            super(cachePackages,
+            super(moduleBuildInfo,
                   moduleService);
         }
 

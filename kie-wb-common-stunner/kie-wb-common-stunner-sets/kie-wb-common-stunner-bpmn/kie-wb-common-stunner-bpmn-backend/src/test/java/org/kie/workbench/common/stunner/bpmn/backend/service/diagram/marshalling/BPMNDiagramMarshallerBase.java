@@ -163,7 +163,7 @@ public abstract class BPMNDiagramMarshallerBase {
         rulesManager = mock(RuleManager.class);
         cloneManager = mock(CloneManager.class);
 
-        // Graph utils.
+        // Graph util.
         when(definitionManager.adapters()).thenReturn(adapterManager);
         when(adapterManager.registry()).thenReturn(adapterRegistry);
         DefinitionUtils definitionUtils1 = new DefinitionUtils(definitionManager,
@@ -313,7 +313,7 @@ public abstract class BPMNDiagramMarshallerBase {
                                                   commandFactory1,
                                                   widService);
 
-        // Graph utils.
+        // Graph util.
         when(definitionManager.adapters()).thenReturn(adapterManager);
         when(adapterManager.registry()).thenReturn(adapterRegistry);
         // initApplicationFactoryManagerAlt();

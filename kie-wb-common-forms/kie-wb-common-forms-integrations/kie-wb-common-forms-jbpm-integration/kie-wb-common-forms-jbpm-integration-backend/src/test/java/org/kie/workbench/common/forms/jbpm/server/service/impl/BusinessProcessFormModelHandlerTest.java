@@ -45,7 +45,7 @@ public class BusinessProcessFormModelHandlerTest extends AbstractJBPMFormModelHa
 
         model = new BusinessProcessFormModel(PROCESS_ID, PROCESS_ID, propertyList);
 
-        handler = new BusinessProcessFormModelHandler(moduleService, moduleClassLoaderHelper, new TestFieldManager(), finderService) {
+        handler = new BusinessProcessFormModelHandler(moduleService, moduleBuildInfo, new TestFieldManager(), finderService) {
             @Override
             protected Locale getLocale() {
                 return Locale.ENGLISH;

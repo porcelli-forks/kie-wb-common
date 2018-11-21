@@ -24,7 +24,7 @@ import org.uberfire.ext.editor.commons.backend.service.helper.DeleteHelper;
 import org.uberfire.workbench.type.ResourceTypeDefinition;
 
 /**
- * DeleteHelper to invalidate LRUDataModelOracleCache entries when a file is deleted.
+ * DeleteHelper to isInvalidated LRUDataModelOracleCache entries when a file is deleted.
  */
 public abstract class AbstractInvalidateDMOPackageCacheDeleteHelper<T extends ResourceTypeDefinition> implements DeleteHelper {
 

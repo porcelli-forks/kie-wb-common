@@ -16,59 +16,35 @@
 
 package org.kie.workbench.common.services.backend.builder.service;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.Consumer;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.project.builder.model.BuildResults;
-import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.service.DeploymentMode;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.kie.workbench.common.services.backend.builder.ala.LocalBuildConfig;
-import org.kie.workbench.common.services.backend.builder.core.Builder;
-import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
-import org.kie.workbench.common.services.shared.project.KieModuleService;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.workbench.events.ResourceChange;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 
 @Service
 @ApplicationScoped
 public class BuildServiceImpl
         implements BuildService {
 
-    private BuildServiceHelper buildServiceHelper;
-
-    private KieModuleService moduleService;
-
-    private LRUBuilderCache cache;
+    private ModuleBuildInfo moduleBuildInfo;
 
     public BuildServiceImpl() {
         //Empty constructor for Weld
     }
 
     @Inject
-    public BuildServiceImpl(final KieModuleService moduleService,
-                            final BuildServiceHelper buildServiceHelper,
-                            final LRUBuilderCache cache) {
-        this.moduleService = moduleService;
-        this.buildServiceHelper = buildServiceHelper;
-        this.cache = cache;
+    public BuildServiceImpl(final ModuleBuildInfo moduleBuildInfo) {
+        this.moduleBuildInfo = moduleBuildInfo;
     }
 
     @Override
     public BuildResults build(final Module module) {
-        return buildServiceHelper.localBuild(module);
-    }
-
-    public void build(final Module module,
-                      final Consumer<Builder> consumer) {
-        buildServiceHelper.localBuild(module,
-                                      localBinaryConfig ->
-                                              consumer.accept(localBinaryConfig.getBuilder()));
+        return moduleBuildInfo.getOrCreateEntry(module).build();
     }
 
     @Override
@@ -98,53 +74,11 @@ public class BuildServiceImpl
     public BuildResults buildAndDeploy(final Module module,
                                        final boolean suppressHandlers,
                                        final DeploymentMode mode) {
-        return buildServiceHelper.localBuildAndDeploy(module,
-                                                      mode,
-                                                      suppressHandlers);
+        return moduleBuildInfo.getOrCreateEntry(module).buildAndInstall();
     }
 
     @Override
     public boolean isBuilt(final Module module) {
-        final Builder builder = cache.assertBuilder(module);
-        return builder.isBuilt();
-    }
-
-    @Override
-    public IncrementalBuildResults addPackageResource(final Path resource) {
-        return buildIncrementally(resource,
-                                  LocalBuildConfig.BuildType.INCREMENTAL_ADD_RESOURCE);
-    }
-
-    @Override
-    public IncrementalBuildResults deletePackageResource(final Path resource) {
-        return buildIncrementally(resource,
-                                  LocalBuildConfig.BuildType.INCREMENTAL_DELETE_RESOURCE);
-    }
-
-    @Override
-    public IncrementalBuildResults updatePackageResource(final Path resource) {
-        return buildIncrementally(resource,
-                                  LocalBuildConfig.BuildType.INCREMENTAL_UPDATE_RESOURCE);
-    }
-
-    private IncrementalBuildResults buildIncrementally(Path resource,
-                                                       LocalBuildConfig.BuildType buildType) {
-        Module module = moduleService.resolveModule(resource);
-        if (module == null) {
-            return new IncrementalBuildResults();
-        }
-        return buildServiceHelper.localBuild(module,
-                                             buildType,
-                                             resource);
-    }
-
-    @Override
-    public IncrementalBuildResults applyBatchResourceChanges(final Module module,
-                                                             final Map<Path, Collection<ResourceChange>> changes) {
-        if (module == null) {
-            return new IncrementalBuildResults();
-        }
-        return buildServiceHelper.localBuild(module,
-                                             changes);
+        return moduleBuildInfo.getOrCreateEntry(module).isBuilt();
     }
 }

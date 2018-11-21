@@ -311,7 +311,7 @@ public class BPMNDiagramMarshallerTest {
     public void setup() throws Exception {
         // Work Items.
         workItemDefinitionMockRegistry = new WorkItemDefinitionMockRegistry();
-        // Graph utils.
+        // Graph util.
         when(definitionManager.adapters()).thenReturn(adapterManager);
         when(adapterManager.registry()).thenReturn(adapterRegistry);
         definitionUtils = new DefinitionUtils(definitionManager,

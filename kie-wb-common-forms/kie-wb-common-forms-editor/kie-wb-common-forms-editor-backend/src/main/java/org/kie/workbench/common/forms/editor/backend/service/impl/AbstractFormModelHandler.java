@@ -32,7 +32,7 @@ import org.kie.workbench.common.forms.editor.service.backend.SourceFormModelNotF
 import org.kie.workbench.common.forms.model.FormModel;
 import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.vfs.Path;
 
@@ -44,12 +44,12 @@ public abstract class AbstractFormModelHandler<F extends FormModel> implements F
 
     protected KieModuleService moduleService;
 
-    protected ModuleClassLoaderHelper classLoaderHelper;
+    protected ModuleBuildInfo moduleBuildInfo;
 
     public AbstractFormModelHandler(final KieModuleService moduleService,
-                                    final ModuleClassLoaderHelper classLoaderHelper) {
+                                    final ModuleBuildInfo moduleBuildInfo) {
         this.moduleService = moduleService;
-        this.classLoaderHelper = classLoaderHelper;
+        this.moduleBuildInfo = moduleBuildInfo;
     }
 
     @Override
@@ -62,7 +62,7 @@ public abstract class AbstractFormModelHandler<F extends FormModel> implements F
     }
 
     protected void initClassLoader() {
-        this.projectClassLoader = classLoaderHelper.getModuleClassLoader(moduleService.resolveModule(path));
+        this.projectClassLoader = moduleBuildInfo.getOrCreateEntry(moduleService.resolveModule(path)).getClassLoader();
     }
 
     protected abstract void initialize();

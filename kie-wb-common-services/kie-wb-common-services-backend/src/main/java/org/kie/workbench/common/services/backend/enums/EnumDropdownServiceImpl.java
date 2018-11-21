@@ -20,14 +20,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.kie.scanner.KieModuleMetaData;
 import org.kie.soup.project.datamodel.commons.util.MVELEvaluator;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.shared.enums.EnumDropdownService;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
@@ -45,14 +45,24 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
 
     private static final Logger logger = LoggerFactory.getLogger(EnumDropdownServiceImpl.class);
 
-    @Inject
-    private BuildInfoService buildInfoService;
-
-    @Inject
     private KieModuleService moduleService;
 
-    @Inject
     private MVELEvaluator mvelEvaluator;
+
+    private ModuleBuildInfo moduleBuildInfo;
+
+    public EnumDropdownServiceImpl() {
+        //CDI proxy
+    }
+
+    @Inject
+    public EnumDropdownServiceImpl(final KieModuleService moduleService,
+                                   final MVELEvaluator mvelEvaluator,
+                                   final ModuleBuildInfo moduleBuildInfo) {
+        this.moduleService = moduleService;
+        this.mvelEvaluator = mvelEvaluator;
+        this.moduleBuildInfo = moduleBuildInfo;
+    }
 
     @Override
     public String[] loadDropDownExpression(final Path resource,
@@ -65,12 +75,13 @@ public class EnumDropdownServiceImpl implements EnumDropdownService {
             logger.error("A Module could not be resolved for path '" + resource.toURI() + "'. No enums will be returned.");
             return null;
         }
-        final org.kie.api.builder.KieModule kieModule = buildInfoService.getBuildInfo(module).getKieModuleIgnoringErrors();
-        if (kieModule == null) {
+
+        final ClassLoader classLoader = moduleBuildInfo.getOrCreateEntry(module).getClassLoader();
+
+        if (classLoader == null) {
             logger.error("A KieModule could not be resolved for path '" + resource.toURI() + "'. No enums will be returned.");
             return null;
         }
-        final ClassLoader classLoader = KieModuleMetaData.Factory.newKieModuleMetaData(kieModule).getClassLoader();
 
         return loadDropDownExpression(classLoader,
                                       mvelEvaluator,

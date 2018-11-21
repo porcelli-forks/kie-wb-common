@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.kie.workbench.common.services.backend.builder.core;
 
@@ -19,7 +19,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
 import org.guvnor.common.services.project.builder.model.BuildResults;
-import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 
 /**
  * Test Observer for Build events
@@ -28,21 +27,12 @@ import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 public class BuildResultsObserver {
 
     private volatile BuildResults buildResults;
-    private volatile IncrementalBuildResults incrementalBuildResults;
 
-    public void onBuildResults( final @Observes BuildResults results ) {
+    public void onBuildResults(final @Observes BuildResults results) {
         this.buildResults = results;
-    }
-
-    public void onIncrementalBuildResults( final @Observes IncrementalBuildResults results ) {
-        this.incrementalBuildResults = results;
     }
 
     public BuildResults getBuildResults() {
         return buildResults;
-    }
-
-    public IncrementalBuildResults getIncrementalBuildResults() {
-        return incrementalBuildResults;
     }
 }

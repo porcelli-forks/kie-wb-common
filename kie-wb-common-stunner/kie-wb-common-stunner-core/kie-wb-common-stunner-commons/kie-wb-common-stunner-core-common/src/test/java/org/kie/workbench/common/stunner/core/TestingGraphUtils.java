@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Some testing utils for graph stuff.
+ * Some testing util for graph stuff.
  */
 public class TestingGraphUtils {
 

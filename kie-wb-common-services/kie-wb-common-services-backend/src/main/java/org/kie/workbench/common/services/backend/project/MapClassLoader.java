@@ -26,6 +26,7 @@ import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Class taken from drools utility classes. (ClassUtils)
@@ -35,12 +36,7 @@ public class MapClassLoader extends ClassLoader {
     private static final ProtectionDomain PROTECTION_DOMAIN;
 
     static {
-        PROTECTION_DOMAIN = (ProtectionDomain) AccessController.doPrivileged( new PrivilegedAction() {
-
-            public Object run() {
-                return MapClassLoader.class.getProtectionDomain();
-            }
-        } );
+        PROTECTION_DOMAIN = (ProtectionDomain) AccessController.doPrivileged((PrivilegedAction) () -> MapClassLoader.class.getProtectionDomain());
     }
 
 
@@ -124,6 +120,10 @@ public class MapClassLoader extends ClassLoader {
                 throw new NoSuchElementException();
             }
         };
+    }
+
+    public Set<String> getKeys() {
+        return map.keySet();
     }
 
     public static String convertClassToResourcePath(final String pName) {

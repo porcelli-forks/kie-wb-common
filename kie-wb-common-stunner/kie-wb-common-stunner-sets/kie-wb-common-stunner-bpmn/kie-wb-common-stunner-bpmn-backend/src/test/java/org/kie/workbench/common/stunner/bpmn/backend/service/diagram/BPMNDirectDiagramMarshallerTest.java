@@ -245,7 +245,7 @@ public class BPMNDirectDiagramMarshallerTest {
         // Work Items.
         workItemDefinitionMockRegistry = new WorkItemDefinitionMockRegistry();
 
-        // Graph utils.
+        // Graph util.
         when(definitionManager.adapters()).thenReturn(adapterManager);
         when(adapterManager.registry()).thenReturn(adapterRegistry);
         // initApplicationFactoryManagerAlt();

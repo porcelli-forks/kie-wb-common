@@ -178,7 +178,7 @@ public class DMNMarshallerTest {
     @Before
     @SuppressWarnings("unchecked")
     public void setup() throws Exception {
-        // Graph utils.
+        // Graph util.
         when(definitionManager.adapters()).thenReturn(adapterManager);
         when(adapterManager.registry()).thenReturn(adapterRegistry);
         definitionUtils = new DefinitionUtils(definitionManager,

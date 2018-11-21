@@ -33,10 +33,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
-import org.kie.workbench.common.services.backend.builder.core.LRUPomModelCache;
 import org.kie.workbench.common.services.shared.kmodule.KModuleModel;
 import org.kie.workbench.common.services.shared.kmodule.KModuleService;
-import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.kie.workbench.common.services.shared.project.ProjectImportsService;
 import org.kie.workbench.common.services.shared.whitelist.PackageNameWhiteListService;
@@ -50,7 +48,10 @@ import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.rpc.SessionInfo;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectScreenModelSaverTest {
@@ -86,9 +87,6 @@ public class ProjectScreenModelSaverTest {
     private CommentedOptionFactory commentedOptionFactory;
 
     @Mock
-    private LRUPomModelCache pomModelCache;
-
-    @Mock
     private IOService ioService;
 
     private Path pathToPom;
@@ -120,8 +118,7 @@ public class ProjectScreenModelSaverTest {
                                             ioService,
                                             moduleService,
                                             repositoryResolver,
-                                            commentedOptionFactory,
-                                            pomModelCache);
+                                            commentedOptionFactory);
 
         pathToPom = testFileSystem.createTempFile("testproject/pom.xml");
     }
@@ -164,32 +161,6 @@ public class ProjectScreenModelSaverTest {
                                 eq(pom),
                                 eq(pomMetaData),
                                 eq("message"));
-    }
-
-    @Test
-    public void checkPOMSaveInvalidatesPomModelCache() {
-        // See https://issues.jboss.org/browse/RHBRMS-2822
-        // Saving the pom.xml (eventually) triggers an InvalidateDMOProjectCacheEvent once VFS's WatchService
-        // has observed the file change after the batch has been committed. The InvalidateDMOProjectCacheEvent then
-        // invalidates the PomModelCache. The PomModelCache is used to find the Project's GAV when the Project is
-        // "Built (& Deployed)" and if it's content is stale can lead to the generated KJAR containing the
-        // wrong GAV. Therefore invalidate the PomModelCache as soon as the save starts.
-        final ProjectScreenModel model = new ProjectScreenModel();
-        final Metadata pomMetaData = new Metadata();
-        final POM pom = new POM();
-        model.setPOM(pom);
-        model.setPOMMetaData(pomMetaData);
-
-        KieModule module = mock(KieModule.class);
-
-        when(moduleService.resolveModule(pathToPom)).thenReturn(module);
-
-        saver.save(pathToPom,
-                   model,
-                   DeploymentMode.FORCED,
-                   "message");
-
-        verify(pomModelCache).invalidateCache(module);
     }
 
     @Test

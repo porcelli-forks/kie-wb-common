@@ -43,7 +43,7 @@ import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderError;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.refactoring.backend.server.indexing.AbstractFileIndexer;
 import org.kie.workbench.common.services.refactoring.backend.server.indexing.DefaultIndexBuilder;
 import org.kie.workbench.common.services.refactoring.backend.server.indexing.IndexBuilder;
@@ -67,11 +67,20 @@ public class BpmnFileIndexer extends AbstractFileIndexer {
         modules.addSemanticModule(new BPMNExtensionsSemanticModule());
     }
 
-    @Inject
     protected BPMNDefinitionSetResourceType bpmnTypeDefinition;
 
+    protected ModuleBuildInfo moduleBuildInfo;
+
+    public BpmnFileIndexer() {
+        //CDI Proxy
+    }
+
     @Inject
-    protected ModuleClassLoaderHelper classLoaderHelper;
+    public BpmnFileIndexer(final BPMNDefinitionSetResourceType bpmnTypeDefinition,
+                           final ModuleBuildInfo moduleBuildInfo) {
+        this.bpmnTypeDefinition = bpmnTypeDefinition;
+        this.moduleBuildInfo = moduleBuildInfo;
+    }
 
     @Override
     public boolean supportsPath(Path path) {
@@ -170,7 +179,7 @@ public class BpmnFileIndexer extends AbstractFileIndexer {
 
     // Protected method for testing
     protected ClassLoader getModuleClassLoader(final KieModule module) {
-        return classLoaderHelper.getModuleClassLoader(module);
+        return moduleBuildInfo.getOrCreateEntry(module).getClassLoader();
     }
 
     private List<BpmnProcessDataEventListener> buildProcessDefinition(String bpmn2Content,

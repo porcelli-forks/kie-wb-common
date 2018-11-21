@@ -22,7 +22,7 @@ import org.kie.workbench.common.stunner.core.graph.content.definition.Definition
 import org.kie.workbench.common.stunner.core.graph.util.GraphUtils;
 
 /**
- * Shared utils class for BPMN stuff.
+ * Shared util class for BPMN stuff.
  */
 public class CaseManagementUtils {
 

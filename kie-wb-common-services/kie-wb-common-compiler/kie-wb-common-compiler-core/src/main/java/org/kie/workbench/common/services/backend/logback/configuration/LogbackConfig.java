@@ -36,11 +36,12 @@ import org.kie.workbench.common.services.backend.logback.appender.UUIDThreadName
 
 /**
  * Class to configure programmatically Logback with the ch.qos.logback.classic.spi.Configurator into
- * the META-INF/services, it works when logabck.xml and logback-test.xml aren't present in the classpath
+ * the META-INF/services, it works when logback.xml and logback-test.xml aren't present in the classpath
  */
 public class LogbackConfig extends ContextAwareBase implements Configurator {
 
     public LogbackConfig() {
+        System.out.println("initialized!");
     }
 
     @Override

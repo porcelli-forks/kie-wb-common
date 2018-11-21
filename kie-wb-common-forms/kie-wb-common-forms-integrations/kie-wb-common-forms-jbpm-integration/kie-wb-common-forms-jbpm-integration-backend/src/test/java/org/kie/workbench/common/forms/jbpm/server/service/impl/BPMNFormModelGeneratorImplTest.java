@@ -32,7 +32,7 @@ import org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProce
 import org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.ModelProperty;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.mockito.Mock;
@@ -114,7 +114,7 @@ public class BPMNFormModelGeneratorImplTest {
     @Mock
     private KieModule module;
     @Mock
-    private ModuleClassLoaderHelper projectClassLoaderHelper;
+    private ModuleBuildInfo moduleBuildInfo;
     @Mock
     private ClassLoader projectClassLoader;
 
@@ -124,18 +124,18 @@ public class BPMNFormModelGeneratorImplTest {
         processWithAllVariablesDefinitions = BPMN2Utils.getDefinitions(BPMNFormModelGeneratorImplTest.class.getResourceAsStream(RESOURCES_PATH + PROCESS_WITH_ALL_VARIABLES_NAME + BPMN2_SUFFIX));
         processWithSharedForms = BPMN2Utils.getDefinitions(BPMNFormModelGeneratorImplTest.class.getResourceAsStream(RESOURCES_PATH + PROCESS_WITH_SHARED_FORMS_NAME + BPMN2_SUFFIX));
         processWithSharedFormsWrongMappings = BPMN2Utils.getDefinitions(BPMNFormModelGeneratorImplTest.class.getResourceAsStream(RESOURCES_PATH + PROCESS_WITH_SHARED_FORMS_WRONG_MAPPINGS_NAME + BPMN2_SUFFIX));
-        processWithWrongTypes  = BPMN2Utils.getDefinitions(BPMNFormModelGeneratorImplTest.class.getResourceAsStream(RESOURCES_PATH + PROCESS_WITH_WRONG_TYPES + BPMN2_SUFFIX));
+        processWithWrongTypes = BPMN2Utils.getDefinitions(BPMNFormModelGeneratorImplTest.class.getResourceAsStream(RESOURCES_PATH + PROCESS_WITH_WRONG_TYPES + BPMN2_SUFFIX));
     }
 
     @Before
     public void init() throws Exception {
         when(projectService.resolveModule(any())).thenReturn(module);
         when(module.getRootPath()).thenReturn(path);
-        when(projectClassLoaderHelper.getModuleClassLoader(module)).thenReturn(projectClassLoader);
+//        when(projectClassLoaderHelper.getModuleClassLoader(module)).thenReturn(projectClassLoader);
         when(projectClassLoader.loadClass(anyString())).thenAnswer(invocation -> Object.class);
 
         generator = new BPMNFormModelGeneratorImpl(projectService,
-                                                   projectClassLoaderHelper);
+                                                   moduleBuildInfo);
     }
 
     @Test

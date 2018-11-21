@@ -96,11 +96,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-datamodel-backend</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-forms-api</artifactId>
     </dependency>

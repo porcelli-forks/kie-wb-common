@@ -15,49 +15,52 @@
  */
 package org.kie.workbench.common.services.backend.session;
 
+import java.util.Optional;
+
+import javax.crypto.spec.OAEPParameterSpec;
 import javax.inject.Inject;
 
 import org.drools.core.ClockType;
 import org.drools.core.SessionConfiguration;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.workbench.common.services.backend.builder.service.BuildInfoService;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.shared.project.KieModule;
 
 public class SessionServiceImpl
         implements SessionService {
 
-    private BuildInfoService buildInfoService;
+    private ModuleBuildInfo moduleBuildInfo;
 
     public SessionServiceImpl() {
         //Empty constructor for Weld
     }
 
     @Inject
-    public SessionServiceImpl(final BuildInfoService buildInfoService) {
-        this.buildInfoService = buildInfoService;
+    public SessionServiceImpl(ModuleBuildInfo moduleBuildInfo) {
+        this.moduleBuildInfo = moduleBuildInfo;
     }
 
     @Override
     public KieSession newKieSession(KieModule project, String ksessionName) {
 
-        KieContainer kieContainer = buildInfoService.getBuildInfo(project).getKieContainer();
+        final Optional<KieContainer> kieContainer = moduleBuildInfo.getOrCreateEntry(project).getKieContainer(); //buildInfoService.getBuildInfo(project).getKieContainer();
 
         //If a KieContainer could not be built there is a build error somewhere; so return null to be handled elsewhere
-        if (kieContainer == null) {
+        if (!kieContainer.isPresent()) {
             return null;
         }
 
-        return kieContainer.newKieSession(ksessionName);
+        return kieContainer.get().newKieSession(ksessionName);
     }
 
     @Override
     public KieSession newDefaultKieSessionWithPseudoClock(final KieModule project) {
 
-        KieContainer kieContainer = buildInfoService.getBuildInfo(project).getKieContainer();
+        final Optional<KieContainer> kieContainer = moduleBuildInfo.getOrCreateEntry(project).getKieContainer(); //buildInfoService.getBuildInfo(project).getKieContainer();
 
         //If a KieContainer could not be built there is a build error somewhere; so return null to be handled elsewhere
-        if (kieContainer == null) {
+        if (!kieContainer.isPresent()) {
             return null;
         }
 
@@ -65,6 +68,6 @@ public class SessionServiceImpl
         final SessionConfiguration conf = SessionConfiguration.newInstance();
         conf.setClockType(ClockType.PSEUDO_CLOCK);
 
-        return kieContainer.getKieBase().newKieSession(conf, null);
+        return kieContainer.get().getKieBase().newKieSession(conf, null);
     }
 }

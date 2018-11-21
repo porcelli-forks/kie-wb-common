@@ -23,7 +23,7 @@ import org.kie.workbench.common.stunner.svg.gen.model.PrimitiveDefinition;
 import org.kie.workbench.common.stunner.svg.gen.model.impl.SVGModelUtils;
 
 /**
- * As the generated values will end up in a source file, this utils class provides different methods
+ * As the generated values will end up in a source file, this util class provides different methods
  * as for using concrete formatting behaviors common along all generated code.
  */
 public class SVGGeneratorFormatUtils {

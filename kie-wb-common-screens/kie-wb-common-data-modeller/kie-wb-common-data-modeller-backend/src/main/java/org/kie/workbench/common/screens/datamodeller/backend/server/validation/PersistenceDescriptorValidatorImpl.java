@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -28,7 +29,7 @@ import org.kie.workbench.common.screens.datamodeller.model.persistence.Persisten
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceUnitModel;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.TransactionType;
 import org.kie.workbench.common.screens.datamodeller.validation.PersistenceDescriptorValidator;
-import org.kie.workbench.common.services.backend.project.ModuleClassLoaderHelper;
+import org.kie.workbench.common.services.backend.builder.ModuleBuildInfo;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.vfs.Path;
@@ -41,7 +42,7 @@ public class PersistenceDescriptorValidatorImpl
 
     private KieModuleService moduleService;
 
-    private ModuleClassLoaderHelper moduleClassLoaderHelper;
+    private ModuleBuildInfo moduleBuildInfo;
 
     private PersistableClassValidator classValidator = new PersistableClassValidator();
 
@@ -53,9 +54,9 @@ public class PersistenceDescriptorValidatorImpl
 
     @Inject
     public PersistenceDescriptorValidatorImpl(KieModuleService moduleService,
-                                              ModuleClassLoaderHelper moduleClassLoaderHelper) {
+                                              ModuleBuildInfo moduleBuildInfo) {
         this.moduleService = moduleService;
-        this.moduleClassLoaderHelper = moduleClassLoaderHelper;
+        this.moduleBuildInfo = moduleBuildInfo;
     }
 
     @Override
@@ -103,7 +104,7 @@ public class PersistenceDescriptorValidatorImpl
         }
 
         if (unitModel.getClasses() != null && !unitModel.getClasses().isEmpty()) {
-            ClassLoader moduleClassLoader = moduleClassLoaderHelper.getModuleClassLoader(module);
+            ClassLoader moduleClassLoader = moduleBuildInfo.getOrCreateEntry(module).getClassLoader();
             unitModel.getClasses().forEach(clazz -> Optional.ofNullable(classValidator.validate(clazz, moduleClassLoader)).ifPresent(messages::addAll));
         }
 
